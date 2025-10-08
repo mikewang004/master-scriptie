@@ -1,0 +1,70 @@
+#time mpirun.openmpi -np 12  ./../../src/lmp_openmpi -i in.cooling
+variable lab equal 1
+variable seed equal 13+654*${lab}
+
+units           lj
+atom_style      angle
+# lmp_mpi -r res.429000000 datafile
+#read_data      PVA20-59.5mil
+read_restart coolingrun_tmax_1e8_dt_0001.restart
+#read_restart res.final
+# no nb12, nb13:
+special_bonds   lj 0 0 1
+mass            * 1.0
+timestep        0.005
+#timestep 0.001
+
+
+#create velocities if started from .data
+#velocity        all create 1. 27287 
+
+#shifted 6-9 potential, cut off in the minimum
+pair_style      lj96/cut 1.6 #check in original paper 
+pair_modify     shift yes
+
+# eps sig rcut
+pair_coeff      * * 0.37775 0.89 1.6
+
+#  4eps=1.511
+
+#bond potential (1350=k/2)
+bond_style      harmonic
+bond_coeff      * 1350 0.5
+
+#angle potential
+angle_style     table linear 181
+angle_coeff     1 angle.aaaw7 aaaw7
+
+# update of neighbor lists
+neighbor        0.3 bin
+neigh_modify    delay 0 every 1 check yes
+
+#startup
+#minimize 1e-4 1e-4 10000 100000
+
+
+# thermostat
+#fix       1 all langevin 1.0 0.1 0.5 ${seed}
+fix	1 all langevin 0.5 1.0 0.5 ${seed}
+fix       2 all nve 
+# NB direct above two lines apply brownian motion
+fix       3 all press/berendsen iso 8.0 8.0 5.0
+
+thermo           10000
+
+#compute myRDF all rdf 100
+#fix 4 all ave/time 1000 196000 100 c_myRDF file rdfnew.dat mode vector ave running
+
+#compute myMSD all msd com yes
+
+#fix 5 all ave/time 1 1 100000 c_myMSD[4] file msdPVA500-new1.dat
+
+reset_timestep 0
+#dump mydump all custom 1000000 run_3_t2e8_*.txt id mol xu yu zu
+
+#restart 10000 cooling-glass.*
+
+#dump 1 all custom 200000 traj_heating_T_0.5-1.0_1e8_dt_0001.lammpstrj id xu yu zu
+#run 500000
+run 100000000
+write_restart heatingrun_T_0.5-1.0_tmax_1e8_dt_0001.restart

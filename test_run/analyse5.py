@@ -129,7 +129,7 @@ class atom_coords:
         Takes about 110 seconds over dataset 720k big"""
         self.total_volume_length = self.maxlength - self.minlength
         data = self.datapd
-        #data = self.datapd.sort_values(by=["mol_id"]) #Does not work as naively expected
+        #data = self.datapd.sort_values(by=["atom_id"], inplace = True) #Does not work as naively expected
         length_array = np.linspace(self.minlength, self.maxlength, nridges+1)
         self.midpoint_ridges = ((length_array + np.roll(length_array, 1))/2)[1:] #Serves as box id 
         #data.iloc[:, 1:] = data.iloc[:, 1:] % total_volume_length
@@ -155,57 +155,43 @@ class atom_coords:
         i = 0
         #order_param_array = np.zeros([len(self.midpoint_ridges)**3])
         order_param_list = []
-        #j = 0
         for xi in self.midpoint_ridges:
             for yi in self.midpoint_ridges:
                 for zi in self.midpoint_ridges:
                     mask = (data.iloc[:, 5] == xi) & (data.iloc[:, 6] == yi) & (data.iloc[:, 7] == zi)
                     box = data[mask]
                     if box.size != 0:
-                        # bond_vec_array = np.zeros([99* polymer_id.size, 3])
-                        # i = 0
-                        # for polymer in polymer_id:
-                        #     subset = (self.datapd[self.datapd["mol_id"] == polymer].iloc[:, 3:])
-                        #     bond_vectors = np.diff(subset, axis = 0) 
-                        #     bond_vectors = bond_vectors / np.linalg.norm(bond_vectors, axis = 0, keepdims = True)
-                        #     bond_vec_array[i: i + 99] = bond_vectors
-                        #     i = i + 99
-                        # labda, ev, order_param = calc_nematic_tensor_2(bond_vec_array)
-                        # #print(order_param)
-                        # #order_param_array[j] = order_param
-                        # order_param_list.append(order_param)
 
                         # Calculate how large the bond vector array needs to be 
                         # This is based on box.size[0] + unique mol ids - (atom_ids % 100 = 0 )
                         unique_mol_ids = box["mol_id"].unique()
                         last_atom_ids = (box["atom_id"] % 100 == 0).sum()
-                        #i = 0
-                        #bond_vec_array = np.zeros([(box.shape[0] + len(unique_mol_ids) - last_atom_ids), 3])
-                        #bond_vec_array = np.zeros([box.shape[0] - last_atom_ids, 3]) 
                         bond_vec_list = []
                         for mol_id in unique_mol_ids:
                             subset = box[box['mol_id'] == mol_id]
                             # Now get bond vectors off all atom ids + 1
-                            print(subset)
+                            #print(subset)
                             max_atom_id = subset['atom_id'].max()
                             atom_ids = subset['atom_id'].values
                             if max_atom_id % 100 != 0:
                                 # Append one atom id to the calculation if its not the last of the chain 
                                 atom_ids = np.append(atom_ids, max_atom_id + 1)
-                            if atom_ids.shape[0] > 1:
+
+                            if atom_ids.shape[0] == 1:
+                                #print(atom_ids)
+                                pass # Skip if atom is last in its chain AND only one in the box
+                            else:
                             # Calculate bond vectors 
+                                #print(atom_ids)
                                 single_poly_bond_vec = self.datapd[self.datapd['atom_id'].isin(atom_ids)].iloc[:, 2:5]
                                 bond_vecs = np.diff(single_poly_bond_vec, axis = 0)
-                                bond_vecs = bond_vecs / np.linalg.norm(bond_vecs, axis = 0, keepdims = True)
+                                #print(bond_vecs)
+                                #print(np.linalg.norm(bond_vecs, axis = 1))
+                                bond_vecs = bond_vecs / np.linalg.norm(bond_vecs, axis = 1, keepdims = True)
                                 #bond_vec_array[i:i + bond_vecs.shape[0], :] = bond_vecs
                                 bond_vec_list.append(bond_vecs)
-                                #i = i + bond_vecs.shape[0]
-                            #else:
-                                #if a momoner is last of its chain AND the single one in this box
-                                #bond_vec_array = np.delete(bond_vec_array, i, axis = 0)
-                        print(bond_vec_list)
-                        bond_vec_array = np.array(bond_vec_list)
-                        print(bond_vec_array.shape)
+                        bond_vec_array = np.vstack(bond_vec_list)
+                        #print(bond_vec_array)
                         labda, ev, order_param = calc_nematic_tensor_2(bond_vec_array)
                         order_param_list.append(order_param)
 

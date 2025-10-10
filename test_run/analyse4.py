@@ -4,30 +4,32 @@ import matplotlib.pyplot as plt
 import re 
 import pandas as pd 
 
+# Check periodic boundary conditions: gebruik unwrapped voor bond vectors 
 
 def calc_nematic_tensor_2(array):
-    """Calculation for the nematic tensor of a local box. NB this is not used yet in the analysis."""
+    """Calculation for the nematic tensor of a local box."""
     array_length = array.shape[0]
     array = array / np.linalg.norm(array, axis = 1, keepdims = True)
-    Q = np.zeros([3,3])
-    # for vector in array:
-    #     outer = np.outer(vector, vector)
-    #     Q = Q + 1.5 * outer
-    #Q = np.einsum('ni,nj->nij', array, array)
+    #Q = np.zeros([3,3])
 
-    outer = (np.einsum('ni,nj->nij', array, array))
+    outer = (np.einsum('ni,nj->nij', array, array)) 
     #Q =  np.mean(outer  - (1/3) * np.eye(3), axis = 0) # According to Sommer/Luo Sep 2010
-    Q = 1.5 * np.mean(outer, axis = 0) - 0.5 * np.eye(3) # Sara 2015
+    # Q = 1.5 * np.mean(outer, axis = 0) - 0.5 * np.eye(3) # Sara 2015 This works !
 
 
-    #Q = Q / array_length - 0.5 * np.eye(3)
+    Q = np.zeros([3,3])
+    for i in range(array_length):
+        vector = array[i, :]
+        outer = np.outer(vector, vector)
+        Q = Q + 1.5 * outer - 0.5 * np.eye(3)
+    Q = Q / array_length
 
     #order_param = np.sqrt(1.5 * np.trace(Q**2)) #Sommer/Luo 2010
     labda, ev = np.linalg.eigh(Q)
+    print(np.sum(labda))
     max_labda = np.max(labda)
     max_ev = ev[:, np.argmax(labda)]
     order_param = max_labda #Sara 2015
-    #print(labda, ev)
     return max_labda, max_ev, order_param
 
 class atom_coords:
@@ -149,7 +151,9 @@ class atom_coords:
                 subset = array[array["mol_id"] == polymer_id].iloc[:, 1:]
                 k = subset.shape[0]
                 bond_vectors = np.diff(subset, axis = 0)
-                polymer_vector_list[j:j+k-1, :] = bond_vectors/2
+                length = np.linalg.norm(bond_vectors, axis = 1)
+                bond_vectors = bond_vectors / length[:, np.newaxis]
+                polymer_vector_list[j:j+k-1, :] = bond_vectors
                 j = j + k- 1
 
             labda, ev, order_param = calc_nematic_tensor_2(polymer_vector_list)
@@ -270,12 +274,13 @@ frac_cryst_08 = cooling_rates_nematic_order(list_atom_coords, cooling_rates)
 frac_cryst_05 = cooling_rates_nematic_order(get_cooling_rates_time("../../data/pva-100/cooling_tdot_e", cooling_rates, 100000), cooling_rates)
 
 
-plt.scatter(frac_cryst_05[0, :], frac_cryst_05[1, :], label = "tdot = 0.5")
-plt.scatter(frac_cryst_08[0, :], frac_cryst_08[1, :], label = "tdot = 0.8")
+plt.scatter(frac_cryst_05[0, :], frac_cryst_05[1, :], label = "T = 0.5")
+plt.scatter(frac_cryst_08[0, :], frac_cryst_08[1, :], label = "T = 0.8")
 
-plt.title("Crystallinity vs temperature")
-plt.xlabel("temperature")
+plt.title("Crystallinity vs cooling rate")
+plt.xlabel("Tdot")
 plt.ylabel("crystallinity")
 plt.xscale("log")
+plt.legend()
 plt.savefig("cryst_tdot.pdf")
 plt.show()

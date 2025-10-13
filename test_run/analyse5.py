@@ -27,7 +27,6 @@ def calc_nematic_tensor_2(array):
     #Q =  np.mean(outer  - (1/3) * np.eye(3), axis = 0) # According to Sommer/Luo Sep 2010
     #Q = 1.5 * np.mean(outer, axis = 0) - 0.5 * np.eye(3) # Sara 2015
 
-    #M = np.einsum('bi,bj->ij', bonds_in_cell, bonds_in_cell) / n_bonds
     Q = (3/2) * outer - (1/2) * np.eye(3)
 
 
@@ -36,10 +35,8 @@ def calc_nematic_tensor_2(array):
     #order_param = np.sqrt(1.5 * np.trace(Q**2)) #Sommer/Luo 2010
     labda, ev = np.linalg.eigh(Q)
     max_labda = np.max(labda)
-    #print(max_labda)
     max_ev = ev[:, np.argmax(labda)]
     order_param = max_labda #Sara 2015
-    #print(max_labda)
     return max_labda, max_ev, order_param
 
 class atom_coords:
@@ -93,41 +90,6 @@ class atom_coords:
             self.box_atom_list, self.volume_box = self.divide_into_box()
         return 0;
 
-
-    def divide_into_box(self, nridges=33):
-        """Default nridges = 33"""
-        data = self.datapd.iloc[:, 1:]
-        total_volume_length = self.maxlength - self.minlength
-        data = data % (total_volume_length) #For periodic boundary conditions, LAMMPS does not apply this automatically
-        box_length = total_volume_length/nridges
-        box_size = box_length * box_length * box_length
-        boxes = []
-        l = 0
-
-        for i in range(nridges):
-            xpos_min = self.minlength + i * box_length
-            xpos_max = xpos_min + box_length
-            xselect = data[(xselect := data['xu'].between(xpos_min, xpos_max))]
-            
-            for j in range(nridges):
-                ypos_min = self.minlength + j * box_length
-                ypos_max = ypos_min + box_length
-                yselect = xselect[xselect['yu'].between(ypos_min, ypos_max)]
-
-                for k in range(nridges):
-                    zpos_min = self.minlength + k * box_length
-                    zpos_max = zpos_min + box_length
-                    zselect = yselect[yselect['zu'].between(zpos_min, zpos_max)]
-
-                    if len(zselect) > 1:
-                        boxes.append(zselect)
-                    else:
-                        l = l + 1
-        print(l)
-        self.box_atom_list = boxes
-        self.box_size = box_size
-        return boxes, box_size
-
     def calculate_bond_vectors(self):
         """Returns np.diff in positions except for each 100th particle."""
         # Filter out every nth row
@@ -170,73 +132,16 @@ class atom_coords:
         data.to_csv("data_test.txt", sep = " ", mode = "w")
         return data
 
-    def get_nematic_vector_2(self, nridges = 33):
-        data = self.assign_center_of_mass(nridges = nridges)
-        #total_volume_length = self.maxlength - self.minlength
-        i = 0
-        #order_param_array = np.zeros([len(self.midpoint_ridges)**3])
-        order_param_list = []
-        #for xi in self.midpoint_ridges:
-        for t in tqdm(range(0, len(self.midpoint_ridges)), desc="runnin"):
-            xi = self.midpoint_ridges[t]
-            for yi in self.midpoint_ridges:
-                for zi in self.midpoint_ridges:
-                    mask = (data.iloc[:, 5] == xi) & (data.iloc[:, 6] == yi) & (data.iloc[:, 7] == zi)
-                    box = data[mask]
-                    if box.size != 0:
-
-                        # Calculate how large the bond vector array needs to be 
-                        # This is based on box.size[0] + unique mol ids - (atom_ids % 100 = 0 )
-                        unique_mol_ids = box["mol_id"].unique()
-                        last_atom_ids = (box["atom_id"] % 100 == 0).sum()
-                        bond_vec_list = []
-                        for mol_id in unique_mol_ids:
-                            subset = box[box['mol_id'] == mol_id]
-                            # Now get bond vectors off all atom ids + 1
-                            #print(subset)
-                            max_atom_id = subset['atom_id'].max()
-                            atom_ids = subset['atom_id'].values
-                            if max_atom_id % 100 != 0:
-                                # Append one atom id to the calculation if its not the last of the chain 
-                                atom_ids = np.append(atom_ids, max_atom_id + 1)
-
-                            if atom_ids.shape[0] == 1:
-                                #print(atom_ids)
-                                pass # Skip if atom is last in its chain AND only one in the box
-                            else:
-                            # Calculate bond vectors 
-                                #print(atom_ids)
-                                single_poly_bond_vec = self.datapd[self.datapd['atom_id'].isin(atom_ids)].iloc[:, 2:5]
-                                bond_vecs = np.diff(single_poly_bond_vec, axis = 0)
-                                #print(bond_vecs)
-                                #print(np.linalg.norm(bond_vecs, axis = 1))
-                                bond_vecs = bond_vecs / np.linalg.norm(bond_vecs, axis = 1, keepdims = True)
-                                #bond_vec_array[i:i + bond_vecs.shape[0], :] = bond_vecs
-                                bond_vec_list.append(bond_vecs)
-                        bond_vec_array = np.vstack(bond_vec_list)
-                        #print(bond_vec_array)
-                        labda, ev, order_param = calc_nematic_tensor_2(bond_vec_array)
-                        order_param_list.append(order_param)
-
-                    #j = j + 1
-        order_param_array = np.asarray(order_param_list)
-        self.fraction_crystallinity = fraction_crystallinity(order_param_array)
-        print(self.fraction_crystallinity)
-        return self.fraction_crystallinity
 
 
 
     def get_nematic_vector_4(self, nridges = 33):
         data = self.assign_center_of_mass(nridges = nridges)
         # Prepare masks of all possible combinations 
-        #data = pd.read_csv("data_test.txt", sep= " ")
-        #data.columns = ["atom_id", "mol_id", "xu", "yu", "zu", "xid", "yid", "zid"]
-        #data = data.set_index("atom_id")
         data = data[data.index % 100 != 0]
         numbers = np.arange(0, nridges)  # 0 to 32 inclusive
         combinations = np.array(np.meshgrid(numbers, numbers, numbers)).T.reshape(-1, 3)
         order_param_list = []
-        #for combination in combinations:
         for t in tqdm(range(0, len(combinations))):
             combination = combinations[t]
             #print(combination)
@@ -387,7 +292,10 @@ def plot_volume_line(list_atom_coords, title,savestring = None, n_atoms = 720000
 def plot_order_param(list_atom_coords, title,savestring = None, n_atoms = 720000, starttemp = 1.0, endtemp = 0.5):
     """Returns plot of volume as function of temperature"""
     list_order_params = []
-    for atom_coords in list_atom_coords:
+    for t in tqdm(range(0, len(list_atom_coords))):
+        print(t)
+        atom_coords = list_atom_coords[t]
+    #for atom_coords in list_atom_coords:
         atom_coords.get_nematic_vector_4()
         list_order_params.append((atom_coords.fraction_crystallinity))
         print(atom_coords.fraction_crystallinity)
@@ -404,13 +312,6 @@ def plot_order_param(list_atom_coords, title,savestring = None, n_atoms = 720000
         plt.savefig(savestring)
     plt.show()
 
-# cooling_pva_100_t0 = atom_coords("pva-100/run_pos/genua_cooling_100_tmin_0.5_ttime_10e7_0.txt")
-#cooling_pva_100_t10000000 = atom_coords("pva-100/run_pos/cooling_tdot_e-4_time_1000000.txt")
-# print("Start cooling t0")
-#cooling_pva_100_t10000000.assign_center_of_mass()
-#cooling_pva_100_t10000000.get_nematic_vector_2()
-# print("End cooling t10000000")
-# cooling_pva_100_t10000000.get_nematic_vector()
 
 
 list_atom_coords_cooling = get_list_atom_coords("../../data/pva-100/cooling_tdot_e-5_time", 21)

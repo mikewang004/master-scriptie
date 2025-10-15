@@ -125,9 +125,6 @@ class atom_coords:
             df_com.iloc[i, 1] = find_nearest(self.midpoint_ridges, data.iloc[i, 2])
             df_com.iloc[i, 2] = find_nearest(self.midpoint_ridges, data.iloc[i, 3])
 
-
-        #TODO Assign Com to current array and modify get nematic vector 2 to accept this
-        #np.savetxt("midpoint.txt", self.midpoint_ridges)
         data = pd.concat([data, df_com], axis=1)
         data.to_csv("data_test.txt", sep = " ", mode = "w")
         return data
@@ -138,7 +135,7 @@ class atom_coords:
     def get_nematic_vector_4(self, nridges = 33):
         data = self.assign_center_of_mass(nridges = nridges)
         # Prepare masks of all possible combinations 
-        data = data[data.index % 100 != 0]
+        data = data[data.index % 100 != 0] # Filter out all last monomers as they do not have a bond vector per definiton
         numbers = np.arange(0, nridges)  # 0 to 32 inclusive
         combinations = np.array(np.meshgrid(numbers, numbers, numbers)).T.reshape(-1, 3)
         order_param_list = []
@@ -263,7 +260,7 @@ def get_crystallinity_tdots(shared_name, min_time, tdots):
     list_atom_coords = get_list_different_tdot(shared_name, min_time, tdots)
     i = 0
     for atom_coords in list_atom_coords:
-        psic_array[1, i] = atom_coords.get_nematic_vector()
+        psic_array[1, i] = atom_coords.get_nematic_vector_4()
         i = i + 1
     print(psic_array)
     return psic_array
@@ -321,13 +318,16 @@ plot_order_param(list_atom_coords_cooling, "Crystallinity vs temperature, coolin
 # last_timestep_e5.get_nematic_vector_4()
 
 
-# plt.scatter(list_different_tdot_t_08[0, :], list_different_tdot_t_08[1, :], label = "T = 0.8")
-# plt.scatter(list_different_tdot_t_05[0, :], list_different_tdot_t_05[1, :], label = "T = 0.5")
-# plt.title("Crystallisation as function of cooling rate")
-# plt.xlabel("cooling rate")
-# plt.ylabel("crystallisation")
-# plt.legend()
-# plt.xscale("log")
-# #plt.yscale("log")
-# plt.savefig("cryst_tdot.pdf")
-# plt.show()
+# list_different_tdot_t_08 = get_crystallinity_tdots("../../data/pva-100/cooling_tdot", 40000, np.array([3, 4, 5]))
+# list_different_tdot_t_05 = get_crystallinity_tdots("../../data/pva-100/cooling_tdot", 100000, np.array([3, 4, 5]))
+
+plt.scatter(list_different_tdot_t_08[0, :], list_different_tdot_t_08[1, :], label = "T = 0.8")
+plt.scatter(list_different_tdot_t_05[0, :], list_different_tdot_t_05[1, :], label = "T = 0.5")
+plt.title("Crystallisation as function of cooling rate")
+plt.xlabel("cooling rate")
+plt.ylabel("crystallisation")
+plt.legend()
+plt.xscale("log")
+#plt.yscale("log")
+plt.savefig("cryst_tdot.pdf")
+plt.show()

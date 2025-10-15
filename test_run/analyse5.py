@@ -45,6 +45,7 @@ class atom_coords:
 
     def __init__(self, file_to_path):
         self.datapd = self.prepare_position_data(file_to_path)
+        combinations = self.generate_box_list()
         self.bond_vectors = self.calculate_bond_vectors()
         self.get_volume_box(file_to_path)
         self.get_timestep_from_file_name(file_to_path)
@@ -130,14 +131,16 @@ class atom_coords:
         return data
 
 
+    def generate_box_list(self, nridges = 33):
+        numbers = np.arange(0, nridges)  # 0 to 32 inclusive
+        self.combinations = np.array(np.meshgrid(numbers, numbers, numbers)).T.reshape(-1, 3)
+        return self.combinations
 
 
     def get_nematic_vector_4(self, nridges = 33):
         data = self.assign_center_of_mass(nridges = nridges)
         # Prepare masks of all possible combinations 
         data = data[data.index % 100 != 0] # Filter out all last monomers as they do not have a bond vector per definiton
-        numbers = np.arange(0, nridges)  # 0 to 32 inclusive
-        combinations = np.array(np.meshgrid(numbers, numbers, numbers)).T.reshape(-1, 3)
         order_param_list = []
         for t in tqdm(range(0, len(combinations))):
             combination = combinations[t]
@@ -156,6 +159,18 @@ class atom_coords:
         print(self.fraction_crystallinity)
         return self.fraction_crystallinity
             
+
+    def get_density_dist(self, nridges = 33):
+        """Uses new method with combinations to calculate local density (i.e. density per box)"""
+        print(self.combinations)
+        local_densities = np.zeros([len(self.combinations), 4]) #First three columns reserved for combination, last for corresponding density
+        local_densities[:, :3] = self.combinations
+        data = self.assign_center_of_mass(nridges = nridges)
+        for t in tqdm(range(0, len(self.combinations))):
+            combination = self.combinations[t]
+            subset = data[(data['xid'] == combination[0]) & (data['yid'] == combination[1]) & (data['zid'] == combination[2])]
+            local_densities[t, 3] = len(subset.index)
+        return local_densities
 
 
     def density_dist(self):
@@ -220,9 +235,10 @@ def fraction_crystallinity(data, cutoff = 0.8):
     fraction = len(data[mask]) / len(data)
     return fraction
 
-def plot_density_dist(data, title):
+def plot_density_dist(atom_coord, title):
     """Returns histogram of local density per cube"""
-    plt.hist(data, bins = 25)
+    data = atom_coord.get_density_dist() #Returns [nx4] array with first 3 columns indicating box id while 4 contains local density
+    plt.hist(data[:, 3], bins = 500)
     plt.title(title) #Include time and temperature in title 
     plt.xlabel("Local density / cube")
     plt.ylabel("count")
@@ -311,23 +327,24 @@ def plot_order_param(list_atom_coords, title,savestring = None, n_atoms = 720000
 
 
 
-list_atom_coords_cooling = get_list_atom_coords("../../data/pva-100/cooling_tdot_e-5_time", 21)
-plot_order_param(list_atom_coords_cooling, "Crystallinity vs temperature, cooling process", savestring = "test_wholebox_frac_cryst_cooling_100_tmin_0.5_ttime_10e7.pdf")
+# list_atom_coords_cooling = get_list_atom_coords("../../data/pva-100/cooling_tdot_e-5_time", 21)
+# plot_order_param(list_atom_coords_cooling, "Crystallinity vs temperature, cooling process", savestring = "test_wholebox_frac_cryst_cooling_100_tmin_0.5_ttime_10e7.pdf")
 
-# last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
-# last_timestep_e5.get_nematic_vector_4()
+last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
+#last_timestep_e5.get_density_dist()
+plot_density_dist(last_timestep_e5, "Distribution of local densities at T = 0.5, tdot 10e-5")
 
 
 # list_different_tdot_t_08 = get_crystallinity_tdots("../../data/pva-100/cooling_tdot", 40000, np.array([3, 4, 5]))
 # list_different_tdot_t_05 = get_crystallinity_tdots("../../data/pva-100/cooling_tdot", 100000, np.array([3, 4, 5]))
 
-plt.scatter(list_different_tdot_t_08[0, :], list_different_tdot_t_08[1, :], label = "T = 0.8")
-plt.scatter(list_different_tdot_t_05[0, :], list_different_tdot_t_05[1, :], label = "T = 0.5")
-plt.title("Crystallisation as function of cooling rate")
-plt.xlabel("cooling rate")
-plt.ylabel("crystallisation")
-plt.legend()
-plt.xscale("log")
-#plt.yscale("log")
-plt.savefig("cryst_tdot.pdf")
-plt.show()
+# plt.scatter(list_different_tdot_t_08[0, :], list_different_tdot_t_08[1, :], label = "T = 0.8")
+# plt.scatter(list_different_tdot_t_05[0, :], list_different_tdot_t_05[1, :], label = "T = 0.5")
+# plt.title("Crystallisation as function of cooling rate")
+# plt.xlabel("cooling rate")
+# plt.ylabel("crystallisation")
+# plt.legend()
+# plt.xscale("log")
+# #plt.yscale("log")
+# plt.savefig("cryst_tdot.pdf")
+# plt.show()

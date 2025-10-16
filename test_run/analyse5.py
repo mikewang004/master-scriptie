@@ -45,6 +45,7 @@ class atom_coords:
 
     def __init__(self, file_to_path):
         self.datapd = self.prepare_position_data(file_to_path)
+        self.n_atoms = len(self.datapd.index)
         combinations = self.generate_box_list()
         self.bond_vectors = self.calculate_bond_vectors()
         self.get_volume_box(file_to_path)
@@ -118,6 +119,7 @@ class atom_coords:
         box_length =  (self.total_volume_length)/nridges
         df_com = pd.DataFrame(np.zeros([data.shape[0], 3]), columns = ["xid", "yid", "zid"])
         print(self.total_volume_length, self.minlength, self.maxlength)
+        self.local_volume = box_length**3
         # Wrap coordinates 
         data.iloc[:, 2:5] = (data.iloc[:, 2:5] - self.minlength) % self.total_volume_length + self.minlength
         # data.rename(columns={"x": "xu", "y": "yu", "z": "zu"})
@@ -169,7 +171,7 @@ class atom_coords:
         for t in tqdm(range(0, len(self.combinations))):
             combination = self.combinations[t]
             subset = data[(data['xid'] == combination[0]) & (data['yid'] == combination[1]) & (data['zid'] == combination[2])]
-            local_densities[t, 3] = len(subset.index)
+            local_densities[t, 3] = len(subset.index)/self.local_volume
         return local_densities
 
 
@@ -258,6 +260,7 @@ def get_list_atom_coords(shared_name, n_samples, starttime = 0, endtime = 1e7):
     #print(list_atom_coords)
     return list_atom_coords
 
+
 def get_list_different_tdot(shared_name, min_time, tdots):
     """tdots array, time int, shared_name string
     NB assumes that tdots is ordered from smallest total runtime to largest"""
@@ -302,7 +305,7 @@ def plot_volume_line(list_atom_coords, title,savestring = None, n_atoms = 720000
         plt.savefig(savestring)
     plt.show()
 
-def plot_order_param(list_atom_coords, title,savestring = None, n_atoms = 720000, starttemp = 1.0, endtemp = 0.5):
+def plot_order_param(list_atom_coords, title,savestring = None, starttemp = 1.0, endtemp = 0.5):
     """Returns plot of volume as function of temperature"""
     list_order_params = []
     for t in tqdm(range(0, len(list_atom_coords))):
@@ -327,13 +330,13 @@ def plot_order_param(list_atom_coords, title,savestring = None, n_atoms = 720000
 
 
 
-# list_atom_coords_cooling = get_list_atom_coords("../../data/pva-100/cooling_tdot_e-5_time", 21)
-# plot_order_param(list_atom_coords_cooling, "Crystallinity vs temperature, cooling process", savestring = "test_wholebox_frac_cryst_cooling_100_tmin_0.5_ttime_10e7.pdf")
+# list_atom_coords_cooling = get_list_atom_coords("../../data/pva-100/cooling_tdot_e-5_time", 21, endtime= 1e7)
+# # plot_order_param(list_atom_coords_cooling, "Crystallinity vs temperature, cooling process", savestring = "test_wholebox_frac_cryst_cooling_100_tmin_0.5_ttime_10e7.pdf")
 
-last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
-#last_timestep_e5.get_density_dist()
-plot_density_dist(last_timestep_e5, "Distribution of local densities at T = 0.5, tdot 10e-5")
-
+# #last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
+# #last_timestep_e5.get_density_dist()
+# #plot_density_dist(last_timestep_e5, "Distribution of local densities at T = 0.5, tdot 10e-5")
+# plot_volume_line(list_atom_coords_cooling, "Volume per monomer as function of temperature, PVA-100", "volume_monomer_tdot_e-5.pdf")
 
 # list_different_tdot_t_08 = get_crystallinity_tdots("../../data/pva-100/cooling_tdot", 40000, np.array([3, 4, 5]))
 # list_different_tdot_t_05 = get_crystallinity_tdots("../../data/pva-100/cooling_tdot", 100000, np.array([3, 4, 5]))
@@ -348,3 +351,7 @@ plot_density_dist(last_timestep_e5, "Distribution of local densities at T = 0.5,
 # #plt.yscale("log")
 # plt.savefig("cryst_tdot.pdf")
 # plt.show()
+
+
+
+

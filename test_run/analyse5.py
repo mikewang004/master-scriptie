@@ -9,7 +9,7 @@ import ctypes
 
 # Load the shared library
 def c_lib_init():
-    lib = ctypes.CDLL('./find_box_id.so')
+    lib = ctypes.CDLL('./boxAlgorithmsInC.so')
 
     # Define the function signature
     lib.find_nearest_value.argtypes = [
@@ -29,6 +29,10 @@ def find_nearest_array(nearest_values, data):
         idx = np.abs(nearest_value - data).argmin()
         results[i] = idx
     return results
+
+def filter_out_subset(data, combination):
+    subset = data[(data['xid'] == combination[0]) & (data['yid'] == combination[1]) & (data['zid'] == combination[2])]
+    return subset
 
 def find_box_id(nearest_values, data):
     """
@@ -168,7 +172,7 @@ class atom_coords:
         df_com.iloc[:, 0] = find_box_id(self.midpoint_ridges, data.iloc[:, 1].to_numpy())
         df_com.iloc[:, 1] = find_box_id(self.midpoint_ridges, data.iloc[:, 2].to_numpy())
         df_com.iloc[:, 2] = find_box_id(self.midpoint_ridges, data.iloc[:, 3].to_numpy())
-        #for i in range(0, data.shape[0]):
+        #for i in range(0, data.shape[0]): #Below is an all-python approach 
             #df_com.iloc[i, 0] = find_nearest(self.midpoint_ridges, data.iloc[i, 1])
             #df_com.iloc[i, 1] = find_nearest(self.midpoint_ridges, data.iloc[i, 2])
             #df_com.iloc[i, 2] = find_nearest(self.midpoint_ridges, data.iloc[i, 3])
@@ -189,32 +193,47 @@ class atom_coords:
         data = self.assign_center_of_mass(nridges = nridges)
         # Prepare masks of all possible combinations 
         data = data[data.index % 100 != 0] # Filter out all last monomers as they do not have a bond vector per definiton
-        #order_param_list = []
-        #ev_list = []
         df_cryst = pd.DataFrame(np.zeros([self.combinations.shape[0], 7]), columns = ["xid", "yid", "zid", "cryst_bool", "x_ev", "y_ev", "z_ev"])
         df_cryst.iloc[:, :3] = self.combinations
         for t in tqdm(range(0, len(self.combinations))):
         #for t in tqdm(range(0, 10)):
             combination = self.combinations[t]
             #print(combination)
-            subset = data[(data['xid'] == combination[0]) & (data['yid'] == combination[1]) & (data['zid'] == combination[2])]
+            #subset = data[(data['xid'] == combination[0]) & (data['yid'] == combination[1]) & (data['zid'] == combination[2])]
+            subset = filter_out_subset(data, combination)
             if subset.empty == False:
                 # Get index molecules 
                 indexes = subset.index
                 #print(indexes)
                 subset_bond_vectors = self.bond_vectors.loc[indexes]
                 labda, ev, order_param = calc_nematic_tensor_2(subset_bond_vectors.iloc[:, 1:4])
-                #order_param_list.append(order_param)
                 df_cryst.iloc[t,3] = order_param
                 df_cryst.iloc[t,4:7] = ev
-                #ev_list.append(ev)
-        #order_param_array = np.asarray(order_param_list)
-        #ev_array = np.asarray(ev_list)
-        #print(ev_array)
-        #print(ev_array.shape)
         self.fraction_crystallinity = fraction_crystallinity(df_cryst.iloc[:,3])
+        self.df_cryst = df_cryst
         print(self.fraction_crystallinity)
         return self.fraction_crystallinity
+
+    def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33):
+        #while clustering_done == False
+        for t in tqdm(range(0, len(self.combinations))):
+            combination = self.combinations[t]
+            #subset = self.df_cryst[(self.df_cryst['xid'] == combination[0]) & (self.df_cryst['yid'] == combination[1]) & (self.df_cryst['zid'] == combination[2])]
+            subset = filter_out_subset(self.df_cryst, combination)
+            if subset.empty == False:
+                # Check whether n dot n >= cutoff 
+                print(subset)
+                x_left = (combination + np.array([-1,0,0])) % nridges
+                x_right = (combination + np.array([+1,0,0])) % nridges
+                y_left = (combination + np.array([0,-1,0])) % nridges
+                y_right = (combination + np.array([0,+1,0])) % nridges
+                z_left = (combination + np.array([0,0,-1])) % nridges
+                z_right = (combination + np.array([0,0,+1])) % nridges
+
+                #nn_left = subset.iloc[4:7] @ filter_out_subset(self.df_cryst, x_left).iloc[4:7]
+                print(filter_out_subset(self.df_cryst, x_left))
+
+
 
             
 
@@ -340,6 +359,7 @@ lib = c_lib_init()
 
 last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
 last_timestep_e5.get_nematic_vector_4()
+last_timestep_e5.merge_boxes()
 # #last_timestep_e5.get_density_dist()
 # #plot_density_dist(last_timestep_e5, "Distribution of local densities at T = 0.5, tdot 10e-5")
 # plot_volume_line(list_atom_coords_cooling, "Volume per monomer as function of temperature, PVA-100", "volume_monomer_tdot_e-5.pdf")

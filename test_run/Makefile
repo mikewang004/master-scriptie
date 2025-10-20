@@ -1,5 +1,5 @@
 
-TARGETS= find_box_id.so 
+TARGETS= boxAlgorithmsInC.so 
 
 PYTHONCFLAGS=$(shell python3-config --cflags)
 PYTHONLDFLAGS=$(shell python3-config --cflags) -shared

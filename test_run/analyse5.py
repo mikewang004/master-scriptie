@@ -4,13 +4,60 @@ import matplotlib.pyplot as plt
 import re 
 import pandas as pd 
 from tqdm import tqdm
+#from find_box_id import *
+import ctypes
 
+# Load the shared library
+def c_lib_init():
+    lib = ctypes.CDLL('./find_box_id.so')
 
-def find_nearest(array, value):
-    array = np.asarray(array)
-    idx = (np.abs(array - value)).argmin()
-    #return array[idx]
-    return idx #Returns index instead of value
+    # Define the function signature
+    lib.find_nearest_value.argtypes = [
+        ctypes.POINTER(ctypes.c_double),  # const double nearest_values[]
+        ctypes.c_size_t,                   # size_t a_size
+        ctypes.POINTER(ctypes.c_double),  # const double data[]
+        ctypes.c_size_t                    # size_t n_size
+    ]
+    lib.find_nearest_value.restype = ctypes.POINTER(ctypes.c_int)  # int* return type
+    return lib
+
+        
+def find_nearest_array(nearest_values, data):
+    """nearest value: 1d np array of size [a], data: 1d np array of size [n]"""
+    results = np.zeros(data.size)
+    for i in range(0, data.size):
+        idx = np.abs(nearest_value - data).argmin()
+        results[i] = idx
+    return results
+
+def find_box_id(nearest_values, data):
+    """
+    nearest_values: 1D numpy array of doubles
+    data: 1D numpy array of doubles
+    returns: 1D numpy array of integers
+    """
+    a_size = len(nearest_values)
+    n_size = len(data)
+    
+    # Convert numpy arrays to ctypes pointers
+    nearest_values_ptr = nearest_values.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+    data_ptr = data.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+    
+    # Call C function
+    result_ptr = lib.find_nearest_value(nearest_values_ptr, a_size, data_ptr, n_size)
+    
+    # Convert result pointer to numpy array
+    # This creates a view without copying data
+    result_array = np.ctypeslib.as_array(result_ptr, shape=(n_size,))
+    
+    # If you need to take ownership and free later, make a copy:
+    result_copy = result_array.copy()
+    
+    # Free the C-allocated memory
+    #lib.free_results(result_ptr)
+    
+    return result_copy
+
 
 
 def calc_nematic_tensor_2(array):
@@ -18,19 +65,12 @@ def calc_nematic_tensor_2(array):
     array_length = array.shape[0]
     array = array / np.linalg.norm(array, axis = 1, keepdims = True)
     Q = np.zeros([3,3])
-    # for vector in array:
-    #     outer = np.outer(vector, vector)
-    #     Q = Q + 1.5 * outer
-    #Q = np.einsum('ni,nj->nij', array, array)
-
     outer = (np.einsum('ni,nj->ij', array, array)) / array_length
     #Q =  np.mean(outer  - (1/3) * np.eye(3), axis = 0) # According to Sommer/Luo Sep 2010
     #Q = 1.5 * np.mean(outer, axis = 0) - 0.5 * np.eye(3) # Sara 2015
 
-    Q = (3/2) * outer - (1/2) * np.eye(3)
+    Q = 1.5 * outer - 0.5* np.eye(3) # Sara 2015
 
-
-    #Q = Q / array_length - 0.5 * np.eye(3)
 
     #order_param = np.sqrt(1.5 * np.trace(Q**2)) #Sommer/Luo 2010
     labda, ev = np.linalg.eigh(Q)
@@ -107,6 +147,7 @@ class atom_coords:
         #np.savetxt("bond_vectors.txt", bond_vectors)
         return bond_vectors
 
+
     def assign_center_of_mass(self, nridges = 33):
         """Loops over all polymers to assign center of mass 
         Also assignes a box id to each polymer group
@@ -123,13 +164,18 @@ class atom_coords:
         # Wrap coordinates 
         data.iloc[:, 2:5] = (data.iloc[:, 2:5] - self.minlength) % self.total_volume_length + self.minlength
         # data.rename(columns={"x": "xu", "y": "yu", "z": "zu"})
-        for i in range(0, data.shape[0]):
-            df_com.iloc[i, 0] = find_nearest(self.midpoint_ridges, data.iloc[i, 1])
-            df_com.iloc[i, 1] = find_nearest(self.midpoint_ridges, data.iloc[i, 2])
-            df_com.iloc[i, 2] = find_nearest(self.midpoint_ridges, data.iloc[i, 3])
 
+        df_com.iloc[:, 0] = find_box_id(self.midpoint_ridges, data.iloc[:, 1].to_numpy())
+        df_com.iloc[:, 1] = find_box_id(self.midpoint_ridges, data.iloc[:, 2].to_numpy())
+        df_com.iloc[:, 2] = find_box_id(self.midpoint_ridges, data.iloc[:, 3].to_numpy())
+        #for i in range(0, data.shape[0]):
+            #df_com.iloc[i, 0] = find_nearest(self.midpoint_ridges, data.iloc[i, 1])
+            #df_com.iloc[i, 1] = find_nearest(self.midpoint_ridges, data.iloc[i, 2])
+            #df_com.iloc[i, 2] = find_nearest(self.midpoint_ridges, data.iloc[i, 3])
+
+            
         data = pd.concat([data, df_com], axis=1)
-        data.to_csv("data_test.txt", sep = " ", mode = "w")
+        #data.to_csv("data_test_ctypes.txt", sep = " ", mode = "w")
         return data
 
 
@@ -139,13 +185,17 @@ class atom_coords:
         return self.combinations
 
 
-    def get_nematic_vector_4(self, nridges = 33):
+    def get_nematic_vector_4(self, nridges = 33, save_ev = False):
         data = self.assign_center_of_mass(nridges = nridges)
         # Prepare masks of all possible combinations 
         data = data[data.index % 100 != 0] # Filter out all last monomers as they do not have a bond vector per definiton
-        order_param_list = []
-        for t in tqdm(range(0, len(combinations))):
-            combination = combinations[t]
+        #order_param_list = []
+        #ev_list = []
+        df_cryst = pd.DataFrame(np.zeros([self.combinations.shape[0], 7]), columns = ["xid", "yid", "zid", "cryst_bool", "x_ev", "y_ev", "z_ev"])
+        df_cryst.iloc[:, :3] = self.combinations
+        for t in tqdm(range(0, len(self.combinations))):
+        #for t in tqdm(range(0, 10)):
+            combination = self.combinations[t]
             #print(combination)
             subset = data[(data['xid'] == combination[0]) & (data['yid'] == combination[1]) & (data['zid'] == combination[2])]
             if subset.empty == False:
@@ -154,12 +204,18 @@ class atom_coords:
                 #print(indexes)
                 subset_bond_vectors = self.bond_vectors.loc[indexes]
                 labda, ev, order_param = calc_nematic_tensor_2(subset_bond_vectors.iloc[:, 1:4])
-                order_param_list.append(order_param)
-        order_param_array = np.asarray(order_param_list)
-
-        self.fraction_crystallinity = fraction_crystallinity(order_param_array)
+                #order_param_list.append(order_param)
+                df_cryst.iloc[t,3] = order_param
+                df_cryst.iloc[t,4:7] = ev
+                #ev_list.append(ev)
+        #order_param_array = np.asarray(order_param_list)
+        #ev_array = np.asarray(ev_list)
+        #print(ev_array)
+        #print(ev_array.shape)
+        self.fraction_crystallinity = fraction_crystallinity(df_cryst.iloc[:,3])
         print(self.fraction_crystallinity)
         return self.fraction_crystallinity
+
             
 
     def get_density_dist(self, nridges = 33):
@@ -173,59 +229,6 @@ class atom_coords:
             subset = data[(data['xid'] == combination[0]) & (data['yid'] == combination[1]) & (data['zid'] == combination[2])]
             local_densities[t, 3] = len(subset.index)/self.local_volume
         return local_densities
-
-
-    def density_dist(self):
-        """Calculates density per distribution of monomers in a local box"""
-        self.check_box_atom_list_exist()
-        density = np.zeros(len(self.box_atom_list))
-        i = 0
-        for box in self.box_atom_list:
-            # Get density 
-            #minlength = box.min(axis = 0) #Does not work properly, volume size should be constant but returns whack histogramss
-            #maxlength = box.max(axis = 0)
-            #size = np.abs(maxlength - minlength)
-            #volume = np.sqrt(size[0] * size[1] * size[2])
-
-            #density[i] = len(box)/volume
-            density[i] = len(box)/self.box_size #should be this
-            #print(density[i])
-            i = i + 1
-        self.density = density
-        return self.density
-
-
-    def get_nematic_vector(self):
-        """function not in use but should calculate nematic vector per local cube"""
-        self.check_box_atom_list_exist()
-        ev_list = np.zeros([len(self.box_atom_list), 3])
-        labda_list = np.zeros(len(self.box_atom_list))
-        order_param_list = np.zeros(len(self.box_atom_list))
-        i = 0
-        for array in self.box_atom_list:
-            polymer_id_list = array["mol_id"].unique()
-            counts = array["mol_id"].value_counts()
-            polymer_vector_list = np.zeros([np.sum(counts) - len(polymer_id_list), 3])
-            j = 0
-            for polymer_id in polymer_id_list:
-                #print(counts.iloc[l])
-                #k = counts.iloc[l]
-                subset = array[array["mol_id"] == polymer_id].iloc[:, 1:]
-                k = subset.shape[0]
-                bond_vectors = np.diff(subset, axis = 0)
-                polymer_vector_list[j:j+k-1, :] = bond_vectors
-                j = j + k- 1
-
-            #print(polymer_vector_list)
-            labda, ev, order_param = calc_nematic_tensor_2(polymer_vector_list)
-            ev_list[i, :] = ev
-            labda_list[i] = labda
-            order_param_list[i] = order_param
-            i = i + 1
-        self.nematic_vector_list = ev_list
-        self.fraction_crystallinity = fraction_crystallinity(order_param_list)
-        #np.savetxt("nematic_tensor_test.txt", order_param_list)
-        return self.fraction_crystallinity
 
 
 
@@ -328,12 +331,15 @@ def plot_order_param(list_atom_coords, title,savestring = None, starttemp = 1.0,
         plt.savefig(savestring)
     plt.show()
 
+lib = c_lib_init()
 
 
-# list_atom_coords_cooling = get_list_atom_coords("../../data/pva-100/cooling_tdot_e-5_time", 21, endtime= 1e7)
-# # plot_order_param(list_atom_coords_cooling, "Crystallinity vs temperature, cooling process", savestring = "test_wholebox_frac_cryst_cooling_100_tmin_0.5_ttime_10e7.pdf")
+#list_atom_coords_cooling = get_list_atom_coords("../../data/pva-100/cooling_tdot_e-5_time", 21, endtime= 1e7)
+#list_atom_coords_heating = get_list_atom_coords("../../data/pva-100/genua_heating_100_tmin_0.5_ttime_10e7",21, endtime = 1e7)
+#plot_order_param(list_atom_coords_heating, "Crystallinity vs temperature, heating process", savestring = "test_wholebox_frac_cryst_heating_100_tmin_0.5_ttime_10e7.pdf")
 
-# #last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
+last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
+last_timestep_e5.get_nematic_vector_4()
 # #last_timestep_e5.get_density_dist()
 # #plot_density_dist(last_timestep_e5, "Distribution of local densities at T = 0.5, tdot 10e-5")
 # plot_volume_line(list_atom_coords_cooling, "Volume per monomer as function of temperature, PVA-100", "volume_monomer_tdot_e-5.pdf")

@@ -28,6 +28,26 @@ def plot_volume_monomer_multiple_temps():
     plt.savefig("volume_monomer_different_tdots.pdf")
     plt.show()
 
+
+def plot_crystallinity_multiple_temps():
+    cryst_e3 = np.loadtxt("test_wholebox_frac_cryst_heating_100_tmin_0.5_ttime_10e5.txt")
+    cryst_e4 = np.loadtxt("test_wholebox_frac_cryst_heating_100_tmin_0.5_ttime_10e6.txt")
+    cryst_e5 = np.loadtxt("test_wholebox_frac_cryst_heating_100_tmin_0.5_ttime_10e7.txt")
+    plt.scatter(cryst_e3[:, 0], cryst_e3[:, 1], label = r"$\dot{T} = 10^{-3}$")
+    plt.scatter(cryst_e4[:, 0], cryst_e4[:, 1], label = r"$\dot{T} = 10^{-4}$")
+    plt.scatter(cryst_e5[:, 0], cryst_e5[:, 1], label = r"$\dot{T} = 10^{-5}$")
+
+    plt.legend()
+    plt.title("Crystallinity vs temperature, cooling process, PVA-100")
+    plt.xlabel("Temperature [unitless]")
+    plt.ylabel("Fraction of crystallinity")
+
+    plt.savefig("crystallinity_multiple_temps.pdf")
+    plt.show()
+
+
     
 
-plot_volume_monomer_multiple_temps()
+#plot_volume_monomer_multiple_temps()
+
+plot_crystallinity_multiple_temps()

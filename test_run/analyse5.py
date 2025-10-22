@@ -377,9 +377,9 @@ def plot_order_param(list_atom_coords, title,savestring = None, starttemp = 1.0,
 lib = c_lib_init()
 
 
-list_atom_coords_cooling = get_list_atom_coords("../../data/pva-100/cooling_tdot_e-4_time", 21, endtime= 1e6)
+#list_atom_coords_cooling = get_list_atom_coords("../../data/pva-100/cooling_tdot_e-5_time", 21, endtime= 1e7)
 #list_atom_coords_heating = get_list_atom_coords("../../data/pva-100/genua_heating_100_tmin_0.5_ttime_10e7",21, endtime = 1e7)
-plot_order_param(list_atom_coords_cooling, "Crystallinity vs temperature, cooling process, Tdot = 10e-4", savestring = "test_wholebox_frac_cryst_heating_100_tmin_0.5_ttime_10e6")
+#plot_order_param(list_atom_coords_cooling, "Crystallinity vs temperature, cooling process, Tdot = 10e-5", savestring = "test_wholebox_frac_cryst_heating_100_tmin_0.5_ttime_10e7")
 
 # last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
 # last_timestep_e5.calc_rdf()

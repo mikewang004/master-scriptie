@@ -196,8 +196,8 @@ class atom_coords:
         data = data[data.index % 100 != 0] # Filter out all last monomers as they do not have a bond vector per definiton
         df_cryst = pd.DataFrame(np.zeros([self.combinations.shape[0], 7]), columns = ["xid", "yid", "zid", "cryst_bool", "x_ev", "y_ev", "z_ev"])
         df_cryst.iloc[:, :3] = self.combinations
-        for t in tqdm(range(0, len(self.combinations))):
-        #for t in tqdm(range(0, 10)):
+        #for t in tqdm(range(0, len(self.combinations))):
+        for t in range(0, len(self.combinations)):
             combination = self.combinations[t]
             #print(combination)
             #subset = data[(data['xid'] == combination[0]) & (data['yid'] == combination[1]) & (data['zid'] == combination[2])]
@@ -346,7 +346,8 @@ def plot_volume_line(list_atom_coords, title,savestring = None, n_atoms = 720000
     if savestring == None:
         pass
     else:
-        plt.savefig(savestring)
+        plt.savefig("%s.pdf" %savestring)
+        np.savetxt("%s.txt" %savestring)
     plt.show()
 
 def plot_order_param(list_atom_coords, title,savestring = None, starttemp = 1.0, endtemp = 0.5):
@@ -361,7 +362,7 @@ def plot_order_param(list_atom_coords, title,savestring = None, starttemp = 1.0,
         print(atom_coords.fraction_crystallinity)
 
     temps = np.linspace(starttemp, endtemp, num = len(list_atom_coords))
-
+    list_order_params = np.array(list_order_params)
     plt.scatter(temps, list_order_params)
     plt.title(title)
     plt.xlabel("Temperature [unitless]")
@@ -369,7 +370,8 @@ def plot_order_param(list_atom_coords, title,savestring = None, starttemp = 1.0,
     if savestring == None:
         pass
     else:
-        plt.savefig(savestring)
+        plt.savefig("%s.pdf" %savestring)
+        np.savetxt("%s.txt" %savestring, np.column_stack((temps, list_order_params)))
     plt.show()
 
 lib = c_lib_init()
@@ -377,7 +379,7 @@ lib = c_lib_init()
 
 list_atom_coords_cooling = get_list_atom_coords("../../data/pva-100/cooling_tdot_e-4_time", 21, endtime= 1e6)
 #list_atom_coords_heating = get_list_atom_coords("../../data/pva-100/genua_heating_100_tmin_0.5_ttime_10e7",21, endtime = 1e7)
-plot_order_param(list_atom_coords_cooling, "Crystallinity vs temperature, cooling process, Tdot = 10e-4", savestring = "test_wholebox_frac_cryst_heating_100_tmin_0.5_ttime_10e6.pdf")
+plot_order_param(list_atom_coords_cooling, "Crystallinity vs temperature, cooling process, Tdot = 10e-4", savestring = "test_wholebox_frac_cryst_heating_100_tmin_0.5_ttime_10e6")
 
 # last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
 # last_timestep_e5.calc_rdf()

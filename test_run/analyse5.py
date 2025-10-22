@@ -87,13 +87,14 @@ class atom_coords:
 
     """Used to read in files and analyse them"""
 
-    def __init__(self, file_to_path):
+    def __init__(self, file_to_path, nridges = 33):
         self.datapd = self.prepare_position_data(file_to_path)
         self.n_atoms = len(self.datapd.index)
         combinations = self.generate_box_list()
         self.bond_vectors = self.calculate_bond_vectors()
         self.get_volume_box(file_to_path)
         self.get_timestep_from_file_name(file_to_path)
+        self.datapd = self.assign_center_of_mass(nridges = nridges)
         #self.box_atom_list = divide_into_box(self.datapd)
         #self.check_box_atom_list_exist()
 
@@ -172,10 +173,10 @@ class atom_coords:
         df_com.iloc[:, 0] = find_box_id(self.midpoint_ridges, data.iloc[:, 1].to_numpy())
         df_com.iloc[:, 1] = find_box_id(self.midpoint_ridges, data.iloc[:, 2].to_numpy())
         df_com.iloc[:, 2] = find_box_id(self.midpoint_ridges, data.iloc[:, 3].to_numpy())
-        #for i in range(0, data.shape[0]): #Below is an all-python approach 
-            #df_com.iloc[i, 0] = find_nearest(self.midpoint_ridges, data.iloc[i, 1])
-            #df_com.iloc[i, 1] = find_nearest(self.midpoint_ridges, data.iloc[i, 2])
-            #df_com.iloc[i, 2] = find_nearest(self.midpoint_ridges, data.iloc[i, 3])
+        # for i in range(0, data.shape[0]): #Below is an all-python approach 
+        #     df_com.iloc[i, 0] = find_nearest(self.midpoint_ridges, data.iloc[i, 1])
+        #     df_com.iloc[i, 1] = find_nearest(self.midpoint_ridges, data.iloc[i, 2])
+        #     df_com.iloc[i, 2] = find_nearest(self.midpoint_ridges, data.iloc[i, 3])
 
             
         data = pd.concat([data, df_com], axis=1)
@@ -190,7 +191,7 @@ class atom_coords:
 
 
     def get_nematic_vector_4(self, nridges = 33, save_ev = False):
-        data = self.assign_center_of_mass(nridges = nridges)
+        data = self.datapd
         # Prepare masks of all possible combinations 
         data = data[data.index % 100 != 0] # Filter out all last monomers as they do not have a bond vector per definiton
         df_cryst = pd.DataFrame(np.zeros([self.combinations.shape[0], 7]), columns = ["xid", "yid", "zid", "cryst_bool", "x_ev", "y_ev", "z_ev"])
@@ -214,6 +215,27 @@ class atom_coords:
         print(self.fraction_crystallinity)
         return self.fraction_crystallinity
 
+    def apply_nn_cutoff(self, ndot, ndot_cutoff = 0.97):
+        if ndot >= cutoff:
+            return 1
+        else:
+            return 0
+
+
+    def calc_rdf(self):
+        """Calculates radial distribution function"""
+
+        data = self.datapd
+        positions = data.iloc[:-1, 1:4].to_numpy()
+        #dists = np.zeros([positions.shape[9**2])
+        j = 0
+        #for i in range(0, positions):
+        current_position = positions[0, :]
+        dists = np.abs(current_position - positions)
+        print(dists)
+
+
+
     def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33):
         #while clustering_done == False
         for t in tqdm(range(0, len(self.combinations))):
@@ -222,16 +244,16 @@ class atom_coords:
             subset = filter_out_subset(self.df_cryst, combination)
             if subset.empty == False:
                 # Check whether n dot n >= cutoff 
-                print(subset)
                 x_left = (combination + np.array([-1,0,0])) % nridges
                 x_right = (combination + np.array([+1,0,0])) % nridges
                 y_left = (combination + np.array([0,-1,0])) % nridges
                 y_right = (combination + np.array([0,+1,0])) % nridges
                 z_left = (combination + np.array([0,0,-1])) % nridges
                 z_right = (combination + np.array([0,0,+1])) % nridges
-
-                #nn_left = subset.iloc[4:7] @ filter_out_subset(self.df_cryst, x_left).iloc[4:7]
-                print(filter_out_subset(self.df_cryst, x_left))
+                #print(subset.iloc[0, 4:7], filter_out_subset(self.df_cryst, x_left).iloc[0, 4:7])
+                nn_left = np.dot(subset.iloc[0, 4:7], filter_out_subset(self.df_cryst, x_left).iloc[0, 4:7])
+                print(nn_left)
+                #print(filter_out_subset(self.df_cryst, x_left))
 
 
 
@@ -353,13 +375,14 @@ def plot_order_param(list_atom_coords, title,savestring = None, starttemp = 1.0,
 lib = c_lib_init()
 
 
-#list_atom_coords_cooling = get_list_atom_coords("../../data/pva-100/cooling_tdot_e-5_time", 21, endtime= 1e7)
+list_atom_coords_cooling = get_list_atom_coords("../../data/pva-100/cooling_tdot_e-4_time", 21, endtime= 1e6)
 #list_atom_coords_heating = get_list_atom_coords("../../data/pva-100/genua_heating_100_tmin_0.5_ttime_10e7",21, endtime = 1e7)
-#plot_order_param(list_atom_coords_heating, "Crystallinity vs temperature, heating process", savestring = "test_wholebox_frac_cryst_heating_100_tmin_0.5_ttime_10e7.pdf")
+plot_order_param(list_atom_coords_cooling, "Crystallinity vs temperature, cooling process, Tdot = 10e-4", savestring = "test_wholebox_frac_cryst_heating_100_tmin_0.5_ttime_10e6.pdf")
 
-last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
-last_timestep_e5.get_nematic_vector_4()
-last_timestep_e5.merge_boxes()
+# last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
+# last_timestep_e5.calc_rdf()
+#last_timestep_e5.get_nematic_vector_4()
+#last_timestep_e5.merge_boxes()
 # #last_timestep_e5.get_density_dist()
 # #plot_density_dist(last_timestep_e5, "Distribution of local densities at T = 0.5, tdot 10e-5")
 # plot_volume_line(list_atom_coords_cooling, "Volume per monomer as function of temperature, PVA-100", "volume_monomer_tdot_e-5.pdf")

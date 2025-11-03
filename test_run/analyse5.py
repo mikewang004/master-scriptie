@@ -18,7 +18,17 @@ def c_lib_init():
         ctypes.POINTER(ctypes.c_double),  # const double data[]
         ctypes.c_size_t                    # size_t n_size
     ]
+    lib.hoshen_kopelman_crystallisation.argtypes = [
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_int,
+        ctypes.c_int,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_int)
+    ]
     lib.find_nearest_value.restype = ctypes.POINTER(ctypes.c_int)  # int* return type
+    lib.hoshen_kopelman_crystallisation.restype = None
+    #lib.hoshen_kopelman_crystallisation.restype = ctypes.c_double
     return lib
 
         
@@ -236,24 +246,43 @@ class atom_coords:
 
 
 
+    # def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33):
+    #     #while clustering_done == False
+    #     for t in tqdm(range(0, len(self.combinations))):
+    #         combination = self.combinations[t]
+    #         #subset = self.df_cryst[(self.df_cryst['xid'] == combination[0]) & (self.df_cryst['yid'] == combination[1]) & (self.df_cryst['zid'] == combination[2])]
+    #         subset = filter_out_subset(self.df_cryst, combination)
+    #         if subset.empty == False:
+    #             # Check whether n dot n >= cutoff 
+    #             x_left = (combination + np.array([-1,0,0])) % nridges
+    #             x_right = (combination + np.array([+1,0,0])) % nridges
+    #             y_left = (combination + np.array([0,-1,0])) % nridges
+    #             y_right = (combination + np.array([0,+1,0])) % nridges
+    #             z_left = (combination + np.array([0,0,-1])) % nridges
+    #             z_right = (combination + np.array([0,0,+1])) % nridges
+    #             #print(subset.iloc[0, 4:7], filter_out_subset(self.df_cryst, x_left).iloc[0, 4:7])
+    #             nx_left = np.dot(subset.iloc[0, 4:7], filter_out_subset(self.df_cryst, x_left).iloc[0, 4:7])
+    #             nx_right = np.dot(subset.iloc[0, 4:7], filter_out_subset(self.df_cryst, y_right).iloc[0, 4:7])
+    #             ny_left = np.dot(subset.iloc[0, 4:7], filter_out_subset(self.df_cryst, y_left).iloc[0, 4:7])
+    #             ny_right = np.dot(subset.iloc[0, 4:7], filter_out_subset(self.df_cryst, y_right).iloc[0, 4:7])
+    #             nz_left = np.dot(subset.iloc[0, 4:7], filter_out_subset(self.df_cryst, z_left).iloc[0, 4:7])
+    #             nz_right = np.dot(subset.iloc[0, 4:7], filter_out_subset(self.df_cryst, z_right).iloc[0, 4:7])
+    #             #print(filter_out_subset(self.df_cryst, x_left))
+
+
     def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33):
-        #while clustering_done == False
-        for t in tqdm(range(0, len(self.combinations))):
-            combination = self.combinations[t]
-            #subset = self.df_cryst[(self.df_cryst['xid'] == combination[0]) & (self.df_cryst['yid'] == combination[1]) & (self.df_cryst['zid'] == combination[2])]
-            subset = filter_out_subset(self.df_cryst, combination)
-            if subset.empty == False:
-                # Check whether n dot n >= cutoff 
-                x_left = (combination + np.array([-1,0,0])) % nridges
-                x_right = (combination + np.array([+1,0,0])) % nridges
-                y_left = (combination + np.array([0,-1,0])) % nridges
-                y_right = (combination + np.array([0,+1,0])) % nridges
-                z_left = (combination + np.array([0,0,-1])) % nridges
-                z_right = (combination + np.array([0,0,+1])) % nridges
-                #print(subset.iloc[0, 4:7], filter_out_subset(self.df_cryst, x_left).iloc[0, 4:7])
-                nn_left = np.dot(subset.iloc[0, 4:7], filter_out_subset(self.df_cryst, x_left).iloc[0, 4:7])
-                print(nn_left)
-                #print(filter_out_subset(self.df_cryst, x_left))
+        print(self.df_cryst)
+        cryst_array = self.df_cryst.to_numpy()
+        output_cryst = np.zeros((nridges**3, 8))
+        max_no_clusters = nridges**3
+        actual_no_clusters = ctypes.c_int(0)
+        cluster_id_list = np.zeros(max_no_clusters)
+
+        input_cryst_pointer = cryst_array.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        output_cryst_pointer = output_cryst.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        output_cluster_pointer = cluster_id_list.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+
+        lib.hoshen_kopelman_crystallisation(input_cryst_pointer, cryst_array.shape[0], cryst_array.shape[1], output_cryst_pointer, output_cluster_pointer, ctypes.byref(actual_no_clusters))
 
 
 
@@ -381,10 +410,10 @@ lib = c_lib_init()
 #list_atom_coords_heating = get_list_atom_coords("../../data/pva-100/genua_heating_100_tmin_0.5_ttime_10e7",21, endtime = 1e7)
 #plot_order_param(list_atom_coords_cooling, "Crystallinity vs temperature, cooling process, Tdot = 10e-5", savestring = "test_wholebox_frac_cryst_heating_100_tmin_0.5_ttime_10e7")
 
-# last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
+last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
 # last_timestep_e5.calc_rdf()
-#last_timestep_e5.get_nematic_vector_4()
-#last_timestep_e5.merge_boxes()
+last_timestep_e5.get_nematic_vector_4()
+last_timestep_e5.merge_boxes()
 # #last_timestep_e5.get_density_dist()
 # #plot_density_dist(last_timestep_e5, "Distribution of local densities at T = 0.5, tdot 10e-5")
 # plot_volume_line(list_atom_coords_cooling, "Volume per monomer as function of temperature, PVA-100", "volume_monomer_tdot_e-5.pdf")

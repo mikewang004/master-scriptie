@@ -37,3 +37,20 @@ int* find_nearest_value(const double nearest_values[], size_t a_size,
 }
 
 
+// Implementaiton of Hoshen - Kopelman algorithm 
+// Input: 2D array containing lattice id, 1D array containing crystallisation
+// Output: 2D array containing lattice id + cluster id, 1d array containing cluster id sizes
+
+
+void hoshen_kopelman_crystallisation(double *array, int rows, int cols, double *output_2d, double *output_1d, int *actual_1d_size) {
+    // Note array structure is [xbox ybox zbox cryst xev yev zev]
+    // Develop method to loop over array, access xbox ybox zbox +- 1 and return xev yev zev 
+    for (int i = 0; i < rows; i ++) {
+        printf("%d \n" i);
+    }
+}
+
+
+
+
+

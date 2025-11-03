@@ -1,0 +1,511 @@
+------------ /sw/arch/RHEL9/EB_production/2024/modulefiles/phys --------------
+   COMSOL/6.3.0                           VASP6/6.4.3-foss-2024a
+   UDUNITS/2.2.28-GCCcore-13.3.0          VASP6/6.5.1-foss-2024a
+   VASP6/6.4.3-foss-2024a-VASPsol-VTST    VASP6/6.5.1-nvofbf-2024.9-ACC
+
+------------- /sw/arch/RHEL9/EB_production/2024/modulefiles/perf --------------
+   Advisor/2024.3.0
+   Advisor/2025.0.0
+   AMD-uProf/5.0.1479
+   CubeGUI/4.8.2-GCCcore-13.3.0
+   CubeLib/4.8.2-GCCcore-13.3.0
+   CubeWriter/4.8.2-GCCcore-13.3.0
+   Extrae/4.2.5-gompi-2024a
+   OPARI2/2.0.8-GCCcore-13.3.0
+   OSU-Micro-Benchmarks/7.4-gompi-2024a
+   OSU-Micro-Benchmarks/7.4-iimpi-2024a
+   OSU-Micro-Benchmarks/7.5-gompi-2024a-CUDA-12.6.0
+   OTF2/3.0.3-GCCcore-13.3.0
+   PAPI/7.1.0-GCCcore-13.3.0
+   Paraver/4.12.0-GCC-13.3.0
+   PDT/3.25.2-GCCcore-13.3.0
+   Scalasca/2.6.1-gompi-2024a
+   Score-P/8.4-gompi-2024a-CUDA-12.6.0
+   Score-P/8.4-gompi-2024a
+
+-------------- /sw/arch/RHEL9/EB_production/2024/modulefiles/geo --------------
+   Cartopy/0.24.1-foss-2024a    WPS/4.6.0-foss-2024a-dmpar
+   ESMF/8.7.0-foss-2024a        WRF/4.6.1-foss-2024a-dmpar
+
+----------- /sw/arch/RHEL9/EB_production/2024/modulefiles/debugger ------------
+   GDB/14.2-GCCcore-13.3.0             Valgrind/3.24.0-gompi-2024a
+   TotalView/2024.1.21_linux_x86-64
+
+------------- /sw/arch/RHEL9/EB_production/2024/modulefiles/chem --------------
+   AMS/2024.104-intelmpi-aocl               NAMD/3.0-foss-2024a-mpi
+   ASE/3.24.0-gfbf-2024a                    NWChem/7.2.3-intel-2024a
+   CP2K/2024.3-foss-2024a                   ORCA/6.0.1-gompi-2024a-avx2
+   ESPResSo/4.2.2-foss-2024a-CUDA-12.6.0    PLUMED/2.9.2-foss-2024a
+   Gaussian/g16.c02                         QuantumESPRESSO/7.3.1-foss-2024a
+   libcint/6.1.2-gfbf-2024a                 QuantumESPRESSO/7.4-foss-2024a
+   Libint/2.9.0-GCC-13.3.0-lmax-6-cp2k      spglib-python/2.5.0-gfbf-2024a
+   libxc/6.2.2-GCC-13.3.0                   Wannier90/3.1.0-foss-2024a
+   Molden/7.3-GCCcore-13.3.0                Wannier90/3.1.0-nvofbf-2024.9
+
+------------- /sw/arch/RHEL9/EB_production/2024/modulefiles/data --------------
+   Arrow/17.0.0-gfbf-2024a
+   BeautifulSoup/4.12.3-GCCcore-13.3.0
+   CDO/2.4.4-gompi-2024a
+   dill/0.3.9-GCCcore-13.3.0
+   Fiona/1.10.1-foss-2024a
+   frictionless/5.18.1-GCCcore-13.3.0
+   GDAL/3.10.0-foss-2024a
+   h5py/3.12.1-foss-2024a
+   HDF/4.3.0-GCCcore-13.3.0
+   HDF5/1.14.5-gompi-2024a
+   HDF5/1.14.5-iimpi-2024a
+   HDF5/1.14.5-nvofbf-2024.9
+   LAME/3.100-GCCcore-13.3.0
+   netCDF-C++4/4.3.1-gompi-2024a
+   netCDF-Fortran/4.6.1-gompi-2024a
+   netCDF/4.9.2-gompi-2024a
+   netcdf4-python/1.7.1.post2-foss-2024a
+   PnetCDF/1.13.0-gompi-2024a
+   PostgreSQL/16.4-GCCcore-13.3.0
+   pyproj/3.7.0-GCCcore-13.3.0
+   scikit-learn/1.6.1-gfbf-2024a
+   SoX/14.4.2-GCCcore-13.3.0
+   XML-Parser/2.47-GCCcore-13.3.0-Perl-5.38.2
+
+-------------- /sw/arch/RHEL9/EB_production/2024/modulefiles/vis --------------
+   assimp/5.4.3-GCCcore-13.3.0               LittleCMS/2.16-GCCcore-13.3.0
+   at-spi2-atk/2.38.0-GCCcore-13.3.0         matplotlib/3.9.2-gfbf-2024a
+   at-spi2-core/2.54.0-GCCcore-13.3.0        Mesa/24.1.3-GCCcore-13.3.0
+   ATK/2.38.0-GCCcore-13.3.0                 ncview/2.1.11-gompi-2024a
+   Blender/4.2.0-linux-x86_64-CUDA-12.6.0    OpenEXR/3.2.4-GCCcore-13.3.0
+   cairo/1.18.0-GCCcore-13.3.0               Pango/1.54.0-GCCcore-13.3.0
+   FFmpeg/7.0.2-GCCcore-13.3.0               ParaView/5.13.2-foss-2024a
+   fontconfig/2.15.0-GCCcore-13.3.0          Pillow-SIMD/10.4.0-GCCcore-13.3.0
+   freetype/2.13.2-GCCcore-13.3.0            Pillow/10.4.0-GCCcore-13.3.0
+   Gdk-Pixbuf/2.42.11-GCCcore-13.3.0         pixman/0.43.4-GCCcore-13.3.0
+   GLib/2.80.4-GCCcore-13.3.0                plotly.py/5.24.1-GCCcore-13.3.0
+   gnuplot/6.0.1-GCCcore-13.3.0              remotevis/git
+   Graphviz/12.2.0-GCCcore-13.3.0            Tk/8.6.14-GCCcore-13.3.0
+   GST-plugins-base/1.24.8-GCC-13.3.0        TurboVNC/3.1.2-GCCcore-13.3.0
+   GStreamer/1.24.8-GCC-13.3.0               VirtualGL/3.1.1-GCC-13.3.0
+   GTK3/3.24.42-GCCcore-13.3.0               VTK/9.3.1-foss-2024a
+   GTS/0.7.6-GCCcore-13.3.0                  Wayland/1.23.0-GCCcore-13.3.0
+   HarfBuzz/9.0.0-GCCcore-13.3.0             wxWidgets/3.2.6-GCC-13.3.0
+   ImageMagick/7.1.1-38-GCCcore-13.3.0       X11/20240607-GCCcore-13.3.0
+   JasPer/4.2.4-GCCcore-13.3.0               x264/20240513-GCCcore-13.3.0
+   jbigkit/2.1-GCCcore-13.3.0                x265/3.6-GCCcore-13.3.0
+   Kaleido/0.2.1-GCCcore-13.3.0              Xvfb/21.1.14-GCCcore-13.3.0
+   libGLU/9.0.3-GCCcore-13.3.0
+
+-------------- /sw/arch/RHEL9/EB_production/2024/modulefiles/bio --------------
+   AlphaFold/3.0.0-foss-2024a-CUDA-12.6.0
+   AlphaFold/3.0.1-foss-2024a-CUDA-12.6.0
+   BamTools/2.5.2-GCC-13.3.0
+   BCFtools/1.21-GCC-13.3.0
+   BEDTools/2.31.1-GCC-13.3.0
+   biom-format/2.1.16-foss-2024a
+   Biopython/1.84-gfbf-2024a
+   BLAST+/2.16.0-gompi-2024a
+   Bowtie2/2.5.4-GCC-13.3.0
+   cutadapt/5.1-GCCcore-13.3.0
+   DendroPy/5.0.8-GCCcore-13.3.0
+   FastTree/2.1.11-GCCcore-13.3.0
+   gffutils/0.13-foss-2024a
+   GROMACS/2024.3-foss-2024a-CUDA-12.6.0-PLUMED-2.9.2
+   GROMACS/2024.3-foss-2024a
+   HMMER/3.4-gompi-2024a
+   HTSlib/1.21-GCC-13.3.0
+   MAFFT/7.526-GCC-13.3.0-with-extensions
+   PRSice/2.3.5-GCCcore-13.3.0
+   pybedtools/0.12.0-foss-2024a
+   pyfaidx/0.8.1.2-GCCcore-13.3.0
+   PyHMMER/0.11.1-gompi-2024a
+   Pysam/0.22.1-GCC-13.3.0
+   QIIME2/2025.4.0-foss-2024a-amplicon
+   R-bundle-Bioconductor/3.20-foss-2024a-R-4.4.2
+   SAMtools/1.21-GCC-13.3.0
+   scikit-bio/0.6.3-foss-2024a
+   Seaborn/0.13.2-gfbf-2024a
+   UniFrac/1.5-foss-2024a
+   VSEARCH/2.30.0-GCC-13.3.0
+
+------------- /sw/arch/RHEL9/EB_production/2024/modulefiles/math --------------
+   Cbc/2.10.12-foss-2024a           libxsmm/1.17-GCC-13.3.0
+   Cgl/0.60.8-foss-2024a            LinBox/1.7.0-gfbf-2024a
+   Clp/1.17.10-foss-2024a           MATLAB/2024b
+   CoinUtils/2.11.12-GCC-13.3.0     MCR/R2024b
+   Eigen/3.4.0-GCCcore-13.3.0       METIS/5.1.0-GCCcore-13.3.0
+   ELPA/2024.05.001-foss-2024a      MPC/1.3.1-GCCcore-13.3.0
+   FFLAS-FFPACK/2.5.0-gfbf-2024a    MPFR/4.2.1-GCCcore-13.3.0
+   FLINT/3.1.2-gfbf-2024a           MUMPS/5.7.2-foss-2024a-metis
+   GEOS/3.12.2-GCC-13.3.0           MUMPS/5.7.3-foss-2024a-metis
+   Givaro/4.2.1-GCCcore-13.3.0      NTL/11.5.1-GCC-13.3.0
+   GMP/6.3.0-GCCcore-13.3.0         Osi/0.108.11-GCC-13.3.0
+   gmpy2/2.2.0-GCCcore-13.3.0       ParMETIS/4.0.3-gompi-2024a
+   Gurobi/12.0.1-GCCcore-13.3.0     Qhull/2020.2-GCCcore-13.3.0
+   HPX/1.10.0-foss-2024a            SCOTCH/7.0.5-gompi-2024a
+   IML/1.0.5-gfbf-2024a             SCOTCH/7.0.6-gompi-2024a
+   ISL/0.26-GCCcore-13.3.0          Shapely/2.0.6-gfbf-2024a
+   JAGS/4.3.2-foss-2024a            statsmodels/0.14.4-gfbf-2024a
+   libcerf/2.4-GCCcore-13.3.0       sympy/1.13.3-gfbf-2024a
+
+-------------- /sw/arch/RHEL9/EB_production/2024/modulefiles/cae --------------
+   Lumerical/2024-R2.03    OpenFOAM/12-foss-2024a
+   Lumerical/2025-R1.03    Zoltan/3.901-foss-2024a
+
+------------ /sw/arch/RHEL9/EB_production/2024/modulefiles/system -------------
+   CUDA/12.6.0
+   hwloc/2.10.0-GCCcore-13.3.0
+   libdeflate/1.20-GCCcore-13.3.0
+   libpciaccess/0.18.1-GCCcore-13.3.0
+   matlab-support-packages/1.0
+   matlab-support-packages/1.1
+   OpenOnDemandApplicationLaunchers/2024.01
+   OpenOnDemandApplicationLaunchers/2024.02
+   OpenPGM/5.2.122-GCCcore-13.3.0
+   OpenSSL/1.1
+   OpenSSL/3
+   supporting-utils/0.0.4
+
+----------- /sw/arch/RHEL9/EB_production/2024/modulefiles/toolchain -----------
+   foss/2024a    gompi/2024a    intel/2024a      nvompi/2024.9
+   gfbf/2024a    iimpi/2024a    nvofbf/2024.9
+
+------------ /sw/arch/RHEL9/EB_production/2024/modulefiles/numlib -------------
+   Armadillo/14.0.3-foss-2024a
+   arpack-ng/3.9.1-foss-2024a
+   BLIS/1.0-GCC-13.3.0
+   CGAL/5.6.1-GCCcore-13.3.0
+   cuDNN/9.5.0.50-CUDA-12.6.0
+   FFTW.MPI/3.3.10-gompi-2024a
+   FFTW.MPI/3.3.10-nvompi-2024.9
+   FFTW/3.3.10-GCC-13.3.0
+   FFTW/3.3.10-NVHPC-24.9-CUDA-12.6.0
+   GSL/2.8-GCC-13.3.0
+   Hypre/2.31.0-foss-2024a
+   imkl-FFTW/2024.2.0-iimpi-2024a
+   imkl/2024.2.0
+   NLopt/2.7.1-GCCcore-13.3.0
+   OpenBLAS/0.3.27-GCC-13.3.0
+   OpenBLAS/0.3.27-NVHPC-24.9-CUDA-12.6.0
+   PETSc/3.22.0-foss-2024a
+   Pint/0.24.4-GCCcore-13.3.0
+   ScaLAPACK/2.2.0-gompi-2024a-fb
+   ScaLAPACK/2.2.0-nvompi-2024.9-fb
+   SuiteSparse/7.8.2-foss-2024a-METIS-5.1.0
+   SuiteSparse/7.8.2-foss-2024a
+   SuperLU_DIST/9.0.0-foss-2024a
+
+-------------- /sw/arch/RHEL9/EB_production/2024/modulefiles/mpi --------------
+   impi/2021.13.0-intel-compilers-2024.2.0
+   MPICH/4.2.2-GCC-13.3.0
+   OpenMPI/5.0.3-GCC-13.3.0
+   OpenMPI/5.0.3-NVHPC-24.9-CUDA-12.6.0
+
+------------- /sw/arch/RHEL9/EB_production/2024/modulefiles/tools -------------
+   absl-py/2.1.0-GCCcore-13.3.0
+   ANSYS/2024R2
+   ANSYS/2025R1
+   ANSYS/2025R2
+   ANTLR/2.7.7-GCCcore-13.3.0-Java-21.0.2
+   arrow-R/17.0.0.1-foss-2024a-R-4.4.2
+   attr/2.5.2-GCCcore-13.3.0
+   bcrypt/4.3.0-GCCcore-13.3.0
+   binutils/2.40
+   binutils/2.42-GCCcore-13.3.0
+   binutils/2.42
+   bokeh/3.6.0-gfbf-2024a
+   Brotli-python/1.1.0-GCCcore-13.3.0
+   bzip2/1.0.8-GCCcore-13.3.0
+   cffi/1.16.0-GCCcore-13.3.0
+   code-server/4.93.1
+   code-server/4.104.0
+   cpio/2.15-GCCcore-13.3.0
+   cppy/1.2.1-GCCcore-13.3.0
+   cryptography/42.0.8-GCCcore-13.3.0
+   cURL/8.7.1-GCCcore-13.3.0
+   ecBuild/3.8.5-GCCcore-13.3.0
+   ecCodes/2.38.3-gompi-2024a
+   expat/2.6.2-GCCcore-13.3.0
+   expecttest/0.2.1-GCCcore-13.3.0
+   flit/3.9.0-GCCcore-13.3.0
+   gettext/0.22.5-GCCcore-13.3.0
+   gettext/0.22.5
+   Ghostscript/10.03.1-GCCcore-13.3.0
+   git/2.45.1-GCCcore-13.3.0
+   GLPK/5.0-GCCcore-13.3.0
+   googletest/1.15.2-GCCcore-13.3.0
+   gperftools/2.16-GCCcore-13.3.0
+   groff/1.23.0-GCCcore-13.3.0
+   gzip/1.13-GCCcore-13.3.0
+   hatch-jupyter-builder/0.9.1-GCCcore-13.3.0
+   hatchling/1.24.2-GCCcore-13.3.0
+   help2man/1.49.3-GCCcore-13.3.0
+   Homkat/2024.11-foss-2024a
+   HPL/2.3-foss-2024a
+   HPL/2.3-intel-2024a
+   HyperQueue/0.20.0
+   hypothesis/6.103.1-GCCcore-13.3.0
+   Inspector/2024.2.0
+   IPython/8.28.0-GCCcore-13.3.0
+   jedi/0.19.1-GCCcore-13.3.0
+   jupyter-server/2.14.2-GCCcore-13.3.0
+   JupyterLab/4.2.5-GCCcore-13.3.0
+   libarchive/3.7.4-GCCcore-13.3.0
+   likwid/5.3.0-GCC-13.3.0
+   lit/18.1.8-GCCcore-13.3.0
+   maturin/1.6.0-GCCcore-13.3.0
+   Mercurial/6.8.1-GCCcore-13.3.0
+   meson-python/0.16.0-GCCcore-13.3.0
+   Meson/1.4.0-GCCcore-13.3.0
+   ml_dtypes/0.5.0-gfbf-2024a
+   mpicopy/4.2-gompi-2024a
+   ncdu/1.20-GCC-13.3.0
+   NCO/5.2.9-foss-2024a
+   networkx/3.3-gfbf-2024a
+   networkx/3.4.2-gfbf-2024a
+   Ninja/1.12.1-GCCcore-13.3.0
+   Nsight-Systems/2024.6.1
+   numactl/2.0.18-GCCcore-13.3.0
+   p7zip/17.05-GCCcore-13.3.0
+   Pandoc/3.6.2
+   parallel/20240722-GCCcore-13.3.0
+   parameterized/0.9.0-GCCcore-13.3.0
+   paramiko/3.5.1-GCCcore-13.3.0
+   Parsl/2025.7.7-GCCcore-13.3.0
+   patchelf/0.18.0-GCCcore-13.3.0
+   pigz/2.8-GCCcore-13.3.0
+   poetry/1.8.3-GCCcore-13.3.0
+   PuLP/2.8.0-foss-2024a
+   pytest-flakefinder/1.1.0-GCCcore-13.3.0
+   pytest-rerunfailures/15.0-GCCcore-13.3.0
+   pytest-shard/0.1.2-GCCcore-13.3.0
+   pytest-subtests/0.13.1-GCCcore-13.3.0
+   QCG-PilotJob/0.14.1-gfbf-2024a
+   re2c/3.1-GCCcore-13.3.0
+   setuptools-rust/1.9.0-GCCcore-13.3.0
+   slurm-viewer/1.0.1-GCCcore-13.3.0
+   Szip/2.1.1-GCCcore-13.3.0
+   tcsh/6.24.13-GCCcore-13.3.0
+   time/1.9-GCCcore-13.3.0
+   tlparse/0.3.37-GCCcore-13.3.0
+   umap-learn/0.5.9-foss-2024a
+   unittest-xml-reporting/3.1.0-GCCcore-13.3.0
+   UnZip/6.0-GCCcore-13.3.0
+   util-linux/2.40-GCCcore-13.3.0
+   versioningit/3.1.2-GCCcore-13.3.0
+   virtualenv/20.26.2-GCCcore-13.3.0
+   VTune/2024.3.0
+   wrapt/1.16.0-gfbf-2024a
+   xxd/9.1.0785-GCCcore-13.3.0
+   XZ/5.4.5-GCCcore-13.3.0
+   yaml-cpp/0.8.0-GCCcore-13.3.0
+   Z3/4.13.0-GCCcore-13.3.0
+   Zip/3.0-GCCcore-13.3.0
+   zlib-ng/2.2.1-GCCcore-13.3.0
+
+-------------- /sw/arch/RHEL9/EB_production/2024/modulefiles/lib --------------
+   Abseil/20240722.0-GCCcore-13.3.0
+   alsa-lib/1.2.11-GCCcore-13.3.0
+   Boost.Python-NumPy/1.85.0-gfbf-2024a
+   Boost.Python/1.85.0-GCC-13.3.0
+   Brotli/1.1.0-GCCcore-13.3.0
+   Brunsli/0.1-GCCcore-13.3.0
+   Catch2/2.13.10-GCCcore-13.3.0
+   CFITSIO/4.4.1-GCCcore-13.3.0
+   double-conversion/3.3.0-GCCcore-13.3.0
+   elfutils/0.191-GCCcore-13.3.0
+   ffnvcodec/12.2.72.0
+   FLAC/1.4.3-GCCcore-13.3.0
+   Flask/3.0.3-GCCcore-13.3.0
+   FlexiBLAS/3.4.4-GCC-13.3.0
+   FlexiBLAS/3.4.4-NVHPC-24.9-CUDA-12.6.0
+   freeglut/3.6.0-GCCcore-13.3.0
+   gc/8.2.6-GCCcore-13.3.0
+   GDRCopy/2.4.1-GCCcore-13.3.0
+   giflib/5.2.1-GCCcore-13.3.0
+   giflib/5.2.2-GCCcore-13.3.0
+   GLM/1.0.1-GCCcore-13.3.0
+   GlobalArrays/5.8.2-intel-2024a
+   Graphene/1.10.8-GCCcore-13.3.0
+   graphite2/1.3.14-GCCcore-13.3.0
+   grpcio/1.70.0-GCCcore-13.3.0
+   Highway/1.2.0-GCCcore-13.3.0
+   ICU/75.1-GCCcore-13.3.0
+   Imath/3.1.11-GCCcore-13.3.0
+   ISA-L/2.31.0-GCCcore-13.3.0
+   json-c/0.17-GCCcore-13.3.0
+   JsonCpp/1.9.5-GCCcore-13.3.0
+   LERC/4.0.0-GCCcore-13.3.0
+   libaec/1.1.3-GCCcore-13.3.0
+   libdap/3.21.0-131-GCCcore-13.3.0
+   libdrm/2.4.122-GCCcore-13.3.0
+   libepoxy/1.5.10-GCCcore-13.3.0
+   libevent/2.1.12-GCCcore-13.3.0
+   libfabric/1.21.0-GCCcore-13.3.0
+   libffi/3.4.5-GCCcore-13.3.0
+   libgd/2.3.3-GCCcore-13.3.0
+   libgeotiff/1.7.3-GCCcore-13.3.0
+   libglvnd/1.7.0-GCCcore-13.3.0
+   libiconv/1.17-GCCcore-13.3.0
+   libjpeg-turbo/3.0.1-GCCcore-13.3.0
+   libmad/0.15.1b-GCCcore-13.3.0
+   libogg/1.3.5-GCCcore-13.3.0
+   libopus/1.5.2-GCCcore-13.3.0
+   libpng/1.6.43-GCCcore-13.3.0
+   libreadline/8.2-GCCcore-13.3.0
+   libsndfile/1.2.2-GCCcore-13.3.0
+   libsodium/1.0.20-GCCcore-13.3.0
+   LibTIFF/4.6.0-GCCcore-13.3.0
+   libtirpc/1.3.5-GCCcore-13.3.0
+   libtool/2.4.7-GCCcore-13.3.0
+   libunistring/1.2-GCCcore-13.3.0
+   libunwind/1.8.1-GCCcore-13.3.0
+   libvorbis/1.3.7-GCCcore-13.3.0
+   libvori/220621-GCCcore-13.3.0
+   libwebp/1.4.0-GCCcore-13.3.0
+   libxml2/2.12.7-GCCcore-13.3.0
+   libxslt/1.1.42-GCCcore-13.3.0
+   libyaml/0.2.5-GCCcore-13.3.0
+   LMDB/0.9.31-GCCcore-13.3.0
+   lxml/5.3.0-GCCcore-13.3.0
+   lz4/1.9.4-GCCcore-13.3.0
+   mpi4py/4.0.1-gompi-2024a
+   NCCL/2.22.3-GCCcore-13.3.0-CUDA-12.6.0
+   nettle/3.10-GCCcore-13.3.0
+   nlohmann_json/3.11.3-GCCcore-13.3.0
+   NSPR/4.35-GCCcore-13.3.0
+   NSS/3.104-GCCcore-13.3.0
+   OpenImageIO/2.5.15.0-GCC-13.3.0
+   OpenJPEG/2.5.2-GCCcore-13.3.0
+   optree/0.14.1-GCCcore-13.3.0
+   PMIx/5.0.2-GCCcore-13.3.0
+   pmt/1.3.1-GCCcore-13.3.0-CUDA-12.6.0
+   pocl/6.0-GCC-13.3.0
+   PROJ/9.4.1-GCCcore-13.3.0
+   PRRTE/3.0.5-GCCcore-13.3.0
+   psutil/6.1.1-GCCcore-13.3.0
+   pybind11/2.12.0-GCC-13.3.0
+   python-isal/1.7.0-GCCcore-13.3.0
+   PyYAML/6.0.2-GCCcore-13.3.0
+   RapidJSON/1.1.0-20240815-GCCcore-13.3.0
+   RE2/2024-07-02-GCCcore-13.3.0
+   scikit-build-core/0.10.6-GCCcore-13.3.0
+   scikit-build/0.17.6-GCCcore-13.3.0
+   SDL2/2.30.6-GCCcore-13.3.0
+   SIONlib/1.7.7-GCCcore-13.3.0-tools
+   SkyNet/1.2-foss-2024a
+   snappy/1.2.1-GCCcore-13.3.0
+   tbb/2021.13.0-GCCcore-13.3.0
+   tensorboard/2.18.0-gfbf-2024a
+   TensorFlow/2.18.1-foss-2024a
+   tornado/6.4.1-GCCcore-13.3.0
+   tqdm/4.66.5-GCCcore-13.3.0
+   UCC-CUDA/1.3.0-GCCcore-13.3.0-CUDA-12.6.0
+   UCC/1.3.0-GCCcore-13.3.0
+   UCX-CUDA/1.16.0-GCCcore-13.3.0-CUDA-12.6.0
+   UCX/1.16.0-GCCcore-13.3.0
+   utf8proc/2.9.0-GCCcore-13.3.0
+   Xerces-C++/3.2.5-GCCcore-13.3.0
+   zlib/1.2.13
+   zlib/1.3.1-GCCcore-13.3.0
+   zlib/1.3.1
+   zstd/1.5.6-GCCcore-13.3.0
+
+----------- /sw/arch/RHEL9/EB_production/2024/modulefiles/compiler ------------
+   AOCC/4.2.0-GCCcore-13.3.0      intel-compilers/2024.2.0
+   Clang/18.1.8-GCCcore-13.3.0    LLVM/14.0.6-GCCcore-13.3.0-llvmlite
+   GCC/13.3.0                     LLVM/18.1.8-GCCcore-13.3.0
+   GCCcore/13.3.0                 NVHPC/24.9-CUDA-12.6.0
+
+------------- /sw/arch/RHEL9/EB_production/2024/modulefiles/lang --------------
+   Anaconda3/2024.06-1
+   Bison/3.8.2-GCCcore-13.3.0
+   Bison/3.8.2
+   Cython/3.0.10-GCCcore-13.3.0
+   flex/2.6.4-GCCcore-13.3.0
+   flex/2.6.4
+   FriBidi/1.0.15-GCCcore-13.3.0
+   Guile/3.0.10-GCCcore-13.3.0
+   Java/11.0.20                                            (11)
+   Java/17.0.6                                             (17)
+   Java/21.0.2                                             (21)
+   Julia/1.10.4-linux-x86_64
+   Lua/5.4.7-GCCcore-13.3.0
+   Mamba/24.9.0-0
+   Miniconda3/24.7.1-0
+   NASM/2.16.03-GCCcore-13.3.0
+   nodejs/20.13.1-GCCcore-13.3.0
+   numba/0.60.0-foss-2024a
+   Perl-bundle-CPAN/5.38.2-GCCcore-13.3.0
+   Perl/5.38.0
+   Perl/5.38.2-GCCcore-13.3.0
+   Python-bundle-PyPI/2024.06-GCCcore-13.3.0
+   Python/3.12.3-GCCcore-13.3.0
+   R-bundle-CRAN/2024.11-foss-2024a
+   R/4.4.2-gfbf-2024a
+   RStudio-Server/2024.12.0+467-foss-2024a-Java-17-R-4.4.2
+   Rust/1.78.0-GCCcore-13.3.0
+   Rust/1.79.0-GCCcore-13.3.0
+   SciPy-bundle/2024.05-gfbf-2024a
+   SOCI/4.0.3-GCC-13.3.0
+   SWI-Prolog/9.2.9-GCC-13.3.0
+   Tcl/8.6.14-GCCcore-13.3.0
+   Tkinter/3.12.3-GCCcore-13.3.0
+   Yasm/1.3.0-GCCcore-13.3.0
+
+------------- /sw/arch/RHEL9/EB_production/2024/modulefiles/base --------------
+   eacctview/0.0.5-gfbf-2024a    eacctview/0.0.8-gfbf-2024a
+
+------------- /sw/arch/RHEL9/EB_production/2024/modulefiles/devel -------------
+   ant/1.10.12-Java-17
+   Autoconf/2.72-GCCcore-13.3.0
+   Automake/1.16.5-GCCcore-13.3.0
+   Autotools/20231222-GCCcore-13.3.0
+   Bazel/6.5.0-GCCcore-13.3.0-Java-11
+   Bazel/7.3.2-GCCcore-13.3.0
+   Bazel/7.4.1-GCCcore-13.3.0-Java-21
+   Boost.MPI/1.85.0-gompi-2024a
+   Boost/1.85.0-GCC-13.3.0
+   CMake/3.29.3-GCCcore-13.3.0
+   DBus/1.15.8-GCCcore-13.3.0
+   Doxygen/1.11.0-GCCcore-13.3.0
+   flatbuffers-python/24.3.25-GCCcore-13.3.0
+   flatbuffers/24.3.25-GCCcore-13.3.0
+   fonttools/4.53.1-GCCcore-13.3.0
+   GObject-Introspection/1.80.1-GCCcore-13.3.0
+   gperf/3.1-GCCcore-13.3.0
+   intltool/0.51.0-GCCcore-13.3.0
+   libdwarf/0.10.1-GCCcore-13.3.0
+   libgit2/1.8.1-GCCcore-13.3.0
+   M4/1.4.19-GCCcore-13.3.0
+   M4/1.4.19
+   make/4.4.1-GCCcore-13.3.0
+   makedepend/1.0.9-GCCcore-13.3.0
+   makeinfo/7.1-GCCcore-13.3.0
+   Mako/1.3.5-GCCcore-13.3.0
+   Markdown/3.7-GCCcore-13.3.0
+   ncurses/6.5-GCCcore-13.3.0
+   ncurses/6.5
+   nsync/1.29.2-GCCcore-13.3.0
+   PCRE/8.45-GCCcore-13.3.0
+   PCRE2/10.43-GCCcore-13.3.0
+   pkgconf/1.8.0
+   pkgconf/2.2.0-GCCcore-13.3.0
+   pkgconfig/1.5.5-GCCcore-13.3.0-python
+   protobuf-python/5.28.0-GCCcore-13.3.0
+   protobuf/28.0-GCCcore-13.3.0
+   pynose/1.5.4-GCCcore-13.3.0
+   PyZMQ/26.2.0-GCCcore-13.3.0
+   Qt5/5.15.15-GCCcore-13.3.0
+   Qt6/6.7.2-GCCcore-13.3.0
+   ReFrame/4.6.3-GCCcore-13.3.0
+   ReFrame/4.7.2-GCCcore-13.3.0
+   setuptools/80.9.0-GCCcore-13.3.0
+   SQLite/3.45.3-GCCcore-13.3.0
+   SWIG/4.2.1-GCCcore-13.3.0
+   typing-extensions/4.11.0-GCCcore-13.3.0
+   xorg-macros/1.20.1-GCCcore-13.3.0
+   xproto/7.0.31-GCCcore-13.3.0
+   ZeroMQ/4.3.5-GCCcore-13.3.0
+
+-------------------- /sw/noarch/RHEL9/2024/modulefiles/all --------------------
+   EasyBuild/4.9.3    EasyBuild/5.1.0    eb/4.9.3    eb/5.1.0
+   EasyBuild/4.9.4    EasyBuild/5.1.1    eb/4.9.4    eb/5.1.1
+   EasyBuild/5.0.0    EasyBuild/5.1.2    eb/5.0.0    eb/5.1.2
+

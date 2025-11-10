@@ -225,6 +225,20 @@ class atom_coords:
         print(self.fraction_crystallinity)
         return self.fraction_crystallinity
 
+
+    def get_distribution_eigenvalues(self, title, nridges = 33, savestring = None):
+        values, bins, _ = plt.hist(self.df_cryst.iloc[:, 3], bins = 1000)
+        plt.title(title)
+        plt.xlabel("eigenvalues")
+        plt.vlines(0.8, ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "cut-off crystalisation")
+        plt.legend()
+        if savestring == None:
+            plt.show()
+        else:
+            plt.savefig("%s.pdf" %savestring)
+        plt.close()
+        #plt.show()
+
     def apply_nn_cutoff(self, ndot, ndot_cutoff = 0.97):
         if ndot >= cutoff:
             return 1
@@ -403,34 +417,52 @@ def plot_order_param(list_atom_coords, title,savestring = None, starttemp = 1.0,
         np.savetxt("%s.txt" %savestring, np.column_stack((temps, list_order_params)))
     plt.show()
 
+
+def plot_multiple_dists_eigenvalues(list_atom_coords, starttemp = 1.0, endtemp = 0.5):
+    temps = np.linspace(starttemp, endtemp, 21)
+    for t in tqdm(range(0, len(list_atom_coords))):
+        current_temp = temps[t]
+        atom_coords = list_atom_coords[t]
+        atom_coords.get_nematic_vector_4()
+        title = r"Distribution of eigenvalues at $T = %s$, $\dot{T} = 10^7$" %temps[t]
+        savestring = "plots/eigenvalue_dist_pva_100_t_%s" %temps[t]
+        atom_coords.get_distribution_eigenvalues(title = title, savestring = savestring)
+    return 0;
+
 lib = c_lib_init()
 
 
-#list_atom_coords_cooling = get_list_atom_coords("../../data/pva-100/cooling_tdot_e-5_time", 21, endtime= 1e7)
+# list_atom_coords_cooling = get_list_atom_coords("../../data/pva-100/cooling_tdot_e-5_time", 21, endtime= 1e7)
+# plot_multiple_dists_eigenvalues(list_atom_coords_cooling)
 #list_atom_coords_heating = get_list_atom_coords("../../data/pva-100/genua_heating_100_tmin_0.5_ttime_10e7",21, endtime = 1e7)
 #plot_order_param(list_atom_coords_cooling, "Crystallinity vs temperature, cooling process, Tdot = 10e-5", savestring = "test_wholebox_frac_cryst_heating_100_tmin_0.5_ttime_10e7")
 
-last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
+# last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
+# mid_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_4000000.txt")
 # last_timestep_e5.calc_rdf()
-last_timestep_e5.get_nematic_vector_4()
-last_timestep_e5.merge_boxes()
+
+# mid_timestep_e5.get_nematic_vector_4()
+# mid_timestep_e5.get_distribution_eigenvalues(r"Distribution of eigenvalues at $T = 0.8$, $\dot{T} = 10^7$")
+# last_timestep_e5.get_nematic_vector_4()
+# last_timestep_e5.get_distribution_eigenvalues(r"Distribution of eigenvalues at $T = 0.5$, $\dot{T} = 10^7$")
+#last_timestep_e5.merge_boxes()
 # #last_timestep_e5.get_density_dist()
 # #plot_density_dist(last_timestep_e5, "Distribution of local densities at T = 0.5, tdot 10e-5")
 # plot_volume_line(list_atom_coords_cooling, "Volume per monomer as function of temperature, PVA-100", "volume_monomer_tdot_e-5.pdf")
 
-# list_different_tdot_t_08 = get_crystallinity_tdots("../../data/pva-100/cooling_tdot", 40000, np.array([3, 4, 5]))
-# list_different_tdot_t_05 = get_crystallinity_tdots("../../data/pva-100/cooling_tdot", 100000, np.array([3, 4, 5]))
+list_different_tdot_t_08 = get_crystallinity_tdots("../../data/pva-100/cooling_tdot", 4000, np.array([2,3, 4, 5]))
+list_different_tdot_t_05 = get_crystallinity_tdots("../../data/pva-100/cooling_tdot", 10000, np.array([2,3, 4, 5]))
 
-# plt.scatter(list_different_tdot_t_08[0, :], list_different_tdot_t_08[1, :], label = "T = 0.8")
-# plt.scatter(list_different_tdot_t_05[0, :], list_different_tdot_t_05[1, :], label = "T = 0.5")
-# plt.title("Crystallisation as function of cooling rate")
-# plt.xlabel("cooling rate")
-# plt.ylabel("crystallisation")
-# plt.legend()
-# plt.xscale("log")
-# #plt.yscale("log")
-# plt.savefig("cryst_tdot.pdf")
-# plt.show()
+plt.scatter(list_different_tdot_t_08[0, :], list_different_tdot_t_08[1, :], label = "T = 0.8")
+plt.scatter(list_different_tdot_t_05[0, :], list_different_tdot_t_05[1, :], label = "T = 0.5")
+plt.title("Crystallisation as function of cooling rate")
+plt.xlabel("cooling rate")
+plt.ylabel("crystallisation")
+plt.legend()
+plt.xscale("log")
+#plt.yscale("log")
+plt.savefig("cryst_tdot.pdf")
+plt.show()
 
 
 

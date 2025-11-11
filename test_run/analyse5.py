@@ -24,7 +24,8 @@ def c_lib_init():
         ctypes.c_int,
         ctypes.POINTER(ctypes.c_double),
         ctypes.POINTER(ctypes.c_double),
-        ctypes.POINTER(ctypes.c_int)
+        ctypes.POINTER(ctypes.c_int),
+        ctypes.c_int
     ]
     lib.find_nearest_value.restype = ctypes.POINTER(ctypes.c_int)  # int* return type
     lib.hoshen_kopelman_crystallisation.restype = None
@@ -112,6 +113,10 @@ class atom_coords:
         pass
         # Should read temperature per timestep from the Slurm file 
         # Returns a 2d array with the temperature per timestep 
+
+    def read_cryst(self, location):
+        self.df_cryst = pd.read_csv(location, sep = " ", header = None)
+        return 0;
         
     def prepare_position_data(self, file_to_path):
         """Reads position data (starts from line 9) in given a file name"""
@@ -200,7 +205,7 @@ class atom_coords:
         return self.combinations
 
 
-    def get_nematic_vector_4(self, nridges = 33, save_ev = False):
+    def get_nematic_vector_4(self, nridges = 33, save_ev = False, save_string = None):
         data = self.datapd
         # Prepare masks of all possible combinations 
         data = data[data.index % 100 != 0] # Filter out all last monomers as they do not have a bond vector per definiton
@@ -223,6 +228,9 @@ class atom_coords:
         self.fraction_crystallinity = fraction_crystallinity(df_cryst.iloc[:,3])
         self.df_cryst = df_cryst
         print(self.fraction_crystallinity)
+        if save_ev == True:
+            df_cryst.to_csv("%s" %save_string, sep = " ", mode = "w")
+
         return self.fraction_crystallinity
 
 
@@ -285,8 +293,9 @@ class atom_coords:
 
 
     def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33):
-        print(self.df_cryst)
+        #print(self.df_cryst)
         cryst_array = self.df_cryst.to_numpy()
+        print(cryst_array)
         output_cryst = np.zeros((nridges**3, 8))
         max_no_clusters = nridges**3
         actual_no_clusters = ctypes.c_int(0)
@@ -296,7 +305,7 @@ class atom_coords:
         output_cryst_pointer = output_cryst.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
         output_cluster_pointer = cluster_id_list.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
 
-        lib.hoshen_kopelman_crystallisation(input_cryst_pointer, cryst_array.shape[0], cryst_array.shape[1], output_cryst_pointer, output_cluster_pointer, ctypes.byref(actual_no_clusters))
+        lib.hoshen_kopelman_crystallisation(input_cryst_pointer, cryst_array.shape[0], cryst_array.shape[1], output_cryst_pointer, output_cluster_pointer, ctypes.byref(actual_no_clusters), nridges)
 
 
 
@@ -437,32 +446,33 @@ lib = c_lib_init()
 #list_atom_coords_heating = get_list_atom_coords("../../data/pva-100/genua_heating_100_tmin_0.5_ttime_10e7",21, endtime = 1e7)
 #plot_order_param(list_atom_coords_cooling, "Crystallinity vs temperature, cooling process, Tdot = 10e-5", savestring = "test_wholebox_frac_cryst_heating_100_tmin_0.5_ttime_10e7")
 
-# last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
+last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
 # mid_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_4000000.txt")
 # last_timestep_e5.calc_rdf()
 
 # mid_timestep_e5.get_nematic_vector_4()
 # mid_timestep_e5.get_distribution_eigenvalues(r"Distribution of eigenvalues at $T = 0.8$, $\dot{T} = 10^7$")
-# last_timestep_e5.get_nematic_vector_4()
+#last_timestep_e5.get_nematic_vector_4(save_ev = True, save_string = "10e5_debug_cryst.txt")
 # last_timestep_e5.get_distribution_eigenvalues(r"Distribution of eigenvalues at $T = 0.5$, $\dot{T} = 10^7$")
-#last_timestep_e5.merge_boxes()
+last_timestep_e5.read_cryst("10e5_debug_cryst.txt")
+last_timestep_e5.merge_boxes()
 # #last_timestep_e5.get_density_dist()
 # #plot_density_dist(last_timestep_e5, "Distribution of local densities at T = 0.5, tdot 10e-5")
 # plot_volume_line(list_atom_coords_cooling, "Volume per monomer as function of temperature, PVA-100", "volume_monomer_tdot_e-5.pdf")
 
-list_different_tdot_t_08 = get_crystallinity_tdots("../../data/pva-100/cooling_tdot", 4000, np.array([2,3, 4, 5]))
-list_different_tdot_t_05 = get_crystallinity_tdots("../../data/pva-100/cooling_tdot", 10000, np.array([2,3, 4, 5]))
+# list_different_tdot_t_08 = get_crystallinity_tdots("../../data/pva-100/cooling_tdot", 4000, np.array([2,3, 4, 5]))
+# list_different_tdot_t_05 = get_crystallinity_tdots("../../data/pva-100/cooling_tdot", 10000, np.array([2,3, 4, 5]))
 
-plt.scatter(list_different_tdot_t_08[0, :], list_different_tdot_t_08[1, :], label = "T = 0.8")
-plt.scatter(list_different_tdot_t_05[0, :], list_different_tdot_t_05[1, :], label = "T = 0.5")
-plt.title("Crystallisation as function of cooling rate")
-plt.xlabel("cooling rate")
-plt.ylabel("crystallisation")
-plt.legend()
-plt.xscale("log")
-#plt.yscale("log")
-plt.savefig("cryst_tdot.pdf")
-plt.show()
+# plt.scatter(list_different_tdot_t_08[0, :], list_different_tdot_t_08[1, :], label = "T = 0.8")
+# plt.scatter(list_different_tdot_t_05[0, :], list_different_tdot_t_05[1, :], label = "T = 0.5")
+# plt.title("Crystallisation as function of cooling rate")
+# plt.xlabel("cooling rate")
+# plt.ylabel("crystallisation")
+# plt.legend()
+# plt.xscale("log")
+# #plt.yscale("log")
+# plt.savefig("cryst_tdot.pdf")
+# plt.show()
 
 
 

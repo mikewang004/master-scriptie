@@ -115,7 +115,7 @@ class atom_coords:
         # Returns a 2d array with the temperature per timestep 
 
     def read_cryst(self, location):
-        self.df_cryst = pd.read_csv(location, sep = " ", header = None)
+        self.df_cryst = pd.read_csv(location, sep = " ", header = None, skiprows = 1)
         return 0;
         
     def prepare_position_data(self, file_to_path):
@@ -294,8 +294,7 @@ class atom_coords:
 
     def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33):
         #print(self.df_cryst)
-        cryst_array = self.df_cryst.to_numpy()
-        print(cryst_array)
+        cryst_array = self.df_cryst.iloc[:, 1:].to_numpy()
         output_cryst = np.zeros((nridges**3, 8))
         max_no_clusters = nridges**3
         actual_no_clusters = ctypes.c_int(0)
@@ -304,7 +303,6 @@ class atom_coords:
         input_cryst_pointer = cryst_array.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
         output_cryst_pointer = output_cryst.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
         output_cluster_pointer = cluster_id_list.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-
         lib.hoshen_kopelman_crystallisation(input_cryst_pointer, cryst_array.shape[0], cryst_array.shape[1], output_cryst_pointer, output_cluster_pointer, ctypes.byref(actual_no_clusters), nridges)
 
 

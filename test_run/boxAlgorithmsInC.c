@@ -41,18 +41,31 @@ int* find_nearest_value(const double nearest_values[], size_t a_size,
 double* find_row_by_three_columns(double *array, int rows, int cols, 
                                   int x, int y, int z) {
     for (int i = 0; i < rows; i++) {
-        double *current_row = &array[i * cols];
+        // For column-major: array[j * rows + i] gives row i, column j
+        double col1_val = array[0 * rows + i];  // First column, row i
+        double col2_val = array[1 * rows + i];  // Second column, row i  
+        double col3_val = array[2 * rows + i];  // Third column, row i
         
         // Check all three conditions
-        if (current_row[0] == x &&    // Column 1 == x
-            current_row[1] == y &&    // Column 2 == y  
-            current_row[2] == z) {    // Column 3 == z
-            printf("Match found \n");
-            return current_row;  // Found matching row
+        if (col1_val == x &&    // Column 1 == x
+            col2_val == y &&    // Column 2 == y  
+            col3_val == z) {    // Column 3 == z
+            printf("Match found at row %d\n", i);
+            
+            // Return pointer to the beginning of this row
+            // In column-major, we need to create a row pointer
+            double *row_ptr = (double *)malloc(cols * sizeof(double));
+            for (int j = 0; j < cols; j++) {
+                row_ptr[j] = array[j * rows + i];  // Column j, row i
+            }
+            return row_ptr;
         }
     }
+    printf("Nothing found for (%d, %d, %d)\n", x, y, z);
     return NULL;  // No match found
 }
+
+
 
 
 
@@ -65,26 +78,36 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, double *
     // Note array structure is [xbox ybox zbox cryst xev yev zev]
     // Develop method to loop over array, access xbox ybox zbox +- 1 and return xev yev zev 
     for (int i = 0; i < 3; i ++) {
-        for (int j = 0; j < cols; j ++) {
-            printf("%f \n", array[i + j]);
-        }
-        int xbox = array[i * cols];
-        int ybox = array[i * cols + 1];
-        int zbox = array[i * cols + 2];
-        // Find six neighbors 
-        printf("%i \n",((xbox-1) % no_boxes + no_boxes) % no_boxes);
-        printf("%i \n",((xbox+1) % no_boxes + no_boxes) % no_boxes);
-        //double *row_left = find_row_by_three_columns(array, rows, cols, ((xbox-1) % no_boxes + no_boxes) % no_boxes, ybox, zbox);
-        //double *row_right = find_row_by_three_columns(array, rows, cols, ((xbox+1) % no_boxes + no_boxes) % no_boxes, ybox, zbox);
-        double *same_row = find_row_by_three_columns(array, rows, cols, xbox, ybox, zbox);
-        for (int j = 0; j < cols; j ++) {
-            printf("%f \n", same_row[j]);
-        }
+        // Note column based indexing
         // for (int j = 0; j < cols; j ++) {
-        //     printf("%f \n", row_right[j]);
+        //     printf("%f \n", array[i + j]);
         // }
+        int xbox = array[i];
+        int ybox = array[i + rows];
+        int zbox = array[i + rows * 2];
+        //printf("array[%d] = %f\n", i+150000, array[i+150000]);
 
-        // Check for crystallinity 
+        // // Find six neighbors 
+        // //printf("%i \n",((xbox-2 + no_boxes) % no_boxes));
+        printf("%i %i %i \n", (xbox-1 + no_boxes) % no_boxes,ybox,zbox);
+        // //printf("%i \n",((xbox+1) % no_boxes + no_boxes) % no_boxes);
+        double *row_left = find_row_by_three_columns(array, rows, cols, ((xbox-1 + no_boxes) % no_boxes), ybox, zbox);
+        double *row_right = find_row_by_three_columns(array, rows, cols, ((xbox+1) % no_boxes), ybox, zbox);
+        double *row_before = find_row_by_three_columns(array, rows, cols, xbox, ((ybox-1 + no_boxes) % no_boxes), zbox);
+        double *row_behind = find_row_by_three_columns(array, rows, cols, xbox, ((ybox+1) % no_boxes), zbox);
+        double *row_lower = find_row_by_three_columns(array, rows, cols, xbox, ybox, ((zbox-1 + no_boxes) % no_boxes));
+        double *row_upper = find_row_by_three_columns(array, rows, cols, xbox, ybox, ((zbox+1) % no_boxes));
+        // //double *same_row = find_row_by_three_columns(array, rows, cols, xbox, ybox, zbox);
+        for (int k = 0; k < cols; k ++) {
+            printf("%f \n", row_left[k]);
+            //printf("%f row array elements \n", row_left[k]);
+            
+        }
+        for (int j = 0; j < cols; j ++) {
+            printf("%f \n", row_right[j]);
+        }
+
+        // // Check for crystallinity 
     }
 }
 

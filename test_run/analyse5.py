@@ -25,7 +25,9 @@ def c_lib_init():
         ctypes.POINTER(ctypes.c_double),
         ctypes.POINTER(ctypes.c_double),
         ctypes.POINTER(ctypes.c_int),
-        ctypes.c_int
+        ctypes.c_int, 
+        ctypes.c_float,
+        ctypes.c_float
     ]
     lib.find_nearest_value.restype = ctypes.POINTER(ctypes.c_int)  # int* return type
     lib.hoshen_kopelman_crystallisation.restype = None
@@ -292,10 +294,10 @@ class atom_coords:
     #             #print(filter_out_subset(self.df_cryst, x_left))
 
 
-    def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33):
+    def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.9):
         #print(self.df_cryst)
         cryst_array = self.df_cryst.iloc[:, 1:].to_numpy()
-        output_cryst = np.zeros((nridges**3, 8))
+        output_cryst = np.zeros([nridges**3, 4])
         max_no_clusters = nridges**3
         actual_no_clusters = ctypes.c_int(0)
         cluster_id_list = np.zeros(max_no_clusters)
@@ -303,7 +305,8 @@ class atom_coords:
         input_cryst_pointer = cryst_array.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
         output_cryst_pointer = output_cryst.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
         output_cluster_pointer = cluster_id_list.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-        lib.hoshen_kopelman_crystallisation(input_cryst_pointer, cryst_array.shape[0], cryst_array.shape[1], output_cryst_pointer, output_cluster_pointer, ctypes.byref(actual_no_clusters), nridges)
+        lib.hoshen_kopelman_crystallisation(input_cryst_pointer, cryst_array.shape[0], cryst_array.shape[1], 
+            output_cryst_pointer, output_cluster_pointer, ctypes.byref(actual_no_clusters), nridges, cryst_cutoff, ndot_cutoff)
 
 
 

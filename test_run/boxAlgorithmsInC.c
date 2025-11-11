@@ -38,7 +38,7 @@ int* find_nearest_value(const double nearest_values[], size_t a_size,
     return results;
 }
 
-double* find_row_by_three_columns(double *array, int rows, int cols, 
+double* find_neighbours(double *array, int rows, int cols, 
                                   int x, int y, int z) {
     for (int i = 0; i < rows; i++) {
         // For column-major: array[j * rows + i] gives row i, column j
@@ -66,6 +66,18 @@ double* find_row_by_three_columns(double *array, int rows, int cols,
 }
 
 
+int check_merger(double *row, float xev, float yev, float zev, float ndot_cutoff) {
+    double inproduct = row[4] * xev + row[5] * yev + row[6] * zev; 
+    printf("%f \n", inproduct);
+    if (inproduct >= ndot_cutoff) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
+
 
 
 
@@ -74,40 +86,44 @@ double* find_row_by_three_columns(double *array, int rows, int cols,
 // Output: 2D array containing lattice id + cluster id, 1d array containing cluster id sizes
 
 
-void hoshen_kopelman_crystallisation(double *array, int rows, int cols, double *output_2d, double *output_1d, int *actual_1d_size, int no_boxes) {
+void hoshen_kopelman_crystallisation(double *array, int rows, int cols, double *output_2d, double *output_1d, int *actual_1d_size, int no_boxes, float cryst_cutoff, float ndot_cutoff) {
     // Note array structure is [xbox ybox zbox cryst xev yev zev]
     // Develop method to loop over array, access xbox ybox zbox +- 1 and return xev yev zev 
-    for (int i = 0; i < 3; i ++) {
+    int last_filled_output_row = 0;
+    for (int i = 0; i < rows; i ++) {
         // Note column based indexing
         // for (int j = 0; j < cols; j ++) {
         //     printf("%f \n", array[i + j]);
         // }
-        int xbox = array[i];
-        int ybox = array[i + rows];
-        int zbox = array[i + rows * 2];
-        //printf("array[%d] = %f\n", i+150000, array[i+150000]);
+        if (array[i + rows * 4] > cryst_cutoff) {
 
-        // // Find six neighbors 
-        // //printf("%i \n",((xbox-2 + no_boxes) % no_boxes));
-        printf("%i %i %i \n", (xbox-1 + no_boxes) % no_boxes,ybox,zbox);
-        // //printf("%i \n",((xbox+1) % no_boxes + no_boxes) % no_boxes);
-        double *row_left = find_row_by_three_columns(array, rows, cols, ((xbox-1 + no_boxes) % no_boxes), ybox, zbox);
-        double *row_right = find_row_by_three_columns(array, rows, cols, ((xbox+1) % no_boxes), ybox, zbox);
-        double *row_before = find_row_by_three_columns(array, rows, cols, xbox, ((ybox-1 + no_boxes) % no_boxes), zbox);
-        double *row_behind = find_row_by_three_columns(array, rows, cols, xbox, ((ybox+1) % no_boxes), zbox);
-        double *row_lower = find_row_by_three_columns(array, rows, cols, xbox, ybox, ((zbox-1 + no_boxes) % no_boxes));
-        double *row_upper = find_row_by_three_columns(array, rows, cols, xbox, ybox, ((zbox+1) % no_boxes));
-        // //double *same_row = find_row_by_three_columns(array, rows, cols, xbox, ybox, zbox);
-        for (int k = 0; k < cols; k ++) {
-            printf("%f \n", row_left[k]);
-            //printf("%f row array elements \n", row_left[k]);
+
+            int xbox = array[i];
+            int ybox = array[i + rows];
+            int zbox = array[i + rows * 2];
+            float xev = array[i + rows * 4];
+            float yev = array[i + rows * 5];
+            float zev = array[i + rows * 6];
+
+            // // Find six neighbors 
+            printf("%i %i %i \n", (xbox-1 + no_boxes) % no_boxes,ybox,zbox);
+            double *row_left = find_neighbours(array, rows, cols, ((xbox-1 + no_boxes) % no_boxes), ybox, zbox);
+            double *row_right = find_neighbours(array, rows, cols, ((xbox+1) % no_boxes), ybox, zbox);
+            double *row_before = find_neighbours(array, rows, cols, xbox, ((ybox-1 + no_boxes) % no_boxes), zbox);
+            double *row_behind = find_neighbours(array, rows, cols, xbox, ((ybox+1) % no_boxes), zbox);
+            double *row_lower = find_neighbours(array, rows, cols, xbox, ybox, ((zbox-1 + no_boxes) % no_boxes));
+            double *row_upper = find_neighbours(array, rows, cols, xbox, ybox, ((zbox+1) % no_boxes));
+
+            // // Check for crystallinity 
+            int check_merger_left = check_merger(row_left,xev, yev, zev, ndot_cutoff);
+            int check_merger_right = check_merger(row_right, xev, yev,zev, ndot_cutoff); 
+
+            // Start new cluster 
+            // if check_merger_left == 1 {
+            //     output_2d
+            // }
             
         }
-        for (int j = 0; j < cols; j ++) {
-            printf("%f \n", row_right[j]);
-        }
-
-        // // Check for crystallinity 
     }
 }
 

@@ -85,30 +85,33 @@ int find_neighbours_index(double *array, int rows, int cols,
 }
 
 
-int check_merger(double *row, double *output_2d, int *box_array, int *cluster_id, float *ev_array, int i, int rows, int cols, float ndot_cutoff) {
+int check_merger(double *row, double *output_2d, int *box_array, int *cluster_id, float *ev_array, int i, int rows, int cols, float cryst_cutoff, float ndot_cutoff) {
     //int i indicates current position of output_2d, row is offset, box_array is location of current center lattice point
-    double inproduct = fabs(row[4]) * fabs(ev_array[1]) + fabs(row[5]) * fabs(ev_array[2]) + fabs(row[6]) * fabs(ev_array[3]); 
-    // printf("%f \n", inproduct);
-    if (inproduct >= ndot_cutoff) {
-        //printf("Index considered \n");
-        // First check if current box values are not already in output array 
-        int row_index_already_in_output = find_neighbours_index(output_2d, rows, cols, row[0], row[1], row[2]);
-        if (row_index_already_in_output == NULL) {
-            output_2d[i] = row[0]; 
-            output_2d[i + rows] = row[1];
-            output_2d[i + rows * 2] = row[2];
-            output_2d[i + rows * 3] = *cluster_id;
-            i = i + 1;
-        }
-        else {
-        // Also check whether item is already in cluster. If so, keep current cluster and advance counter by one 
-        // TODO implement proper union algorithm
-            if (output_2d[row_index_already_in_output + rows * 4] == 0) {
-                output_2d[row_index_already_in_output + rows * 3] = *cluster_id;
+    if (row[3] > cryst_cutoff) { // Both lattice points should be crystalline, crystalliiny central point checked in H-K main function
+        //double inproduct = fabs(row[4] * ev_array[0]) + fabs(row[5] * ev_array[1]) + fabs(row[6] * ev_array[2]); 
+        printf("%f * %f  + %f * %f  +%f * %f  = %f \n", row[4], ev_array[0], row[5], ev_array[1], row[6], ev_array[2], inproduct);
+        //printf("%f \n", inproduct);
+        if (inproduct >= ndot_cutoff) {
+            //printf("Index considered \n");
+            // First check if current box values are not already in output array 
+            int row_index_already_in_output = find_neighbours_index(output_2d, rows, cols, row[0], row[1], row[2]);
+            if (row_index_already_in_output == NULL) {
+                output_2d[i] = row[0]; 
+                output_2d[i + rows] = row[1];
+                output_2d[i + rows * 2] = row[2];
+                output_2d[i + rows * 3] = *cluster_id;
+                i = i + 1;
             }
             else {
-                *cluster_id = *cluster_id + 1;
-                printf("current cluster id %i \n", *cluster_id);
+            // Also check whether item is already in cluster. If so, keep current cluster and advance counter by one 
+            // TODO implement proper union algorithm
+                if (output_2d[row_index_already_in_output + rows * 4] == 0) {
+                    output_2d[row_index_already_in_output + rows * 3] = *cluster_id;
+                }
+                else {
+                    *cluster_id = *cluster_id + 1;
+                    printf("current cluster id %i \n", *cluster_id);
+                }
             }
         }
     }
@@ -158,12 +161,12 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, double *
 
             // // Check for crystallinity 
             int og_last_filled_output_row = last_filled_output_row;
-            last_filled_output_row =  check_merger(row_left, output_2d, box_array, &cluster_id,  ev_array, last_filled_output_row, rows, cols,ndot_cutoff);
-            last_filled_output_row = check_merger(row_right, output_2d, box_array, &cluster_id, ev_array, last_filled_output_row, rows, cols,ndot_cutoff); 
-            last_filled_output_row =  check_merger(row_before, output_2d, box_array, &cluster_id,  ev_array, last_filled_output_row, rows, cols,ndot_cutoff);
-            last_filled_output_row = check_merger(row_behind, output_2d, box_array, &cluster_id, ev_array, last_filled_output_row, rows, cols,ndot_cutoff); 
-            last_filled_output_row =  check_merger(row_lower, output_2d, box_array, &cluster_id,  ev_array, last_filled_output_row, rows, cols,ndot_cutoff);
-            last_filled_output_row = check_merger(row_upper, output_2d, box_array, &cluster_id, ev_array, last_filled_output_row, rows, cols,ndot_cutoff); 
+            last_filled_output_row =  check_merger(row_left, output_2d, box_array, &cluster_id,  ev_array, last_filled_output_row, rows, cols,cryst_cutoff, ndot_cutoff);
+            last_filled_output_row = check_merger(row_right, output_2d, box_array, &cluster_id, ev_array, last_filled_output_row, rows, cols, cryst_cutoff, ndot_cutoff); 
+            last_filled_output_row =  check_merger(row_before, output_2d, box_array, &cluster_id,  ev_array, last_filled_output_row, rows, cols,cryst_cutoff, ndot_cutoff);
+            last_filled_output_row = check_merger(row_behind, output_2d, box_array, &cluster_id, ev_array, last_filled_output_row, rows, cols,cryst_cutoff, ndot_cutoff); 
+            last_filled_output_row =  check_merger(row_lower, output_2d, box_array, &cluster_id,  ev_array, last_filled_output_row, rows, cols,cryst_cutoff, ndot_cutoff);
+            last_filled_output_row = check_merger(row_upper, output_2d, box_array, &cluster_id, ev_array, last_filled_output_row, rows, cols,cryst_cutoff, ndot_cutoff); 
             //printf("%i \n" ,last_filled_output_row);
             // If there is a match, also apply cluster id to center spot 
             if (og_last_filled_output_row != last_filled_output_row) {

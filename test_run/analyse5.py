@@ -7,6 +7,8 @@ from tqdm import tqdm
 #from find_box_id import *
 import ctypes
 
+
+
 # Load the shared library
 def c_lib_init():
     lib = ctypes.CDLL('./boxAlgorithmsInC.so')
@@ -270,30 +272,6 @@ class atom_coords:
 
 
 
-    # def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33):
-    #     #while clustering_done == False
-    #     for t in tqdm(range(0, len(self.combinations))):
-    #         combination = self.combinations[t]
-    #         #subset = self.df_cryst[(self.df_cryst['xid'] == combination[0]) & (self.df_cryst['yid'] == combination[1]) & (self.df_cryst['zid'] == combination[2])]
-    #         subset = filter_out_subset(self.df_cryst, combination)
-    #         if subset.empty == False:
-    #             # Check whether n dot n >= cutoff 
-    #             x_left = (combination + np.array([-1,0,0])) % nridges
-    #             x_right = (combination + np.array([+1,0,0])) % nridges
-    #             y_left = (combination + np.array([0,-1,0])) % nridges
-    #             y_right = (combination + np.array([0,+1,0])) % nridges
-    #             z_left = (combination + np.array([0,0,-1])) % nridges
-    #             z_right = (combination + np.array([0,0,+1])) % nridges
-    #             #print(subset.iloc[0, 4:7], filter_out_subset(self.df_cryst, x_left).iloc[0, 4:7])
-    #             nx_left = np.dot(subset.iloc[0, 4:7], filter_out_subset(self.df_cryst, x_left).iloc[0, 4:7])
-    #             nx_right = np.dot(subset.iloc[0, 4:7], filter_out_subset(self.df_cryst, y_right).iloc[0, 4:7])
-    #             ny_left = np.dot(subset.iloc[0, 4:7], filter_out_subset(self.df_cryst, y_left).iloc[0, 4:7])
-    #             ny_right = np.dot(subset.iloc[0, 4:7], filter_out_subset(self.df_cryst, y_right).iloc[0, 4:7])
-    #             nz_left = np.dot(subset.iloc[0, 4:7], filter_out_subset(self.df_cryst, z_left).iloc[0, 4:7])
-    #             nz_right = np.dot(subset.iloc[0, 4:7], filter_out_subset(self.df_cryst, z_right).iloc[0, 4:7])
-    #             #print(filter_out_subset(self.df_cryst, x_left))
-
-
     def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8):
         #print(self.df_cryst)
         cryst_array = self.df_cryst.iloc[:, 1:].to_numpy()
@@ -312,10 +290,10 @@ class atom_coords:
         #cluster_id_array = np.ctypeslib.as_array(out, shape = (cryst_array.shape[0], 4))
         unique_values, counts = np.unique(output_cryst[:, -1], return_counts=True)
         print(counts)
-        plt.bar(unique_values[1:], counts[1:], color='skyblue', edgecolor='black', alpha=0.7)
-        plt.xlabel("cluster-id")
-        plt.savefig("cluster_prelim_firstrun.pdf")
-        plt.show()
+        # plt.bar(unique_values[1:], counts[1:], color='skyblue', edgecolor='black', alpha=0.7)
+        # plt.xlabel("cluster-id")
+        # plt.savefig("cluster_prelim_firstrun.pdf")
+        # plt.show()
 
 
 
@@ -412,7 +390,7 @@ def plot_volume_line(list_atom_coords, title,savestring = None, n_atoms = 720000
         np.savetxt("%s.txt" %savestring)
     plt.show()
 
-def plot_order_param(list_atom_coords, title,savestring = None, starttemp = 1.0, endtemp = 0.5):
+def plot_order_param(list_atom_coords, title,savestring = None, starttemp = 1.0, endtemp = 0.5, plot_time_instead = False, starttime = None, endtime = None, n_samples = None):
     """Returns plot of volume as function of temperature"""
     list_order_params = []
     for t in tqdm(range(0, len(list_atom_coords))):
@@ -423,17 +401,22 @@ def plot_order_param(list_atom_coords, title,savestring = None, starttemp = 1.0,
         list_order_params.append((atom_coords.fraction_crystallinity))
         print(atom_coords.fraction_crystallinity)
 
-    temps = np.linspace(starttemp, endtemp, num = len(list_atom_coords))
     list_order_params = np.array(list_order_params)
-    plt.scatter(temps, list_order_params)
+    if plot_time_instead == True:
+        timespace = np.linspace(starttime, endtime, n_samples)
+        plt.scatter(timespace, list_order_params)
+        plt.xlabel("Simulation time")
+    else:
+        temps = np.linspace(starttemp, endtemp, num = len(list_atom_coords))
+        plt.scatter(temps, list_order_params)
+        plt.xlabel("Temperature [unitless]")
     plt.title(title)
-    plt.xlabel("Temperature [unitless]")
     plt.ylabel("Fraction of crystallinity")
     if savestring == None:
         pass
     else:
         plt.savefig("%s.pdf" %savestring)
-        np.savetxt("%s.txt" %savestring, np.column_stack((temps, list_order_params)))
+        #np.savetxt("%s.txt" %savestring, np.column_stack((temps, list_order_params)))
     plt.show()
 
 

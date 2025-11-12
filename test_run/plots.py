@@ -85,3 +85,7 @@ def quick_quench_volume_monomer():
 #plot_crystallinity_multiple_temps()
 
 #quick_quench_volume_monomer()
+
+
+const_t08_e3_cooling = get_list_atom_coords("../../data/pva-100/quick_quench/equil_t_08_tdot_e-3_time", 18, endtime= 20400000) #Kept constant at T=0.8 after quench from T = 1.0
+plot_order_param(const_t08_e3_cooling, "Crystallinity vs time, equilibrated system", savestring="equil_t_08_24e7", plot_time_instead= True, starttime = 0, endtime = 20400000, n_samples = 18)

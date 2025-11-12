@@ -19,15 +19,16 @@ def c_lib_init():
         ctypes.c_size_t                    # size_t n_size
     ]
     lib.hoshen_kopelman_crystallisation.argtypes = [
-        ctypes.POINTER(ctypes.c_double),
-        ctypes.c_int,
-        ctypes.c_int,
-        ctypes.POINTER(ctypes.c_double),
-        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double), #Input cryst_array [box-id, cryst_value, xev, yev, zev]
+        ctypes.c_int, #no. rows
+        ctypes.c_int, #no. cols
+        #ctypes.POINTER(ctypes.c_double), #Output cryst_array [box-id, cluster id]
+        np.ctypeslib.ndpointer(dtype = np.double, flags = "C_CONTIGUOUS"),
+        ctypes.POINTER(ctypes.c_double), #1d cluster array 
         ctypes.POINTER(ctypes.c_int),
-        ctypes.c_int, 
-        ctypes.c_float,
-        ctypes.c_float
+        ctypes.c_int, #no. lattice points/boxes
+        ctypes.c_float, #cutoff for crystallisation yes/no
+        ctypes.c_float #cutoff for ndot product 
     ]
     lib.find_nearest_value.restype = ctypes.POINTER(ctypes.c_int)  # int* return type
     lib.hoshen_kopelman_crystallisation.restype = None
@@ -84,7 +85,6 @@ def calc_nematic_tensor_2(array):
     Q = np.zeros([3,3])
     outer = (np.einsum('ni,nj->ij', array, array)) / array_length
     #Q =  np.mean(outer  - (1/3) * np.eye(3), axis = 0) # According to Sommer/Luo Sep 2010
-    #Q = 1.5 * np.mean(outer, axis = 0) - 0.5 * np.eye(3) # Sara 2015
 
     Q = 1.5 * outer - 0.5* np.eye(3) # Sara 2015
 
@@ -294,19 +294,28 @@ class atom_coords:
     #             #print(filter_out_subset(self.df_cryst, x_left))
 
 
-    def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.9):
+    def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8):
         #print(self.df_cryst)
         cryst_array = self.df_cryst.iloc[:, 1:].to_numpy()
-        output_cryst = np.zeros([nridges**3, 4])
+        #cryst_array_new = np.zeros([cryst_array.shape[0],cryst_array.shape[1]+1])
+        #cryst_array_new[:, :-1] = cryst_array
+        #cryst_array = cryst_array_new
+        output_cryst = np.zeros([nridges**3, 4]) #Lattice points and cluster id 
         max_no_clusters = nridges**3
         actual_no_clusters = ctypes.c_int(0)
         cluster_id_list = np.zeros(max_no_clusters)
-
         input_cryst_pointer = cryst_array.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-        output_cryst_pointer = output_cryst.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        #output_cryst_pointer = output_cryst.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
         output_cluster_pointer = cluster_id_list.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
         lib.hoshen_kopelman_crystallisation(input_cryst_pointer, cryst_array.shape[0], cryst_array.shape[1], 
-            output_cryst_pointer, output_cluster_pointer, ctypes.byref(actual_no_clusters), nridges, cryst_cutoff, ndot_cutoff)
+            output_cryst, output_cluster_pointer, ctypes.byref(actual_no_clusters), nridges, cryst_cutoff, ndot_cutoff)
+        #cluster_id_array = np.ctypeslib.as_array(out, shape = (cryst_array.shape[0], 4))
+        unique_values, counts = np.unique(output_cryst[:, -1], return_counts=True)
+        print(counts)
+        plt.bar(unique_values[1:], counts[1:], color='skyblue', edgecolor='black', alpha=0.7)
+        plt.xlabel("cluster-id")
+        plt.savefig("cluster_prelim_firstrun.pdf")
+        plt.show()
 
 
 

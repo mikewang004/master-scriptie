@@ -103,6 +103,7 @@ class atom_coords:
     """Used to read in files and analyse them"""
 
     def __init__(self, file_to_path, nridges = 33):
+        #Note datapd has following columns: 
         self.datapd = self.prepare_position_data(file_to_path)
         self.n_atoms = len(self.datapd.index)
         combinations = self.generate_box_list()
@@ -180,15 +181,13 @@ class atom_coords:
         data = self.datapd
         length_array = np.linspace(self.minlength, self.maxlength, nridges+1)
         self.midpoint_ridges = ((length_array + np.roll(length_array, 1))/2)[1:] #Serves as box id 
-        #data.iloc[:, 1:] = data.iloc[:, 1:] % total_volume_length
         box_length =  (self.total_volume_length)/nridges
-        df_com = pd.DataFrame(np.zeros([data.shape[0], 3]), columns = ["xid", "yid", "zid"])
+        df_com = pd.DataFrame(np.zeros([data.shape[0], 3]), columns = ["xid", "yid", "zid"], index = data.index)
         print(self.total_volume_length, self.minlength, self.maxlength)
         self.local_volume = box_length**3
         # Wrap coordinates 
         data.iloc[:, 2:5] = (data.iloc[:, 2:5] - self.minlength) % self.total_volume_length + self.minlength
         # data.rename(columns={"x": "xu", "y": "yu", "z": "zu"})
-
         df_com.iloc[:, 0] = find_box_id(self.midpoint_ridges, data.iloc[:, 1].to_numpy())
         df_com.iloc[:, 1] = find_box_id(self.midpoint_ridges, data.iloc[:, 2].to_numpy())
         df_com.iloc[:, 2] = find_box_id(self.midpoint_ridges, data.iloc[:, 3].to_numpy())
@@ -199,6 +198,7 @@ class atom_coords:
 
             
         data = pd.concat([data, df_com], axis=1)
+        #data = data.iloc[:-1, :]
         #data.to_csv("data_test_ctypes.txt", sep = " ", mode = "w")
         return data
 
@@ -207,6 +207,33 @@ class atom_coords:
         numbers = np.arange(0, nridges)  # 0 to 32 inclusive
         self.combinations = np.array(np.meshgrid(numbers, numbers, numbers)).T.reshape(-1, 3)
         return self.combinations
+
+    def end_to_end_distance(self, nridges = 33, show_plot = False, save_plot_string = None):
+        # Calculates end-to-end distance of each polymer 
+        #print(self.datapd)
+        no_polymers = self.datapd.iloc[:, 0].max()
+        end_end_length = np.zeros([no_polymers, 3])
+        df_end_end_length = pd.DataFrame(np.zeros([no_polymers, 4]), columns = ["xl", "yl", "zl", "end_end_length"]) #xlength etc.
+        df_end_end_length.index.name = "mol_id"
+        df_end_end_length.index = df_end_end_length.index + 1
+        for i in range(0, no_polymers):
+            #subset = data[(data['xid'] == combination[0]) & (data['yid'] == combination[1]) & (data['zid'] == combination[2])]
+            subset = self.datapd[(self.datapd["mol_id"] == i+1)]
+            diff = subset.diff()
+            #print(i, diff.sum())
+            length_3d = diff.sum()[1:4]
+            df_end_end_length.iloc[i, :-1] = length_3d
+            df_end_end_length.iloc[i, -1] = np.sqrt(length_3d[0]**2 + length_3d[1]**2 + length_3d[2]**2)
+            #print(df_end_end_length)
+            #print(i)
+        #print(np.mean(df_end_end_length["end_end_length"]))
+        self.mean_end_to_end_length = np.mean(df_end_end_length["end_end_length"])
+        self.end_to_end_length = df_end_end_length
+        values, bins, _ = plt.hist(df_end_end_length.iloc[:, -1], bins = 100)
+        plt.vlines(np.mean(df_end_end_length["end_end_length"]), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "mean end-to-end length = %.2f" %self.mean_end_to_end_length)
+        plt.legend()
+        plt.show()
+        return self.end_to_end_length;
 
 
     def get_nematic_vector_4(self, nridges = 33, save_ev = False, save_string = None):
@@ -443,12 +470,13 @@ last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_1000000
 # mid_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_4000000.txt")
 # last_timestep_e5.calc_rdf()
 
-# mid_timestep_e5.get_nematic_vector_4()
+#mid_timestep_e5.get_nematic_vector_4()
 # mid_timestep_e5.get_distribution_eigenvalues(r"Distribution of eigenvalues at $T = 0.8$, $\dot{T} = 10^7$")
-#last_timestep_e5.get_nematic_vector_4(save_ev = True, save_string = "10e5_debug_cryst.txt")
+last_timestep_e5.end_to_end_distance()
+#last_timestep_e5.get_nematic_vector_4()#save_ev = True, save_string = "10e5_debug_cryst.txt")
 # last_timestep_e5.get_distribution_eigenvalues(r"Distribution of eigenvalues at $T = 0.5$, $\dot{T} = 10^7$")
-last_timestep_e5.read_cryst("10e5_debug_cryst.txt")
-last_timestep_e5.merge_boxes()
+#last_timestep_e5.read_cryst("10e5_debug_cryst.txt")
+#last_timestep_e5.merge_boxes()
 # #last_timestep_e5.get_density_dist()
 # #plot_density_dist(last_timestep_e5, "Distribution of local densities at T = 0.5, tdot 10e-5")
 # plot_volume_line(list_atom_coords_cooling, "Volume per monomer as function of temperature, PVA-100", "volume_monomer_tdot_e-5.pdf")

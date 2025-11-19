@@ -106,6 +106,8 @@ class atom_coords:
         #Note datapd has following columns: 
         self.datapd = self.prepare_position_data(file_to_path)
         self.n_atoms = len(self.datapd.index)
+        self.no_polymers = self.datapd["mol_id"].max()
+        self.polymer_length = self.n_atoms/self.no_polymers
         combinations = self.generate_box_list()
         self.bond_vectors = self.calculate_bond_vectors()
         self.get_volume_box(file_to_path)
@@ -172,6 +174,9 @@ class atom_coords:
         #np.savetxt("bond_vectors.txt", bond_vectors)
         return bond_vectors
 
+    def wrap_coordinates(self, data):
+        """Converts coordinates to wrapped coordinates. Input can be float or array (float)"""
+        return (data - self.minlength) % self.total_volume_length + self.minlength
 
     def assign_center_of_mass(self, nridges = 33):
         """Loops over all polymers to assign center of mass 
@@ -186,7 +191,8 @@ class atom_coords:
         print(self.total_volume_length, self.minlength, self.maxlength)
         self.local_volume = box_length**3
         # Wrap coordinates 
-        data.iloc[:, 2:5] = (data.iloc[:, 2:5] - self.minlength) % self.total_volume_length + self.minlength
+        #data.iloc[:, 2:5] = (data.iloc[:, 2:5] - self.minlength) % self.total_volume_length + self.minlength
+        data.iloc[:, 2:5] = self.wrap_coordinates(data.iloc[:, 2:5])
         # data.rename(columns={"x": "xu", "y": "yu", "z": "zu"})
         df_com.iloc[:, 0] = find_box_id(self.midpoint_ridges, data.iloc[:, 1].to_numpy())
         df_com.iloc[:, 1] = find_box_id(self.midpoint_ridges, data.iloc[:, 2].to_numpy())
@@ -208,15 +214,18 @@ class atom_coords:
         self.combinations = np.array(np.meshgrid(numbers, numbers, numbers)).T.reshape(-1, 3)
         return self.combinations
 
+    def create_new_polymer_df(self, column_names):
+        """Creates an empty dataframe per mol_id with len(column_names) columns. column_names must be a list"""
+        new_df = pd.DataFrame(np.zeros([self.no_polymers, len(column_names)]), columns = column_names)
+        new_df.index.name = "mol_id"
+        new_df.index = new_df.index + 1
+        return new_df
+
     def end_to_end_distance(self, nridges = 33, show_plot = False, save_plot_string = None):
         # Calculates end-to-end distance of each polymer 
         #print(self.datapd)
-        no_polymers = self.datapd.iloc[:, 0].max()
-        end_end_length = np.zeros([no_polymers, 3])
-        df_end_end_length = pd.DataFrame(np.zeros([no_polymers, 4]), columns = ["xl", "yl", "zl", "end_end_length"]) #xlength etc.
-        df_end_end_length.index.name = "mol_id"
-        df_end_end_length.index = df_end_end_length.index + 1
-        for i in range(0, no_polymers):
+        df_end_end_length = self.create_new_polymer_df(["xl", "yl", "zl", "end_end_length"])
+        for i in range(0, self.no_polymers):
             #subset = data[(data['xid'] == combination[0]) & (data['yid'] == combination[1]) & (data['zid'] == combination[2])]
             subset = self.datapd[(self.datapd["mol_id"] == i+1)]
             diff = subset.diff()
@@ -229,12 +238,38 @@ class atom_coords:
         #print(np.mean(df_end_end_length["end_end_length"]))
         self.mean_end_to_end_length = np.mean(df_end_end_length["end_end_length"])
         self.end_to_end_length = df_end_end_length
-        values, bins, _ = plt.hist(df_end_end_length.iloc[:, -1], bins = 100)
-        plt.vlines(np.mean(df_end_end_length["end_end_length"]), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "mean end-to-end length = %.2f" %self.mean_end_to_end_length)
-        plt.legend()
-        plt.show()
+
+        if show_plot == True:
+            values, bins, _ = plt.hist(df_end_end_length.iloc[:, -1], bins = 100)
+            plt.vlines(np.mean(df_end_end_length["end_end_length"]), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "mean end-to-end length = %.2f" %self.mean_end_to_end_length)
+            plt.legend()
+            plt.show()
         return self.end_to_end_length;
 
+    def gyration_radius(self, nridges = 33, show_plot = True):
+        # First calculate center of mass of each polymer 
+        df_gyration_radius = self.create_new_polymer_df(["comx", "comy", "comz", "gyration_radius"])
+        # wrapped_coordinates = self.datapd.iloc[:, :4]
+        # wrapped_coordinates.iloc[:, 1:4] = self.wrap_coordinates(wrapped_coordinates)
+        # print(wrapped_coordinates)
+        for i in range(0, self.no_polymers):
+            # First calculate center of mass 
+            subset = self.datapd[(self.datapd["mol_id"] == i+1)].iloc[:, 1:4]
+            com = np.mean(subset, axis = 0)
+            df_gyration_radius.iloc[i, :3] = com
+
+            # Shift system to have new center of mass as center 
+            subset_com = subset - com
+            denom = (subset.shape[0]+1)
+            gyration_radius_squared = subset_com**2/denom
+            radius_of_gyration = np.sqrt(1/denom * np.sum(np.mean(gyration_radius_squared, axis = 1)))
+            df_gyration_radius.iloc[i, 3] = radius_of_gyration
+        self.mean_gyration_radius = np.mean(df_gyration_radius["gyration_radius"])
+        if show_plot == True:
+            values, bins, _ = plt.hist(df_gyration_radius.iloc[:, -1], bins = 100)
+            plt.vlines(self.mean_gyration_radius, ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "mean gyration radius = %.4f" %self.mean_gyration_radius)
+            plt.legend()
+            plt.show()
 
     def get_nematic_vector_4(self, nridges = 33, save_ev = False, save_string = None):
         data = self.datapd
@@ -472,7 +507,8 @@ last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_1000000
 
 #mid_timestep_e5.get_nematic_vector_4()
 # mid_timestep_e5.get_distribution_eigenvalues(r"Distribution of eigenvalues at $T = 0.8$, $\dot{T} = 10^7$")
-last_timestep_e5.end_to_end_distance()
+#last_timestep_e5.end_to_end_distance()
+last_timestep_e5.gyration_radius()
 #last_timestep_e5.get_nematic_vector_4()#save_ev = True, save_string = "10e5_debug_cryst.txt")
 # last_timestep_e5.get_distribution_eigenvalues(r"Distribution of eigenvalues at $T = 0.5$, $\dot{T} = 10^7$")
 #last_timestep_e5.read_cryst("10e5_debug_cryst.txt")

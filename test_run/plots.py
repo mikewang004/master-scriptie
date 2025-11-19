@@ -94,5 +94,9 @@ def quick_quench_volume_monomer():
 last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
 last_timestep_e5.gyration_radius()
 
-last_timestep_e4 = atom_coords("../../data/pva-100/cooling_tdot_e-4_time_1000000.txt")
-last_timestep_e4.gyration_radius()
+# last_timestep_e4 = atom_coords("../../data/pva-100/cooling_tdot_e-4_time_1000000.txt")
+# last_timestep_e4.gyration_radius()
+
+#first_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_0.txt")
+#first_timestep_e5.gyration_radius()
+#first_timestep_e5.end_to_end_distance(show_plot= True)

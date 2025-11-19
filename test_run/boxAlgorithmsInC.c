@@ -38,6 +38,96 @@ int* find_nearest_value(const double nearest_values[], size_t a_size,
     return results;
 }
 
+// double* inner_products_per_polymer(double* array, int rows, int cols) {
+//     if (array == NULL || rows <= 1 || cols != 3) {
+//         printf("Error: Invalid input parameters\n");
+//         printf("  array: %s, rows: %d, cols: %d\n", 
+//                array == NULL ? "NULL" : "valid", rows, cols);
+//         return NULL;
+//     }
+    
+//     // Allocate result array (rows-1 elements for i-th and (i+1)-th pairs)
+//     double* results = (double*)malloc((rows - 1) * sizeof(double));
+//     if (results == NULL) {
+//         printf("Error: Memory allocation failed for %d results\n", rows - 1);
+//         return NULL;
+//     }
+    
+//     // Compute inner products between consecutive rows
+//     for (int i = 0; i < rows - 1; i++) {
+//         double* row_i = &array[i * cols];      // i-th row
+//         double* row_i1 = &array[(i + 1) * cols]; // (i+1)-th row
+        
+//         // Inner product: x1*x2 + y1*y2 + z1*z2
+//         results[i] = (row_i[0] * row_i1[0]) + 
+//                      (row_i[1] * row_i1[1]) + 
+//                      (row_i[2] * row_i1[2]);
+//     }
+    
+//     return results;
+// }
+
+double* inner_products_per_polymer(double* array, int rows, int cols) {
+    if (array == NULL || rows < 3 || cols != 3) {
+        printf("Error: Invalid input parameters\n");
+        printf("  array: %s, rows: %d, cols: %d\n", 
+               array == NULL ? "NULL" : "valid", rows, cols);
+        return NULL;
+    }
+    
+    // Allocate result array (rows-2 elements for consecutive bond pairs)
+    double* results = (double*)malloc((rows - 2) * sizeof(double));
+    if (results == NULL) {
+        printf("Error: Memory allocation failed for %d results\n", rows - 2);
+        return NULL;
+    }
+    
+    // Compute dot products between consecutive normalized bond vectors
+    for (int i = 0; i < rows - 2; i++) {
+        // Get three consecutive positions
+        double* pos_i = &array[i * cols];       // Position i
+        double* pos_i1 = &array[(i + 1) * cols]; // Position i+1
+        double* pos_i2 = &array[(i + 2) * cols]; // Position i+2
+        
+        // Calculate bond vector from i to i+1
+        double bond1_x = pos_i1[0] - pos_i[0];
+        double bond1_y = pos_i1[1] - pos_i[1];
+        double bond1_z = pos_i1[2] - pos_i[2];
+        
+        // Calculate bond vector from i+1 to i+2
+        double bond2_x = pos_i2[0] - pos_i1[0];
+        double bond2_y = pos_i2[1] - pos_i1[1];
+        double bond2_z = pos_i2[2] - pos_i1[2];
+        
+        // Calculate magnitudes
+        double mag1 = sqrt(bond1_x*bond1_x + bond1_y*bond1_y + bond1_z*bond1_z);
+        double mag2 = sqrt(bond2_x*bond2_x + bond2_y*bond2_y + bond2_z*bond2_z);
+        
+        // Avoid division by zero for zero-length bonds
+        if (mag1 < 1e-12 || mag2 < 1e-12) {
+            results[i] = 0.0;
+            continue;
+        }
+        
+        // Normalize bond vectors
+        double bond1_hat_x = bond1_x / mag1;
+        double bond1_hat_y = bond1_y / mag1;
+        double bond1_hat_z = bond1_z / mag1;
+        
+        double bond2_hat_x = bond2_x / mag2;
+        double bond2_hat_y = bond2_y / mag2;
+        double bond2_hat_z = bond2_z / mag2;
+        
+        // Dot product of normalized bond vectors: b̂_i • b̂_{i+1}
+        results[i] = (bond1_hat_x * bond2_hat_x) + 
+                     (bond1_hat_y * bond2_hat_y) + 
+                     (bond1_hat_z * bond2_hat_z);
+    }
+    
+    return results;
+}
+
+
 double* find_neighbours(double *array, int rows, int cols, 
                                   int x, int y, int z) {
     for (int i = 0; i < rows; i++) {
@@ -88,7 +178,7 @@ int find_neighbours_index(double *array, int rows, int cols,
 int check_merger(double *row, double *output_2d, int *box_array, int *cluster_id, float *ev_array, int i, int rows, int cols, float cryst_cutoff, float ndot_cutoff) {
     //int i indicates current position of output_2d, row is offset, box_array is location of current center lattice point
     if (row[3] > cryst_cutoff) { // Both lattice points should be crystalline, crystalliiny central point checked in H-K main function
-        //double inproduct = fabs(row[4] * ev_array[0]) + fabs(row[5] * ev_array[1]) + fabs(row[6] * ev_array[2]); 
+        double inproduct = fabs(row[4] * ev_array[0]) + fabs(row[5] * ev_array[1]) + fabs(row[6] * ev_array[2]); 
         printf("%f * %f  + %f * %f  +%f * %f  = %f \n", row[4], ev_array[0], row[5], ev_array[1], row[6], ev_array[2], inproduct);
         //printf("%f \n", inproduct);
         if (inproduct >= ndot_cutoff) {

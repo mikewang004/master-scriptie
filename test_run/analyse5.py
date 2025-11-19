@@ -20,6 +20,7 @@ def c_lib_init():
         ctypes.POINTER(ctypes.c_double),  # const double data[]
         ctypes.c_size_t                    # size_t n_size
     ]
+    
     lib.hoshen_kopelman_crystallisation.argtypes = [
         ctypes.POINTER(ctypes.c_double), #Input cryst_array [box-id, cryst_value, xev, yev, zev]
         ctypes.c_int, #no. rows
@@ -32,8 +33,15 @@ def c_lib_init():
         ctypes.c_float, #cutoff for crystallisation yes/no
         ctypes.c_float #cutoff for ndot product 
     ]
+
+    lib.inner_products_per_polymer.argtypes = [
+        np.ctypeslib.ndpointer(ctypes.c_double),
+        ctypes.c_int,
+        ctypes.c_int
+    ]
     lib.find_nearest_value.restype = ctypes.POINTER(ctypes.c_int)  # int* return type
     lib.hoshen_kopelman_crystallisation.restype = None
+    lib.inner_products_per_polymer.restype = ctypes.POINTER(ctypes.c_double)
     #lib.hoshen_kopelman_crystallisation.restype = ctypes.c_double
     return lib
 
@@ -241,7 +249,8 @@ class atom_coords:
 
         if show_plot == True:
             values, bins, _ = plt.hist(df_end_end_length.iloc[:, -1], bins = 100)
-            plt.vlines(np.mean(df_end_end_length["end_end_length"]), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "mean end-to-end length = %.2f" %self.mean_end_to_end_length)
+            plt.vlines(np.mean(df_end_end_length["end_end_length"]), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = r"mean end-to-end length = %.2f" %self.mean_end_to_end_length)
+            plt.title("Distribution of end-to-end distance")
             plt.legend()
             plt.show()
         return self.end_to_end_length;
@@ -249,8 +258,31 @@ class atom_coords:
     
     def distribution_bond_vectors(self, show_plot = False):
         for i in range(0, self.no_polymers):
-            subset = self.datapd[(sdelf.datapd["mol_id"] == i + 1)]
+            subset = self.datapd[(self.datapd["mol_id"] == i + 1)]
             diff = subset.diff()
+
+    def bond_bond_correlation(self, show_plot = False):
+        #df_mean_bond_bond_per_polymer = self.create_new_polymer_df(["cos_theta"])
+        df_bond_per_position = pd.DataFrame(np.zeros([int(self.n_atoms/self.no_polymers)-2, self.no_polymers]))
+        df_bond_per_position.index.name = "bead_position"
+        df_bond_per_position.index = df_bond_per_position.index + 1
+        for i in range(0, self.no_polymers):
+            subset = self.datapd[(self.datapd["mol_id"] == i + 1)].to_numpy()[:, 1:4]
+            #Normalise bond vectors 
+            #subset = subset/np.linalg.norm(subset, axis = 1, keepdims = True)
+            #print(subset)
+            bond_bond_array = lib.inner_products_per_polymer(subset, subset.shape[0], subset.shape[1])
+            bond_bond_array = np.ctypeslib.as_array(bond_bond_array, shape=(subset.shape[0]-2,))
+            #print(bond_bond_array)
+            df_bond_per_position.iloc[:, i] = bond_bond_array
+            #print(df_bond_per_position.iloc[:, i])
+        #print(df_bond_per_position)
+        #print(df_bond_per_position.shape)
+        cos_per_position = np.mean(df_bond_per_position, axis = 1)
+        print(cos_per_position)
+        plt.scatter(cos_per_position.index, cos_per_position)
+        plt.title("Distribution of bond-bond correlations")
+        plt.show()
 
     def gyration_radius(self, nridges = 33, show_plot = True):
         # First calculate center of mass of each polymer 
@@ -267,8 +299,8 @@ class atom_coords:
             # Shift system to have new center of mass as center 
             subset_com = subset - com
             denom = (subset.shape[0]+1)
-            gyration_radius_squared = subset_com**2/denom
-            radius_of_gyration = np.sqrt(1/denom * np.sum(np.mean(gyration_radius_squared, axis = 1)))
+            gyration_radius_squared = subset_com**2
+            radius_of_gyration = np.sqrt(1/(denom) * np.sum(np.mean(gyration_radius_squared, axis = 1)))
             df_gyration_radius.iloc[i, 3] = radius_of_gyration
         self.mean_gyration_radius = np.mean(df_gyration_radius["gyration_radius"])
         if show_plot == True:
@@ -508,9 +540,11 @@ lib = c_lib_init()
 #list_atom_coords_heating = get_list_atom_coords("../../data/pva-100/genua_heating_100_tmin_0.5_ttime_10e7",21, endtime = 1e7)
 #plot_order_param(list_atom_coords_cooling, "Crystallinity vs temperature, cooling process, Tdot = 10e-5", savestring = "test_wholebox_frac_cryst_heating_100_tmin_0.5_ttime_10e7")
 
-last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
-# mid_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_4000000.txt")
+#last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
+#first_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_0.txt")
+#mid_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_4000000.txt")
 # last_timestep_e5.calc_rdf()
+#first_timestep_e5.bond_bond_correlation()
 
 #mid_timestep_e5.get_nematic_vector_4()
 # mid_timestep_e5.get_distribution_eigenvalues(r"Distribution of eigenvalues at $T = 0.8$, $\dot{T} = 10^7$")

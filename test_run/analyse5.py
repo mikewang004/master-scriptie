@@ -246,6 +246,12 @@ class atom_coords:
             plt.show()
         return self.end_to_end_length;
 
+    
+    def distribution_bond_vectors(self, show_plot = False):
+        for i in range(0, self.no_polymers):
+            subset = self.datapd[(sdelf.datapd["mol_id"] == i + 1)]
+            diff = subset.diff()
+
     def gyration_radius(self, nridges = 33, show_plot = True):
         # First calculate center of mass of each polymer 
         df_gyration_radius = self.create_new_polymer_df(["comx", "comy", "comz", "gyration_radius"])
@@ -268,6 +274,7 @@ class atom_coords:
         if show_plot == True:
             values, bins, _ = plt.hist(df_gyration_radius.iloc[:, -1], bins = 100)
             plt.vlines(self.mean_gyration_radius, ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "mean gyration radius = %.4f" %self.mean_gyration_radius)
+            plt.title("Distribution of the gyration radius")
             plt.legend()
             plt.show()
 
@@ -508,7 +515,7 @@ last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_1000000
 #mid_timestep_e5.get_nematic_vector_4()
 # mid_timestep_e5.get_distribution_eigenvalues(r"Distribution of eigenvalues at $T = 0.8$, $\dot{T} = 10^7$")
 #last_timestep_e5.end_to_end_distance()
-last_timestep_e5.gyration_radius()
+#last_timestep_e5.gyration_radius()
 #last_timestep_e5.get_nematic_vector_4()#save_ev = True, save_string = "10e5_debug_cryst.txt")
 # last_timestep_e5.get_distribution_eigenvalues(r"Distribution of eigenvalues at $T = 0.5$, $\dot{T} = 10^7$")
 #last_timestep_e5.read_cryst("10e5_debug_cryst.txt")

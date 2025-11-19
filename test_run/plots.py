@@ -87,5 +87,12 @@ def quick_quench_volume_monomer():
 #quick_quench_volume_monomer()
 
 
-const_t08_e3_cooling = get_list_atom_coords("../../data/pva-100/quick_quench/equil_t_08_tdot_e-3_time", 18, endtime= 20400000) #Kept constant at T=0.8 after quench from T = 1.0
-plot_order_param(const_t08_e3_cooling, "Crystallinity vs time, equilibrated system", savestring="equil_t_08_24e7", plot_time_instead= True, starttime = 0, endtime = 20400000, n_samples = 18)
+#const_t08_e3_cooling = get_list_atom_coords("../../data/pva-100/quick_quench/equil_t_08_tdot_e-3_time", 18, endtime= 20400000) #Kept constant at T=0.8 after quench from T = 1.0
+#plot_order_param(const_t08_e3_cooling, "Crystallinity vs time, equilibrated system", savestring="equil_t_08_24e7", plot_time_instead= True, starttime = 0, endtime = 20400000, n_samples = 18)
+
+
+last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
+last_timestep_e5.gyration_radius()
+
+last_timestep_e4 = atom_coords("../../data/pva-100/cooling_tdot_e-4_time_1000000.txt")
+last_timestep_e4.gyration_radius()

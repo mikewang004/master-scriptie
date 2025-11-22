@@ -97,14 +97,13 @@ def calc_nematic_tensor_2(array):
     #Q =  np.mean(outer  - (1/3) * np.eye(3), axis = 0) # According to Sommer/Luo Sep 2010
 
     Q = 1.5 * outer - 0.5* np.eye(3) # Sara 2015
-
-
     #order_param = np.sqrt(1.5 * np.trace(Q**2)) #Sommer/Luo 2010
     labda, ev = np.linalg.eigh(Q)
+    print(labda)
     max_labda = np.max(labda)
     max_ev = ev[:, np.argmax(labda)]
     order_param = max_labda #Sara 2015
-    return max_labda, max_ev, order_param
+    return max_labda, max_ev, labda, ev
 
 class atom_coords:
 
@@ -327,7 +326,7 @@ class atom_coords:
                 indexes = subset.index
                 #print(indexes)
                 subset_bond_vectors = self.bond_vectors.loc[indexes]
-                labda, ev, order_param = calc_nematic_tensor_2(subset_bond_vectors.iloc[:, 1:4])
+                order_param, order_ev, _, _ = calc_nematic_tensor_2(subset_bond_vectors.iloc[:, 1:4])
                 df_cryst.iloc[t,3] = order_param
                 df_cryst.iloc[t,4:7] = ev
         self.fraction_crystallinity = fraction_crystallinity(df_cryst.iloc[:,3])
@@ -340,6 +339,7 @@ class atom_coords:
 
 
     def get_distribution_eigenvalues(self, title, nridges = 33, savestring = None):
+        #TODO modify this to include all eigenvalues instead of the highest one and normalise result
         values, bins, _ = plt.hist(self.df_cryst.iloc[:, 3], bins = 1000)
         plt.title(title)
         plt.xlabel("eigenvalues")

@@ -39,9 +39,17 @@ def c_lib_init():
         ctypes.c_int,
         ctypes.c_int
     ]
+
+    lib.inner_products_columnwise_array.argtypes = [
+        np.ctypeslib.ndpointer(ctypes.c_double), #Input array 1 of size [rows x cols]
+        np.ctypeslib.ndpointer(ctypes.c_double), #Input array 2 of size [rows x cols]
+        ctypes.c_int,
+        ctypes.c_int
+    ]
     lib.find_nearest_value.restype = ctypes.POINTER(ctypes.c_int)  # int* return type
     lib.hoshen_kopelman_crystallisation.restype = None
     lib.inner_products_per_polymer.restype = ctypes.POINTER(ctypes.c_double)
+    lib.inner_products_columnwise_array.restype = ctypes.POINTER(ctypes.c_double)
     #lib.hoshen_kopelman_crystallisation.restype = ctypes.c_double
     return lib
 
@@ -284,12 +292,11 @@ class atom_coords:
         plt.show()
 
     def gyration_radius(self, nridges = 33, show_plot = True):
+        """Should confirm to Saras 2018 paper eq. 3"""
         # First calculate center of mass of each polymer 
         df_gyration_radius = self.create_new_polymer_df(["comx", "comy", "comz", "gyration_radius"])
-        # wrapped_coordinates = self.datapd.iloc[:, :4]
-        # wrapped_coordinates.iloc[:, 1:4] = self.wrap_coordinates(wrapped_coordinates)
-        # print(wrapped_coordinates)
         for i in range(0, self.no_polymers):
+        #for i in range(0, 3):
             # First calculate center of mass 
             subset = self.datapd[(self.datapd["mol_id"] == i+1)].iloc[:, 1:4]
             com = np.mean(subset, axis = 0)
@@ -298,10 +305,13 @@ class atom_coords:
             # Shift system to have new center of mass as center 
             subset_com = subset - com
             denom = (subset.shape[0]+1)
-            gyration_radius_squared = subset_com**2
-            radius_of_gyration = np.sqrt(1/(denom) * np.sum(np.mean(gyration_radius_squared, axis = 1)))
-            df_gyration_radius.iloc[i, 3] = radius_of_gyration
-        self.mean_gyration_radius = np.mean(df_gyration_radius["gyration_radius"])
+            gyration_radius_squared = lib.inner_products_columnwise_array(subset_com.to_numpy(), subset_com.to_numpy(), subset_com.shape[0], subset_com.shape[1])
+            gyration_radius_squared = np.ctypeslib.as_array(gyration_radius_squared, shape=(subset.shape[0],))
+            #gyration_radius_squared = np.vecdot(subset_com, subset_com, axes = 1)
+            rhs_average = np.mean(gyration_radius_squared)
+            #radius_of_gyration = np.sqrt(1/(self.no_polymers * self.polymer_length) * rhs_average)
+            df_gyration_radius.iloc[i, 3] = rhs_average
+        #self.mean_gyration_radius = np.mean(df_gyration_radius["gyration_radius"])
         if show_plot == True:
             values, bins, _ = plt.hist(df_gyration_radius.iloc[:, -1], bins = 100)
             plt.vlines(self.mean_gyration_radius, ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "mean gyration radius = %.4f" %self.mean_gyration_radius)
@@ -541,7 +551,8 @@ lib = c_lib_init()
 #plot_order_param(list_atom_coords_cooling, "Crystallinity vs temperature, cooling process, Tdot = 10e-5", savestring = "test_wholebox_frac_cryst_heating_100_tmin_0.5_ttime_10e7")
 
 #last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
-#first_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_0.txt")
+first_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_0.txt")
+first_timestep_e5.gyration_radius()
 #mid_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_4000000.txt")
 # last_timestep_e5.calc_rdf()
 #first_timestep_e5.bond_bond_correlation()

@@ -67,6 +67,21 @@ int* find_nearest_value(const double nearest_values[], size_t a_size,
 //     return results;
 // }
 
+double inner_products_columnwise_array(double* array1, double* array2, int rows, int cols) {
+    //Takes an array [rows x cols], returns inner product according to array1[1] * array2[1] + array[1][2] * array2[2] + ... + array1[n] * array2[n]
+    double* results = (double*)malloc((rows) * sizeof(double));
+
+    for (int i = 0; i < rows; i ++ ) {
+        double dot_product = 0.0;
+        for (int j = 0; j < cols; j ++ ) {
+            int index = i + rows * j;
+            dot_product += array1[index] * array2[index];
+        }
+        results[i] = dot_product;
+    }
+    return *results;
+}
+
 double* inner_products_per_polymer(double* array, int rows, int cols) {
     if (array == NULL || rows < 3 || cols != 3) {
         printf("Error: Invalid input parameters\n");

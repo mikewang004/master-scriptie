@@ -239,24 +239,28 @@ class atom_coords:
     def end_to_end_distance(self, nridges = 33, show_plot = False, save_plot_string = None):
         # Calculates end-to-end distance of each polymer 
         #print(self.datapd)
-        df_end_end_length = self.create_new_polymer_df(["xl", "yl", "zl", "end_end_length"])
+        df_end_end_length = self.create_new_polymer_df(["end_end_length"])
         for i in range(0, self.no_polymers):
-            #subset = data[(data['xid'] == combination[0]) & (data['yid'] == combination[1]) & (data['zid'] == combination[2])]
+            # First calculate end to end distance 
+            # defined as r_n - r_i for each position 
             subset = self.datapd[(self.datapd["mol_id"] == i+1)]
-            diff = subset.diff()
-            #print(i, diff.sum())
-            length_3d = diff.sum()[1:4]
-            df_end_end_length.iloc[i, :-1] = length_3d
-            df_end_end_length.iloc[i, -1] = np.sqrt(length_3d[0]**2 + length_3d[1]**2 + length_3d[2]**2)
-            #print(df_end_end_length)
-            #print(i)
-        #print(np.mean(df_end_end_length["end_end_length"]))
-        self.mean_end_to_end_length = np.mean(df_end_end_length["end_end_length"])
-        self.end_to_end_length = df_end_end_length
+            first_element = subset.iloc[0, 1:4]
+            last_element = subset.iloc[-1, 1:4]
+            dist = last_element - first_element
+            df_end_end_length.iloc[i] = dist.iloc[0]* dist.iloc[0] + dist.iloc[1] * dist.iloc[1] + dist.iloc[2] * dist.iloc[2]
+            #end_end_distances = (subset.iloc[1:, 1:4] - first_element).to_numpy()
+            #end_end_distance = subset.iloc[1:, 1:4] - first_element[1:4]
+            #squared_end_end_distance = lib.inner_products_columnwise_array(end_end_distances, end_end_distances, end_end_distances.shape[0], end_end_distances.shape[1])
+            #squared_end_end_distance = (np.ctypeslib.as_array(squared_end_end_distance, shape =(end_end_distances.shape[0],)))
+            #df_end_end_length.iloc[i] = np.mean(squared_end_end_distance)
+            #df_end_end_length.iloc[i, :3] = subset.iloc[:, 1:4] - first_element
+        #print(df_end_end_length.to_numpy())
+        self.end_to_end_length = np.sqrt(np.sum(df_end_end_length.to_numpy())/self.no_polymers)
+        print(self.end_to_end_length)
 
         if show_plot == True:
             values, bins, _ = plt.hist(df_end_end_length.iloc[:, -1], bins = 100)
-            plt.vlines(np.mean(df_end_end_length["end_end_length"]), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = r"mean end-to-end length = %.2f" %self.mean_end_to_end_length)
+            plt.vlines(self.end_to_end_length), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = r"mean end-to-end length = %.2f" %self.end_to_end_length)
             plt.title("Distribution of end-to-end distance")
             plt.legend()
             plt.show()
@@ -267,6 +271,38 @@ class atom_coords:
         for i in range(0, self.no_polymers):
             subset = self.datapd[(self.datapd["mol_id"] == i + 1)]
             diff = subset.diff()
+
+
+    def gyration_radius(self, nridges = 33, show_plot = True):
+        """Should confirm to Saras 2018 paper eq. 3"""
+        #TODO fix definition of rhs and gyration radius 
+        # First calculate center of mass of each polymer 
+        df_gyration_radius = self.create_new_polymer_df(["comx", "comy", "comz", "gyration_radius"])
+        for i in range(0, self.no_polymers):
+        #for i in range(0, 3):
+            # First calculate center of mass 
+            subset = self.datapd[(self.datapd["mol_id"] == i+1)].iloc[:, 1:4]
+            com = np.mean(subset, axis = 0)
+            df_gyration_radius.iloc[i, :3] = com
+
+            # Shift system to have new center of mass as center 
+            subset_com = subset - com
+            denom = (subset.shape[0]+1)
+            gyration_radius_squared = lib.inner_products_columnwise_array(subset_com.to_numpy(), subset_com.to_numpy(), subset_com.shape[0], subset_com.shape[1])
+            gyration_radius_squared = np.ctypeslib.as_array(gyration_radius_squared, shape=(subset.shape[0],))
+            #gyration_radius_squared = np.vecdot(subset_com, subset_com, axes = 1)
+            #print(gyration_radius_squared)
+            rhs_average = np.mean(gyration_radius_squared)
+            #radius_of_gyration = np.sqrt(1/(self.no_polymers * self.polymer_length) * rhs_average)
+            df_gyration_radius.iloc[i, 3] = rhs_average
+        self.mean_gyration_radius = np.sqrt(np.mean(df_gyration_radius["gyration_radius"])/(self.no_polymers*self.polymer_length))
+        print(self.mean_gyration_radius)
+        if show_plot == True:
+            values, bins, _ = plt.hist(df_gyration_radius.iloc[:, -1], bins = 100)
+            plt.vlines(self.mean_gyration_radius, ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "mean gyration radius = %.4f" %self.mean_gyration_radius)
+            plt.title("Distribution of the gyration radius")
+            plt.legend()
+            plt.show()
 
     def bond_bond_correlation(self, show_plot = False):
         #df_mean_bond_bond_per_polymer = self.create_new_polymer_df(["cos_theta"])
@@ -290,34 +326,6 @@ class atom_coords:
         plt.scatter(cos_per_position.index, cos_per_position)
         plt.title("Distribution of bond-bond correlations")
         plt.show()
-
-    def gyration_radius(self, nridges = 33, show_plot = True):
-        """Should confirm to Saras 2018 paper eq. 3"""
-        # First calculate center of mass of each polymer 
-        df_gyration_radius = self.create_new_polymer_df(["comx", "comy", "comz", "gyration_radius"])
-        for i in range(0, self.no_polymers):
-        #for i in range(0, 3):
-            # First calculate center of mass 
-            subset = self.datapd[(self.datapd["mol_id"] == i+1)].iloc[:, 1:4]
-            com = np.mean(subset, axis = 0)
-            df_gyration_radius.iloc[i, :3] = com
-
-            # Shift system to have new center of mass as center 
-            subset_com = subset - com
-            denom = (subset.shape[0]+1)
-            gyration_radius_squared = lib.inner_products_columnwise_array(subset_com.to_numpy(), subset_com.to_numpy(), subset_com.shape[0], subset_com.shape[1])
-            gyration_radius_squared = np.ctypeslib.as_array(gyration_radius_squared, shape=(subset.shape[0],))
-            #gyration_radius_squared = np.vecdot(subset_com, subset_com, axes = 1)
-            rhs_average = np.mean(gyration_radius_squared)
-            #radius_of_gyration = np.sqrt(1/(self.no_polymers * self.polymer_length) * rhs_average)
-            df_gyration_radius.iloc[i, 3] = rhs_average
-        #self.mean_gyration_radius = np.mean(df_gyration_radius["gyration_radius"])
-        if show_plot == True:
-            values, bins, _ = plt.hist(df_gyration_radius.iloc[:, -1], bins = 100)
-            plt.vlines(self.mean_gyration_radius, ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "mean gyration radius = %.4f" %self.mean_gyration_radius)
-            plt.title("Distribution of the gyration radius")
-            plt.legend()
-            plt.show()
 
     def get_nematic_vector_4(self, nridges = 33, save_ev = False, save_string = None):
         data = self.datapd
@@ -552,7 +560,8 @@ lib = c_lib_init()
 
 #last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
 first_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_0.txt")
-first_timestep_e5.gyration_radius()
+first_timestep_e5.gyration_radius(show_plot= False)
+first_timestep_e5.end_to_end_distance(show_plot = True)
 #mid_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_4000000.txt")
 # last_timestep_e5.calc_rdf()
 #first_timestep_e5.bond_bond_correlation()

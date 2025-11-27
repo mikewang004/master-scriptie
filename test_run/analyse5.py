@@ -244,11 +244,11 @@ class atom_coords:
         for i in range(0, self.no_polymers):
             # First calculate end to end distance 
             # defined as r_n - r_i for each position 
-            subset = self.datapd[(self.datapd["mol_id"] == i+1)]
+            subset = self.bond_vectors[(self.bond_vectors["mol_id"] == i+1)]
             first_element = subset.iloc[0, 1:4] #r_{i,1}
             last_element = subset.iloc[-1, 1:4] #r_{i,N}
             #dist = last_element - first_element
-            dist = np.sum(subset.iloc[:-1, 1:4])
+            dist = np.sum(subset.iloc[:, 1:4])
             #df_end_end_length.iloc[i] = (subset.iloc[0, 1] - subset.iloc[-1, 1])**2 + (subset.iloc[0, 2] - subset.iloc[-1, 2])**2 +   (subset.iloc[0, 3] - subset.iloc[-1, 3])**2 
             df_end_end_length.iloc[i] = (dist.iloc[0]* dist.iloc[0] + dist.iloc[1] * dist.iloc[1] + dist.iloc[2] * dist.iloc[2])
             #print(df_end_end_length.iloc[i])
@@ -261,8 +261,7 @@ class atom_coords:
         #print(df_end_end_length.to_numpy())
         end_to_end_length = (np.sum(df_end_end_length.to_numpy())/self.no_polymers)
         end_end_distance_normalised = np.sqrt(df_end_end_length.iloc[:] / end_to_end_length)
-        print(end_to_end_length)
-        self.mean_squared_end_to_end = np.mean(end_end_distance_normalised)
+        self.mean_squared_end_to_end = np.sqrt(end_to_end_length)
         print("mean end-to-end is %f" %self.mean_squared_end_to_end)
 
         if show_plot == True:

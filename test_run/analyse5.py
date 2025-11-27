@@ -247,7 +247,7 @@ class atom_coords:
             first_element = subset.iloc[0, 1:4]
             last_element = subset.iloc[-1, 1:4]
             dist = last_element - first_element
-            df_end_end_length.iloc[i] = dist.iloc[0]* dist.iloc[0] + dist.iloc[1] * dist.iloc[1] + dist.iloc[2] * dist.iloc[2]
+            df_end_end_length.iloc[i] = np.sqrt(dist.iloc[0]* dist.iloc[0] + dist.iloc[1] * dist.iloc[1] + dist.iloc[2] * dist.iloc[2])
             #end_end_distances = (subset.iloc[1:, 1:4] - first_element).to_numpy()
             #end_end_distance = subset.iloc[1:, 1:4] - first_element[1:4]
             #squared_end_end_distance = lib.inner_products_columnwise_array(end_end_distances, end_end_distances, end_end_distances.shape[0], end_end_distances.shape[1])
@@ -255,12 +255,12 @@ class atom_coords:
             #df_end_end_length.iloc[i] = np.mean(squared_end_end_distance)
             #df_end_end_length.iloc[i, :3] = subset.iloc[:, 1:4] - first_element
         #print(df_end_end_length.to_numpy())
-        self.end_to_end_length = np.sqrt(np.sum(df_end_end_length.to_numpy())/self.no_polymers)
-        print(self.end_to_end_length)
+        self.end_to_end_length = (np.sum(df_end_end_length.to_numpy())/self.no_polymers)
+        print("mean end-to-end is %f" %self.end_to_end_length)
 
         if show_plot == True:
             values, bins, _ = plt.hist(df_end_end_length.iloc[:, -1], bins = 100)
-            plt.vlines(self.end_to_end_length), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = r"mean end-to-end length = %.2f" %self.end_to_end_length)
+            plt.vlines((self.end_to_end_length), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = r"mean end-to-end length = %.2f" %self.end_to_end_length)
             plt.title("Distribution of end-to-end distance")
             plt.legend()
             plt.show()
@@ -287,16 +287,15 @@ class atom_coords:
 
             # Shift system to have new center of mass as center 
             subset_com = subset - com
-            denom = (subset.shape[0]+1)
             gyration_radius_squared = lib.inner_products_columnwise_array(subset_com.to_numpy(), subset_com.to_numpy(), subset_com.shape[0], subset_com.shape[1])
-            gyration_radius_squared = np.ctypeslib.as_array(gyration_radius_squared, shape=(subset.shape[0],))
+            gyration_radius_squared2 = np.ctypeslib.as_array(gyration_radius_squared, shape=(subset.shape[0],))
             #gyration_radius_squared = np.vecdot(subset_com, subset_com, axes = 1)
             #print(gyration_radius_squared)
-            rhs_average = np.mean(gyration_radius_squared)
+            rhs_average = (np.mean(gyration_radius_squared2))
             #radius_of_gyration = np.sqrt(1/(self.no_polymers * self.polymer_length) * rhs_average)
-            df_gyration_radius.iloc[i, 3] = rhs_average
-        self.mean_gyration_radius = np.sqrt(np.mean(df_gyration_radius["gyration_radius"])/(self.no_polymers*self.polymer_length))
-        print(self.mean_gyration_radius)
+            df_gyration_radius.iloc[i, 3] = np.sqrt(rhs_average)
+        self.mean_gyration_radius = (np.mean(df_gyration_radius["gyration_radius"]))
+        print("mean gyration is %f" %self.mean_gyration_radius)
         if show_plot == True:
             values, bins, _ = plt.hist(df_gyration_radius.iloc[:, -1], bins = 100)
             plt.vlines(self.mean_gyration_radius, ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "mean gyration radius = %.4f" %self.mean_gyration_radius)
@@ -559,8 +558,8 @@ lib = c_lib_init()
 #plot_order_param(list_atom_coords_cooling, "Crystallinity vs temperature, cooling process, Tdot = 10e-5", savestring = "test_wholebox_frac_cryst_heating_100_tmin_0.5_ttime_10e7")
 
 #last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
-first_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_0.txt")
-first_timestep_e5.gyration_radius(show_plot= False)
+first_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
+first_timestep_e5.gyration_radius(show_plot= True)
 first_timestep_e5.end_to_end_distance(show_plot = True)
 #mid_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_4000000.txt")
 # last_timestep_e5.calc_rdf()

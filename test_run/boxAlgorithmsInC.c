@@ -91,52 +91,52 @@ double* inner_products_per_polymer(double* array, int rows, int cols) {
     }
     
     // Allocate result array (rows-2 elements for consecutive bond pairs)
-    double* results = (double*)malloc((rows - 2) * sizeof(double));
+    double* results = (double*)malloc((rows - 1) * sizeof(double));
     if (results == NULL) {
         printf("Error: Memory allocation failed for %d results\n", rows - 2);
         return NULL;
     }
     
     // Compute dot products between consecutive normalized bond vectors
-    for (int i = 0; i < rows - 2; i++) {
+    for (int i = 0; i < rows - 1; i++) {
         // Get three consecutive positions
         double* pos_i = &array[i * cols];       // Position i
         double* pos_i1 = &array[(i + 1) * cols]; // Position i+1
-        double* pos_i2 = &array[(i + 2) * cols]; // Position i+2
+        // double* pos_i2 = &array[(i + 2) * cols]; // Position i+2
         
         // Calculate bond vector from i to i+1
-        double bond1_x = pos_i1[0] - pos_i[0];
-        double bond1_y = pos_i1[1] - pos_i[1];
-        double bond1_z = pos_i1[2] - pos_i[2];
+        // double bond1_x = pos_i1[0] - pos_i[0];
+        // double bond1_y = pos_i1[1] - pos_i[1];
+        // double bond1_z = pos_i1[2] - pos_i[2];
         
-        // Calculate bond vector from i+1 to i+2
-        double bond2_x = pos_i2[0] - pos_i1[0];
-        double bond2_y = pos_i2[1] - pos_i1[1];
-        double bond2_z = pos_i2[2] - pos_i1[2];
+        // // Calculate bond vector from i+1 to i+2
+        // double bond2_x = pos_i2[0] - pos_i1[0];
+        // double bond2_y = pos_i2[1] - pos_i1[1];
+        // double bond2_z = pos_i2[2] - pos_i1[2];
         
-        // Calculate magnitudes
-        double mag1 = sqrt(bond1_x*bond1_x + bond1_y*bond1_y + bond1_z*bond1_z);
-        double mag2 = sqrt(bond2_x*bond2_x + bond2_y*bond2_y + bond2_z*bond2_z);
+        // // Calculate magnitudes
+        // double mag1 = sqrt(bond1_x*bond1_x + bond1_y*bond1_y + bond1_z*bond1_z);
+        // double mag2 = sqrt(bond2_x*bond2_x + bond2_y*bond2_y + bond2_z*bond2_z);
         
-        // Avoid division by zero for zero-length bonds
-        if (mag1 < 1e-12 || mag2 < 1e-12) {
-            results[i] = 0.0;
-            continue;
-        }
+        // // Avoid division by zero for zero-length bonds
+        // if (mag1 < 1e-12 || mag2 < 1e-12) {
+        //     results[i] = 0.0;
+        //     continue;
+        // }
         
-        // Normalize bond vectors
-        double bond1_hat_x = bond1_x / mag1;
-        double bond1_hat_y = bond1_y / mag1;
-        double bond1_hat_z = bond1_z / mag1;
+        // // Normalize bond vectors
+        // double bond1_hat_x = bond1_x / mag1;
+        // double bond1_hat_y = bond1_y / mag1;
+        // double bond1_hat_z = bond1_z / mag1;
         
-        double bond2_hat_x = bond2_x / mag2;
-        double bond2_hat_y = bond2_y / mag2;
-        double bond2_hat_z = bond2_z / mag2;
+        // double bond2_hat_x = bond2_x / mag2;
+        // double bond2_hat_y = bond2_y / mag2;
+        // double bond2_hat_z = bond2_z / mag2;
         
         // Dot product of normalized bond vectors: b̂_i • b̂_{i+1}
-        results[i] = (bond1_hat_x * bond2_hat_x) + 
-                     (bond1_hat_y * bond2_hat_y) + 
-                     (bond1_hat_z * bond2_hat_z);
+        results[i] = (pos_i[0] * pos_i1[0]) + 
+                     (pos_i[1] * pos_i1[1]) + 
+                     (pos_i[2] * pos_i1[2]);
     }
     
     return results;

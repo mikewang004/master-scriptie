@@ -107,7 +107,6 @@ def calc_nematic_tensor_2(array):
     Q = 1.5 * outer - 0.5* np.eye(3) # Sara 2015
     #order_param = np.sqrt(1.5 * np.trace(Q**2)) #Sommer/Luo 2010
     labda, ev = np.linalg.eigh(Q)
-    print(labda)
     max_labda = np.max(labda)
     max_ev = ev[:, np.argmax(labda)]
     order_param = max_labda #Sara 2015
@@ -331,6 +330,7 @@ class atom_coords:
         # Prepare masks of all possible combinations 
         data = data[data.index % 100 != 0] # Filter out all last monomers as they do not have a bond vector per definiton
         df_cryst = pd.DataFrame(np.zeros([self.combinations.shape[0], 7]), columns = ["xid", "yid", "zid", "cryst_bool", "x_ev", "y_ev", "z_ev"])
+        df_labdas = pd.DataFrame(np.zeros([self.combinations.shape[0], 3]), columns = ["labda_1", "labda_2", "labda_3"])
         df_cryst.iloc[:, :3] = self.combinations
         #for t in tqdm(range(0, len(self.combinations))):
         for t in range(0, len(self.combinations)):
@@ -343,12 +343,15 @@ class atom_coords:
                 indexes = subset.index
                 #print(indexes)
                 subset_bond_vectors = self.bond_vectors.loc[indexes]
-                order_param, order_ev, _, _ = calc_nematic_tensor_2(subset_bond_vectors.iloc[:, 1:4])
+                order_param, order_ev, labda, ev = calc_nematic_tensor_2(subset_bond_vectors.iloc[:, 1:4])
                 df_cryst.iloc[t,3] = order_param
-                df_cryst.iloc[t,4:7] = ev
+                df_cryst.iloc[t,4:7] = order_ev
+                df_labdas.iloc[t, :] = labda
+        self.df_labdas = df_labdas
         self.fraction_crystallinity = fraction_crystallinity(df_cryst.iloc[:,3])
         self.df_cryst = df_cryst
-        print(self.fraction_crystallinity)
+        print(self.df_labdas)
+        #print(self.fraction_crystallinity)
         if save_ev == True:
             df_cryst.to_csv("%s" %save_string, sep = " ", mode = "w")
 
@@ -357,7 +360,8 @@ class atom_coords:
 
     def get_distribution_eigenvalues(self, title, nridges = 33, savestring = None):
         #TODO modify this to include all eigenvalues instead of the highest one and normalise result
-        values, bins, _ = plt.hist(self.df_cryst.iloc[:, 3], bins = 1000)
+        #labdas = self.df_labdas.to_numpy().flatten()
+        values, bins, _ = plt.hist(self.df_labdas, bins = 1000, density = True)
         plt.title(title)
         plt.xlabel("eigenvalues")
         plt.vlines(0.8, ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "cut-off crystalisation")
@@ -407,7 +411,7 @@ class atom_coords:
             output_cryst, output_cluster_pointer, ctypes.byref(actual_no_clusters), nridges, cryst_cutoff, ndot_cutoff)
         #cluster_id_array = np.ctypeslib.as_array(out, shape = (cryst_array.shape[0], 4))
         unique_values, counts = np.unique(output_cryst[:, -1], return_counts=True)
-        print(counts)
+        #print(counts)
         # plt.bar(unique_values[1:], counts[1:], color='skyblue', edgecolor='black', alpha=0.7)
         # plt.xlabel("cluster-id")
         # plt.savefig("cluster_prelim_firstrun.pdf")
@@ -419,7 +423,7 @@ class atom_coords:
 
     def get_density_dist(self, nridges = 33):
         """Uses new method with combinations to calculate local density (i.e. density per box)"""
-        print(self.combinations)
+        #print(self.combinations)
         local_densities = np.zeros([len(self.combinations), 4]) #First three columns reserved for combination, last for corresponding density
         local_densities[:, :3] = self.combinations
         data = self.assign_center_of_mass(nridges = nridges)
@@ -544,7 +548,7 @@ def plot_multiple_dists_eigenvalues(list_atom_coords, starttemp = 1.0, endtemp =
         current_temp = temps[t]
         atom_coords = list_atom_coords[t]
         atom_coords.get_nematic_vector_4()
-        title = r"Distribution of eigenvalues at $T = %s$, $\dot{T} = 10^7$" %temps[t]
+        title = r"Distribution of eigenvalues at $T = %s$, $\dot{T} = 10^{-7}$" %temps[t]
         savestring = "plots/eigenvalue_dist_pva_100_t_%s" %temps[t]
         atom_coords.get_distribution_eigenvalues(title = title, savestring = savestring)
     return 0;
@@ -552,8 +556,8 @@ def plot_multiple_dists_eigenvalues(list_atom_coords, starttemp = 1.0, endtemp =
 lib = c_lib_init()
 
 
-# list_atom_coords_cooling = get_list_atom_coords("../../data/pva-100/cooling_tdot_e-5_time", 21, endtime= 1e7)
-# plot_multiple_dists_eigenvalues(list_atom_coords_cooling)
+list_atom_coords_cooling = get_list_atom_coords("../../data/pva-100/cooling_tdot_e-5_time", 21, endtime= 1e7)
+plot_multiple_dists_eigenvalues(list_atom_coords_cooling)
 #list_atom_coords_heating = get_list_atom_coords("../../data/pva-100/genua_heating_100_tmin_0.5_ttime_10e7",21, endtime = 1e7)
 #plot_order_param(list_atom_coords_cooling, "Crystallinity vs temperature, cooling process, Tdot = 10e-5", savestring = "test_wholebox_frac_cryst_heating_100_tmin_0.5_ttime_10e7")
 

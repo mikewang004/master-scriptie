@@ -29,7 +29,7 @@ def c_lib_init():
         ctypes.c_int, #no. cols
         #ctypes.POINTER(ctypes.c_double), #Output cryst_array [box-id, cluster id]
         np.ctypeslib.ndpointer(dtype = np.double, flags = "C_CONTIGUOUS"),
-        ctypes.POINTER(ctypes.c_double), #1d cluster array, index is cluster-id, corresponding value is cluster size
+        ctypes.POINTER(ctypes.c_int), #1d cluster array, index is cluster-id, corresponding value is cluster size
         ctypes.POINTER(ctypes.c_int),
         ctypes.c_int, #no. lattice points/boxes
         ctypes.c_float, #cutoff for crystallisation yes/no
@@ -413,16 +413,15 @@ class atom_coords:
         output_cryst = np.zeros([nridges**3, 4]) #Lattice points and cluster id 
         max_no_clusters = nridges**3
         actual_no_clusters = ctypes.c_int(0)
-        cluster_id_list = np.zeros(max_no_clusters)
+        cluster_id_list = np.arange(max_no_clusters) #Loop direction is first over y, then over x, then over z.
         input_cryst_pointer = cryst_array.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-        #output_cryst_pointer = output_cryst.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-        output_cluster_pointer = cluster_id_list.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        output_cryst_pointer = output_cryst.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        output_cluster_pointer = cluster_id_list.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
         lib.hoshen_kopelman_crystallisation(input_cryst_pointer, cryst_array.shape[0], cryst_array.shape[1], 
             output_cryst, output_cluster_pointer, ctypes.byref(actual_no_clusters), nridges, cryst_cutoff, ndot_cutoff)
         #cluster_id_array = np.ctypeslib.as_array(out, shape = (cryst_array.shape[0], 4))
         unique_values, counts = np.unique(output_cryst[:, -1], return_counts=True)
         cluster_sizes = np.ctypeslib.as_array(output_cluster_pointer, shape = (max_no_clusters,))
-        print((cluster_sizes[cluster_sizes != 0.0]))
         # plt.bar(unique_values[1:], counts[1:], color='skyblue', edgecolor='black', alpha=0.7)
         # plt.xlabel("cluster-id")
         # plt.savefig("cluster_prelim_firstrun.pdf")

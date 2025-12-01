@@ -5,6 +5,11 @@
 #include <stdlib.h>
 #include <math.h>
 #include <Python.h>
+#include <assert.h>
+
+
+#define max(a,b) (a>b?a:b)
+
 
 
 
@@ -38,35 +43,6 @@ int* find_nearest_value(const double nearest_values[], size_t a_size,
     return results;
 }
 
-// double* inner_products_per_polymer(double* array, int rows, int cols) {
-//     if (array == NULL || rows <= 1 || cols != 3) {
-//         printf("Error: Invalid input parameters\n");
-//         printf("  array: %s, rows: %d, cols: %d\n", 
-//                array == NULL ? "NULL" : "valid", rows, cols);
-//         return NULL;
-//     }
-    
-//     // Allocate result array (rows-1 elements for i-th and (i+1)-th pairs)
-//     double* results = (double*)malloc((rows - 1) * sizeof(double));
-//     if (results == NULL) {
-//         printf("Error: Memory allocation failed for %d results\n", rows - 1);
-//         return NULL;
-//     }
-    
-//     // Compute inner products between consecutive rows
-//     for (int i = 0; i < rows - 1; i++) {
-//         double* row_i = &array[i * cols];      // i-th row
-//         double* row_i1 = &array[(i + 1) * cols]; // (i+1)-th row
-        
-//         // Inner product: x1*x2 + y1*y2 + z1*z2
-//         results[i] = (row_i[0] * row_i1[0]) + 
-//                      (row_i[1] * row_i1[1]) + 
-//                      (row_i[2] * row_i1[2]);
-//     }
-    
-//     return results;
-// }
-
 double inner_products_columnwise_array(double* array1, double* array2, int rows, int cols) {
     //Takes an array [rows x cols], returns inner product according to array1[1] * array2[1] + array[1][2] * array2[2] + ... + array1[n] * array2[n]
     double* results = (double*)malloc((rows) * sizeof(double));
@@ -99,41 +75,9 @@ double* inner_products_per_polymer(double* array, int rows, int cols) {
     
     // Compute dot products between consecutive normalized bond vectors
     for (int i = 0; i < rows - 1; i++) {
-        // Get three consecutive positions
+        // Get two consecutive positions
         double* pos_i = &array[i * cols];       // Position i
         double* pos_i1 = &array[(i + 1) * cols]; // Position i+1
-        // double* pos_i2 = &array[(i + 2) * cols]; // Position i+2
-        
-        // Calculate bond vector from i to i+1
-        // double bond1_x = pos_i1[0] - pos_i[0];
-        // double bond1_y = pos_i1[1] - pos_i[1];
-        // double bond1_z = pos_i1[2] - pos_i[2];
-        
-        // // Calculate bond vector from i+1 to i+2
-        // double bond2_x = pos_i2[0] - pos_i1[0];
-        // double bond2_y = pos_i2[1] - pos_i1[1];
-        // double bond2_z = pos_i2[2] - pos_i1[2];
-        
-        // // Calculate magnitudes
-        // double mag1 = sqrt(bond1_x*bond1_x + bond1_y*bond1_y + bond1_z*bond1_z);
-        // double mag2 = sqrt(bond2_x*bond2_x + bond2_y*bond2_y + bond2_z*bond2_z);
-        
-        // // Avoid division by zero for zero-length bonds
-        // if (mag1 < 1e-12 || mag2 < 1e-12) {
-        //     results[i] = 0.0;
-        //     continue;
-        // }
-        
-        // // Normalize bond vectors
-        // double bond1_hat_x = bond1_x / mag1;
-        // double bond1_hat_y = bond1_y / mag1;
-        // double bond1_hat_z = bond1_z / mag1;
-        
-        // double bond2_hat_x = bond2_x / mag2;
-        // double bond2_hat_y = bond2_y / mag2;
-        // double bond2_hat_z = bond2_z / mag2;
-        
-        // Dot product of normalized bond vectors: b̂_i • b̂_{i+1}
         results[i] = (pos_i[0] * pos_i1[0]) + 
                      (pos_i[1] * pos_i1[1]) + 
                      (pos_i[2] * pos_i1[2]);
@@ -217,8 +161,8 @@ int hk_find(int *output_1d, int cluster_id) {
     return y;
 }
 
-void hk_union(int *output_1d, int x, int y) {
-    output_1d[hk_find(output_1d, x)] = hk_find(output_1d, y);
+int hk_union(int *output_1d, int x, int y) {
+    return output_1d[hk_find(output_1d, x)] = hk_find(output_1d, y);
 }
 
 int hk_make_set(int *output_1d, int *n_labels) {
@@ -242,7 +186,7 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, double *
     Implemented from https://www.ocf.berkeley.edu/~fricke/projects/hoshenkopelman/hoshenkopelman.html*/
     int cluster_id = 1;
     int steps_since_last_cluster_change = 0;
-    int n_labels = 0;
+    int n_labels = 33*33*33;
     int nridges = 33;
 
     //Initialise matrix with cluster labels 
@@ -265,43 +209,12 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, double *
 		}
     }
 
-    // for (int i = 0; i < rows; i ++) {
-    // //for (int i = 0; i < 50; i ++) {
-    //     // Note column based indexing
-    //     if (array[i + rows * 4] > cryst_cutoff) {
-    //         int xbox = array[i];
-    //         int ybox = array[i + rows];
-    //         int zbox = array[i + rows * 2];
-    //         double xev = array[i + rows * 4];
-    //         double yev = array[i + rows * 5];
-    //         double zev = array[i + rows * 6];
-    //         int box_array[3] = {xbox, ybox, zbox};
-    //         double ev_array[3] = {xev, yev, zev};
-
-    //         double *row_left = find_neighbours(array, rows, cols, ((xbox-1 + no_boxes) % no_boxes), ybox, zbox);
-    //         double *row_before = find_neighbours(array, rows, cols, xbox, ((ybox-1 + no_boxes) % no_boxes), zbox);
-    //         double *row_upper = find_neighbours(array, rows, cols, xbox, ybox, ((zbox+1) % no_boxes));
-
-    //         // Confirm if rows confirm to crystallinity and eigenvalue criteria
-
-    //         int row_left_check = check_merger_criteria(ev_array, row_left, cryst_cutoff, ndot_cutoff);
-    //         int row_before_check = check_merger_criteria(ev_array, row_before, cryst_cutoff, ndot_cutoff);
-    //         int row_upper_check = check_merger_criteria(ev_array, row_upper, cryst_cutoff, ndot_cutoff);
-
-    //         switch (!!row_left_check + !!row_before_check + !!row_upper_check) {
-    //             case 0: 
-    //                 break; // in case no neighbours 
-    //             case 1:
-
-    //         }
-    //     }
-    // }
-
+    int l = 0;
     for (int i = 0; i < nridges; i ++) {
         for (int j = 0; j < nridges; j ++) {
             for (int k = 0; k < nridges; k ++) {
     // Note k corresponds to y-dimension, j to x-dimension, i to z-dimension
-                int l = i * rows + j * rows + k;
+                //int l = i * rows + j * rows + k;
                 if (array[l + rows * 4] > cryst_cutoff) {
                     int xbox = array[l];
                     int ybox = array[l + rows];
@@ -321,10 +234,111 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, double *
                     int row_left_check = check_merger_criteria(ev_array, row_left, cryst_cutoff, ndot_cutoff);
                     int row_before_check = check_merger_criteria(ev_array, row_before, cryst_cutoff, ndot_cutoff);
                     int row_upper_check = check_merger_criteria(ev_array, row_upper, cryst_cutoff, ndot_cutoff);
+                    printf("%i %i %i \n", row_left_check, row_before_check, row_upper_check);
+                    switch (!!row_left_check + !!row_before_check + !! row_upper_check) {
+                        case 0:
+                            label_matrix[i][j][k] = hk_make_set(output_1d, n_labels);      // create a new cluster
+                            break;
+                        case 1:                              // part of an existing cluster
+                            label_matrix[i][j][k] = max(row_before_check,max(row_upper_check,row_left_check));       // whichever neighbouring cluster number is nonzero is labelled
+                            break;
+                        case 2:                              // this site binds two clusters
+                            label_matrix[i][j][k] = (!!row_before_check == 0 ? hk_union(output_1d, row_left_check,row_upper_check) : (!!row_upper_check == 0 ? hk_union(output_1d, row_before_check,row_left_check) : hk_union(output_1d, row_before_check,row_upper_check)));
+                            break;
+                        case 3:                              // this site binds three clusters
+                            label_matrix[i][j][k] = hk_union(output_1d, row_left_check,row_upper_check);
+                            label_matrix[i][j][k] = hk_union(output_1d, row_before_check,row_left_check);
+                            label_matrix[i][j][k] = hk_union(output_1d, row_before_check,row_upper_check);
+                            break;
+                    }
+
+                        
+
                 }
+                l = l + 1;
             }
         }
     }
+
+    int *new_labels_pbc = calloc(sizeof(int), n_labels); // allocate array, initialized to zero
+		for (int i=0; i<nridges; i++)
+		{
+			for (int j=0; j<nridges; j++)
+			{
+				for (int k=0; k<nridges; k++)
+				{
+					if (label_matrix[i][j][k])
+					{
+						int x = hk_find(output_1d, label_matrix[i][j][k]);
+						if (new_labels_pbc[x] == 0)
+						{
+							new_labels_pbc[0]++;
+							new_labels_pbc[x] = new_labels_pbc[0];
+						}
+						label_matrix[i][j][k] = new_labels_pbc[x];
+                        printf("%i \n", new_labels_pbc[x]);
+					}
+				}
+			}
+		}
+
+        
+
+    // Loop once more to merge clusters 
+    // l = 0;
+
+    // for (int i = 0; i < nridges; i ++) {
+    //     for (int j = 0; j < nridges; j ++) {
+    //         for (int k = 0; k < nridges; k ++) {
+    // // Note k corresponds to y-dimension, j to x-dimension, i to z-dimension
+    //             //int l = i * rows + j * rows + k;
+    //             if (array[l + rows * 4] > cryst_cutoff) {
+    //                 int xbox = array[l];
+    //                 int ybox = array[l + rows];
+    //                 int zbox = array[l + rows * 2];
+    //                 double xev = array[l + rows * 4];
+    //                 double yev = array[l + rows * 5];
+    //                 double zev = array[l + rows * 6];
+    //                 int box_array[3] = {xbox, ybox, zbox};
+    //                 double ev_array[3] = {xev, yev, zev};
+
+    //                 double *row_left = find_neighbours(array, rows, cols, ((xbox-1 + no_boxes) % no_boxes), ybox, zbox);
+    //                 double *row_before = find_neighbours(array, rows, cols, xbox, ((ybox-1 + no_boxes) % no_boxes), zbox);
+    //                 double *row_upper = find_neighbours(array, rows, cols, xbox, ybox, ((zbox+1) % no_boxes));
+
+    //                 // Confirm if rows confirm to crystallinity and eigenvalue criteria
+
+    //                 int row_left_check = check_merger_criteria(ev_array, row_left, cryst_cutoff, ndot_cutoff);
+    //                 int row_before_check = check_merger_criteria(ev_array, row_before, cryst_cutoff, ndot_cutoff);
+    //                 int row_upper_check = check_merger_criteria(ev_array, row_upper, cryst_cutoff, ndot_cutoff);
+
+    //                 switch (!!row_left_check + !!row_before_check + !! row_upper_check) {
+    //                     case 0:
+    //                         //label_matrix[i][j][k] = hk_make_set(output_1d, n_labels);      // create a new cluster
+    //                         break;
+    //                     case 1:                              // part of an existing cluster
+    //                         if (row_before_check) {label_matrix[i][j][k] = row_before_check;}
+    //                         if (row_upper_check) {label_matrix[i][j][k] = row_upper_check;}
+    //                         if (row_left_check) {label_matrix[i][j][k] = row_left_check;}
+	// 						break;
+    //                     case 2:                              // this site binds two clusters
+    //                         label_matrix[i][j][k] = (!!row_before_check == 0 ? hk_union(output_1d, row_left_check,row_upper_check) : (!!row_upper_check == 0 ? hk_union(output_1d, row_before_check,row_left_check) : hk_union(output_1d, row_before_check,row_upper_check)));
+    //                         break;
+    //                     case 3:                              // this site binds three clusters
+    //                         label_matrix[i][j][k] = hk_union(output_1d, row_left_check,row_upper_check);
+    //                         label_matrix[i][j][k] = hk_union(output_1d, row_before_check,row_left_check);
+    //                         label_matrix[i][j][k] = hk_union(output_1d, row_before_check,row_upper_check);
+    //                         break;
+    //                 }
+
+    //                 printf("%i \n", label_matrix[i][j][k]);
+                        
+
+    //             }
+    //             l = l + 1;
+    //         }
+    //     }
+    // }
 
 }
 

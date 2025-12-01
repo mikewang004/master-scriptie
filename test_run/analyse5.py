@@ -419,7 +419,8 @@ class atom_coords:
         output_cluster_pointer = cluster_id_list.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
         lib.hoshen_kopelman_crystallisation(input_cryst_pointer, cryst_array.shape[0], cryst_array.shape[1], 
             output_cryst, output_cluster_pointer, ctypes.byref(actual_no_clusters), nridges, cryst_cutoff, ndot_cutoff)
-        #cluster_id_array = np.ctypeslib.as_array(out, shape = (cryst_array.shape[0], 4))
+        cluster_id_array = np.ctypeslib.as_array(output_cluster_pointer, shape = (max_no_clusters,))
+        print(cluster_id_array)
         unique_values, counts = np.unique(output_cryst[:, -1], return_counts=True)
         cluster_sizes = np.ctypeslib.as_array(output_cluster_pointer, shape = (max_no_clusters,))
         # plt.bar(unique_values[1:], counts[1:], color='skyblue', edgecolor='black', alpha=0.7)

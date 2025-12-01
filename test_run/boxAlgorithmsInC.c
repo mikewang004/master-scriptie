@@ -189,8 +189,24 @@ int find_neighbours_index(double *array, int rows, int cols,
     return NULL;  // No match found
 }
 
+// void hoshen_kopelman_union(double *output_2d, int rows, int* cluster_id) {
+//     //Find all rows with current cluster id
+//     // First count all points 
+//     cluster_size = 0;
+//     for (int i = 0; i < rows; i ++ ) {
+//         if (output_2d[i + rows * 3] == *cluster_id){
+            
+//         }
+//     }
+// }
 
-int check_merger(double *row, double *output_2d, int *box_array, int *cluster_id, float *ev_array, int i, int rows, int cols, float cryst_cutoff, float ndot_cutoff) {
+
+void hoshen_kopelman_increase_cluster_size(double *output_1d, int* cluster_id) {
+    // Writes cluster_id to output_1d array
+    output_1d[*cluster_id] += 1;
+}
+
+int check_merger(double *row, double *output_2d, double *output_1d, int *box_array, int *cluster_id, int *steps_since_last_cluster_change, float *ev_array, int i, int rows, int cols, float cryst_cutoff, float ndot_cutoff) {
     //int i indicates current position of output_2d, row is offset, box_array is location of current center lattice point
     if (row[3] > cryst_cutoff) { // Both lattice points should be crystalline, crystalliiny central point checked in H-K main function
         double inproduct = fabs(row[4] * ev_array[0]) + fabs(row[5] * ev_array[1]) + fabs(row[6] * ev_array[2]); 
@@ -210,12 +226,17 @@ int check_merger(double *row, double *output_2d, int *box_array, int *cluster_id
             else {
             // Also check whether item is already in cluster. If so, keep current cluster and advance counter by one 
             // TODO implement proper union algorithm
-                if (output_2d[row_index_already_in_output + rows * 4] == 0) {
+                if (output_2d[row_index_already_in_output + rows * 3] == 0) {
+                    // If item is not already in a cluster 
                     output_2d[row_index_already_in_output + rows * 3] = *cluster_id;
+                    hoshen_kopelman_increase_cluster_size(output_1d, cluster_id);
                 }
                 else {
+                    // Insert union algorithm here 
+                    // hosen_kopelman_union(output_2d, rows, *cluster_id)
                     *cluster_id = *cluster_id + 1;
                     printf("current cluster id %i \n", *cluster_id);
+                    
                 }
             }
         }
@@ -237,12 +258,11 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, double *
     // Develop method to loop over array, access xbox ybox zbox +- 1 and return xev yev zev 
     int last_filled_output_row = 0;
     int cluster_id = 1;
+    int steps_since_last_cluster_change = 0;
+    //for (int i = 0; steps_since_last_cluster_change < rows; i ++) {
     for (int i = 0; i < rows; i ++) {
     //for (int i = 0; i < 50; i ++) {
         // Note column based indexing
-        // for (int j = 0; j < cols; j ++) {
-        //     printf("%f \n", array[i + j]);
-        // }
         if (array[i + rows * 4] > cryst_cutoff) {
 
 
@@ -265,13 +285,14 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, double *
             double *row_upper = find_neighbours(array, rows, cols, xbox, ybox, ((zbox+1) % no_boxes));
 
             // // Check for crystallinity 
+            // Below checks if there is a match; if so the new cluster id is applied to the outer lattice point
             int og_last_filled_output_row = last_filled_output_row;
-            last_filled_output_row =  check_merger(row_left, output_2d, box_array, &cluster_id,  ev_array, last_filled_output_row, rows, cols,cryst_cutoff, ndot_cutoff);
-            last_filled_output_row = check_merger(row_right, output_2d, box_array, &cluster_id, ev_array, last_filled_output_row, rows, cols, cryst_cutoff, ndot_cutoff); 
-            last_filled_output_row =  check_merger(row_before, output_2d, box_array, &cluster_id,  ev_array, last_filled_output_row, rows, cols,cryst_cutoff, ndot_cutoff);
-            last_filled_output_row = check_merger(row_behind, output_2d, box_array, &cluster_id, ev_array, last_filled_output_row, rows, cols,cryst_cutoff, ndot_cutoff); 
-            last_filled_output_row =  check_merger(row_lower, output_2d, box_array, &cluster_id,  ev_array, last_filled_output_row, rows, cols,cryst_cutoff, ndot_cutoff);
-            last_filled_output_row = check_merger(row_upper, output_2d, box_array, &cluster_id, ev_array, last_filled_output_row, rows, cols,cryst_cutoff, ndot_cutoff); 
+            last_filled_output_row =  check_merger(row_left, output_2d, output_1d, box_array, &cluster_id,  &steps_since_last_cluster_change, ev_array, last_filled_output_row, rows, cols,cryst_cutoff, ndot_cutoff);
+            last_filled_output_row = check_merger(row_right, output_2d, output_1d, box_array, &cluster_id, &steps_since_last_cluster_change, ev_array, last_filled_output_row, rows, cols, cryst_cutoff, ndot_cutoff); 
+            last_filled_output_row =  check_merger(row_before, output_2d, output_1d, box_array, &cluster_id, &steps_since_last_cluster_change, ev_array, last_filled_output_row, rows, cols,cryst_cutoff, ndot_cutoff);
+            last_filled_output_row = check_merger(row_behind, output_2d, output_1d, box_array, &cluster_id, &steps_since_last_cluster_change, ev_array, last_filled_output_row, rows, cols,cryst_cutoff, ndot_cutoff); 
+            last_filled_output_row =  check_merger(row_lower, output_2d, output_1d, box_array, &cluster_id,  &steps_since_last_cluster_change, ev_array, last_filled_output_row, rows, cols,cryst_cutoff, ndot_cutoff);
+            last_filled_output_row = check_merger(row_upper, output_2d, output_1d, box_array, &cluster_id, &steps_since_last_cluster_change, ev_array, last_filled_output_row, rows, cols,cryst_cutoff, ndot_cutoff); 
             //printf("%i \n" ,last_filled_output_row);
             // If there is a match, also apply cluster id to center spot 
             if (og_last_filled_output_row != last_filled_output_row) {
@@ -287,8 +308,7 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, double *
                 else {
                     output_2d[row_index_already_in_output + rows * 3] = cluster_id;
                 }
-
-                
+                hoshen_kopelman_increase_cluster_size(output_1d, &cluster_id);
             }
             
         }

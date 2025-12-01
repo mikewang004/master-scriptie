@@ -29,7 +29,7 @@ def c_lib_init():
         ctypes.c_int, #no. cols
         #ctypes.POINTER(ctypes.c_double), #Output cryst_array [box-id, cluster id]
         np.ctypeslib.ndpointer(dtype = np.double, flags = "C_CONTIGUOUS"),
-        ctypes.POINTER(ctypes.c_double), #1d cluster array 
+        ctypes.POINTER(ctypes.c_double), #1d cluster array, index is cluster-id, corresponding value is cluster size
         ctypes.POINTER(ctypes.c_int),
         ctypes.c_int, #no. lattice points/boxes
         ctypes.c_float, #cutoff for crystallisation yes/no
@@ -421,7 +421,8 @@ class atom_coords:
             output_cryst, output_cluster_pointer, ctypes.byref(actual_no_clusters), nridges, cryst_cutoff, ndot_cutoff)
         #cluster_id_array = np.ctypeslib.as_array(out, shape = (cryst_array.shape[0], 4))
         unique_values, counts = np.unique(output_cryst[:, -1], return_counts=True)
-        #print(counts)
+        cluster_sizes = np.ctypeslib.as_array(output_cluster_pointer, shape = (max_no_clusters,))
+        print((cluster_sizes[cluster_sizes != 0.0]))
         # plt.bar(unique_values[1:], counts[1:], color='skyblue', edgecolor='black', alpha=0.7)
         # plt.xlabel("cluster-id")
         # plt.savefig("cluster_prelim_firstrun.pdf")
@@ -571,14 +572,14 @@ lib = c_lib_init()
 #list_atom_coords_heating = get_list_atom_coords("../../data/pva-100/genua_heating_100_tmin_0.5_ttime_10e7",21, endtime = 1e7)
 #plot_order_param(list_atom_coords_cooling, "Crystallinity vs temperature, cooling process, Tdot = 10e-5", savestring = "test_wholebox_frac_cryst_heating_100_tmin_0.5_ttime_10e7")
 
-#last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
-first_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_0.txt")
+last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
+#first_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_0.txt")
 #first_timestep_e5 = atom_coords("../../data/pva-20/runt2e8_0.txt")
 #first_timestep_e5.gyration_radius(show_plot= True)
 #first_timestep_e5.end_to_end_distance(show_plot = True)
 #mid_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_4000000.txt")
 # last_timestep_e5.calc_rdf()
-first_timestep_e5.bond_bond_correlation(show_plot= True)
+#first_timestep_e5.bond_bond_correlation(show_plot= True)
 
 #mid_timestep_e5.get_nematic_vector_4()
 # mid_timestep_e5.get_distribution_eigenvalues(r"Distribution of eigenvalues at $T = 0.8$, $\dot{T} = 10^7$")
@@ -586,8 +587,8 @@ first_timestep_e5.bond_bond_correlation(show_plot= True)
 #last_timestep_e5.gyration_radius()
 #last_timestep_e5.get_nematic_vector_4()#save_ev = True, save_string = "10e5_debug_cryst.txt")
 # last_timestep_e5.get_distribution_eigenvalues(r"Distribution of eigenvalues at $T = 0.5$, $\dot{T} = 10^7$")
-#last_timestep_e5.read_cryst("10e5_debug_cryst.txt")
-#last_timestep_e5.merge_boxes()
+last_timestep_e5.read_cryst("10e5_debug_cryst.txt")
+last_timestep_e5.merge_boxes()
 # #last_timestep_e5.get_density_dist()
 # #plot_density_dist(last_timestep_e5, "Distribution of local densities at T = 0.5, tdot 10e-5")
 # plot_volume_line(list_atom_coords_cooling, "Volume per monomer as function of temperature, PVA-100", "volume_monomer_tdot_e-5.pdf")

@@ -402,7 +402,9 @@ class atom_coords:
 
     def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8):
         cryst_array = self.df_cryst.iloc[:, 1:].to_numpy()
-
+        rows, cols = cryst_array.shape[0], cryst_array.shape[1]
+        cryst_array_c = cryst_array.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        lib.hoshen_kopelman_crystallisation(cryst_array_c, rows, cols, nridges, cryst_cutoff, ndot_cutoff)
 
 
 

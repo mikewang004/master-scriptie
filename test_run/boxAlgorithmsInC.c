@@ -239,12 +239,17 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
     /* Note array structure is [xbox ybox zbox cryst xev yev zev]
     // Develop method to loop over array, access xbox ybox zbox +- 1 and return xev yev zev 
     Input: cryst_array, rows, cols, cryst_cutoff, ndot_cutoff
-    Output: array containing cluster-id per lattice point
+    Output: array containing cluster-id per lattice point, labels-id array
     Implemented from https://www.ocf.berkeley.edu/~fricke/projects/hoshenkopelman/hoshenkopelman.html*/
     int cluster_id = 1;
     int steps_since_last_cluster_change = 0;
-    int n_labels = 0;
-    int nridges = 33;
+    int max_labels = nridges*nridges*nridges;
+    int n_labels = max_labels;
+    int init_matrix_counter = 0;
+
+    // Setup label array 
+    int* labels = calloc(sizeof(int), max_labels);
+    labels[0] = 0;
 
     //Initialise matrix with cluster labels 
     int ***label_matrix; 
@@ -260,7 +265,9 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
 				label_matrix[i][j] = (int *)calloc(nridges,sizeof(int));
 				for (int k=0; k<nridges; k++)
 				{
-					
+                    label_matrix[i][j][k] = init_matrix_counter;
+                    init_matrix_counter = init_matrix_counter + 1;
+                    printf("%i \n", label_matrix[i][j][k]);
 				}
 			}
 		}
@@ -273,6 +280,7 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
     // Note k corresponds to y-dimension, j to x-dimension, i to z-dimension
                 int l = i * rows + j * rows + k;
                 if (array[l + rows * 4] > cryst_cutoff) {
+                    //printf("%f \n", array[l]);
                     int xbox = array[l];
                     int ybox = array[l + rows];
                     int zbox = array[l + rows * 2];
@@ -282,9 +290,9 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
                     int box_array[3] = {xbox, ybox, zbox};
                     double ev_array[3] = {xev, yev, zev};
 
-                    double *row_left = find_neighbours(array, rows, cols, ((xbox-1 + no_boxes) % no_boxes), ybox, zbox);
-                    double *row_before = find_neighbours(array, rows, cols, xbox, ((ybox-1 + no_boxes) % no_boxes), zbox);
-                    double *row_upper = find_neighbours(array, rows, cols, xbox, ybox, ((zbox+1) % no_boxes));
+                    double *row_left = find_neighbours(array, rows, cols, ((xbox-1 + nridges) % nridges), ybox, zbox);
+                    double *row_before = find_neighbours(array, rows, cols, xbox, ((ybox-1 + nridges) % nridges), zbox);
+                    double *row_upper = find_neighbours(array, rows, cols, xbox, ybox, ((zbox+1) % nridges));
 
                     // Confirm if rows confirm to crystallinity and eigenvalue criteria
 
@@ -292,6 +300,7 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
                     int row_before_check = check_merger_criteria(ev_array, row_before, cryst_cutoff, ndot_cutoff);
                     int row_upper_check = check_merger_criteria(ev_array, row_upper, cryst_cutoff, ndot_cutoff);
                 }
+                // TODO implement different cases what to do if rows confirm
             }
         }
     }

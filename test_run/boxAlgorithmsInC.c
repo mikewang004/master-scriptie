@@ -232,13 +232,14 @@ int hk_make_set(int *output_1d, int *n_labels) {
 
 // Implementaiton of Hoshen - Kopelman algorithm 
 // Input: 2D array containing lattice id, 1D array containing crystallisation
-// Output: 2D array containing lattice id + cluster id, 1d array containing cluster id sizes
+// Output: 2D array containing lattice id + cluster id
 
 
-void hoshen_kopelman_crystallisation(double *array, int rows, int cols, double *output_2d, int *output_1d, int *actual_1d_size, int no_boxes, float cryst_cutoff, float ndot_cutoff) {
+void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nridges, float cryst_cutoff, float ndot_cutoff) {
     /* Note array structure is [xbox ybox zbox cryst xev yev zev]
     // Develop method to loop over array, access xbox ybox zbox +- 1 and return xev yev zev 
-    output_1d is label array 
+    Input: cryst_array, rows, cols, cryst_cutoff, ndot_cutoff
+    Output: array containing cluster-id per lattice point
     Implemented from https://www.ocf.berkeley.edu/~fricke/projects/hoshenkopelman/hoshenkopelman.html*/
     int cluster_id = 1;
     int steps_since_last_cluster_change = 0;
@@ -265,37 +266,6 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, double *
 		}
     }
 
-    // for (int i = 0; i < rows; i ++) {
-    // //for (int i = 0; i < 50; i ++) {
-    //     // Note column based indexing
-    //     if (array[i + rows * 4] > cryst_cutoff) {
-    //         int xbox = array[i];
-    //         int ybox = array[i + rows];
-    //         int zbox = array[i + rows * 2];
-    //         double xev = array[i + rows * 4];
-    //         double yev = array[i + rows * 5];
-    //         double zev = array[i + rows * 6];
-    //         int box_array[3] = {xbox, ybox, zbox};
-    //         double ev_array[3] = {xev, yev, zev};
-
-    //         double *row_left = find_neighbours(array, rows, cols, ((xbox-1 + no_boxes) % no_boxes), ybox, zbox);
-    //         double *row_before = find_neighbours(array, rows, cols, xbox, ((ybox-1 + no_boxes) % no_boxes), zbox);
-    //         double *row_upper = find_neighbours(array, rows, cols, xbox, ybox, ((zbox+1) % no_boxes));
-
-    //         // Confirm if rows confirm to crystallinity and eigenvalue criteria
-
-    //         int row_left_check = check_merger_criteria(ev_array, row_left, cryst_cutoff, ndot_cutoff);
-    //         int row_before_check = check_merger_criteria(ev_array, row_before, cryst_cutoff, ndot_cutoff);
-    //         int row_upper_check = check_merger_criteria(ev_array, row_upper, cryst_cutoff, ndot_cutoff);
-
-    //         switch (!!row_left_check + !!row_before_check + !!row_upper_check) {
-    //             case 0: 
-    //                 break; // in case no neighbours 
-    //             case 1:
-
-    //         }
-    //     }
-    // }
 
     for (int i = 0; i < nridges; i ++) {
         for (int j = 0; j < nridges; j ++) {

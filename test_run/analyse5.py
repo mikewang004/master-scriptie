@@ -59,6 +59,7 @@ def c_lib_init():
 def cartesian_product_broadcasted(*arrays):
     """
     http://stackoverflow.com/a/11146645/190597 (senderle)
+    Needed for plotting the 3d plot easily
     """
     broadcastable = np.ix_(*arrays)
     broadcasted = np.broadcast_arrays(*broadcastable)
@@ -445,24 +446,31 @@ class atom_coords:
 
         #result = result[8:24, 8:24, 8:24]
         print(result)
-       # Plot result 
+        # Set all result values that only have one entry to 0 
+       #Plot result 
 
-        # fig = plt.figure()
+        unique_vals, indices, counts = np.unique(result, return_inverse=True, return_counts=True)
+        unique_counts = counts[indices].reshape(result.shape)
+        mask = unique_counts == 1
+        result = result.copy()
+        result[mask] = 0
 
-        # ax = fig.add_subplot(111, projection='3d')
-        # size = 16
-        # x, y, z = cartesian_product_broadcasted(*[np.arange(size, dtype='int16')]*3).T
-        # mask = ((x == 0) | (x == size-1) 
-        #         | (y == 0) | (y == size-1) 
-        #         | (z == 0) | (z == size-1))
-        # x = x[mask]
-        # y = y[mask]
-        # z = z[mask]
-        # volume = result.ravel()[mask]
+        fig = plt.figure()
 
-        # scatter = ax.scatter(x, y, z, c=volume, cmap=plt.get_cmap('jet'))
-        # cbar = plt.colorbar(scatter, ax=ax)
-        # plt.show()
+        ax = fig.add_subplot(111, projection='3d')
+        size = 33
+        x, y, z = cartesian_product_broadcasted(*[np.arange(size, dtype='int16')]*3).T
+        mask = ((x == 0) | (x == size-1) 
+                | (y == 0) | (y == size-1) 
+                | (z == 0) | (z == size-1))
+        x = x[mask]
+        y = y[mask]
+        z = z[mask]
+        volume = result.ravel()[mask]
+
+        scatter = ax.scatter(x, y, z, c=volume, cmap=plt.get_cmap('jet'))
+        cbar = plt.colorbar(scatter, ax=ax)
+        plt.show()
 
 
 

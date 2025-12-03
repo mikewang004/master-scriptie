@@ -6,6 +6,7 @@ import pandas as pd
 from tqdm import tqdm
 #from find_box_id import *
 import ctypes
+import functools
 
 
 def gaussian(x, H, A, x0, sigma):
@@ -29,7 +30,9 @@ def c_lib_init():
         ctypes.c_int, #no. cols
         ctypes.c_int, #nridges
         ctypes.c_float, #cutoff for crystallisation yes/no
-        ctypes.c_float #cutoff for ndot product 
+        ctypes.c_float, #cutoff for ndot product 
+        ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.c_int))) #Return array of size nridges**#
+        #ctypes.POINTER(ctypes.POINTER(ctypes.c_int)) #Return array containing cluster indexes and size
     ]
 
     lib.inner_products_per_polymer.argtypes = [
@@ -51,6 +54,21 @@ def c_lib_init():
     #lib.hoshen_kopelman_crystallisation.restype = ctypes.c_double
     return lib
 
+
+def cartesian_product_broadcasted(*arrays):
+    """
+    http://stackoverflow.com/a/11146645/190597 (senderle)
+    """
+    broadcastable = np.ix_(*arrays)
+    broadcasted = np.broadcast_arrays(*broadcastable)
+    dtype = np.result_type(*arrays)
+    rows, cols = functools.reduce(np.multiply, broadcasted[0].shape), len(broadcasted)
+    out = np.empty(rows * cols, dtype=dtype)
+    start, end = 0, rows
+    for a in broadcasted:
+        out[start:end] = a.reshape(-1)
+        start, end = end, end + rows
+    return out.reshape(cols, rows).T
         
 def find_nearest_array(nearest_values, data):
     """nearest value: 1d np array of size [a], data: 1d np array of size [n]"""
@@ -404,8 +422,50 @@ class atom_coords:
         cryst_array = self.df_cryst.iloc[:, 1:].to_numpy()
         rows, cols = cryst_array.shape[0], cryst_array.shape[1]
         cryst_array_c = cryst_array.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-        lib.hoshen_kopelman_crystallisation(cryst_array_c, rows, cols, nridges, cryst_cutoff, ndot_cutoff)
 
+        label_matrix_np = np.zeros([nridges, nridges, nridges], dtype = int)
+        label_matrix = (ctypes.POINTER(ctypes.POINTER(ctypes.c_int)) * nridges)()
+        for i in range(nridges):
+            label_matrix[i] = (ctypes.POINTER(ctypes.c_int) * nridges)()
+            for j in range(nridges):
+                label_matrix[i][j] = (ctypes.c_int * nridges)()
+                for k in range(nridges):
+                    label_matrix[i][j][k] = label_matrix_np[i, j, k]
+        lib.hoshen_kopelman_crystallisation(cryst_array_c, rows, cols, nridges, cryst_cutoff, ndot_cutoff, label_matrix)
+
+        
+        #print(label_matrix[0][0][2])
+        # for i in range(nridges):
+        #     for j in range(nridges):
+        #         for k in range(nridges):
+        #             label_matrix_np[i,j,k] = label_matrix[i][j][k]
+        #             print(label_matrix[i][j][k])
+
+        #result = np.ctypeslib.as_array(label_matrix)#, size = (nridges, nridges, nridges)
+        result = np.ctypeslib.as_array(ctypes.POINTER(ctypes.c_ushort).from_address(ctypes.addressof(label_matrix)), shape = (nridges, nridges, nridges))
+        # cluster_id, counts = np.unique(result, return_counts = True)
+       # print(label_matrix_np)
+
+
+
+       # Plot result 
+
+        fig = plt.figure()
+
+        ax = fig.add_subplot(111, projection='3d')
+        size = nridges
+        x, y, z = cartesian_product_broadcasted(*[np.arange(size, dtype='int16')]*3).T
+        mask = ((x == 0) | (x == size-1) 
+                | (y == 0) | (y == size-1) 
+                | (z == 0) | (z == size-1))
+        x = x[mask]
+        y = y[mask]
+        z = z[mask]
+        volume = result.ravel()[mask]
+
+        scatter = ax.scatter(x, y, z, c=volume, cmap=plt.get_cmap('jet'))
+        cbar = plt.colorbar(scatter, ax=ax)
+        plt.show()
 
 
 

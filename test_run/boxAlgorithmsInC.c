@@ -14,6 +14,7 @@
 
 
 
+
 int* find_nearest_value(const double nearest_values[], size_t a_size, 
                                  const double data[], size_t n_size) {
     if (nearest_values == NULL || data == NULL || a_size == 0 || n_size == 0) {
@@ -181,7 +182,7 @@ int hk_make_set(int *output_1d, int *n_labels) {
 // Output: 2D array containing lattice id + cluster id
 
 
-void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nridges, float cryst_cutoff, float ndot_cutoff) {
+void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nridges, float cryst_cutoff, float ndot_cutoff, int ***label_matrix) {
     /* Note array structure is [xbox ybox zbox cryst xev yev zev]
     // Develop method to loop over array, access xbox ybox zbox +- 1 and return xev yev zev 
     Input: cryst_array, rows, cols, cryst_cutoff, ndot_cutoff
@@ -194,13 +195,13 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
     int init_matrix_counter = 0;
 
     // Setup label array 
-    int* labels = calloc(sizeof(int), max_labels);
+    int *labels = calloc(sizeof(int), max_labels);
     labels[0] = 0;
 
     
 
     //Initialise matrix with cluster labels 
-    int ***label_matrix; 
+    //int ***label_matrix; 
     	if (nridges)  
 	{
 		//memory management - allocate memory to matrix data structure
@@ -225,7 +226,7 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
     for (int i = 0; i < nridges; i ++) {
         for (int j = 0; j < nridges; j ++) {
             for (int k = 0; k < nridges; k ++) {
-    // Note k corresponds to y-dimension, j to x-dimension, i to z-dimension
+    // Note that cryst_array is sorted on y-x-z order, so that y loops fastest and z loops slowest. 
                 int l = i * rows + j * rows + k;
                 if (array[l + rows * 4] > cryst_cutoff) {
                     //printf("%f \n", array[l]);
@@ -288,13 +289,13 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
                             else { //binds y,z 
                                 label_matrix[i][j][k] = hk_union(labels, position_before, position_upper);
                             }
-                            printf("two clusters binded %i \n", label_matrix[i][j][k]);
+                            //printf("two clusters binded %i \n", label_matrix[i][j][k]);
                             break;
                         case 3: //Combine three clusters
                             label_matrix[i][j][k] = hk_union(labels, position_left, position_upper);
                             label_matrix[i][j][k] = hk_union(labels, position_before, position_left);
                             label_matrix[i][j][k] = hk_union(labels, position_before, position_upper);
-                            printf("three clusters binded %i \n", label_matrix[i][j][k]);
+                            //printf("three clusters binded %i \n", label_matrix[i][j][k]);
                             break;
                     }
                         
@@ -302,6 +303,14 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
             }
         }
     }
+
+    // for (int i = 0; i < nridges; i ++) {
+    //     for (int j = 0; j < nridges; j ++) {
+    //         for (int k = 0; k < nridges; k ++) {
+    //             printf("label matrix value %d \n", label_matrix[i][j][k]);
+    // }
+    // }
+    // }
 
 }
 

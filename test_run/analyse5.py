@@ -447,13 +447,14 @@ class atom_coords:
        # print(label_matrix_np)
 
 
+        result = result[8:24, 8:24, 8:24]
 
        # Plot result 
 
         fig = plt.figure()
 
         ax = fig.add_subplot(111, projection='3d')
-        size = nridges
+        size = 16
         x, y, z = cartesian_product_broadcasted(*[np.arange(size, dtype='int16')]*3).T
         mask = ((x == 0) | (x == size-1) 
                 | (y == 0) | (y == size-1) 

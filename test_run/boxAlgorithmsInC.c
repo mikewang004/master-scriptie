@@ -222,12 +222,12 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
 		}
     }
 
-
+    int l = 0;
     for (int i = 0; i < nridges; i ++) {
         for (int j = 0; j < nridges; j ++) {
             for (int k = 0; k < nridges; k ++) {
     // Note that cryst_array is sorted on y-x-z order, so that y loops fastest and z loops slowest. 
-                int l = i * rows + j * rows + k;
+                //int l = i * rows + j * rows + k;
                 if (array[l + rows * 4] > cryst_cutoff) {
                     //printf("%f \n", array[l]);
                     int xbox = array[l];
@@ -258,7 +258,7 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
                     switch (!! row_left_check + !!row_before_check + !!row_upper_check) {
                         case 0: //Make new cluster 
                             label_matrix[i][j][k] = hk_make_set(labels, n_labels);
-                            //printf("new cluster %i \n", label_matrix[i][j][k]);
+                            printf("at counter %i new cluster %i \n", l,label_matrix[i][j][k]);
                             break;
                         case 1: //Add to cluster left/above
                             
@@ -300,7 +300,9 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
                     }
                         
                 }
+            l = l + 1;
             }
+
         }
     }
 

@@ -31,8 +31,9 @@ def c_lib_init():
         ctypes.c_int, #nridges
         ctypes.c_float, #cutoff for crystallisation yes/no
         ctypes.c_float, #cutoff for ndot product 
-        ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.c_int))) #Return array of size nridges**#
-        #ctypes.POINTER(ctypes.POINTER(ctypes.c_int)) #Return array containing cluster indexes and size
+        ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.c_int))), #Return array of size nridges**#
+        #(ctypes.POINTER(ctypes.c_int)) #Return array containing cluster indexes and size
+        np.ctypeslib.ndpointer(ctypes.c_int)
     ]
 
     lib.inner_products_per_polymer.argtypes = [
@@ -425,21 +426,16 @@ class atom_coords:
 
         label_matrix_np = np.zeros([nridges, nridges, nridges], dtype = int)
         label_matrix = (ctypes.POINTER(ctypes.POINTER(ctypes.c_int)) * nridges)()
+        labels = np.zeros(nridges**3, dtype = np.int32)
         for i in range(nridges):
             label_matrix[i] = (ctypes.POINTER(ctypes.c_int) * nridges)()
             for j in range(nridges):
                 label_matrix[i][j] = (ctypes.c_int * nridges)()
                 for k in range(nridges):
                     label_matrix[i][j][k] = label_matrix_np[i, j, k]
-        lib.hoshen_kopelman_crystallisation(cryst_array_c, rows, cols, nridges, cryst_cutoff, ndot_cutoff, label_matrix)
+        lib.hoshen_kopelman_crystallisation(cryst_array_c, rows, cols, nridges, cryst_cutoff, ndot_cutoff, label_matrix, labels)
 
         
-        #print(label_matrix[0][0][2])
-        # for i in range(nridges):
-        #     for j in range(nridges):
-        #         for k in range(nridges):
-        #             label_matrix_np[i,j,k] = label_matrix[i][j][k]
-        #             print(label_matrix[i][j][k])
 
         #result = np.ctypeslib.as_array(label_matrix)#, size = (nridges, nridges, nridges)
         result = np.ctypeslib.as_array(ctypes.POINTER(ctypes.c_ushort).from_address(ctypes.addressof(label_matrix)), shape = (nridges, nridges, nridges))
@@ -447,26 +443,26 @@ class atom_coords:
        # print(label_matrix_np)
 
 
-        result = result[8:24, 8:24, 8:24]
-
+        #result = result[8:24, 8:24, 8:24]
+        print(result)
        # Plot result 
 
-        fig = plt.figure()
+        # fig = plt.figure()
 
-        ax = fig.add_subplot(111, projection='3d')
-        size = 16
-        x, y, z = cartesian_product_broadcasted(*[np.arange(size, dtype='int16')]*3).T
-        mask = ((x == 0) | (x == size-1) 
-                | (y == 0) | (y == size-1) 
-                | (z == 0) | (z == size-1))
-        x = x[mask]
-        y = y[mask]
-        z = z[mask]
-        volume = result.ravel()[mask]
+        # ax = fig.add_subplot(111, projection='3d')
+        # size = 16
+        # x, y, z = cartesian_product_broadcasted(*[np.arange(size, dtype='int16')]*3).T
+        # mask = ((x == 0) | (x == size-1) 
+        #         | (y == 0) | (y == size-1) 
+        #         | (z == 0) | (z == size-1))
+        # x = x[mask]
+        # y = y[mask]
+        # z = z[mask]
+        # volume = result.ravel()[mask]
 
-        scatter = ax.scatter(x, y, z, c=volume, cmap=plt.get_cmap('jet'))
-        cbar = plt.colorbar(scatter, ax=ax)
-        plt.show()
+        # scatter = ax.scatter(x, y, z, c=volume, cmap=plt.get_cmap('jet'))
+        # cbar = plt.colorbar(scatter, ax=ax)
+        # plt.show()
 
 
 

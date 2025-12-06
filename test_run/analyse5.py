@@ -445,7 +445,7 @@ class atom_coords:
 
 
         #result = result[8:24, 8:24, 8:24]
-        print(result)
+        #print(result)
         # Set all result values that only have one entry to 0 
        #Plot result 
 
@@ -470,7 +470,7 @@ class atom_coords:
 
         scatter = ax.scatter(x, y, z, c=volume, cmap=plt.get_cmap('jet'))
         cbar = plt.colorbar(scatter, ax=ax)
-        plt.show()
+        #plt.show()
 
 
 

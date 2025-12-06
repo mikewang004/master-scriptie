@@ -240,7 +240,7 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
 
                     double *row_left = find_neighbours(array, rows, cols, ((xbox-1 + nridges) % nridges), ybox, zbox);
                     double *row_before = find_neighbours(array, rows, cols, xbox, ((ybox-1 + nridges) % nridges), zbox);
-                    double *row_upper = find_neighbours(array, rows, cols, xbox, ybox, ((zbox+1) % nridges));
+                    double *row_upper = find_neighbours(array, rows, cols, xbox, ybox, ((zbox-1 + nridges) % nridges));
 
                     // Confirm if rows confirm to crystallinity and eigenvalue criteria
 
@@ -262,7 +262,9 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
                         case 1: //Add to cluster left/above
                             
                             // label_matrix[i][j][k] = max(row_before_check,max(row_upper_check,row_left_check));  
-                            // printf("before: %i, upper: %i, left: %i\n", row_before_check, row_upper_check, row_left_check);
+                            // TODO fix descrepancy here
+                            printf("before: %i, upper: %i, left: %i\n", row_before_check, row_upper_check, row_left_check);
+                            printf("before %i, upper %i, left %i \n", position_left, position_before, position_upper);
                             // 
                             if (row_left_check != 0) { //corresponds to x-coordinate
                                 label_matrix[i][j][k] = position_left;
@@ -276,6 +278,7 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
                             //printf("cluster binded %i \n", label_matrix[i][j][k]);
                             break;
                         case 2: //Combine two clusters 
+
                             // label_matrix[i][j][k] = (!!row_before_check == 0 ? hk_union(labels, row_left_check, row_upper_check) : 
                             //     (!!row_upper_check == 0 ? hk_union(labels, row_before_check, row_left_check) : 
                             //     hk_union(labels, row_before_check, row_upper_check)));

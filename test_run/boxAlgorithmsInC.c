@@ -252,19 +252,22 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
                     int position_left =  label_matrix[(i-1 + nridges) % nridges][j][k];
                     int position_before = label_matrix[i][(j-1 + nridges) % nridges][k];
                     int position_upper = label_matrix[i][j][(k-1 + nridges) %nridges];
+
+
                 // TODO implement different cases what to do if rows confirm
 
                     switch (!! row_left_check + !!row_before_check + !!row_upper_check) {
                         case 0: //Make new cluster 
                             label_matrix[i][j][k] = hk_make_set(labels, n_labels);
-                            printf("at counter %i new cluster %i \n", l,label_matrix[i][j][k]);
+                            printf("at position %i %i %i, counter %i new cluster %i \n", i,j,k,l,label_matrix[i][j][k]);
                             break;
                         case 1: //Add to cluster left/above
                             
                             // label_matrix[i][j][k] = max(row_before_check,max(row_upper_check,row_left_check));  
                             // TODO fix descrepancy here
-                            printf("before: %i, upper: %i, left: %i\n", row_before_check, row_upper_check, row_left_check);
-                            printf("before %i, upper %i, left %i \n", position_left, position_before, position_upper);
+                            // printf("current position %i %i %i has value %i \n", i,j,k,label_matrix[i][j][k]);
+                            // printf("left: %i, upper: %i, before: %i\n", row_left_check, row_before_check, row_upper_check);
+                            // printf("left %i, upper %i, before %i \n", position_left, position_before, position_upper);
                             // 
                             if (row_left_check != 0) { //corresponds to x-coordinate
                                 label_matrix[i][j][k] = position_left;
@@ -278,12 +281,15 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
                             //printf("cluster binded %i \n", label_matrix[i][j][k]);
                             break;
                         case 2: //Combine two clusters 
-
+                            // printf("current position %i %i %i has value %i \n", i,j,k,label_matrix[i][j][k]);
+                            // printf("left: %i, upper: %i, before: %i\n", row_left_check, row_before_check, row_upper_check);
+                            // printf("left %i, upper %i, before %i \n", position_left, position_before, position_upper);
                             // label_matrix[i][j][k] = (!!row_before_check == 0 ? hk_union(labels, row_left_check, row_upper_check) : 
                             //     (!!row_upper_check == 0 ? hk_union(labels, row_before_check, row_left_check) : 
                             //     hk_union(labels, row_before_check, row_upper_check)));
                             if (row_upper_check == 0) { //binds x,y 
                                 label_matrix[i][j][k] = hk_union(labels, position_left, position_before);
+                                printf("%i %i \n", position_left, position_before);
                             }
                             else if (row_before_check == 0) { //binds x,z
                                 label_matrix[i][j][k] = hk_union(labels, position_left, position_upper);
@@ -306,9 +312,8 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
             }
 
         }
-    printf("first loop done \n");
     }
-
+    printf("first loop done \n");
     // // Implement second loop
     // l = 0;
     // for (int i = 0; i < nridges; i ++) {

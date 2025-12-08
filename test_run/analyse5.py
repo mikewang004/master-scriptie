@@ -33,7 +33,7 @@ def c_lib_init():
         ctypes.c_float, #cutoff for ndot product 
         ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.c_int))), #Return array of size nridges**#
         #(ctypes.POINTER(ctypes.c_int)) #Return array containing cluster indexes and size
-        np.ctypeslib.ndpointer(ctypes.c_int)
+        np.ctypeslib.ndpointer(ctypes.c_int, flags = "C_CONTIGUOUS")
     ]
 
     lib.inner_products_per_polymer.argtypes = [
@@ -439,26 +439,29 @@ class atom_coords:
         
 
         #result = np.ctypeslib.as_array(label_matrix)#, size = (nridges, nridges, nridges)
-        result = np.ctypeslib.as_array(ctypes.POINTER(ctypes.c_ushort).from_address(ctypes.addressof(label_matrix)), shape = (nridges, nridges, nridges))
+        label_matrix = np.ctypeslib.as_array(ctypes.POINTER(ctypes.c_ushort).from_address(ctypes.addressof(label_matrix)), shape = (nridges, nridges, nridges))
+        #labels = np.ctypeslib.as_array(ctypes.POINTER(ctypes.c_ushort).from_address(ctypes.addressof(labels)), shape = (nridges**3))
+        print(labels[labels != 0])
         # cluster_id, counts = np.unique(result, return_counts = True)
        # print(label_matrix_np)
 
-
-        #result = result[8:24, 8:24, 8:24]
+        maxview = 16
+        minview = 8
+        size = maxview - minview
+        label_matrix = label_matrix[minview:maxview, minview:maxview, minview:maxview]
         #print(result)
         # Set all result values that only have one entry to 0 
        #Plot result 
 
-        unique_vals, indices, counts = np.unique(result, return_inverse=True, return_counts=True)
-        unique_counts = counts[indices].reshape(result.shape)
+        unique_vals, indices, counts = np.unique(label_matrix, return_inverse=True, return_counts=True)
+        unique_counts = counts[indices].reshape(label_matrix.shape)
         mask = unique_counts == 1
-        result = result.copy()
-        result[mask] = 0
+        label_matrix = label_matrix.copy()
+        label_matrix[mask] = 0
 
         fig = plt.figure()
 
         ax = fig.add_subplot(111, projection='3d')
-        size = 33
         x, y, z = cartesian_product_broadcasted(*[np.arange(size, dtype='int16')]*3).T
         mask = ((x == 0) | (x == size-1) 
                 | (y == 0) | (y == size-1) 
@@ -466,7 +469,7 @@ class atom_coords:
         x = x[mask]
         y = y[mask]
         z = z[mask]
-        volume = result.ravel()[mask]
+        volume = label_matrix.ravel()[mask]
 
         scatter = ax.scatter(x, y, z, c=volume, cmap=plt.get_cmap('jet'))
         cbar = plt.colorbar(scatter, ax=ax)

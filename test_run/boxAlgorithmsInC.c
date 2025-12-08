@@ -152,6 +152,9 @@ int find_neighbours_index(double *array, int rows, int cols,
 
 int hk_find(int *output_1d, int cluster_id) {
     int y = cluster_id;
+    // for (int i = 0; i < 800; i ++ ) {
+    //     printf("%i \n", output_1d[i]);
+    // }
     while (output_1d[y] != y) {
         y = output_1d[y];
     }
@@ -173,6 +176,15 @@ int hk_make_set(int *output_1d, int *n_labels) {
     assert(output_1d[0] <= n_labels);
     output_1d[output_1d[0]] = output_1d[0];
     return output_1d[0];
+}
+
+int hk_set_position_1(int check, int *label_matrix_position) {
+    if (label_matrix_position == 0)  {
+        if (check == 1) {
+            return check;
+        }
+    }
+    return 0;
 }
 
 
@@ -247,11 +259,21 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
                     int row_left_check = check_merger_criteria(ev_array, row_left, cryst_cutoff, ndot_cutoff);
                     int row_before_check = check_merger_criteria(ev_array, row_before, cryst_cutoff, ndot_cutoff);
                     int row_upper_check = check_merger_criteria(ev_array, row_upper, cryst_cutoff, ndot_cutoff);
+            
+
+                    // Set matrix positions to 1 if they do not have a cluster lable 
+                    label_matrix[(i-1 + nridges) % nridges][j][k] = hk_set_position_1(row_left_check,  label_matrix[(i-1 + nridges) % nridges][j][k]);
+                    label_matrix[i][(j-1 + nridges) % nridges][k] = hk_set_position_1(row_before_check,  label_matrix[i][(j-1 + nridges) % nridges][k]);
+                    label_matrix[i][j][(k-1 + nridges) %nridges] =  hk_set_position_1(row_upper_check,  label_matrix[i][j][(k-1 + nridges) %nridges]);
+                    
 
                     // Also save actual matrix labels 
                     int position_left =  label_matrix[(i-1 + nridges) % nridges][j][k];
                     int position_before = label_matrix[i][(j-1 + nridges) % nridges][k];
                     int position_upper = label_matrix[i][j][(k-1 + nridges) %nridges];
+
+                    //printf("%i \n", position_left);
+                    
 
 
                 // TODO implement different cases what to do if rows confirm
@@ -263,40 +285,47 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
                             break;
                         case 1: //Add to cluster left/above
                             
-                            // label_matrix[i][j][k] = max(row_before_check,max(row_upper_check,row_left_check));  
+                            label_matrix[i][j][k] = max(position_before,max(position_upper,position_left));  
+                            //printf("%i \n", max(position_before,max(position_upper,position_left)));
                             // TODO fix descrepancy here
                             // printf("current position %i %i %i has value %i \n", i,j,k,label_matrix[i][j][k]);
                             // printf("left: %i, upper: %i, before: %i\n", row_left_check, row_before_check, row_upper_check);
                             // printf("left %i, upper %i, before %i \n", position_left, position_before, position_upper);
                             // 
-                            if (row_left_check != 0) { //corresponds to x-coordinate
-                                label_matrix[i][j][k] = position_left;
-                            }
-                            if (row_before_check != 0) { //corresponds to y-coordinate
-                                label_matrix[i][j][k] = position_before;
-                            }
-                            if (row_upper_check != 0) { //corresponds to z-coordinate
-                                label_matrix[i][j][k] = position_upper;
-                            }
+                            // if (row_left_check != 0) { //corresponds to x-coordinate
+                            //     //label_matrix[i][j][k] = position_left;
+                            //     label_matrix[i][j][k] = row_left_check;
+                            // }
+                            // if (row_before_check != 0) { //corresponds to y-coordinate
+                            //     //label_matrix[i][j][k] = position_before;
+                            //     label_matrix[i][j][k] = row_before_check;
+                            // }
+                            // if (row_upper_check != 0) { //corresponds to z-coordinate
+                            //     //label_matrix[i][j][k] = position_upper;
+                            //     label_matrix[i][j][k] = row_upper_check;
+                            // }
                             //printf("cluster binded %i \n", label_matrix[i][j][k]);
                             break;
                         case 2: //Combine two clusters 
                             // printf("current position %i %i %i has value %i \n", i,j,k,label_matrix[i][j][k]);
                             // printf("left: %i, upper: %i, before: %i\n", row_left_check, row_before_check, row_upper_check);
                             // printf("left %i, upper %i, before %i \n", position_left, position_before, position_upper);
-                            // label_matrix[i][j][k] = (!!row_before_check == 0 ? hk_union(labels, row_left_check, row_upper_check) : 
-                            //     (!!row_upper_check == 0 ? hk_union(labels, row_before_check, row_left_check) : 
+                            label_matrix[i][j][k] = (!! row_before_check == 0 ? hk_union(labels, position_left, position_upper) : (!! row_upper_check == 0 ?
+                                hk_union(labels, position_before, position_left) : hk_union(labels, position_before, position_upper)));
                             //     hk_union(labels, row_before_check, row_upper_check)));
-                            if (row_upper_check == 0) { //binds x,y 
-                                label_matrix[i][j][k] = hk_union(labels, position_left, position_before);
-                                printf("%i %i \n", position_left, position_before);
-                            }
-                            else if (row_before_check == 0) { //binds x,z
-                                label_matrix[i][j][k] = hk_union(labels, position_left, position_upper);
-                            }
-                            else { //binds y,z 
-                                label_matrix[i][j][k] = hk_union(labels, position_before, position_upper);
-                            }
+                            // if (row_upper_check == 0) { //binds x,y 
+                            //     //label_matrix[i][j][k] = hk_union(labels, position_left, position_before);
+                            //     // printf("%i %i \n", position_left, position_before);
+                            //     label_matrix[i][j][k] = hk_union(labels, row_left_check, row_before_check);
+                            // }
+                            // else if (row_before_check == 0) { //binds x,z
+                            //     //label_matrix[i][j][k] = hk_union(labels, position_left, position_upper);
+                            //     label_matrix[i][j][k] = hk_union(labels, row_left_check, row_upper_check);
+                            // }
+                            // else { //binds y,z 
+                            //     //label_matrix[i][j][k] = hk_union(labels, position_left, position_upper);
+                            //     label_matrix[i][j][k] = hk_union(labels, row_before_check, row_upper_check);
+                            // }
                             //printf("two clusters binded %i \n", label_matrix[i][j][k]);
                             break;
                         case 3: //Combine three clusters
@@ -393,23 +422,21 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
 
 
 
-    // // Do new label binding 
+    // Do new label binding 
 
-    // for (int i = 0; i < nridges; i ++) {
-    //     for (int j = 0; j < nridges; j ++) {
-    //         for (int k = 0; k < nridges; k ++) {
-    //             printf("%i %i %i \n", i,j,k);
-    // //TODO loop freezes in line below. Probably something wrong with hk_find or new_labels
-    //             int x = hk_find(new_labels, label_matrix[i][j][k]);
-    //             if (new_labels[x] == 0) {
-    //                 new_labels[0]++;
-    //                 new_labels[x] = new_labels[0];
-    //             }
+    for (int i = 0; i < nridges; i ++) {
+        for (int j = 0; j < nridges; j ++) {
+            for (int k = 0; k < nridges; k ++) {
+                int x = hk_find(labels, label_matrix[i][j][k]);
+                if (new_labels[x] == 0) {
+                    new_labels[0]++;
+                    new_labels[x] = new_labels[0];
+                }
 
-    //             label_matrix[i][j][k] = new_labels[x];
-    //         }
-    //     }
-    // } 
+                label_matrix[i][j][k] = new_labels[x];
+            }
+        }
+    } 
 
     // for (int i = 0; i < nridges; i ++) {
     //     for (int j = 0; j < nridges; j ++) {

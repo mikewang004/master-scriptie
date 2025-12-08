@@ -421,12 +421,13 @@ class atom_coords:
 
 
     def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8):
+        max_labels = 1000
         cryst_array = self.df_cryst.iloc[:, 1:].to_numpy()
         rows, cols = cryst_array.shape[0], cryst_array.shape[1]
         cryst_array_c = cryst_array.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
 
         label_matrix_np = np.zeros([nridges, nridges, nridges], dtype = int)
-        label_matrix = (ctypes.POINTER(ctypes.POINTER(ctypes.c_int)) * nridges)()
+        label_matrix = (ctypes.POINTER(ctypes.POINTER(ctypes.c_int)) * max_labels)()
         labels = np.zeros(nridges**3, dtype = np.int32)
         for i in range(nridges):
             label_matrix[i] = (ctypes.POINTER(ctypes.c_int) * nridges)()
@@ -442,6 +443,8 @@ class atom_coords:
         label_matrix = np.ctypeslib.as_array(ctypes.POINTER(ctypes.c_ushort).from_address(ctypes.addressof(label_matrix)), shape = (nridges, nridges, nridges))
         #labels = np.ctypeslib.as_array(ctypes.POINTER(ctypes.c_ushort).from_address(ctypes.addressof(labels)), shape = (nridges**3))
         print(labels[labels != 0])
+        print(np.sum(labels))
+        #np.savetxt("labels.txt", labels, fmt="%i")
         # cluster_id, counts = np.unique(result, return_counts = True)
        # print(label_matrix_np)
 
@@ -449,7 +452,7 @@ class atom_coords:
         minview = 8
         size = maxview - minview
         label_matrix = label_matrix[minview:maxview, minview:maxview, minview:maxview]
-        #print(result)
+        #print(label_matrix)
         # Set all result values that only have one entry to 0 
        #Plot result 
 

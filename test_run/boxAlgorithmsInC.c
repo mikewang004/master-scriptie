@@ -313,6 +313,7 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
                         label_matrix[i][j][k] = hk_union(labels, position_before, position_upper);
                         break;
                 }
+                printf("label matrix %i\n", label_matrix[i][j][k]);
             }
         }
     printf("first loop done \n");

@@ -130,6 +130,7 @@ def calc_nematic_tensor_2(array):
     order_param = max_labda #Sara 2015
     return max_labda, max_ev, labda, ev
 
+
 def get_time_temp_from_slurm(file_to_path):
     n_columns = 2
     with open(file_to_path, "r") as file:
@@ -147,6 +148,9 @@ def get_time_temp_from_slurm(file_to_path):
         row = line.strip().split()
         collected_rows.append(row[:n_columns])
     return np.array(collected_rows, dtype = float)
+
+
+
 
 class atom_coords:
 
@@ -636,46 +640,6 @@ def plot_multiple_dists_eigenvalues(list_atom_coords, starttemp = 1.0, endtemp =
 
 lib = c_lib_init()
 
-
-# list_atom_coords_cooling = get_list_atom_coords("../../data/pva-100/cooling_tdot_e-5_time", 21, endtime= 1e7)
-# plot_multiple_dists_eigenvalues(list_atom_coords_cooling)
-#list_atom_coords_heating = get_list_atom_coords("../../data/pva-100/genua_heating_100_tmin_0.5_ttime_10e7",21, endtime = 1e7)
-#plot_order_param(list_atom_coords_cooling, "Crystallinity vs temperature, cooling process, Tdot = 10e-5", savestring = "test_wholebox_frac_cryst_heating_100_tmin_0.5_ttime_10e7")
-
-last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
-#first_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_0.txt")
-#first_timestep_e5 = atom_coords("../../data/pva-20/runt2e8_0.txt")
-#first_timestep_e5.gyration_radius(show_plot= True)
-#first_timestep_e5.end_to_end_distance(show_plot = True)
-#mid_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_4000000.txt")
-# last_timestep_e5.calc_rdf()
-#first_timestep_e5.bond_bond_correlation(show_plot= True)
-
-#mid_timestep_e5.get_nematic_vector_4()
-# mid_timestep_e5.get_distribution_eigenvalues(r"Distribution of eigenvalues at $T = 0.8$, $\dot{T} = 10^7$")
-#last_timestep_e5.end_to_end_distance()
-#last_timestep_e5.gyration_radius()
-#last_timestep_e5.get_nematic_vector_4()#save_ev = True, save_string = "10e5_debug_cryst.txt")
-# last_timestep_e5.get_distribution_eigenvalues(r"Distribution of eigenvalues at $T = 0.5$, $\dot{T} = 10^7$")
-last_timestep_e5.read_cryst("10e5_debug_cryst.txt")
-last_timestep_e5.merge_boxes()
-# #last_timestep_e5.get_density_dist()
-# #plot_density_dist(last_timestep_e5, "Distribution of local densities at T = 0.5, tdot 10e-5")
-# plot_volume_line(list_atom_coords_cooling, "Volume per monomer as function of temperature, PVA-100", "volume_monomer_tdot_e-5.pdf")
-
-# list_different_tdot_t_08 = get_crystallinity_tdots("../../data/pva-100/cooling_tdot", 4000, np.array([2,3, 4, 5]))
-# list_different_tdot_t_05 = get_crystallinity_tdots("../../data/pva-100/cooling_tdot", 10000, np.array([2,3, 4, 5]))
-
-# plt.scatter(list_different_tdot_t_08[0, :], list_different_tdot_t_08[1, :], label = "T = 0.8")
-# plt.scatter(list_different_tdot_t_05[0, :], list_different_tdot_t_05[1, :], label = "T = 0.5")
-# plt.title("Crystallisation as function of cooling rate")
-# plt.xlabel("cooling rate")
-# plt.ylabel("crystallisation")
-# plt.legend()
-# plt.xscale("log")
-# #plt.yscale("log")
-# plt.savefig("cryst_tdot.pdf")
-# plt.show()
 
 
 

@@ -24,7 +24,9 @@ def calc_crystallisation(file_name_path, times, cryst_file_name):
         current_atom_coords = atom_coords(current_file_name)
         frac_cryst = current_atom_coords.get_nematic_vector_4(save_ev= True, save_string = "%s/cryst_%s_time_%i.txt" %(file_name_path, cryst_file_name, time))
         print(current_file_name)
-        with open(cryst_array_string, "w") as file:
+        with open(cryst_array_string, "a") as file:
             file.write(f"{time}, {frac_cryst}\n")
 
 calc_crystallisation(data_path, time_temp_T07[:, 0], file_name_T07)
+
+calc_crystallisation(data_path, time_temp_T08[:, 0], file_name_T08)

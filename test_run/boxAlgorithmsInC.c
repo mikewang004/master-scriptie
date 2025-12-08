@@ -168,6 +168,8 @@ int hk_find(int *output_1d, int x) {
 }
 
 int hk_union(int *output_1d, int x, int y) {
+    printf("union results for positions %i, %i \n", x,y);
+    //printf("%i %i to result in %i \n", hk_find(output_1d, x), hk_find(output_1d, y), output_1d[hk_find(output_1d, x)] = hk_find(output_1d, y));
     return output_1d[hk_find(output_1d, x)] = hk_find(output_1d, y);
 }
 
@@ -272,7 +274,7 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
                 int position_before = label_matrix[i][(j-1 + nridges) % nridges][k];
                 int position_upper = label_matrix[i][j][(k-1 + nridges) %nridges];
 
-                //printf("%i \n", position_left);
+                //printf("check left %i actual position %i \n", row_left_check,position_left);
                 
 
 
@@ -301,6 +303,7 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
                         }
                         break;
                     case 2: //Combine two clusters 
+                        //printf("case 2 \n");
                         label_matrix[i][j][k] = (!! position_before == 0 ? hk_union(labels, position_left, position_upper) : (!! position_upper == 0 ?
                             hk_union(labels, position_before, position_left) : hk_union(labels, position_before, position_upper)));
                         break;

@@ -449,8 +449,8 @@ class atom_coords:
         cryst_array_c = cryst_array.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
 
         label_matrix_np = np.zeros([nridges, nridges, nridges], dtype = int)
-        label_matrix = (ctypes.POINTER(ctypes.POINTER(ctypes.c_int)) * max_labels)()
-        labels = np.zeros(nridges**3, dtype = np.int32)
+        label_matrix = (ctypes.POINTER(ctypes.POINTER(ctypes.c_int)) * nridges)()
+        labels = np.zeros(max_labels, dtype = np.int32)
         for i in range(nridges):
             label_matrix[i] = (ctypes.POINTER(ctypes.c_int) * nridges)()
             for j in range(nridges):
@@ -459,10 +459,19 @@ class atom_coords:
                     label_matrix[i][j][k] = label_matrix_np[i, j, k]
         lib.hoshen_kopelman_crystallisation(cryst_array_c, rows, cols, nridges, cryst_cutoff, ndot_cutoff, label_matrix, labels)
 
-        
+        #Return label matrix to c 
 
-        #result = np.ctypeslib.as_array(label_matrix)#, size = (nridges, nridges, nridges)
-        label_matrix = np.ctypeslib.as_array(ctypes.POINTER(ctypes.c_ushort).from_address(ctypes.addressof(label_matrix)), shape = (nridges, nridges, nridges))
+        for i in range(nridges):
+            for j in range(nridges):
+                for k in range(nridges):
+                    #print(label_matrix[i][j][k])
+                    label_matrix_np[k,j,i] = label_matrix[i][j][k]
+
+
+
+        label_matrix = label_matrix_np
+        #label_matrix = np.ctypeslib.as_array(label_matrix)#, size = (nridges, nridges, nridges)
+        #label_matrix = np.ctypeslib.as_array(ctypes.POINTER(ctypes.c_ushort).from_address(ctypes.addressof(label_matrix)), shape = (nridges, nridges, nridges))
         #labels = np.ctypeslib.as_array(ctypes.POINTER(ctypes.c_ushort).from_address(ctypes.addressof(labels)), shape = (nridges**3))
         print(labels[labels != 0])
         print(np.sum(labels))
@@ -470,11 +479,11 @@ class atom_coords:
         # cluster_id, counts = np.unique(result, return_counts = True)
        # print(label_matrix_np)
 
-        maxview = 16
-        minview = 8
+        maxview = 6
+        minview = 0
         size = maxview - minview
         label_matrix = label_matrix[minview:maxview, minview:maxview, minview:maxview]
-        #print(label_matrix)
+        print(label_matrix)
         # Set all result values that only have one entry to 0 
        #Plot result 
 

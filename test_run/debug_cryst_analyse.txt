@@ -1,0 +1,3 @@
+ xid yid zid cryst_bool x_ev y_ev z_ev
+0 0.0 1.0 0.0 0.8 0.9 -0.9 0.9
+

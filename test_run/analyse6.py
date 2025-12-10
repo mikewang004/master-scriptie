@@ -479,29 +479,36 @@ class atom_coords:
         print(label_matrix[:,:,0])
         print(label_matrix[:,:,1])
         # Set all result values that only have one entry to 0 
+        
+
+
+
+
+
+
        #Plot result 
 
-        unique_vals, indices, counts = np.unique(label_matrix, return_inverse=True, return_counts=True)
-        unique_counts = counts[indices].reshape(label_matrix.shape)
-        mask = unique_counts == 1
-        label_matrix = label_matrix.copy()
-        label_matrix[mask] = 0
+        # unique_vals, indices, counts = np.unique(label_matrix, return_inverse=True, return_counts=True)
+        # unique_counts = counts[indices].reshape(label_matrix.shape)
+        # mask = unique_counts == 1
+        # label_matrix = label_matrix.copy()
+        # label_matrix[mask] = 0
 
-        fig = plt.figure()
+        # fig = plt.figure()
 
-        ax = fig.add_subplot(111, projection='3d')
-        x, y, z = cartesian_product_broadcasted(*[np.arange(size, dtype='int16')]*3).T
-        mask = ((x == 0) | (x == size-1) 
-                | (y == 0) | (y == size-1) 
-                | (z == 0) | (z == size-1))
-        x = x[mask]
-        y = y[mask]
-        z = z[mask]
-        volume = label_matrix.ravel()[mask]
+        # ax = fig.add_subplot(111, projection='3d')
+        # x, y, z = cartesian_product_broadcasted(*[np.arange(size, dtype='int16')]*3).T
+        # mask = ((x == 0) | (x == size-1) 
+        #         | (y == 0) | (y == size-1) 
+        #         | (z == 0) | (z == size-1))
+        # x = x[mask]
+        # y = y[mask]
+        # z = z[mask]
+        # volume = label_matrix.ravel()[mask]
 
-        scatter = ax.scatter(x, y, z, c=volume, cmap=plt.get_cmap('jet'))
-        cbar = plt.colorbar(scatter, ax=ax)
-        plt.show()
+        # scatter = ax.scatter(x, y, z, c=volume, cmap=plt.get_cmap('jet'))
+        # cbar = plt.colorbar(scatter, ax=ax)
+        # plt.show()
 
 
 

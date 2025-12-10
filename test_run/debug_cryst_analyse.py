@@ -13,7 +13,7 @@ def convert_input_lattice_to_cryst_array(input_lattice_file, ndot_cutoff = 0.97)
 
     #Add another layer of zid to lattice 
     zid_zero_layer = np.zeros_like(lattice)
-    lattice = np.stack([lattice_2, lattice, zid_zero_layer, zid_zero_layer, zid_zero_layer, zid_zero_layer], axis = 2)
+    lattice = np.stack([lattice, lattice_2, zid_zero_layer, zid_zero_layer, zid_zero_layer, zid_zero_layer], axis = 2)
 
     yid, xid, zid = np.indices(lattice.shape)
     print(lattice.shape)

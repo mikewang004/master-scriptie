@@ -168,8 +168,8 @@ int hk_find(int *output_1d, int x) {
 }
 
 int hk_union(int *output_1d, int x, int y) {
-    printf("cluster of position x = %i, cluster of position y = %i\n",x,y);
-    printf("find result for x is %i, for y is %i \n", hk_find(output_1d, x), hk_find(output_1d, y));
+    //printf("cluster of position x = %i, cluster of position y = %i\n",x,y);
+    //printf("find result for x is %i, for y is %i \n", hk_find(output_1d, x), hk_find(output_1d, y));
     return output_1d[hk_find(output_1d, x)] = hk_find(output_1d, y);
 }
 
@@ -301,8 +301,8 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
     }
 
     for (int i = 0; i < 20; i ++) {
-        //printf("labels[%i] = %i \n", i, labels[i]);
-        new_labels[i] = labels[i];
+        printf("labels[%i] = %i \n", i, labels[i]);
+        //new_labels[i] = labels[i];
     }
  
     // for (int i = 0; i < nridges; i ++) {
@@ -316,21 +316,22 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
 
 
     // Do new label binding 
-    // TODO fix this part
+    // TODO fix recursive labelling
 
-    // for (int i = 0; i < nridges; i ++) {
-    //     for (int j = 0; j < nridges; j ++) {
-    //         for (int k = 0; k < nridges; k ++) {
-    //             int x = hk_find(labels, label_matrix[j][i][k]);
-    //             if (new_labels[x] == 0) {
-    //                 new_labels[0]++;
-    //                 new_labels[x] = new_labels[0];
-    //             }
-
-    //             label_matrix[j][i][k] = new_labels[x];
-    //         }
-    //     }
-    // } 
+    for (int i = 0; i < nridges; i ++) {
+        for (int j = 0; j < nridges; j ++) {
+            for (int k = 0; k < nridges; k ++) {
+                if (label_matrix[i][j][k] > 0) {
+                    int x = hk_find(labels, label_matrix[i][j][k]);
+                    if (new_labels[x] == 0) {
+                        new_labels[0]++;
+                        new_labels[x] = new_labels[0];
+                    }
+                    label_matrix[i][j][k] = new_labels[x];
+                }
+            }
+        }
+    } 
 
 
 

@@ -8,11 +8,12 @@ def convert_input_lattice_to_cryst_array(input_lattice_file, ndot_cutoff = 0.97)
     xid yid zid cryst xev yev zev"""
 
     lattice = np.loadtxt(input_lattice_file)
+    lattice_2 = np.loadtxt("debug_cryst_lattice_2.txt")
     print(lattice)
 
     #Add another layer of zid to lattice 
     zid_zero_layer = np.zeros_like(lattice)
-    lattice = np.stack([lattice, zid_zero_layer, zid_zero_layer, zid_zero_layer, zid_zero_layer, zid_zero_layer], axis = 2)
+    lattice = np.stack([lattice_2, lattice, zid_zero_layer, zid_zero_layer, zid_zero_layer, zid_zero_layer], axis = 2)
 
     yid, xid, zid = np.indices(lattice.shape)
     print(lattice.shape)
@@ -37,23 +38,23 @@ def convert_input_lattice_to_cryst_array(input_lattice_file, ndot_cutoff = 0.97)
     #Add RNG for eigenvalues simulation: if cryst = 1, then xev, yev,zev should be at least 0.8 
 
 
-
     for l in range(0, cryst_array.shape[0]):
         if cryst_array.iloc[l, 3] > ndot_cutoff:
-            cryst_array.iloc[l, 4:] = rng.uniform(0.8, 1.0, size = 3)
+            cryst_array.iloc[l, 4:] = rng.uniform(0.9, 1.0, size = 3)
 
 
 
     cryst_array = cryst_array.sort_values(['zid', 'xid', 'yid']).reset_index(drop=True)
 
-    print(cryst_array)
+    #print(cryst_array)
     cryst_array.to_csv("debug_cryst_analyse_2D.txt", sep = " ", mode = "w")
 
 nridges = 6
 
-#convert_input_lattice_to_cryst_array("debug_cryst_lattice.txt")
+convert_input_lattice_to_cryst_array("debug_cryst_lattice.txt")
 
 last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
+#last_timestep_e5.read_cryst("10e5_debug_cryst.txt")
 last_timestep_e5.read_cryst("debug_cryst_analyse_2D.txt") #Should be independent from actual last_timestep used
 last_timestep_e5.merge_boxes(nridges = nridges)
 

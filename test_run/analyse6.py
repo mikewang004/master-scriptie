@@ -464,26 +464,20 @@ class atom_coords:
         for i in range(nridges):
             for j in range(nridges):
                 for k in range(nridges):
-                    #print(label_matrix[i][j][k])
-                    label_matrix_np[k,j,i] = label_matrix[i][j][k]
+                    label_matrix_np[i,j,k] = label_matrix[j][i][k]
 
 
 
         label_matrix = label_matrix_np
-        #label_matrix = np.ctypeslib.as_array(label_matrix)#, size = (nridges, nridges, nridges)
-        #label_matrix = np.ctypeslib.as_array(ctypes.POINTER(ctypes.c_ushort).from_address(ctypes.addressof(label_matrix)), shape = (nridges, nridges, nridges))
-        #labels = np.ctypeslib.as_array(ctypes.POINTER(ctypes.c_ushort).from_address(ctypes.addressof(labels)), shape = (nridges**3))
+        size = nridges
         print(labels[labels != 0])
-        print(np.sum(labels))
-        #np.savetxt("labels.txt", labels, fmt="%i")
-        # cluster_id, counts = np.unique(result, return_counts = True)
-       # print(label_matrix_np)
 
-        maxview = 6
-        minview = 0
-        size = maxview - minview
-        label_matrix = label_matrix[minview:maxview, minview:maxview, minview:maxview]
-        print(label_matrix)
+        #maxview = 6
+        #minview = 0
+        #size = maxview - minview
+        #label_matrix = label_matrix[minview:maxview, minview:maxview, minview:maxview]
+        print(label_matrix[:,:,0])
+        print(label_matrix[:,:,1])
         # Set all result values that only have one entry to 0 
        #Plot result 
 
@@ -507,7 +501,7 @@ class atom_coords:
 
         scatter = ax.scatter(x, y, z, c=volume, cmap=plt.get_cmap('jet'))
         cbar = plt.colorbar(scatter, ax=ax)
-        #plt.show()
+        plt.show()
 
 
 

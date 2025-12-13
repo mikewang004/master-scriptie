@@ -49,12 +49,20 @@ def convert_input_lattice_to_cryst_array(input_lattice_file, ndot_cutoff = 0.97)
     #print(cryst_array)
     cryst_array.to_csv("debug_cryst_analyse_2D.txt", sep = " ", mode = "w")
 
-nridges = 6
 
-convert_input_lattice_to_cryst_array("debug_cryst_lattice.txt")
 
+
+
+
+nridges = 33
+
+# convert_input_lattice_to_cryst_array("debug_cryst_lattice.txt")
+
+
+#last_timestep_long_quench = atom_coords("../../data/pva-100/quick_quench/long_run/equil_t_08_tdot_e-3_time_58800000.txt")
 last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
-#last_timestep_e5.read_cryst("10e5_debug_cryst.txt")
-last_timestep_e5.read_cryst("debug_cryst_analyse_2D.txt") #Should be independent from actual last_timestep used
-last_timestep_e5.merge_boxes(nridges = nridges)
+# last_timestep_e5.read_cryst("10e5_debug_cryst.txt")
+#last_timestep_e5.read_cryst("debug_cryst_analyse_2D.txt") #Should be independent from actual last_timestep used
+#last_timestep_e5.merge_boxes(nridges = nridges)
 
+last_timestep_e5.gyration_radius_rmsd(show_plot= True)

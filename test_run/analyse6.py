@@ -319,17 +319,34 @@ class atom_coords:
         #TODO fix definition of rhs and gyration radius 
         # First calculate center of mass of each polymer 
         df_gyration_radius = self.create_new_polymer_df(["comx", "comy", "comz", "gyration_radius"])
+        counter = 0
         for i in range(0, self.no_polymers):
         #for i in range(0, 3):
             # First calculate center of mass 
             subset = self.datapd[(self.datapd["mol_id"] == i+1)].iloc[:, 1:4]
-            #print(subset.shape)
-            com = np.mean(subset, axis = 0)
             #print(subset)
+            com = np.mean(subset, axis = 0)
+            #print(com)
             df_gyration_radius.iloc[i, :3] = com
             # Shift system to have new center of mass as center 
             subset_com = subset - com
+            #subset_com = (subset - com) %self.total_volume_length
             gyration_radius_squared = np.sum((subset_com**2), axis = 1)
+            #print(np.mean(gyration_radius_squared))
+
+            # if np.mean(gyration_radius_squared) > 100:
+            #     print("subset original coords given as")
+            #     print(subset)
+            #     print("shifted to com")
+            #     print(subset_com)
+            #     print("with com")
+            #     print(com)
+            #     print(np.mean(subset_com, axis = 0))
+            # #     print(np.mean(gyration_radius_squared))
+            # #     print(com)
+            #     print()
+            #     counter = counter + 1
+            
             #rhs_average_squared = (np.sum(gyration_radius_squared))
             #radius_of_gyration = np.sqrt(1/(self.no_polymers * self.polymer_length) * rhs_average)
             df_gyration_radius.iloc[i, 3] = np.mean(gyration_radius_squared) 
@@ -337,7 +354,34 @@ class atom_coords:
         self.mean_gyration_radius = np.mean(df_gyration_radius["gyration_radius"]) #Ensemble average
         print("mean gyration is %f" %np.sqrt(self.mean_gyration_radius))
         gyration_2 = np.sqrt(df_gyration_radius.iloc[: , -1].to_numpy())
-        print(np.mean(gyration_2[gyration_2 < 10.0]))
+        #print(np.mean(gyration_2[gyration_2 > 10.0]))
+        if show_plot == True:
+            values, bins, _ = plt.hist(np.sqrt(df_gyration_radius.iloc[:, -1]), bins = 100, density = True)
+            plt.vlines(np.sqrt(self.mean_gyration_radius), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "mean gyration radius = %.4f" %np.sqrt(self.mean_gyration_radius))
+            plt.vlines(((np.mean(gyration_2[gyration_2 < 10.0]))), ymin = 0, ymax = np.max(values), linestyles =":", color = "red", label = "gaussian peak gyration radius = %.4f" %(np.mean(gyration_2[gyration_2 < 10.0])))
+            plt.title("Distribution of the gyration radius, PVA-100, simulation start")
+            plt.xlabel("gyration radius")
+            #plt.ylabel("probability")
+            plt.legend()
+            plt.savefig("gyration_radius_PVA-100_unnormalised_start.pdf")
+            plt.show()
+
+
+    def gyration_radius_rmsd(self, nridges = 33, show_plot = False):
+        df_gyration_radius = self.create_new_polymer_df(["comx", "comy", "comz", "gyration_radius"])
+        counter = 0
+        for i in range(0, self.no_polymers):
+            subset = np.array(self.datapd[(self.datapd["mol_id"] == i+1)].iloc[:, 1:4])
+            sqd = np.sum((np.abs(subset[:, np.newaxis] - subset))**2, axis = 2)
+            upper_triangle = sqd[np.triu_indices(self.polymer_length, k=1)]
+
+            #print(np.sum(upper_triangle)/(2 * self.polymer_length**2))
+            gyration_radius_squared = np.sum(upper_triangle)/(2 * self.polymer_length**2)
+            df_gyration_radius.iloc[i, 3] = np.mean(gyration_radius_squared) 
+        self.mean_gyration_radius = np.mean(df_gyration_radius["gyration_radius"]) #Ensemble average
+        print("mean gyration is %f" %np.sqrt(self.mean_gyration_radius))
+        gyration_2 = np.sqrt(df_gyration_radius.iloc[: , -1].to_numpy())
+
         if show_plot == True:
             values, bins, _ = plt.hist(np.sqrt(df_gyration_radius.iloc[:, -1]), bins = 100, density = True)
             plt.vlines(np.sqrt(self.mean_gyration_radius), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "mean gyration radius = %.4f" %np.sqrt(self.mean_gyration_radius))

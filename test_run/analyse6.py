@@ -32,6 +32,7 @@ def c_lib_init():
         ctypes.c_float, #cutoff for crystallisation yes/no
         ctypes.c_float, #cutoff for ndot product 
         ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.c_int))), #Return array of size nridges**#
+        ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.c_int))), #Return array of size nridges**#
         #(ctypes.POINTER(ctypes.c_int)) #Return array containing cluster indexes and size
         np.ctypeslib.ndpointer(ctypes.c_int, flags = "C_CONTIGUOUS")
     ]
@@ -321,7 +322,7 @@ class atom_coords:
         df_gyration_radius = self.create_new_polymer_df(["comx", "comy", "comz", "gyration_radius"])
         counter = 0
         for i in range(0, self.no_polymers):
-        #for i in range(0, 3):
+        #for i in range(0, 1000):
             # First calculate center of mass 
             subset = self.datapd[(self.datapd["mol_id"] == i+1)].iloc[:, 1:4]
             #print(subset)
@@ -349,6 +350,7 @@ class atom_coords:
             
             #rhs_average_squared = (np.sum(gyration_radius_squared))
             #radius_of_gyration = np.sqrt(1/(self.no_polymers * self.polymer_length) * rhs_average)
+            #print(i+1, np.mean(gyration_radius_squared), np.sqrt(np.mean(gyration_radius_squared)))
             df_gyration_radius.iloc[i, 3] = np.mean(gyration_radius_squared) 
             #df_gyration_radius.iloc[i,3] = np.mean(gyration_radius_squared)
         self.mean_gyration_radius = np.mean(df_gyration_radius["gyration_radius"]) #Ensemble average
@@ -366,20 +368,70 @@ class atom_coords:
             plt.savefig("gyration_radius_PVA-100_unnormalised_start.pdf")
             plt.show()
 
+    def gyration_radius_debug(self, nridges = 33, show_plot = False):
+        molid = 999
+        for i in range(molid, molid +1):
+            subset = self.datapd[(self.datapd["mol_id"] == i+1)].iloc[:, 1:4]
+            print(subset)
+            com = np.mean(subset, axis = 0)
+            #print(com)
+            #df_gyration_radius.iloc[i, :3] = com
+            # Shift system to have new center of mass as center 
+            subset_com = subset - com
+            #subset_com = (subset - com) %self.total_volume_length
+            print(subset_com)
+            gyration_radius_squared = np.sum((subset_com**2), axis = 1)/self.polymer_length
+            print(np.sqrt(gyration_radius_squared))
+            
 
     def gyration_radius_rmsd(self, nridges = 33, show_plot = False):
         df_gyration_radius = self.create_new_polymer_df(["comx", "comy", "comz", "gyration_radius"])
         counter = 0
         for i in range(0, self.no_polymers):
+        #for i in range(0, 50):
             subset = np.array(self.datapd[(self.datapd["mol_id"] == i+1)].iloc[:, 1:4])
             sqd = np.sum((np.abs(subset[:, np.newaxis] - subset))**2, axis = 2)
             upper_triangle = sqd[np.triu_indices(self.polymer_length, k=1)]
 
             #print(np.sum(upper_triangle)/(2 * self.polymer_length**2))
             gyration_radius_squared = np.sum(upper_triangle)/(2 * self.polymer_length**2)
+            #print(i, np.mean(gyration_radius_squared) )
             df_gyration_radius.iloc[i, 3] = np.mean(gyration_radius_squared) 
         self.mean_gyration_radius = np.mean(df_gyration_radius["gyration_radius"]) #Ensemble average
         print("mean gyration is %f" %np.sqrt(self.mean_gyration_radius))
+        gyration_2 = np.sqrt(df_gyration_radius.iloc[: , -1].to_numpy())
+
+        if show_plot == True:
+            values, bins, _ = plt.hist(np.sqrt(df_gyration_radius.iloc[:, -1]), bins = 50, density = True)
+            plt.vlines(np.sqrt(self.mean_gyration_radius), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "mean gyration radius = %.4f" %np.sqrt(self.mean_gyration_radius))
+            plt.vlines(((np.mean(gyration_2[gyration_2 < 10.0]))), ymin = 0, ymax = np.max(values), linestyles =":", color = "red", label = "gaussian peak gyration radius = %.4f" %(np.mean(gyration_2[gyration_2 < 10.0])))
+            plt.title("Distribution of the gyration radius, PVA-100, simulation start")
+            plt.xlabel("gyration radius")
+            #plt.ylabel("probability")
+            plt.legend()
+            plt.savefig("gyration_radius_PVA-100_unnormalised_start.pdf")
+            plt.show()
+
+
+
+    def gyration_tensor(self, nridges = 33, show_plot = False):
+        df_gyration_radius = self.create_new_polymer_df(["comx", "comy", "comz", "gyration_radius"])
+        for i in range(0, self.no_polymers):
+            subset = np.array(self.datapd[(self.datapd["mol_id"] == i+1)].iloc[:, 1:4])
+            com = np.mean(subset, axis = 0)
+            #print(com)
+            df_gyration_radius.iloc[i, :3] = com
+            # Shift system to have new center of mass as center 
+            subset_com = subset - com
+            # Normalise result 
+            #subset_com = np.linalg.norm(subset_com, axis = 1, keepdims = True)
+            gyration_tensor =  np.einsum('im,in->mn', subset_com,subset_com)/self.polymer_length
+            #print(gyration_tensor)
+            labda, ev = np.linalg.eig(gyration_tensor)
+            #print(labda)
+            gyration_radius_squared = np.sum(labda)
+            df_gyration_radius.iloc[i, 3] = np.mean(gyration_radius_squared) 
+        self.mean_gyration_radius = np.mean(df_gyration_radius["gyration_radius"]) #Ensemble average
         gyration_2 = np.sqrt(df_gyration_radius.iloc[: , -1].to_numpy())
 
         if show_plot == True:
@@ -392,6 +444,8 @@ class atom_coords:
             plt.legend()
             plt.savefig("gyration_radius_PVA-100_unnormalised_start.pdf")
             plt.show()
+
+
 
     def bond_bond_correlation(self, show_plot = False):
         #df_mean_bond_bond_per_polymer = self.create_new_polymer_df(["cos_theta"])
@@ -487,21 +541,25 @@ class atom_coords:
 
 
     def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8):
-        max_labels = 1000
+        max_labels = 837
         cryst_array = self.df_cryst.iloc[:, 1:].to_numpy()
         rows, cols = cryst_array.shape[0], cryst_array.shape[1]
         cryst_array_c = cryst_array.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
 
         label_matrix_np = np.zeros([nridges, nridges, nridges], dtype = int)
         label_matrix = (ctypes.POINTER(ctypes.POINTER(ctypes.c_int)) * nridges)()
+        new_label_matrix = (ctypes.POINTER(ctypes.POINTER(ctypes.c_int)) * nridges)()
         labels = np.zeros(max_labels, dtype = np.int32)
         for i in range(nridges):
             label_matrix[i] = (ctypes.POINTER(ctypes.c_int) * nridges)()
+            new_label_matrix[i] = (ctypes.POINTER(ctypes.c_int) * nridges)()
             for j in range(nridges):
                 label_matrix[i][j] = (ctypes.c_int * nridges)()
+                new_label_matrix[i][j] = (ctypes.c_int * nridges)()
                 for k in range(nridges):
                     label_matrix[i][j][k] = label_matrix_np[i, j, k]
-        lib.hoshen_kopelman_crystallisation(cryst_array_c, rows, cols, nridges, cryst_cutoff, ndot_cutoff, label_matrix, labels)
+                    new_label_matrix[i][j][k] = label_matrix_np[i, j, k]
+        lib.hoshen_kopelman_crystallisation(cryst_array_c, rows, cols, nridges, cryst_cutoff, ndot_cutoff, label_matrix, new_label_matrix, labels)
 
         #Return label matrix to c 
 
@@ -514,14 +572,27 @@ class atom_coords:
 
         label_matrix = label_matrix_np
         size = nridges
-        print(labels[labels != 0])
+        #print(labels[labels != 0])
+        print(labels)
+        labels2 = labels[labels != 0]
+
+
+
+        unique_values, counts = np.unique(label_matrix, return_counts=True)
+        print(counts)
+        #for value, count in zip(unique_values, counts):
+        #    print(f"  {value}: {count}")
+        #print(np.unique(label_matrix))
 
         #maxview = 6
         #minview = 0
         #size = maxview - minview
         #label_matrix = label_matrix[minview:maxview, minview:maxview, minview:maxview]
-        print(label_matrix[:,:,0])
-        print(label_matrix[:,:,1])
+        # print(label_matrix[:,:,0])
+        # print(label_matrix[:,:,1])
+        # print(label_matrix[:,:,2])
+        # print(label_matrix[:,:,3])
+        # print(label_matrix[:,:,4])
         # Set all result values that only have one entry to 0 
         
 

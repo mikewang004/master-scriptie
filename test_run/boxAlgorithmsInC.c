@@ -194,7 +194,8 @@ int hk_set_position_1(int check, int *label_matrix_position) {
 // Output: 2D array containing lattice id + cluster id
 
 
-void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nridges, float cryst_cutoff, float ndot_cutoff, int ***label_matrix, int *new_labels) {
+void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nridges, float cryst_cutoff, float ndot_cutoff, int ***label_matrix, int ***new_label_matrix, 
+    int *new_labels) {
     /* Note array structure is [xbox ybox zbox cryst xev yev zev]
     // Develop method to loop over array, access xbox ybox zbox +- 1 and return xev yev zev 
     Input: cryst_array, rows, cols, cryst_cutoff, ndot_cutoff
@@ -323,6 +324,7 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
             for (int k = 0; k < nridges; k ++) {
                 if (label_matrix[i][j][k] > 0) {
                     int x = hk_find(labels, label_matrix[i][j][k]);
+                    printf("x = %i for label_matrix[%i][%i][%i] = %i \n", x,i,j,k,label_matrix[i][j][k]);
                     if (new_labels[x] == 0) {
                         new_labels[0]++;
                         new_labels[x] = new_labels[0];
@@ -333,6 +335,10 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
         }
     } 
 
+
+    // for (int i = 0; i< max_labels; i ++) {
+    //     new_labels[i] = labels[i];
+    // }
 
 
 }

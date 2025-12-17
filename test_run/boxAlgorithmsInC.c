@@ -336,9 +336,7 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
     } 
 
 
-    // for (int i = 0; i< max_labels; i ++) {
-    //     new_labels[i] = labels[i];
-    // }
+
 
 
 }

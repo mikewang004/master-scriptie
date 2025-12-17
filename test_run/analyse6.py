@@ -7,6 +7,7 @@ from tqdm import tqdm
 #from find_box_id import *
 import ctypes
 import functools
+import sys
 
 
 def gaussian(x, H, A, x0, sigma):
@@ -247,15 +248,26 @@ class atom_coords:
         self.local_volume = box_length**3
         # Wrap coordinates 
         #data.iloc[:, 2:5] = (data.iloc[:, 2:5] - self.minlength) % self.total_volume_length + self.minlength
-        data.iloc[:, 2:5] = self.wrap_coordinates(data.iloc[:, 2:5])
+
+        #Wrapped implementation below 
+        ###############################################
+        #data.iloc[:, 1:5] = self.wrap_coordinates(data.iloc[:, 1:5])
         # data.rename(columns={"x": "xu", "y": "yu", "z": "zu"})
-        df_com.iloc[:, 0] = find_box_id(self.midpoint_ridges, data.iloc[:, 1].to_numpy())
-        df_com.iloc[:, 1] = find_box_id(self.midpoint_ridges, data.iloc[:, 2].to_numpy())
-        df_com.iloc[:, 2] = find_box_id(self.midpoint_ridges, data.iloc[:, 3].to_numpy())
+        # df_com.iloc[:, 0] = find_box_id(self.midpoint_ridges, data.iloc[:, 1].to_numpy())
+        # df_com.iloc[:, 1] = find_box_id(self.midpoint_ridges, data.iloc[:, 2].to_numpy())
+        # df_com.iloc[:, 2] = find_box_id(self.midpoint_ridges, data.iloc[:, 3].to_numpy())
         # for i in range(0, data.shape[0]): #Below is an all-python approach 
         #     df_com.iloc[i, 0] = find_nearest(self.midpoint_ridges, data.iloc[i, 1])
         #     df_com.iloc[i, 1] = find_nearest(self.midpoint_ridges, data.iloc[i, 2])
         #     df_com.iloc[i, 2] = find_nearest(self.midpoint_ridges, data.iloc[i, 3])
+        #########################################################
+        #Implementation below preserves unwrapped original coordinates
+        wrapped_coordinates = self.wrap_coordinates(data.iloc[:, 1:5])
+        print("test here below")
+        print(wrapped_coordinates)
+        df_com.iloc[:, 0] = find_box_id(self.midpoint_ridges, wrapped_coordinates.iloc[:, 0].to_numpy())
+        df_com.iloc[:, 1] = find_box_id(self.midpoint_ridges, wrapped_coordinates.iloc[:, 1].to_numpy())
+        df_com.iloc[:, 2] = find_box_id(self.midpoint_ridges, wrapped_coordinates.iloc[:, 2].to_numpy())
 
             
         data = pd.concat([data, df_com], axis=1)
@@ -322,15 +334,20 @@ class atom_coords:
         df_gyration_radius = self.create_new_polymer_df(["comx", "comy", "comz", "gyration_radius"])
         counter = 0
         for i in range(0, self.no_polymers):
-        #for i in range(0, 1000):
+        #for i in range(5, 6):
             # First calculate center of mass 
+            #print(self.datapd[(self.datapd["mol_id"] == i+1)])
             subset = self.datapd[(self.datapd["mol_id"] == i+1)].iloc[:, 1:4]
-            #print(subset)
+
             com = np.mean(subset, axis = 0)
-            #print(com)
+
             df_gyration_radius.iloc[i, :3] = com
             # Shift system to have new center of mass as center 
             subset_com = subset - com
+            #pd.set_option("display.max_rows", None)
+            #print(subset)
+            #print(com)
+            #print(subset_com)
             #subset_com = (subset - com) %self.total_volume_length
             gyration_radius_squared = np.sum((subset_com**2), axis = 1)
             #print(np.mean(gyration_radius_squared))
@@ -360,7 +377,7 @@ class atom_coords:
         if show_plot == True:
             values, bins, _ = plt.hist(np.sqrt(df_gyration_radius.iloc[:, -1]), bins = 100, density = True)
             plt.vlines(np.sqrt(self.mean_gyration_radius), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "mean gyration radius = %.4f" %np.sqrt(self.mean_gyration_radius))
-            plt.vlines(((np.mean(gyration_2[gyration_2 < 10.0]))), ymin = 0, ymax = np.max(values), linestyles =":", color = "red", label = "gaussian peak gyration radius = %.4f" %(np.mean(gyration_2[gyration_2 < 10.0])))
+            #plt.vlines(((np.mean(gyration_2[gyration_2 < 10.0]))), ymin = 0, ymax = np.max(values), linestyles =":", color = "red", label = "gaussian peak gyration radius = %.4f" %(np.mean(gyration_2[gyration_2 < 10.0])))
             plt.title("Distribution of the gyration radius, PVA-100, simulation start")
             plt.xlabel("gyration radius")
             #plt.ylabel("probability")
@@ -499,15 +516,25 @@ class atom_coords:
         print(self.df_labdas)
         #print(self.fraction_crystallinity)
         if save_ev == True:
+            df_labdas.to_csv("10e5_T1_debug_labdas.txt", sep = " ", mode = "w")
             df_cryst.to_csv("%s" %save_string, sep = " ", mode = "w")
 
         return self.fraction_crystallinity
 
 
-    def get_distribution_eigenvalues(self, title, nridges = 33, savestring = None):
+    def get_distribution_eigenvalues(self, title, nridges = 33, savestring = None, readfile = None):
         #TODO modify this to include all eigenvalues instead of the highest one and normalise result
         #labdas = self.df_labdas.to_numpy().flatten()
-        values, bins, _ = plt.hist(self.df_labdas, bins = 1000, density = True)
+        if readfile != None:
+            self.df_labdas = pd.read_csv(readfile, sep = " ", header = None, skiprows = 1)
+        labdas = self.df_labdas.to_numpy()[:, 1:]
+        print(labdas)
+        #Get largest labdas per row 
+        max_indices = np.argmax(np.abs(labdas), axis = 1)
+
+        max_labda = labdas[range(labdas.shape[0]), max_indices]
+        values, bins, _ = plt.hist(max_labda, bins = 250, density = True)
+        print(max_labda)
         plt.title(title)
         plt.xlabel("eigenvalues")
         plt.vlines(0.8, ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "cut-off crystalisation")

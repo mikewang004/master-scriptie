@@ -21,8 +21,8 @@ cryst_T07 = "all_times_cryst_equil_t_07_tdot_e-3.txt"
 cryst_T08 = "all_times_cryst_equil_t_08_tdot_e-3.txt"
 cryst_T075 = "all_times_cryst_equil_t_075_tdot_e-3.txt"
 cryst_T085 = "all_times_cryst_equil_t_085_tdot_e-3.txt"
-cryst_list = [cryst_T07, cryst_T08]
-temps = [0.7, 0.8]
+cryst_list = [cryst_T07, cryst_T075, cryst_T08, cryst_T085]
+temps = [0.7, 0.75, 0.8, 0.85]
 
 
 def calc_crystallisation(file_name_path, times, cryst_file_name):
@@ -56,8 +56,8 @@ def plot_crystallisation(list_cryst_file_names, temps):
 
 
 
-#plot_crystallisation(cryst_list, temps)
+plot_crystallisation(cryst_list, temps)
 
 #calc_crystallisation(data_path, time_temp_T075[:, 0], file_name_T075)
 
-calc_crystallisation(data_path, time_temp_T085[:, 0], file_name_T085)
+#calc_crystallisation(data_path, time_temp_T085[:, 0], file_name_T085)

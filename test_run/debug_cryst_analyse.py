@@ -62,12 +62,23 @@ nridges = 33
 
 
 #last_timestep_long_quench = atom_coords("../../data/pva-100/quick_quench/long_run/equil_t_08_tdot_e-3_time_58800000.txt")
-last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_0.txt")
-last_timestep_e5.read_cryst("10e5_debug_cryst.txt")
+#last_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
+#last_timestep_e5.get_distribution_eigenvalues(r"Distribution of largest eigenvalues, $T = 0.5, \dot{T} = 10^{-5}$", readfile = "10e5_debug_labdas.txt", savestring = "10e5_T05_labda_dist")
+#last_timestep_e5.get_nematic_vector_4(save_ev = True,save_string = "10e5_debug_cryst.txt")
+#last_timestep_e5.read_cryst("10e5_debug_cryst.txt")
 #last_timestep_e5.read_cryst("debug_cryst_analyse_2D.txt") #Should be independent from actual last_timestep used
-last_timestep_e5.merge_boxes(nridges = nridges)
+#last_timestep_e5.merge_boxes(nridges = nridges)
+#last_timestep_e5.get_distribution_eigenvalues(r"Distribution of eigenvalues at $T = 0.5$, $\dot{T} = 10^{-7}$")
 
-#last_timestep_e5.gyration_tensor(show_plot= True)
+#last_timestep_e5.gyration_radius(show_plot= True)
 #last_timestep_e5.gyration_radius_debug()
+
+
+
+first_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_0.txt")
+#first_timestep_e5.get_nematic_vector_4(save_ev = True,save_string = "10e5_T1_debug_cryst.txt")
+#first_timestep_e5.get_distribution_eigenvalues(r"Distribution of largest eigenvalues, $T = 1.0, \dot{T} = 10^{-5}$", readfile = "10e5_T1_debug_labdas.txt", savestring = "10e5_T1_labda_dist")
+
+first_timestep_e5.gyration_radius(show_plot = True)
 
 

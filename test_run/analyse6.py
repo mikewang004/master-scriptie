@@ -443,7 +443,7 @@ class atom_coords:
         df_bond_per_position.index = df_bond_per_position.index + 1
         for i in range(0, self.no_polymers):
             subset = self.bond_vectors[(self.bond_vectors["mol_id"] == i + 1)].to_numpy()[:, 1:4]
-            print(subset)
+            #print(subset)
             #Normalise bond vectors 
             subset = subset/np.linalg.norm(subset, axis = 1, keepdims = True)
             #print(subset)

@@ -57,6 +57,7 @@ def convert_input_lattice_to_cryst_array(input_lattice_file, ndot_cutoff = 0.97)
 
 
 nridges = 33
+#nridges = 6
 
 # convert_input_lattice_to_cryst_array("debug_cryst_lattice.txt")
 
@@ -68,6 +69,7 @@ nridges = 33
 #last_timestep_e5.read_cryst("10e5_debug_cryst.txt")
 #last_timestep_e5.read_cryst("debug_cryst_analyse_2D.txt") #Should be independent from actual last_timestep used
 #last_timestep_e5.merge_boxes(nridges = nridges)
+
 #last_timestep_e5.get_distribution_eigenvalues(r"Distribution of eigenvalues at $T = 0.5$, $\dot{T} = 10^{-7}$")
 
 #last_timestep_e5.gyration_radius(show_plot= True)
@@ -76,9 +78,11 @@ nridges = 33
 
 
 first_timestep_e5 = atom_coords("../../data/pva-100/cooling_tdot_e-5_time_0.txt")
-#first_timestep_e5.get_nematic_vector_4(save_ev = True,save_string = "10e5_T1_debug_cryst.txt")
-#first_timestep_e5.get_distribution_eigenvalues(r"Distribution of largest eigenvalues, $T = 1.0, \dot{T} = 10^{-5}$", readfile = "10e5_T1_debug_labdas.txt", savestring = "10e5_T1_labda_dist")
+first_timestep_e5.bond_bond_correlation()
+# #first_timestep_e5.get_nematic_vector_4(save_ev = True,save_string = "10e5_T1_debug_cryst.txt")
+# #first_timestep_e5.get_distribution_eigenvalues(r"Distribution of largest eigenvalues, $T = 1.0, \dot{T} = 10^{-5}$", readfile = "10e5_T1_debug_labdas.txt", savestring = "10e5_T1_labda_dist")
 
-first_timestep_e5.gyration_radius(show_plot = True)
+# first_timestep_e5.gyration_radius(show_plot = True)
+# first_timestep_e5.end_to_end_distance(show_plot = True)
 
 

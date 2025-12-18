@@ -45,13 +45,14 @@ def plot_crystallisation(list_cryst_file_names, temps):
         array = np.loadtxt(item, delimiter="," )
         print(array)
         time = array[:, 0]; cryst = array[:, 1]
-        plt.scatter(time, cryst, label = "temperature = %f" %temps[i])
+        plt.scatter(time, cryst, label = "temperature = %.2f" %temps[i])
         i = i + 1
     
-    plt.title("Crystallisation as function of time")
+    plt.title(r"PVA-100 crystallisation after quick quench at $\dot{T} = 10^{-3} \tau^{-1}$")
     plt.xlabel(r"time ($\tau$)")
     plt.ylabel("fraction of crystallinity")
     plt.legend()
+    plt.savefig("crystallisation_after_quick_quench.pdf")
     plt.show()
 
 

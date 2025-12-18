@@ -58,21 +58,6 @@ def c_lib_init():
     return lib
 
 
-def cartesian_product_broadcasted(*arrays):
-    """
-    http://stackoverflow.com/a/11146645/190597 (senderle)
-    Needed for plotting the 3d plot easily
-    """
-    broadcastable = np.ix_(*arrays)
-    broadcasted = np.broadcast_arrays(*broadcastable)
-    dtype = np.result_type(*arrays)
-    rows, cols = functools.reduce(np.multiply, broadcasted[0].shape), len(broadcasted)
-    out = np.empty(rows * cols, dtype=dtype)
-    start, end = 0, rows
-    for a in broadcasted:
-        out[start:end] = a.reshape(-1)
-        start, end = end, end + rows
-    return out.reshape(cols, rows).T
         
 def find_nearest_array(nearest_values, data):
     """nearest value: 1d np array of size [a], data: 1d np array of size [n]"""
@@ -301,7 +286,7 @@ class atom_coords:
             dist = np.sum(subset.iloc[:, 1:4])
             df_end_end_length.iloc[i] = (dist.iloc[0]* dist.iloc[0] + dist.iloc[1] * dist.iloc[1] + dist.iloc[2] * dist.iloc[2])
         end_to_end_length = (np.sum(df_end_end_length.to_numpy())/self.no_polymers)
-        end_end_distance_normalised = np.sqrt(df_end_end_length.iloc[:] / end_to_end_length)
+        end_end_distance_normalised = np.sqrt(df_end_end_length.iloc[:])
         self.mean_squared_end_to_end = np.sqrt(end_to_end_length)
         print("mean end-to-end is %f" %self.mean_squared_end_to_end)
 
@@ -311,9 +296,9 @@ class atom_coords:
             mu, sigma = sp.stats.norm.fit(end_end_distance_normalised)
             gauss_fit = sp.stats.norm.pdf(bins, mu, sigma)
             plt.plot(bins, gauss_fit, label = r"Gaussian fit, $\mu = %.2f$, $\sigma = %.2f$" %(mu, sigma))
-            #plt.vlines((self.end_to_end_length), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = r"mean end-to-end length = %.2f" %self.end_to_end_length)
+            plt.vlines((self.mean_squared_end_to_end), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = r"mean end-to-end length = %.2f" %self.mean_squared_end_to_end)
             plt.title("Distribution of end-to-end distance, PVA-100, simulation start")
-            plt.xlabel("end-end distance")
+            plt.xlabel(r"end-end distance ($R_e\sigma$)")
             #plt.ylabel("count")
             plt.legend()
             plt.savefig("end_to_end_distance_PVA-100_start.pdf")
@@ -326,6 +311,18 @@ class atom_coords:
             subset = self.bond_vectors[(self.bond_vectors["mol_id"] == i + 1)]
             
 
+    # def end_to_end_distance_2(self, nridges = 33, show_plot = False):
+    #     df_end_end_length = self.create_new_polymer_df(["end_end_length"])
+    #     for i in range(0, 3):
+    #     #for i in range(0, self.no_polymers):
+    #         subset = self.datapd[(self.datapd["mol_id"] == i+1)].iloc[:, 1:4]
+    #         first_element = subset.iloc[0, 1:4]
+    #         dist = subset.iloc[1:, 1:4] - first_element
+    #         dist_sum = np.sum(dist**2, axis = 1)
+    #         mean_squared_end_to_end = np.sum(dist_sum)
+    #         df_end_end_length.iloc[i] = mean_squared_end_to_end
+    #     print(np.mean(df_end_end_length))
+    
 
     def gyration_radius(self, nridges = 33, show_plot = False):
         """Should confirm to Saras 2018 paper eq. 3"""
@@ -334,9 +331,6 @@ class atom_coords:
         df_gyration_radius = self.create_new_polymer_df(["comx", "comy", "comz", "gyration_radius"])
         counter = 0
         for i in range(0, self.no_polymers):
-        #for i in range(5, 6):
-            # First calculate center of mass 
-            #print(self.datapd[(self.datapd["mol_id"] == i+1)])
             subset = self.datapd[(self.datapd["mol_id"] == i+1)].iloc[:, 1:4]
 
             com = np.mean(subset, axis = 0)
@@ -344,45 +338,23 @@ class atom_coords:
             df_gyration_radius.iloc[i, :3] = com
             # Shift system to have new center of mass as center 
             subset_com = subset - com
-            #pd.set_option("display.max_rows", None)
-            #print(subset)
-            #print(com)
-            #print(subset_com)
-            #subset_com = (subset - com) %self.total_volume_length
             gyration_radius_squared = np.sum((subset_com**2), axis = 1)
             #print(np.mean(gyration_radius_squared))
-
-            # if np.mean(gyration_radius_squared) > 100:
-            #     print("subset original coords given as")
-            #     print(subset)
-            #     print("shifted to com")
-            #     print(subset_com)
-            #     print("with com")
-            #     print(com)
-            #     print(np.mean(subset_com, axis = 0))
-            # #     print(np.mean(gyration_radius_squared))
-            # #     print(com)
-            #     print()
-            #     counter = counter + 1
-            
-            #rhs_average_squared = (np.sum(gyration_radius_squared))
-            #radius_of_gyration = np.sqrt(1/(self.no_polymers * self.polymer_length) * rhs_average)
-            #print(i+1, np.mean(gyration_radius_squared), np.sqrt(np.mean(gyration_radius_squared)))
             df_gyration_radius.iloc[i, 3] = np.mean(gyration_radius_squared) 
-            #df_gyration_radius.iloc[i,3] = np.mean(gyration_radius_squared)
         self.mean_gyration_radius = np.mean(df_gyration_radius["gyration_radius"]) #Ensemble average
         print("mean gyration is %f" %np.sqrt(self.mean_gyration_radius))
-        gyration_2 = np.sqrt(df_gyration_radius.iloc[: , -1].to_numpy())
-        #print(np.mean(gyration_2[gyration_2 > 10.0]))
         if show_plot == True:
-            values, bins, _ = plt.hist(np.sqrt(df_gyration_radius.iloc[:, -1]), bins = 100, density = True)
+            values, bins, _ = plt.hist(np.sqrt(df_gyration_radius.iloc[:, -1]), bins = 200, density = True)
+            #mu, sigma = sp.stats.norm.fit(np.sqrt(df_gyration_radius.iloc[:, -1]))
+            #gauss_fit = sp.stats.norm.pdf(bins, mu, sigma)
+            #plt.plot(bins, gauss_fit, label = r"Gaussian fit, $\mu = %.2f$, $\sigma = %.2f$" %(mu, sigma))
             plt.vlines(np.sqrt(self.mean_gyration_radius), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "mean gyration radius = %.4f" %np.sqrt(self.mean_gyration_radius))
             #plt.vlines(((np.mean(gyration_2[gyration_2 < 10.0]))), ymin = 0, ymax = np.max(values), linestyles =":", color = "red", label = "gaussian peak gyration radius = %.4f" %(np.mean(gyration_2[gyration_2 < 10.0])))
             plt.title("Distribution of the gyration radius, PVA-100, simulation start")
-            plt.xlabel("gyration radius")
+            plt.xlabel(r"gyration radius  ($R_g/\sigma$)")
             #plt.ylabel("probability")
             plt.legend()
-            plt.savefig("gyration_radius_PVA-100_unnormalised_start.pdf")
+            plt.savefig("gyration_radius_PVA-100_normalised_start.pdf")
             plt.show()
 
     def gyration_radius_debug(self, nridges = 33, show_plot = False):
@@ -471,7 +443,7 @@ class atom_coords:
         df_bond_per_position.index = df_bond_per_position.index + 1
         for i in range(0, self.no_polymers):
             subset = self.bond_vectors[(self.bond_vectors["mol_id"] == i + 1)].to_numpy()[:, 1:4]
-            #print(subset)
+            print(subset)
             #Normalise bond vectors 
             subset = subset/np.linalg.norm(subset, axis = 1, keepdims = True)
             #print(subset)
@@ -600,57 +572,46 @@ class atom_coords:
         label_matrix = label_matrix_np
         size = nridges
         #print(labels[labels != 0])
-        print(labels)
+        #print(labels)
         labels2 = labels[labels != 0]
 
 
+        # Loop over matrix to set all points not connected to a cluster to 0 
+
+        for i in range(0, nridges):
+            for j in range(0, nridges):
+                for k in range(0, nridges):
+                    if label_matrix[i,j,k] >0:
+                        if label_matrix[(i -1)% nridges, j,k] ==0 and label_matrix[(i +1)% nridges, j,k] == 0:
+                            if label_matrix[i, (j - 1) % nridges, k]==0 and label_matrix[i, (j + 1) %nridges, k] == 0:
+                                if label_matrix[i,j,(k -1) %nridges]==0 and label_matrix[i,j, (k + 1) %nridges] == 0:
+                                    label_matrix[i,j,k] = 0
+                        if label_matrix[i,j,k] > 0:
+                            print("position %i %i %i, current label %i, neighbours in x-direction %i and %i" %(i,j,k,label_matrix[i,j,k], label_matrix[(i -1)% nridges, j,k], label_matrix[(i +1)% nridges, j,k]))
+                            print("neighbours in y-direction %i and %i" %(label_matrix[i, (j - 1) %nridges, k], label_matrix[i, (j + 1) %nridges, k]))
+                            print("neighbours in z-direction %i and %i" %(label_matrix[i, j, (k - 1)%nridges], label_matrix[i, j, (k + 1)%nridges]))
+
+                        # if label_matrix[(i -1)% nridges, j,k] or label_matrix[(i +1)% nridges, j,k] != 0:
+                        #     print("position %i %i %i, current label %i, neighbours in x-direction %i and %i" %(i,j,k,label_matrix[i,j,k], label_matrix[(i -1)% nridges, j,k], label_matrix[(i +1)% nridges, j,k]))
+                        # if label_matrix[i, (j - 1) % nridges, k] or label_matrix[i, (j + 1) %nridges, k] != 0:
+                        #     print("position %i %i %i, current label %i, neighbours in y-direction %i and %i" %(i,j,k,label_matrix[i,j,k], label_matrix[i, (j - 1) %nridges, k], label_matrix[i, (j + 1) %nridges, k]))
+                        # if label_matrix[i,j,(k -1) %nridges] or label_matrix[i,j, (k + 1) %nridges] != 0:
+                        #     print("position %i %i %i, current label %i, neighbours in z-direction %i and %i" %(i,j,k,label_matrix[i,j,k], label_matrix[i, j, (k - 1)%nridges], label_matrix[i, j, (k + 1)%nridges]))
+
 
         unique_values, counts = np.unique(label_matrix, return_counts=True)
-        print(counts)
-        #for value, count in zip(unique_values, counts):
-        #    print(f"  {value}: {count}")
+        #print(label_matrix[label_matrix != 0])
+        for value, count in zip(unique_values, counts):
+            print(f"  {value}: {count}")
         #print(np.unique(label_matrix))
+        print(np.sum(counts[1:]))
 
-        #maxview = 6
-        #minview = 0
-        #size = maxview - minview
-        #label_matrix = label_matrix[minview:maxview, minview:maxview, minview:maxview]
-        # print(label_matrix[:,:,0])
-        # print(label_matrix[:,:,1])
-        # print(label_matrix[:,:,2])
-        # print(label_matrix[:,:,3])
-        # print(label_matrix[:,:,4])
-        # Set all result values that only have one entry to 0 
+        #print(label_matrix[:,:,0])
+        #print(label_matrix[:,:,1])
         
 
 
 
-
-
-
-       #Plot result 
-
-        # unique_vals, indices, counts = np.unique(label_matrix, return_inverse=True, return_counts=True)
-        # unique_counts = counts[indices].reshape(label_matrix.shape)
-        # mask = unique_counts == 1
-        # label_matrix = label_matrix.copy()
-        # label_matrix[mask] = 0
-
-        # fig = plt.figure()
-
-        # ax = fig.add_subplot(111, projection='3d')
-        # x, y, z = cartesian_product_broadcasted(*[np.arange(size, dtype='int16')]*3).T
-        # mask = ((x == 0) | (x == size-1) 
-        #         | (y == 0) | (y == size-1) 
-        #         | (z == 0) | (z == size-1))
-        # x = x[mask]
-        # y = y[mask]
-        # z = z[mask]
-        # volume = label_matrix.ravel()[mask]
-
-        # scatter = ax.scatter(x, y, z, c=volume, cmap=plt.get_cmap('jet'))
-        # cbar = plt.colorbar(scatter, ax=ax)
-        # plt.show()
 
 
 

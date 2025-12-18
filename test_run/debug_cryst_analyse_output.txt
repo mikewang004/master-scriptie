@@ -1,0 +1,1661 @@
+65.95667343717597 -16.106147750529324 49.850525686646634
+test here below
+                xu        yu        zu
+atom_id                               
+1        44.599273  -3.55803  10.60290
+2        44.649273  -3.52388  10.09420
+3        44.383273  -3.78623   9.80547
+4        44.126373  -4.02598   9.49898
+5        43.881473  -4.27065   9.15644
+...            ...       ...       ...
+719996   31.829800  14.78810   7.60708
+719997   31.739800  14.44690   7.93883
+719998   31.648800  14.08820   8.33535
+719999   31.218600  13.95230   8.52845
+720000   30.812500  13.86600   8.77444
+
+[720000 rows x 3 columns]
+position 0 3 15, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 0 4 28, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 0 4 29, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 0 6 15, current label 37, neighbours in x-direction 0 and 146
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 0 11 16, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 0 12 3, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 0 15 28, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 0 16 28, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 0 19 1, current label 497, neighbours in x-direction 0 and 498
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 0 23 13, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 0 27 3, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 0 27 10, current label 684, neighbours in x-direction 0 and 685
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 0 28 2, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 0 28 3, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 37
+neighbours in z-direction 37 and 0
+position 0 29 3, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 0 32 7, current label 779, neighbours in x-direction 813 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 780
+position 0 32 8, current label 780, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 779 and 0
+position 1 2 12, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 1 3 4, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 89
+position 1 3 5, current label 89, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 1 3 14, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 37
+position 1 3 15, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 1 4 14, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 1 5 15, current label 146, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 146
+neighbours in z-direction 0 and 0
+position 1 6 15, current label 146, neighbours in x-direction 37 and 0
+neighbours in y-direction 146 and 0
+neighbours in z-direction 0 and 0
+position 1 7 6, current label 182, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 205
+neighbours in z-direction 0 and 0
+position 1 8 6, current label 205, neighbours in x-direction 0 and 0
+neighbours in y-direction 182 and 0
+neighbours in z-direction 0 and 0
+position 1 8 20, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 1 9 20, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 1 11 16, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 1 12 3, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 1 19 1, current label 498, neighbours in x-direction 497 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 1 22 13, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 1 23 13, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 1 23 24, current label 595, neighbours in x-direction 0 and 597
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 1 27 10, current label 685, neighbours in x-direction 684 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 2 2 4, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 2 2 12, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 2 3 2, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 2 3 4, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 37
+position 2 3 5, current label 37, neighbours in x-direction 89 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 37 and 0
+position 2 4 5, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 2 6 4, current label 165, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 183
+neighbours in z-direction 0 and 0
+position 2 7 4, current label 183, neighbours in x-direction 0 and 0
+neighbours in y-direction 165 and 0
+neighbours in z-direction 0 and 0
+position 2 7 9, current label 184, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 207
+neighbours in z-direction 0 and 0
+position 2 8 9, current label 207, neighbours in x-direction 0 and 0
+neighbours in y-direction 184 and 0
+neighbours in z-direction 0 and 0
+position 2 15 28, current label 385, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 2 18 29, current label 465, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 466
+position 2 18 30, current label 466, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 465 and 0
+position 2 23 24, current label 597, neighbours in x-direction 595 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 2 23 30, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 2 23 31, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 2 27 2, current label 687, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 710
+neighbours in z-direction 0 and 0
+position 2 28 2, current label 710, neighbours in x-direction 0 and 0
+neighbours in y-direction 687 and 0
+neighbours in z-direction 0 and 0
+position 3 2 1, current label 63, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 37
+position 3 2 2, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 63 and 0
+position 3 3 1, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 63 and 0
+neighbours in z-direction 0 and 37
+position 3 3 2, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 37
+neighbours in z-direction 37 and 0
+position 3 3 18, current label 91, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 92
+position 3 3 19, current label 92, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 91 and 0
+position 3 4 2, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 3 15 27, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 3 15 28, current label 37, neighbours in x-direction 385 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 3 16 30, current label 412, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 439
+neighbours in z-direction 0 and 0
+position 3 17 30, current label 439, neighbours in x-direction 0 and 0
+neighbours in y-direction 412 and 0
+neighbours in z-direction 0 and 0
+position 4 0 27, current label 4, neighbours in x-direction 0 and 5
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 4 4 1, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 4 5 1, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 4 5 3, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 4 12 28, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 4 13 28, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 4 14 22, current label 358, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 390
+neighbours in z-direction 0 and 0
+position 4 15 22, current label 390, neighbours in x-direction 0 and 0
+neighbours in y-direction 358 and 0
+neighbours in z-direction 0 and 0
+position 4 18 13, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 4 29 24, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 4 29 25, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 5 0 27, current label 5, neighbours in x-direction 4 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 5 1 3, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 5 2 3, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 5 4 3, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 5 5 2, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 5 5 3, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 0
+position 5 12 29, current label 309, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 339
+neighbours in z-direction 0 and 0
+position 5 13 29, current label 339, neighbours in x-direction 0 and 0
+neighbours in y-direction 309 and 0
+neighbours in z-direction 0 and 0
+position 5 17 13, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 5 18 12, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 5 18 13, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 0
+position 5 19 11, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 5 20 10, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 5 20 11, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 37
+neighbours in z-direction 37 and 0
+position 5 21 11, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 577
+neighbours in z-direction 0 and 0
+position 5 22 11, current label 577, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 5 24 14, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 5 25 14, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 6 5 12, current label 149, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 168
+neighbours in z-direction 0 and 0
+position 6 6 12, current label 168, neighbours in x-direction 0 and 0
+neighbours in y-direction 149 and 0
+neighbours in z-direction 0 and 0
+position 6 7 1, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 6 8 1, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 6 10 30, current label 253, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 254
+position 6 10 31, current label 254, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 253 and 0
+position 6 24 32, current label 620, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 645
+neighbours in z-direction 0 and 0
+position 6 25 32, current label 645, neighbours in x-direction 0 and 0
+neighbours in y-direction 620 and 0
+neighbours in z-direction 0 and 0
+position 7 3 1, current label 95, neighbours in x-direction 0 and 98
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 7 7 2, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 7 7 3, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 7 8 16, current label 211, neighbours in x-direction 0 and 212
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 7 19 26, current label 500, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 533
+neighbours in z-direction 0 and 0
+position 7 20 26, current label 533, neighbours in x-direction 0 and 0
+neighbours in y-direction 500 and 0
+neighbours in z-direction 0 and 0
+position 7 21 11, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 7 22 11, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 37
+position 7 22 12, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 37 and 0
+position 7 23 10, current label 601, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 601
+neighbours in z-direction 0 and 0
+position 7 23 12, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 7 24 9, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 601
+position 7 24 10, current label 601, neighbours in x-direction 0 and 0
+neighbours in y-direction 601 and 0
+neighbours in z-direction 37 and 0
+position 7 25 14, current label 646, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 665
+neighbours in z-direction 0 and 0
+position 7 26 14, current label 665, neighbours in x-direction 0 and 0
+neighbours in y-direction 646 and 0
+neighbours in z-direction 0 and 0
+position 7 27 1, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 7 28 1, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 8 0 2, current label 7, neighbours in x-direction 0 and 0
+neighbours in y-direction 785 and 0
+neighbours in z-direction 0 and 0
+position 8 3 1, current label 98, neighbours in x-direction 95 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 8 8 16, current label 212, neighbours in x-direction 211 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 8 10 28, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 8 10 29, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 8 15 0, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 8 18 25, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 8 18 26, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 8 26 0, current label 666, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 8 26 1, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 666 and 37
+position 8 26 2, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 8 29 31, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 8 29 32, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 8 32 2, current label 785, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 7
+neighbours in z-direction 0 and 0
+position 9 1 24, current label 39, neighbours in x-direction 0 and 40
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 9 3 21, current label 99, neighbours in x-direction 0 and 101
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 9 13 8, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 9 13 9, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 9 14 0, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 9 15 0, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 0
+position 9 15 32, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 9 20 19, current label 537, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 538
+position 9 20 20, current label 538, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 537 and 0
+position 9 23 12, current label 602, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 621
+neighbours in z-direction 0 and 0
+position 9 24 12, current label 621, neighbours in x-direction 0 and 0
+neighbours in y-direction 602 and 0
+neighbours in z-direction 0 and 0
+position 9 29 31, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 9 31 9, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 10 1 24, current label 40, neighbours in x-direction 39 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 10 3 21, current label 101, neighbours in x-direction 99 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 10 4 24, current label 128, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 129
+position 10 4 25, current label 129, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 128 and 0
+position 10 6 25, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 10 7 15, current label 188, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 189
+position 10 7 16, current label 189, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 188 and 0
+position 10 13 0, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 37
+position 10 13 1, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 10 14 0, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 10 20 25, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 37
+position 10 20 26, current label 37, neighbours in x-direction 0 and 539
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 10 21 25, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 10 29 23, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 10 29 24, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 10 30 9, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 10 31 8, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 10 31 9, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 0
+position 11 5 25, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 11 6 24, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 11 6 25, current label 37, neighbours in x-direction 37 and 37
+neighbours in y-direction 37 and 37
+neighbours in z-direction 37 and 0
+position 11 7 15, current label 37, neighbours in x-direction 188 and 191
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 11 7 25, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 11 13 3, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 11 14 2, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 11 14 3, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 0
+position 11 15 30, current label 393, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 418
+neighbours in z-direction 0 and 0
+position 11 16 30, current label 418, neighbours in x-direction 0 and 0
+neighbours in y-direction 393 and 0
+neighbours in z-direction 0 and 0
+position 11 18 9, current label 475, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 11 19 8, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 11 19 9, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 475 and 0
+neighbours in z-direction 37 and 37
+position 11 19 10, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 11 20 26, current label 539, neighbours in x-direction 37 and 37
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 11 21 26, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 539 and 0
+neighbours in z-direction 0 and 0
+position 11 22 29, current label 581, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 11 28 24, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 12 5 25, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 12 5 27, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 12 6 25, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 37
+neighbours in z-direction 0 and 0
+position 12 6 27, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 12 7 14, current label 191, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 191
+position 12 7 15, current label 191, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 191 and 0
+position 12 7 24, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 12 7 25, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 0
+position 12 13 9, current label 343, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 363
+neighbours in z-direction 0 and 0
+position 12 14 9, current label 363, neighbours in x-direction 0 and 0
+neighbours in y-direction 343 and 0
+neighbours in z-direction 0 and 0
+position 12 19 8, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 12 20 26, current label 37, neighbours in x-direction 539 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 12 21 26, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 12 21 30, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 12 22 29, current label 37, neighbours in x-direction 581 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 37
+position 12 22 30, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 37
+neighbours in z-direction 37 and 0
+position 12 23 29, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 37
+position 12 23 30, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 0
+position 12 28 24, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 13 0 20, current label 14, neighbours in x-direction 0 and 15
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 13 2 19, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 13 2 20, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 13 2 28, current label 67, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 68
+position 13 2 29, current label 68, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 67 and 0
+position 13 15 11, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 13 17 8, current label 443, neighbours in x-direction 0 and 446
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 13 27 16, current label 692, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 693
+position 13 27 17, current label 693, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 692 and 0
+position 13 27 23, current label 694, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 14 0 20, current label 15, neighbours in x-direction 14 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 14 0 22, current label 16, neighbours in x-direction 0 and 0
+neighbours in y-direction 792 and 0
+neighbours in z-direction 0 and 0
+position 14 1 14, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 14 15 11, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 14 17 8, current label 446, neighbours in x-direction 443 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 14 27 22, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 14 27 23, current label 37, neighbours in x-direction 694 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 14 32 22, current label 792, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 16
+neighbours in z-direction 0 and 0
+position 15 1 11, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 15 1 14, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 15 2 10, current label 69, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 15 2 11, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 69 and 0
+position 15 2 17, current label 71, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 108
+neighbours in z-direction 0 and 0
+position 15 3 6, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 15 3 17, current label 108, neighbours in x-direction 0 and 0
+neighbours in y-direction 71 and 0
+neighbours in z-direction 0 and 0
+position 15 7 10, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 15 10 13, current label 259, neighbours in x-direction 0 and 260
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 15 12 23, current label 315, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 346
+neighbours in z-direction 0 and 0
+position 15 12 32, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 15 13 23, current label 346, neighbours in x-direction 0 and 0
+neighbours in y-direction 315 and 0
+neighbours in z-direction 0 and 0
+position 15 25 22, current label 650, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 651
+position 15 25 23, current label 651, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 650 and 0
+position 15 27 24, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 15 27 25, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 15 29 6, current label 740, neighbours in x-direction 0 and 741
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 16 1 10, current label 44, neighbours in x-direction 0 and 46
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 16 2 25, current label 72, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 110
+neighbours in z-direction 0 and 0
+position 16 2 28, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 73
+position 16 2 29, current label 73, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 16 3 6, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 16 3 13, current label 109, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 16 3 25, current label 110, neighbours in x-direction 0 and 0
+neighbours in y-direction 72 and 0
+neighbours in z-direction 0 and 0
+position 16 3 28, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 16 5 6, current label 151, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 174
+neighbours in z-direction 0 and 0
+position 16 5 18, current label 153, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 16 5 19, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 153 and 0
+position 16 6 6, current label 174, neighbours in x-direction 0 and 0
+neighbours in y-direction 151 and 0
+neighbours in z-direction 0 and 0
+position 16 7 10, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 16 9 31, current label 232, neighbours in x-direction 0 and 237
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 16 10 13, current label 260, neighbours in x-direction 259 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 16 10 30, current label 261, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 16 11 30, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 261 and 0
+neighbours in z-direction 0 and 37
+position 16 11 31, current label 37, neighbours in x-direction 0 and 291
+neighbours in y-direction 0 and 37
+neighbours in z-direction 37 and 37
+position 16 11 32, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 37 and 0
+position 16 12 31, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 37
+position 16 12 32, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 0
+position 16 15 0, current label 396, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 422
+neighbours in z-direction 0 and 0
+position 16 16 0, current label 422, neighbours in x-direction 0 and 0
+neighbours in y-direction 396 and 0
+neighbours in z-direction 0 and 0
+position 16 26 22, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 16 26 23, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 16 29 6, current label 741, neighbours in x-direction 740 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 17 1 10, current label 46, neighbours in x-direction 44 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 17 1 12, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 17 1 13, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 17 3 13, current label 37, neighbours in x-direction 109 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 17 5 7, current label 154, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 17 5 8, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 154 and 0
+position 17 5 19, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 17 9 15, current label 233, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 234
+position 17 9 16, current label 234, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 233 and 0
+position 17 9 31, current label 237, neighbours in x-direction 232 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 17 11 11, current label 288, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 317
+neighbours in z-direction 0 and 0
+position 17 11 31, current label 291, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 17 12 11, current label 317, neighbours in x-direction 0 and 0
+neighbours in y-direction 288 and 0
+neighbours in z-direction 0 and 0
+position 17 15 1, current label 397, neighbours in x-direction 0 and 398
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 17 20 9, current label 541, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 562
+neighbours in z-direction 0 and 0
+position 17 21 9, current label 562, neighbours in x-direction 0 and 0
+neighbours in y-direction 541 and 0
+neighbours in z-direction 0 and 0
+position 17 24 28, current label 630, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 653
+neighbours in z-direction 0 and 0
+position 17 25 19, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 17 25 28, current label 653, neighbours in x-direction 0 and 0
+neighbours in y-direction 630 and 0
+neighbours in z-direction 0 and 0
+position 17 26 19, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 17 26 22, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 17 26 23, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 17 31 16, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 17 32 15, current label 796, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 17 32 16, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 796 and 0
+position 18 1 12, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 18 1 13, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 37 and 0
+position 18 2 13, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 37
+neighbours in z-direction 0 and 0
+position 18 3 13, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 18 5 8, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 18 7 1, current label 194, neighbours in x-direction 0 and 195
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 18 14 11, current label 369, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 399
+neighbours in z-direction 0 and 0
+position 18 15 1, current label 398, neighbours in x-direction 397 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 18 15 11, current label 399, neighbours in x-direction 0 and 0
+neighbours in y-direction 369 and 0
+neighbours in z-direction 0 and 0
+position 18 16 1, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 398 and 37
+neighbours in z-direction 0 and 0
+position 18 17 1, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 18 21 29, current label 564, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 564
+neighbours in z-direction 0 and 0
+position 18 22 29, current label 564, neighbours in x-direction 0 and 0
+neighbours in y-direction 564 and 0
+neighbours in z-direction 0 and 0
+position 18 31 6, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 19 2 1, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 19 2 2, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 19 4 30, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 19 7 1, current label 195, neighbours in x-direction 194 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 19 7 31, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 19 9 13, current label 238, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 239
+position 19 9 14, current label 239, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 238 and 0
+position 19 11 2, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 19 12 12, current label 318, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 19 15 19, current label 401, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 402
+position 19 15 20, current label 402, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 401 and 0
+position 19 19 26, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 19 31 5, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 19 31 6, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 19 32 15, current label 798, neighbours in x-direction 0 and 801
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 799
+position 19 32 16, current label 799, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 798 and 800
+position 19 32 17, current label 800, neighbours in x-direction 0 and 802
+neighbours in y-direction 0 and 0
+neighbours in z-direction 799 and 0
+position 20 2 1, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 20 2 2, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 20 2 31, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 20 2 32, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 20 3 30, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 20 4 30, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 20 5 24, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 20 5 25, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 20 7 20, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 20 7 31, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 20 8 20, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 20 9 9, current label 240, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 264
+neighbours in z-direction 0 and 0
+position 20 10 8, current label 263, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 264
+position 20 10 9, current label 264, neighbours in x-direction 0 and 0
+neighbours in y-direction 240 and 0
+neighbours in z-direction 263 and 0
+position 20 11 2, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 319
+neighbours in z-direction 0 and 0
+position 20 12 2, current label 319, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 348
+neighbours in z-direction 0 and 0
+position 20 12 12, current label 37, neighbours in x-direction 318 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 20 13 2, current label 348, neighbours in x-direction 0 and 0
+neighbours in y-direction 319 and 0
+neighbours in z-direction 0 and 349
+position 20 13 3, current label 349, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 348 and 0
+position 20 18 14, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 20 18 26, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 482
+position 20 18 27, current label 482, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 20 19 13, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 20 19 14, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 0
+position 20 19 26, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 37
+neighbours in z-direction 0 and 0
+position 20 20 26, current label 37, neighbours in x-direction 0 and 545
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 20 29 24, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 20 32 15, current label 801, neighbours in x-direction 798 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 20 32 17, current label 802, neighbours in x-direction 800 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 21 2 15, current label 77, neighbours in x-direction 0 and 81
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 21 3 18, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 21 5 19, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 21 5 22, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 21 5 23, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 37
+position 21 5 24, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 21 6 19, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 21 8 10, current label 223, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 242
+neighbours in z-direction 0 and 0
+position 21 9 10, current label 242, neighbours in x-direction 0 and 0
+neighbours in y-direction 223 and 0
+neighbours in z-direction 0 and 0
+position 21 11 12, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 21 12 12, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 21 18 8, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 21 20 25, current label 545, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 545
+position 21 20 26, current label 545, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 545 and 0
+position 21 28 24, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 21 29 23, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 21 29 24, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 0
+position 22 2 13, current label 79, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 80
+position 22 2 14, current label 80, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 79 and 81
+position 22 2 15, current label 81, neighbours in x-direction 77 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 80 and 0
+position 22 3 7, current label 115, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 22 3 18, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 22 4 7, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 115 and 37
+neighbours in z-direction 0 and 0
+position 22 5 7, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 22 18 8, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 22 25 18, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 674
+neighbours in z-direction 0 and 37
+position 22 25 19, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 22 26 18, current label 674, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 22 27 17, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 23 5 30, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 23 5 31, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 23 8 11, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 23 11 8, current label 297, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 298
+position 23 11 9, current label 298, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 297 and 0
+position 23 13 8, current label 350, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 375
+neighbours in z-direction 0 and 0
+position 23 14 8, current label 375, neighbours in x-direction 0 and 0
+neighbours in y-direction 350 and 0
+neighbours in z-direction 0 and 0
+position 23 15 24, current label 404, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 404
+position 23 15 25, current label 404, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 404 and 0
+position 23 19 32, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 23 20 31, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 23 20 32, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 0
+position 23 25 4, current label 656, neighbours in x-direction 0 and 657
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 23 27 0, current label 701, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 722
+neighbours in z-direction 0 and 0
+position 23 27 17, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 23 27 27, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 23 27 28, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 23 28 0, current label 722, neighbours in x-direction 0 and 0
+neighbours in y-direction 701 and 744
+neighbours in z-direction 0 and 0
+position 23 29 0, current label 744, neighbours in x-direction 0 and 0
+neighbours in y-direction 722 and 0
+neighbours in z-direction 0 and 0
+position 24 1 16, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 24 1 31, current label 55, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 83
+neighbours in z-direction 0 and 0
+position 24 2 31, current label 83, neighbours in x-direction 0 and 0
+neighbours in y-direction 55 and 0
+neighbours in z-direction 0 and 0
+position 24 3 6, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 24 5 30, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 24 5 31, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 24 7 11, current label 199, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 24 8 10, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 37
+position 24 8 11, current label 37, neighbours in x-direction 37 and 37
+neighbours in y-direction 199 and 0
+neighbours in z-direction 37 and 0
+position 24 9 10, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 37
+neighbours in z-direction 0 and 0
+position 24 10 10, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 24 12 26, current label 323, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 324
+position 24 12 27, current label 324, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 323 and 0
+position 24 19 32, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 24 20 31, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 24 25 4, current label 657, neighbours in x-direction 656 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 24 28 7, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 24 29 6, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 24 29 7, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 0
+position 25 1 16, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 25 3 6, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 25 3 23, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 25 3 24, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 25 5 15, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 25 8 11, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 37
+position 25 8 12, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 37 and 0
+position 25 9 11, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 37
+position 25 9 12, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 0
+position 25 10 18, current label 269, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 302
+neighbours in z-direction 0 and 270
+position 25 10 19, current label 270, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 269 and 0
+position 25 11 18, current label 302, neighbours in x-direction 0 and 0
+neighbours in y-direction 269 and 0
+neighbours in z-direction 0 and 0
+position 25 19 24, current label 518, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 548
+neighbours in z-direction 0 and 0
+position 25 20 24, current label 548, neighbours in x-direction 0 and 0
+neighbours in y-direction 518 and 0
+neighbours in z-direction 0 and 0
+position 25 25 18, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 25 31 18, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 25 31 19, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 26 0 32, current label 28, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 56
+neighbours in z-direction 0 and 0
+position 26 1 32, current label 56, neighbours in x-direction 0 and 0
+neighbours in y-direction 28 and 0
+neighbours in z-direction 0 and 0
+position 26 5 15, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 26 6 20, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 26 7 19, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 26 7 20, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 0
+position 26 9 11, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 26 14 27, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 26 17 31, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 26 17 32, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 26 19 17, current label 519, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 26 20 17, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 519 and 0
+neighbours in z-direction 0 and 0
+position 26 25 17, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 26 25 18, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 26 28 4, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 26 29 6, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 26 30 5, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 26 30 6, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 0
+position 27 0 24, current label 29, neighbours in x-direction 0 and 0
+neighbours in y-direction 809 and 0
+neighbours in z-direction 0 and 0
+position 27 6 20, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 27 7 14, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 27 10 8, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 27 10 9, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 27 14 27, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 27 18 3, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 27 19 17, current label 37, neighbours in x-direction 519 and 37
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 27 20 16, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 37
+position 27 20 17, current label 37, neighbours in x-direction 37 and 37
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 0
+position 27 21 16, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 27 28 3, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 27 28 4, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 27 28 6, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 27 29 5, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 27 29 6, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 0
+position 27 30 15, current label 764, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 776
+neighbours in z-direction 0 and 0
+position 27 31 15, current label 776, neighbours in x-direction 0 and 0
+neighbours in y-direction 764 and 0
+neighbours in z-direction 0 and 0
+position 27 31 22, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 27 32 24, current label 809, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 29
+neighbours in z-direction 0 and 0
+position 28 0 25, current label 30, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 31
+position 28 0 26, current label 31, neighbours in x-direction 0 and 0
+neighbours in y-direction 810 and 0
+neighbours in z-direction 30 and 0
+position 28 6 14, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 28 7 14, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 28 13 19, current label 352, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 353
+position 28 13 20, current label 353, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 352 and 0
+position 28 14 6, current label 376, neighbours in x-direction 0 and 380
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 28 14 11, current label 377, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 378
+position 28 14 12, current label 378, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 377 and 379
+position 28 14 13, current label 379, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 378 and 0
+position 28 14 20, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 353 and 0
+neighbours in z-direction 0 and 0
+position 28 14 29, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 28 15 28, current label 408, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 28 15 29, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 408 and 0
+position 28 18 3, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 28 18 16, current label 490, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 37
+position 28 18 17, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 37
+neighbours in z-direction 490 and 0
+position 28 19 16, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 490 and 37
+neighbours in z-direction 0 and 37
+position 28 19 17, current label 37, neighbours in x-direction 37 and 37
+neighbours in y-direction 37 and 37
+neighbours in z-direction 37 and 0
+position 28 20 15, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 28 20 16, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 37
+neighbours in z-direction 37 and 37
+position 28 20 17, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 37
+position 28 20 18, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 28 21 16, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 28 26 12, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 28 27 11, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 28 27 12, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 0
+position 28 28 3, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 28 30 21, current label 37, neighbours in x-direction 0 and 746
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 28 31 21, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 37
+position 28 31 22, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 28 32 26, current label 810, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 31
+neighbours in z-direction 0 and 0
+position 29 8 15, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 29 9 15, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 29 10 9, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 29 14 6, current label 380, neighbours in x-direction 376 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 29 14 20, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 29 18 17, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 29 19 16, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 29 19 17, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 0
+position 29 26 17, current label 682, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 29 27 4, current label 706, neighbours in x-direction 0 and 708
+neighbours in y-direction 0 and 725
+neighbours in z-direction 0 and 0
+position 29 28 4, current label 725, neighbours in x-direction 0 and 0
+neighbours in y-direction 706 and 725
+neighbours in z-direction 0 and 0
+position 29 29 4, current label 725, neighbours in x-direction 0 and 0
+neighbours in y-direction 725 and 0
+neighbours in z-direction 0 and 0
+position 29 29 21, current label 746, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 746
+neighbours in z-direction 0 and 0
+position 29 30 21, current label 746, neighbours in x-direction 37 and 0
+neighbours in y-direction 746 and 0
+neighbours in z-direction 0 and 0
+position 30 9 9, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 30 10 9, current label 37, neighbours in x-direction 37 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 30 22 12, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 30 22 13, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 30 25 17, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 30 26 17, current label 37, neighbours in x-direction 682 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 30 27 4, current label 708, neighbours in x-direction 706 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 30 28 10, current label 37, neighbours in x-direction 0 and 728
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 37
+position 30 28 11, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 37
+position 30 28 12, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 30 29 10, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 31 12 18, current label 330, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 331
+position 31 12 19, current label 331, neighbours in x-direction 0 and 332
+neighbours in y-direction 0 and 0
+neighbours in z-direction 330 and 0
+position 31 19 11, current label 523, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 31 19 12, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 523 and 0
+position 31 20 12, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 31 25 18, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 31 26 18, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 0
+position 31 28 10, current label 728, neighbours in x-direction 37 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 31 28 29, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 0
+position 31 29 28, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 31 29 29, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 0
+position 32 2 7, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 37
+position 32 2 8, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 37 and 0
+position 32 12 19, current label 332, neighbours in x-direction 331 and 0
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 32 16 28, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0
+position 32 19 13, current label 524, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 554
+neighbours in z-direction 0 and 0
+position 32 20 13, current label 554, neighbours in x-direction 0 and 0
+neighbours in y-direction 524 and 0
+neighbours in z-direction 0 and 0
+position 32 28 3, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 0 and 37
+neighbours in z-direction 0 and 37
+position 32 28 4, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 0 and 37
+neighbours in z-direction 37 and 0
+position 32 29 3, current label 37, neighbours in x-direction 0 and 37
+neighbours in y-direction 37 and 0
+neighbours in z-direction 0 and 37
+position 32 29 4, current label 37, neighbours in x-direction 0 and 0
+neighbours in y-direction 37 and 0
+neighbours in z-direction 37 and 0
+position 32 32 7, current label 813, neighbours in x-direction 0 and 779
+neighbours in y-direction 0 and 0
+neighbours in z-direction 0 and 0

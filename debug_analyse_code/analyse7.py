@@ -226,6 +226,9 @@ class atom_coords:
         new_df.index = new_df.index + 1
         return new_df
 
+
+    # Cleaned up until here
+
     def end_to_end_distance(self, show_plot = False, save_plot_string = None):
         # Calculates end-to-end distance of each polymer 
         #print(self.datapd)
@@ -234,8 +237,6 @@ class atom_coords:
             # First calculate end to end distance 
             # defined as r_n - r_i for each position 
             subset = self.bond_vectors[(self.bond_vectors["mol_id"] == i+1)]
-            first_element = subset.iloc[0, 1:4] #r_{i,1}
-            last_element = subset.iloc[-1, 1:4] #r_{i,N}
             dist = np.sum(subset.iloc[:, 1:4])
             df_end_end_length.iloc[i] = (dist.iloc[0]* dist.iloc[0] + dist.iloc[1] * dist.iloc[1] + dist.iloc[2] * dist.iloc[2])
         end_to_end_length = (np.sum(df_end_end_length.to_numpy())/self.no_polymers)

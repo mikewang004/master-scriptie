@@ -85,7 +85,7 @@ def find_box_id(nearest_values, data):
     result_copy = result_array.copy()
     
     # Free the C-allocated memory
-    lib.free_results(result_ptr)
+    #lib.free_results(result_ptr)
     
     return result_copy
 
@@ -125,7 +125,7 @@ def get_time_temp_from_slurm(file_to_path):
 
 class atom_coords:
 
-    """Used to read in files and analyse them"""
+    """Read in files and do basic data preprocessing"""
 
     def __init__(self, file_to_path, nridges = 33):
         #Read in data 
@@ -227,185 +227,6 @@ class atom_coords:
         return new_df
 
 
-    # Cleaned up until here
-
-    def end_to_end_distance(self, show_plot = False, save_plot_string = None):
-        # Calculates end-to-end distance of each polymer 
-        #print(self.datapd)
-        df_end_end_length = self.create_new_polymer_df(["end_end_length"])
-        for i in range(0, self.no_polymers):
-            # First calculate end to end distance 
-            # defined as r_n - r_i for each position 
-            subset = self.bond_vectors[(self.bond_vectors["mol_id"] == i+1)]
-            dist = np.sum(subset.iloc[:, 1:4])
-            df_end_end_length.iloc[i] = (dist.iloc[0]* dist.iloc[0] + dist.iloc[1] * dist.iloc[1] + dist.iloc[2] * dist.iloc[2])
-        end_to_end_length = (np.sum(df_end_end_length.to_numpy())/self.no_polymers)
-        end_end_distance_normalised = np.sqrt(df_end_end_length.iloc[:])
-        self.mean_squared_end_to_end = np.sqrt(end_to_end_length)
-        print("mean end-to-end is %f" %self.mean_squared_end_to_end)
-
-        if show_plot == True:
-            # Fit gaussian 
-            values, bins, _ = plt.hist(end_end_distance_normalised, bins = 200, density = True)
-            mu, sigma = sp.stats.norm.fit(end_end_distance_normalised)
-            gauss_fit = sp.stats.norm.pdf(bins, mu, sigma)
-            plt.plot(bins, gauss_fit, label = r"Gaussian fit, $\mu = %.2f$, $\sigma = %.2f$" %(mu, sigma))
-            plt.vlines((self.mean_squared_end_to_end), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = r"mean end-to-end length = %.2f" %self.mean_squared_end_to_end)
-            plt.title("Distribution of end-to-end distance, PVA-100, simulation start")
-            plt.xlabel(r"end-end distance ($R_e\sigma$)")
-            #plt.ylabel("count")
-            plt.legend()
-            plt.savefig("end_to_end_distance_PVA-100_start.pdf")
-            plt.show()
-        return self.mean_squared_end_to_end;
-
-    
-    def distribution_bond_vectors(self, show_plot = False):
-        for i in range(0, self.no_polymers):
-            subset = self.bond_vectors[(self.bond_vectors["mol_id"] == i + 1)]
-            
-
-    # def end_to_end_distance_2(self, nridges = 33, show_plot = False):
-    #     df_end_end_length = self.create_new_polymer_df(["end_end_length"])
-    #     for i in range(0, 3):
-    #     #for i in range(0, self.no_polymers):
-    #         subset = self.datapd[(self.datapd["mol_id"] == i+1)].iloc[:, 1:4]
-    #         first_element = subset.iloc[0, 1:4]
-    #         dist = subset.iloc[1:, 1:4] - first_element
-    #         dist_sum = np.sum(dist**2, axis = 1)
-    #         mean_squared_end_to_end = np.sum(dist_sum)
-    #         df_end_end_length.iloc[i] = mean_squared_end_to_end
-    #     print(np.mean(df_end_end_length))
-    
-
-    def gyration_radius(self, nridges = 33, show_plot = False):
-        """Should confirm to Saras 2018 paper eq. 3"""
-        #TODO fix definition of rhs and gyration radius 
-        # First calculate center of mass of each polymer 
-        df_gyration_radius = self.create_new_polymer_df(["comx", "comy", "comz", "gyration_radius"])
-        counter = 0
-        for i in range(0, self.no_polymers):
-            subset = self.datapd[(self.datapd["mol_id"] == i+1)].iloc[:, 1:4]
-
-            com = np.mean(subset, axis = 0)
-
-            df_gyration_radius.iloc[i, :3] = com
-            # Shift system to have new center of mass as center 
-            subset_com = subset - com
-            gyration_radius_squared = np.sum((subset_com**2), axis = 1)
-            #print(np.mean(gyration_radius_squared))
-            df_gyration_radius.iloc[i, 3] = np.mean(gyration_radius_squared) 
-        self.mean_gyration_radius = np.mean(df_gyration_radius["gyration_radius"]) #Ensemble average
-        print("mean gyration is %f" %np.sqrt(self.mean_gyration_radius))
-        if show_plot == True:
-            values, bins, _ = plt.hist(np.sqrt(df_gyration_radius.iloc[:, -1]), bins = 200, density = True)
-            #mu, sigma = sp.stats.norm.fit(np.sqrt(df_gyration_radius.iloc[:, -1]))
-            #gauss_fit = sp.stats.norm.pdf(bins, mu, sigma)
-            #plt.plot(bins, gauss_fit, label = r"Gaussian fit, $\mu = %.2f$, $\sigma = %.2f$" %(mu, sigma))
-            plt.vlines(np.sqrt(self.mean_gyration_radius), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "mean gyration radius = %.4f" %np.sqrt(self.mean_gyration_radius))
-            #plt.vlines(((np.mean(gyration_2[gyration_2 < 10.0]))), ymin = 0, ymax = np.max(values), linestyles =":", color = "red", label = "gaussian peak gyration radius = %.4f" %(np.mean(gyration_2[gyration_2 < 10.0])))
-            plt.title("Distribution of the gyration radius, PVA-100, simulation start")
-            plt.xlabel(r"gyration radius  ($R_g/\sigma$)")
-            #plt.ylabel("probability")
-            plt.legend()
-            plt.savefig("gyration_radius_PVA-100_normalised_start.pdf")
-            plt.show()
-
-    def gyration_radius_debug(self, nridges = 33, show_plot = False):
-        molid = 999
-        for i in range(molid, molid +1):
-            subset = self.datapd[(self.datapd["mol_id"] == i+1)].iloc[:, 1:4]
-            print(subset)
-            com = np.mean(subset, axis = 0)
-            subset_com = subset - com
-            print(subset_com)
-            gyration_radius_squared = np.sum((subset_com**2), axis = 1)/self.polymer_length
-            print(np.sqrt(gyration_radius_squared))
-            
-
-    def gyration_radius_rmsd(self, nridges = 33, show_plot = False):
-        df_gyration_radius = self.create_new_polymer_df(["comx", "comy", "comz", "gyration_radius"])
-        counter = 0
-        for i in range(0, self.no_polymers):
-        #for i in range(0, 50):
-            subset = np.array(self.datapd[(self.datapd["mol_id"] == i+1)].iloc[:, 1:4])
-            sqd = np.sum((np.abs(subset[:, np.newaxis] - subset))**2, axis = 2)
-            upper_triangle = sqd[np.triu_indices(self.polymer_length, k=1)]
-
-            gyration_radius_squared = np.sum(upper_triangle)/(2 * self.polymer_length**2)
-
-            df_gyration_radius.iloc[i, 3] = np.mean(gyration_radius_squared) 
-        self.mean_gyration_radius = np.mean(df_gyration_radius["gyration_radius"]) #Ensemble average
-        print("mean gyration is %f" %np.sqrt(self.mean_gyration_radius))
-        gyration_2 = np.sqrt(df_gyration_radius.iloc[: , -1].to_numpy())
-
-        if show_plot == True:
-            values, bins, _ = plt.hist(np.sqrt(df_gyration_radius.iloc[:, -1]), bins = 50, density = True)
-            plt.vlines(np.sqrt(self.mean_gyration_radius), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "mean gyration radius = %.4f" %np.sqrt(self.mean_gyration_radius))
-            plt.vlines(((np.mean(gyration_2[gyration_2 < 10.0]))), ymin = 0, ymax = np.max(values), linestyles =":", color = "red", label = "gaussian peak gyration radius = %.4f" %(np.mean(gyration_2[gyration_2 < 10.0])))
-            plt.title("Distribution of the gyration radius, PVA-100, simulation start")
-            plt.xlabel("gyration radius")
-            #plt.ylabel("probability")
-            plt.legend()
-            plt.savefig("gyration_radius_PVA-100_unnormalised_start.pdf")
-            plt.show()
-
-
-
-    def gyration_tensor(self, nridges = 33, show_plot = False):
-        df_gyration_radius = self.create_new_polymer_df(["comx", "comy", "comz", "gyration_radius"])
-        for i in range(0, self.no_polymers):
-            subset = np.array(self.datapd[(self.datapd["mol_id"] == i+1)].iloc[:, 1:4])
-            com = np.mean(subset, axis = 0)
-            #print(com)
-            df_gyration_radius.iloc[i, :3] = com
-            # Shift system to have new center of mass as center 
-            subset_com = subset - com
-            # Normalise result 
-            gyration_tensor =  np.einsum('im,in->mn', subset_com,subset_com)/self.polymer_length
-            labda, ev = np.linalg.eig(gyration_tensor)
-            gyration_radius_squared = np.sum(labda)
-            df_gyration_radius.iloc[i, 3] = np.mean(gyration_radius_squared) 
-        self.mean_gyration_radius = np.mean(df_gyration_radius["gyration_radius"]) #Ensemble average
-        gyration_2 = np.sqrt(df_gyration_radius.iloc[: , -1].to_numpy())
-
-        if show_plot == True:
-            values, bins, _ = plt.hist(np.sqrt(df_gyration_radius.iloc[:, -1]), bins = 100, density = True)
-            plt.vlines(np.sqrt(self.mean_gyration_radius), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "mean gyration radius = %.4f" %np.sqrt(self.mean_gyration_radius))
-            plt.vlines(((np.mean(gyration_2[gyration_2 < 10.0]))), ymin = 0, ymax = np.max(values), linestyles =":", color = "red", label = "gaussian peak gyration radius = %.4f" %(np.mean(gyration_2[gyration_2 < 10.0])))
-            plt.title("Distribution of the gyration radius, PVA-100, simulation start")
-            plt.xlabel("gyration radius")
-            #plt.ylabel("probability")
-            plt.legend()
-            plt.savefig("gyration_radius_PVA-100_unnormalised_start.pdf")
-            plt.show()
-
-
-
-    def bond_bond_correlation(self, show_plot = False):
-        #df_mean_bond_bond_per_polymer = self.create_new_polymer_df(["cos_theta"])
-        df_bond_per_position = pd.DataFrame(np.zeros([int(self.n_atoms/self.no_polymers)-2, self.no_polymers]))
-        df_bond_per_position.index.name = "bead_position"
-        df_bond_per_position.index = df_bond_per_position.index + 1
-        for i in range(0, self.no_polymers):
-            subset = self.bond_vectors[(self.bond_vectors["mol_id"] == i + 1)].to_numpy()[:, 1:4]
-            #print(subset)
-            #Normalise bond vectors 
-            subset = subset/np.linalg.norm(subset, axis = 1, keepdims = True)
-            #print(subset)
-            bond_bond_array = lib.inner_products_per_polymer(subset, subset.shape[0], subset.shape[1])
-            bond_bond_array = np.ctypeslib.as_array(bond_bond_array, shape=(subset.shape[0]-1,))
-            #print(bond_bond_array)
-            df_bond_per_position.iloc[:, i] = bond_bond_array
-            #print(df_bond_per_position.iloc[:, i])
-        cos_per_position = np.mean(df_bond_per_position, axis = 1)
-        print(cos_per_position)
-        plt.scatter(cos_per_position.index, cos_per_position)
-        plt.xlabel("n")
-        plt.ylabel(r"cos\theta(n)")
-        plt.title("Distribution of bond-bond correlations")
-        plt.show()
-
     def get_nematic_vector_4(self, nridges = 33, save_ev = False, save_string = None):
         data = self.datapd
         # Prepare masks of all possible combinations 
@@ -438,49 +259,6 @@ class atom_coords:
             df_cryst.to_csv("%s" %save_string, sep = " ", mode = "w")
 
         return self.fraction_crystallinity
-
-
-    def get_distribution_eigenvalues(self, title, nridges = 33, savestring = None, readfile = None):
-        #TODO modify this to include all eigenvalues instead of the highest one and normalise result
-        #labdas = self.df_labdas.to_numpy().flatten()
-        if readfile != None:
-            self.df_labdas = pd.read_csv(readfile, sep = " ", header = None, skiprows = 1)
-        labdas = self.df_labdas.to_numpy()[:, 1:]
-        print(labdas)
-        #Get largest labdas per row 
-        max_indices = np.argmax(np.abs(labdas), axis = 1)
-
-        max_labda = labdas[range(labdas.shape[0]), max_indices]
-        values, bins, _ = plt.hist(max_labda, bins = 250, density = True)
-        print(max_labda)
-        plt.title(title)
-        plt.xlabel("eigenvalues")
-        plt.vlines(0.8, ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "cut-off crystalisation")
-        plt.legend()
-        if savestring == None:
-            plt.show()
-        else:
-            plt.savefig("%s.pdf" %savestring)
-        plt.close()
-        #plt.show()
-
-    def apply_nn_cutoff(self, ndot, ndot_cutoff = 0.97):
-        if ndot >= cutoff:
-            return 1
-        else:
-            return 0
-
-
-    def calc_rdf(self):
-        """Calculates radial distribution function"""
-
-        data = self.datapd
-        positions = data.iloc[:-1, 1:4].to_numpy()
-        j = 0
-        current_position = positions[0, :]
-        dists = np.abs(current_position - positions)
-        print(dists)
-
 
 
     def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8):
@@ -539,25 +317,85 @@ class atom_coords:
             print(f"  {value}: {count}")
         print(np.sum(counts[1:]))
 
-        
 
 
 
 
-    def get_density_dist(self, nridges = 33):
-        """Uses new method with combinations to calculate local density (i.e. density per box)"""
-        #print(self.combinations)
-        local_densities = np.zeros([len(self.combinations), 4]) #First three columns reserved for combination, last for corresponding density
-        local_densities[:, :3] = self.combinations
-        data = self.assign_center_of_mass(nridges = nridges)
-        for t in tqdm(range(0, len(self.combinations))):
-            combination = self.combinations[t]
-            subset = data[(data['xid'] == combination[0]) & (data['yid'] == combination[1]) & (data['zid'] == combination[2])]
-            local_densities[t, 3] = len(subset.index)/self.local_volume
-        return local_densities
+class polymer_properties():
+    def __init__(self, atom_coords):
+        self.atom_coords = atom_coords
+        self.results = results()
+
+    def create_new_polymer_df(self, column_names):
+        """Creates an empty dataframe per mol_id with len(column_names) columns. column_names must be a list"""
+        new_df = pd.DataFrame(np.zeros([self.atom_coords.no_polymers, len(column_names)]), columns = column_names)
+        new_df.index.name = "mol_id"
+        new_df.index = new_df.index + 1
+        return new_df
+
+    def end_to_end_distance(self, show_plot = False, save_plot_string = None):
+        # Calculates end-to-end distance of each polymer 
+        #print(self.datapd)
+        df_end_end_length = self.create_new_polymer_df(["end_end_length"])
+        for i in range(0, self.atom_coords.no_polymers):
+            # First calculate end to end distance 
+            # defined as r_n - r_i for each position 
+            subset = self.bond_vectors[(self.bond_vectors["mol_id"] == i+1)]
+            dist = np.sum(subset.iloc[:, 1:4])
+            df_end_end_length.iloc[i] = (dist.iloc[0]* dist.iloc[0] + dist.iloc[1] * dist.iloc[1] + dist.iloc[2] * dist.iloc[2])
+        end_to_end_length = (np.sum(df_end_end_length.to_numpy())/self.no_polymers)
+        end_end_distance_normalised = np.sqrt(df_end_end_length.iloc[:])
+        self.results.end_to_end_length = end_to_end_length
+        self.mean_squared_end_to_end = np.sqrt(end_to_end_length)
+        print("mean end-to-end is %f" %self.mean_squared_end_to_end)
+
+    def gyration_radius(self, nridges = 33, show_plot = False):
+        """Should confirm to Saras 2018 paper eq. 3"""
+        df_gyration_radius = self.create_new_polymer_df(["comx", "comy", "comz", "gyration_radius"])
+        counter = 0
+        for i in range(0, self.atom_coords.no_polymers):
+            subset = self.atom_coords.datapd[(self.atom_coords.datapd["mol_id"] == i+1)].iloc[:, 1:4]
+
+            com = np.mean(subset, axis = 0)
+
+            df_gyration_radius.iloc[i, :3] = com
+            # Shift system to have new center of mass as center 
+            subset_com = subset - com
+            gyration_radius_squared = np.sum((subset_com**2), axis = 1)
+            #print(np.mean(gyration_radius_squared))
+            df_gyration_radius.iloc[i, 3] = np.mean(gyration_radius_squared) 
+        self.results.gyration_radius = df_gyration_radius
+        self.mean_gyration_radius = np.mean(df_gyration_radius["gyration_radius"]) #Ensemble average
+        print("mean gyration is %f" %np.sqrt(self.mean_gyration_radius))
+
+
+    def bond_bond_correlation(self, show_plot = False):
+        #df_mean_bond_bond_per_polymer = self.create_new_polymer_df(["cos_theta"])
+        df_bond_per_position = pd.DataFrame(np.zeros([int(self.atom_coords.n_atoms/self.atom_coords.no_polymers)-2, self.atom_coords.no_polymers]))
+        df_bond_per_position.index.name = "bead_position"
+        df_bond_per_position.index = df_bond_per_position.index + 1
+        for i in range(0, self.atom_coords.no_polymers):
+            subset = self.atom_coords.bond_vectors[(self.atom_coords.bond_vectors["mol_id"] == i + 1)].to_numpy()[:, 1:4]
+            #print(subset)
+            #Normalise bond vectors 
+            subset = subset/np.linalg.norm(subset, axis = 1, keepdims = True)
+            #print(subset)
+            bond_bond_array = lib.inner_products_per_polymer(subset, subset.shape[0], subset.shape[1])
+            bond_bond_array = np.ctypeslib.as_array(bond_bond_array, shape=(subset.shape[0]-1,))
+            #print(bond_bond_array)
+            df_bond_per_position.iloc[:, i] = bond_bond_array
+            #print(df_bond_per_position.iloc[:, i])
+        cos_per_position = np.mean(df_bond_per_position, axis = 1)
+        print(cos_per_position)
+
 
 
 
 class results(object):
     def __init__(self):
         return
+
+    # Include plotting functions here 
+
+
+lib = c_lib_init()

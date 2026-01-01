@@ -8,6 +8,9 @@ file_name_T07 = "equil_t_07_tdot_e-3"
 file_name_T08 = "equil_t_08_tdot_e-3"
 file_name_T075 = "equil_t_075_tdot_e-3"
 file_name_T085 = "equil_t_085_tdot_e-3"
+file_name_e4_T085 = "equil_t_085_tdot_e-4"
+file_name_run2_e3_T07 = "equil_t_07_tdot_e-3_run2"
+file_name_run2_e3_T085 = "equil_t_085_tdot_e-3_run2"
 
 # Search all 
 
@@ -15,14 +18,23 @@ time_temp_T08 = get_time_temp_from_slurm(data_path + "/slurm-T=0.8.out")
 time_temp_T07 = get_time_temp_from_slurm(data_path + "/slurm-T=0.7.out")
 time_temp_T085 = get_time_temp_from_slurm(data_path + "/slurm-T=0.85.out")
 time_temp_T075 = get_time_temp_from_slurm(data_path + "/slurm-T=0.75.out")
-print(time_temp_T07[:, 0])
+time_temp_e4_T085 = get_time_temp_from_slurm(data_path + "/slurm-e4-T=0.85.out")
+time_temp_run2_e3_T07 = get_time_temp_from_slurm(data_path + "/slurm-run2-e3-T=0.7.out")
+time_temp_run2_e3_T085 = get_time_temp_from_slurm(data_path + "/slurm-run2-e3-T=0.85.out")
+#print(time_temp_T07[:, 0])
 
 cryst_T07 = "all_times_cryst_equil_t_07_tdot_e-3.txt"
 cryst_T08 = "all_times_cryst_equil_t_08_tdot_e-3.txt"
 cryst_T075 = "all_times_cryst_equil_t_075_tdot_e-3.txt"
 cryst_T085 = "all_times_cryst_equil_t_085_tdot_e-3.txt"
-cryst_list = [cryst_T07, cryst_T075, cryst_T08, cryst_T085]
-temps = [0.7, 0.75, 0.8, 0.85]
+e3_run2_cryst_T07 = "all_times_cryst_equil_t_07_tdot_e-3_run2.txt"
+e3_run2_cryst_T085 = "all_times_cryst_equil_t_085_tdot_e-3_run2.txt"
+e4_cryst_T085 = "all_times_cryst_equil_t_085_tdot_e-4.txt"
+#cryst_list = [cryst_T07, cryst_T075, cryst_T08, cryst_T085]
+#temps = [0.7, 0.75, 0.8, 0.85]
+
+cryst_list = [e3_run2_cryst_T07, e3_run2_cryst_T085]
+temps = [0.7, 0.85]
 
 
 def calc_crystallisation(file_name_path, times, cryst_file_name):
@@ -62,3 +74,9 @@ plot_crystallisation(cryst_list, temps)
 #calc_crystallisation(data_path, time_temp_T075[:, 0], file_name_T075)
 
 #calc_crystallisation(data_path, time_temp_T085[:, 0], file_name_T085)
+
+#calc_crystallisation(data_path, time_temp_e4_T085[:, 0], file_name_e4_T085)
+
+#calc_crystallisation(data_path, time_temp_run2_e3_T07[:, 0], file_name_run2_e3_T07)
+
+#calc_crystallisation(data_path, time_temp_run2_e3_T085[:, 0], file_name_run2_e3_T085)

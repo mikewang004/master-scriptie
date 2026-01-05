@@ -40,10 +40,17 @@ def box_algos_lib_init():
         ctypes.c_int,
         ctypes.c_int
     ]
+    lib.bond_bond_correlation.argtypes = [
+        np.ctypeslib.ndpointer(ctypes.c_double), 
+        np.ctypeslib.ndpointer(ctypes.c_double), 
+        ctypes.c_int,
+        ctypes.c_int
+    ]
     lib.find_nearest_value.restype = ctypes.POINTER(ctypes.c_int)  # int* return type
     lib.hoshen_kopelman_crystallisation.restype = None
     lib.inner_products_per_polymer.restype = ctypes.POINTER(ctypes.c_double)
     lib.inner_products_columnwise_array.restype = ctypes.POINTER(ctypes.c_double)
+    lib.bond_bond_correlation.restype = None
     #lib.hoshen_kopelman_crystallisation.restype = ctypes.c_double
     return lib
 

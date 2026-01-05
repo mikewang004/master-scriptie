@@ -88,6 +88,22 @@ double* inner_products_per_polymer(double* array, int rows, int cols) {
     return results;
 }
 
+void bond_bond_correlation(double* bond_array, double *bond_bond_triag_arr, int no_bonds, int dims) {
+    // NB no_bonds is amount of bond vectors in a given polymer. This is the same as the amount of monomers in a polymer - 1
+    // no_bonds is also the amount of rows
+    for (int i = 0; i < no_bonds; i ++) {
+        //printf("{x,y,z} = %d %d %d \n",bond_array[0 * dims + i], bond_array[1 * dims + i], bond_array[2 * dims + i]);
+        printf("%f \n", bond_array[i]);
+        double* pos_i = &bond_array[i * dims];       // Position i
+        for (int j = i; j < no_bonds; j ++) {
+            double* pos_j = &bond_array[(j + 1) * dims]; // Position j
+            
+            // bond_bond_triag_arr #Should confirm to bond_bond_correlation_array[i,j,k]
+
+        }
+    }
+}
+
 
 double* find_neighbours(double *array, int rows, int cols, 
                                   int x, int y, int z) {

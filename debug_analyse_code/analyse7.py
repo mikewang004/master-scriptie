@@ -12,8 +12,21 @@ import ctypes
 def gaussian(x, H, A, x0, sigma):
     return H + A * np.exp(-(x - x0)**2 / (2 * sigma**2))
 
-# Load the shared library
+def calc_nematic_tensor_2(array):
+    """Calculation for the nematic tensor of a local box. NB this is not used yet in the analysis."""
+    array_length = array.shape[0]
+    array = array / np.linalg.norm(array, axis = 1, keepdims = True)
+    Q = np.zeros([3,3])
+    outer = (np.einsum('ni,nj->ij', array, array)) / array_length
+    #Q =  np.mean(outer  - (1/3) * np.eye(3), axis = 0) # According to Sommer/Luo Sep 2010
 
+    Q = 1.5 * outer - 0.5* np.eye(3) # Sara 2015
+    #order_param = np.sqrt(1.5 * np.trace(Q**2)) #Sommer/Luo 2010
+    labda, ev = np.linalg.eigh(Q)
+    max_labda = np.max(labda)
+    max_ev = ev[:, np.argmax(labda)]
+    order_param = max_labda #Sara 2015
+    return max_labda, max_ev, labda, ev
 
 
 
@@ -161,8 +174,6 @@ class atom_coords:
         #print(self.total_volume_length, self.minlength, self.maxlength)
         local_volume = box_length**3
         wrapped_coordinates = self.wrap_coordinates(data.iloc[:, 1:5])
-        print("test here below")
-        print(wrapped_coordinates)
         df_com.iloc[:, 0] = find_box_id(midpoint_ridges, wrapped_coordinates.iloc[:, 0].to_numpy())
         df_com.iloc[:, 1] = find_box_id(midpoint_ridges, wrapped_coordinates.iloc[:, 1].to_numpy())
         df_com.iloc[:, 2] = find_box_id(midpoint_ridges, wrapped_coordinates.iloc[:, 2].to_numpy())
@@ -332,33 +343,37 @@ class polymer_properties():
     def bond_bond_correlation(self, show_plot = False):
         #For PVA-100: 7200 x99 x 99 upper triangular matrix, axis-0: j, axis-1: j + 1
         bond_bond_correlation_array = np.zeros([self.atom_coords.no_polymers, self.atom_coords.polymer_length-1, self.atom_coords.polymer_length-1])
-        print(self.atom_coords.bond_vectors)
-        for i in range(0, self.atom_coords.no_polymers):
+        #for i in range(0, self.atom_coords.no_polymers):
+        for i in range(0,1):
             subset = self.atom_coords.bond_vectors[(self.atom_coords.bond_vectors["mol_id"] == i + 1)].to_numpy()[:, 1:4]
             #Normalise bond vectors 
             subset = subset/np.linalg.norm(subset, axis = 1, keepdims = True)
-            for j in range(0, subset.shape[0]):
-                counter_n = subset.shape[0] - j
-                # Calculate inner product for all counter_n 
-                for k in range(j, subset.shape[0]):
-                    bond_corr = np.dot(subset[j, :], subset[k, :])
-                    bond_bond_correlation_array[i,j,k] = bond_corr
-        bond_correlation_average = np.mean(bond_bond_correlation_array, axis = 0)
-        print(bond_correlation_average)
+            print(subset)
+            bond_bond_corr_array_polymer = np.zeros([self.atom_coords.polymer_length-1, self.atom_coords.polymer_length-1])
+            box_algos_lib.bond_bond_correlation(subset, bond_bond_corr_array_polymer, subset.shape[0], subset.shape[1])
+        #     print(subset.shape)
+        #     for j in range(0, subset.shape[0]):
+        #         counter_n = subset.shape[0] - j
+        #         # Calculate inner product for all counter_n 
+        #         for k in range(j, subset.shape[0]):
+        #             bond_corr = np.dot(subset[j, :], subset[k, :])
+        #             bond_bond_correlation_array[i,j,k] = bond_corr
+        # bond_correlation_average = np.mean(bond_bond_correlation_array, axis = 0)
+        # print(bond_correlation_average)
         #np.savetxt("debug_bond_bond_average.txt", bond_correlation_average)
         #bond_correlation_average = np.loadtxt("debug_bond_bond_average.txt")
-        diag_means = np.zeros(self.atom_coords.polymer_length-1)
-        for i in range(0, self.atom_coords.polymer_length -1):
-            #print(np.mean(np.diagonal(bond_correlation_average, offset = i)))
-            diag_means[i] = np.mean(np.diagonal(bond_correlation_average, offset = i))
-        #print(np.mean(bond_correlation_average, axis = 0))
-        positions = np.arange(1, 100)
-        print(diag_means)
-        plt.scatter(positions, (diag_means))
-        plt.xlabel("n")
-        plt.ylabel(r"cos\theta(n)")
-        plt.title("Distribution of bond-bond correlations")
-        plt.show()
+        # diag_means = np.zeros(self.atom_coords.polymer_length-1)
+        # for i in range(0, self.atom_coords.polymer_length -1):
+        #     #print(np.mean(np.diagonal(bond_correlation_average, offset = i)))
+        #     diag_means[i] = np.mean(np.diagonal(bond_correlation_average, offset = i))
+        # #print(np.mean(bond_correlation_average, axis = 0))
+        # positions = np.arange(1, 100)
+        # print(diag_means)
+        # plt.scatter(positions, (diag_means))
+        # plt.xlabel("n")
+        # plt.ylabel(r"cos\theta(n)")
+        # plt.title("Distribution of bond-bond correlations")
+        # plt.show()
 
 
 

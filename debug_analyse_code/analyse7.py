@@ -4,56 +4,16 @@ import matplotlib.pyplot as plt
 import re 
 import pandas as pd 
 from tqdm import tqdm
-import ctypes
 import functools
 import sys
+from boxAlgorithmsInC import box_algos_lib
+import ctypes
 
 def gaussian(x, H, A, x0, sigma):
     return H + A * np.exp(-(x - x0)**2 / (2 * sigma**2))
 
 # Load the shared library
-def c_lib_init():
-    lib = ctypes.CDLL('./boxAlgorithmsInC.so')
 
-    # Define the function signature
-    lib.find_nearest_value.argtypes = [
-        ctypes.POINTER(ctypes.c_double),  # const double nearest_values[]
-        ctypes.c_size_t,                   # size_t a_size
-        ctypes.POINTER(ctypes.c_double),  # const double data[]
-        ctypes.c_size_t                    # size_t n_size
-    ]
-    
-    lib.hoshen_kopelman_crystallisation.argtypes = [
-        ctypes.POINTER(ctypes.c_double), #Input cryst_array [box-id, cryst_value, xev, yev, zev]
-        ctypes.c_int, #no. rows
-        ctypes.c_int, #no. cols
-        ctypes.c_int, #nridges
-        ctypes.c_float, #cutoff for crystallisation yes/no
-        ctypes.c_float, #cutoff for ndot product 
-        ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.c_int))), #Return array of size nridges**#
-        ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.c_int))), #Return array of size nridges**#
-        #(ctypes.POINTER(ctypes.c_int)) #Return array containing cluster indexes and size
-        np.ctypeslib.ndpointer(ctypes.c_int, flags = "C_CONTIGUOUS")
-    ]
-
-    lib.inner_products_per_polymer.argtypes = [
-        np.ctypeslib.ndpointer(ctypes.c_double),
-        ctypes.c_int,
-        ctypes.c_int
-    ]
-
-    lib.inner_products_columnwise_array.argtypes = [
-        np.ctypeslib.ndpointer(ctypes.c_double), #Input array 1 of size [rows x cols]
-        np.ctypeslib.ndpointer(ctypes.c_double), #Input array 2 of size [rows x cols]
-        ctypes.c_int,
-        ctypes.c_int
-    ]
-    lib.find_nearest_value.restype = ctypes.POINTER(ctypes.c_int)  # int* return type
-    lib.hoshen_kopelman_crystallisation.restype = None
-    lib.inner_products_per_polymer.restype = ctypes.POINTER(ctypes.c_double)
-    lib.inner_products_columnwise_array.restype = ctypes.POINTER(ctypes.c_double)
-    #lib.hoshen_kopelman_crystallisation.restype = ctypes.c_double
-    return lib
 
 
 
@@ -75,7 +35,7 @@ def find_box_id(nearest_values, data):
     data_ptr = data.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
     
     # Call C function
-    result_ptr = lib.find_nearest_value(nearest_values_ptr, a_size, data_ptr, n_size)
+    result_ptr = box_algos_lib.find_nearest_value(nearest_values_ptr, a_size, data_ptr, n_size)
     
     # Convert result pointer to numpy array
     # This creates a view without copying data
@@ -136,7 +96,7 @@ class atom_coords:
         #Calculate box properties 
         self.n_atoms = len(self.datapd.index)
         self.no_polymers = self.datapd["mol_id"].max()
-        self.polymer_length = self.n_atoms/self.no_polymers
+        self.polymer_length = int(self.n_atoms/self.no_polymers)
         self.combinations = self.generate_box_list()
         self.bond_vectors = self.calculate_bond_vectors()
         self.datapd, self.local_volume = self.assign_center_of_mass(nridges = nridges)
@@ -280,7 +240,7 @@ class atom_coords:
                 for k in range(nridges):
                     label_matrix[i][j][k] = label_matrix_np[i, j, k]
                     new_label_matrix[i][j][k] = label_matrix_np[i, j, k]
-        lib.hoshen_kopelman_crystallisation(cryst_array_c, rows, cols, nridges, cryst_cutoff, ndot_cutoff, label_matrix, new_label_matrix, labels)
+        box_algos_lib.hoshen_kopelman_crystallisation(cryst_array_c, rows, cols, nridges, cryst_cutoff, ndot_cutoff, label_matrix, new_label_matrix, labels)
 
         #Return label matrix to c 
 
@@ -370,23 +330,35 @@ class polymer_properties():
 
 
     def bond_bond_correlation(self, show_plot = False):
-        #df_mean_bond_bond_per_polymer = self.create_new_polymer_df(["cos_theta"])
-        df_bond_per_position = pd.DataFrame(np.zeros([int(self.atom_coords.n_atoms/self.atom_coords.no_polymers)-2, self.atom_coords.no_polymers]))
-        df_bond_per_position.index.name = "bead_position"
-        df_bond_per_position.index = df_bond_per_position.index + 1
+        #For PVA-100: 7200 x99 x 99 upper triangular matrix, axis-0: j, axis-1: j + 1
+        bond_bond_correlation_array = np.zeros([self.atom_coords.no_polymers, self.atom_coords.polymer_length-1, self.atom_coords.polymer_length-1])
+        print(self.atom_coords.bond_vectors)
         for i in range(0, self.atom_coords.no_polymers):
             subset = self.atom_coords.bond_vectors[(self.atom_coords.bond_vectors["mol_id"] == i + 1)].to_numpy()[:, 1:4]
-            #print(subset)
             #Normalise bond vectors 
             subset = subset/np.linalg.norm(subset, axis = 1, keepdims = True)
-            #print(subset)
-            bond_bond_array = lib.inner_products_per_polymer(subset, subset.shape[0], subset.shape[1])
-            bond_bond_array = np.ctypeslib.as_array(bond_bond_array, shape=(subset.shape[0]-1,))
-            #print(bond_bond_array)
-            df_bond_per_position.iloc[:, i] = bond_bond_array
-            #print(df_bond_per_position.iloc[:, i])
-        cos_per_position = np.mean(df_bond_per_position, axis = 1)
-        print(cos_per_position)
+            for j in range(0, subset.shape[0]):
+                counter_n = subset.shape[0] - j
+                # Calculate inner product for all counter_n 
+                for k in range(j, subset.shape[0]):
+                    bond_corr = np.dot(subset[j, :], subset[k, :])
+                    bond_bond_correlation_array[i,j,k] = bond_corr
+        bond_correlation_average = np.mean(bond_bond_correlation_array, axis = 0)
+        print(bond_correlation_average)
+        #np.savetxt("debug_bond_bond_average.txt", bond_correlation_average)
+        #bond_correlation_average = np.loadtxt("debug_bond_bond_average.txt")
+        diag_means = np.zeros(self.atom_coords.polymer_length-1)
+        for i in range(0, self.atom_coords.polymer_length -1):
+            #print(np.mean(np.diagonal(bond_correlation_average, offset = i)))
+            diag_means[i] = np.mean(np.diagonal(bond_correlation_average, offset = i))
+        #print(np.mean(bond_correlation_average, axis = 0))
+        positions = np.arange(1, 100)
+        print(diag_means)
+        plt.scatter(positions, (diag_means))
+        plt.xlabel("n")
+        plt.ylabel(r"cos\theta(n)")
+        plt.title("Distribution of bond-bond correlations")
+        plt.show()
 
 
 
@@ -398,4 +370,13 @@ class results(object):
     # Include plotting functions here 
 
 
-lib = c_lib_init()
+
+
+def main():
+    """Testing function"""
+
+    first_timestep_e5 = polymer_properties(atom_coords("../../data/pva-100/cooling_tdot_e-5_time_0.txt"))
+    first_timestep_e5.bond_bond_correlation()
+
+if __name__ == "__main__":
+    main()

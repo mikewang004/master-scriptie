@@ -60,6 +60,7 @@ double inner_products_columnwise_array(double* array1, double* array2, int rows,
 }
 
 double* inner_products_per_polymer(double* array, int rows, int cols) {
+    // Deprecated, rework later, corresponding python function is bond_bond_correlation
     if (array == NULL || rows < 3 || cols != 3) {
         printf("Error: Invalid input parameters\n");
         printf("  array: %s, rows: %d, cols: %d\n", 

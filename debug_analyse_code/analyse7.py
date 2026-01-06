@@ -292,7 +292,7 @@ class atom_coords:
 
 
 
-class polymer_properties():
+class polymer():
     def __init__(self, atom_coords):
         self.atom_coords = atom_coords
         self.results = results()
@@ -317,7 +317,7 @@ class polymer_properties():
         end_to_end_length = (np.sum(df_end_end_length.to_numpy())/self.no_polymers)
         end_end_distance_normalised = np.sqrt(df_end_end_length.iloc[:])
         self.results.end_to_end_length = end_to_end_length
-        self.mean_squared_end_to_end = np.sqrt(end_to_end_length)
+        self.results.mean_squared_end_to_end = np.sqrt(end_to_end_length)
         print("mean end-to-end is %f" %self.mean_squared_end_to_end)
 
     def gyration_radius(self, nridges = 33, show_plot = False):
@@ -336,7 +336,7 @@ class polymer_properties():
             #print(np.mean(gyration_radius_squared))
             df_gyration_radius.iloc[i, 3] = np.mean(gyration_radius_squared) 
         self.results.gyration_radius = df_gyration_radius
-        self.mean_gyration_radius = np.mean(df_gyration_radius["gyration_radius"]) #Ensemble average
+        self.results.mean_gyration_radius = np.mean(df_gyration_radius["gyration_radius"]) #Ensemble average
         print("mean gyration is %f" %np.sqrt(self.mean_gyration_radius))
 
 
@@ -361,14 +361,14 @@ class polymer_properties():
         for i in range(0, self.atom_coords.polymer_length -1):
         #     #print(np.mean(np.diagonal(bond_correlation_average, offset = i)))
             diag_means[i] = np.mean(np.diagonal(bond_correlation_average, offset = i))
-        # #print(np.mean(bond_correlation_average, axis = 0))
-        positions = np.arange(1, 100)
-        print(diag_means)
-        plt.scatter(positions, (diag_means))
-        plt.xlabel("n")
-        plt.ylabel(r"cos\theta(n)")
-        plt.title("Distribution of bond-bond correlations")
-        plt.show()
+        self.results.bond_bond_correlation = diag_means
+        self.atom_coords.positions = np.arange(1, 100)
+        # plt.scatter(positions, (diag_means))
+        # plt.xlabel("n")
+        # plt.ylabel(r"cos\theta(n)")
+        # plt.title("Distribution of bond-bond correlations")
+        #plt.show()
+
 
 
 
@@ -379,14 +379,55 @@ class results(object):
 
     # Include plotting functions here 
 
+class make_plot():
+    def __init__(self):
+        return
+
+    def scatter_plot(xdata: list, ydata: list, labels: list = None, xlabel = None, ylabel = None, title = None, save_string: str = None, show_plot: bool = False):
+        """xdata, ydata lists of numpy arrays"""
+
+        print(xdata, ydata)
+        if isinstance(xdata, list):
+            if len(xdata) == len(ydata):
+                for i in range(len(xdata)):
+                    if labels != None:
+                        plt.scatter(xdata[i],ydata[i],labels[i])
+                    else:
+                        plt.scatter(xdata[i],ydata[i])
+            else:
+                raise Exception("x,y need have same len")
+        else:
+            if isinstance(xdata, np.ndarray):
+                if isinstance(ydata, np.ndarray):
+                    if isinstance(labels, str):
+                        plt.scatter(xdata, ydata, labels)
+                    else:
+                        plt.scatter(xdata, ydata)
+                else: 
+                    raise Exception("x,y need have same len")
+
+
+        if isinstance(xlabel, str):
+            plt.xlabel(xlabel)
+        if isinstance(ylabel, str):
+            plt.ylabel(ylabel)
+        if isinstance(title, str):
+            plt.title(title)
+
+        if isinstance(save_string, str):
+            plt.savefig(save_string)
+        if show_plot == True:
+            plt.show()
 
 
 
 def main():
     """Testing function"""
 
-    first_timestep_e5 = polymer_properties(atom_coords("../../data/pva-100/cooling_tdot_e-5_time_0.txt"))
+    first_timestep_e5 = polymer(atom_coords("../../data/pva-100/cooling_tdot_e-5_time_0.txt"))
     first_timestep_e5.bond_bond_correlation()
+    make_plot.scatter_plot(first_timestep_e5.atom_coords.positions, first_timestep_e5.results.bond_bond_correlation, xlabel = "n",
+        ylabel = r"cos\theta(n)", title = "Distribution of bond-bond correlations, PVA-100", save_string = "plots/bond_bond_corr.pdf")
 
 if __name__ == "__main__":
     main()

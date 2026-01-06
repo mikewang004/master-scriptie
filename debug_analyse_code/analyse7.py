@@ -9,6 +9,8 @@ import sys
 from boxAlgorithmsInC import box_algos_lib
 import ctypes
 
+from polymer_plots import *
+
 def gaussian(x, H, A, x0, sigma):
     return H + A * np.exp(-(x - x0)**2 / (2 * sigma**2))
 
@@ -379,45 +381,7 @@ class results(object):
 
     # Include plotting functions here 
 
-class make_plot():
-    def __init__(self):
-        return
 
-    def scatter_plot(xdata: list, ydata: list, labels: list = None, xlabel = None, ylabel = None, title = None, save_string: str = None, show_plot: bool = False):
-        """xdata, ydata lists of numpy arrays"""
-
-        print(xdata, ydata)
-        if isinstance(xdata, list):
-            if len(xdata) == len(ydata):
-                for i in range(len(xdata)):
-                    if labels != None:
-                        plt.scatter(xdata[i],ydata[i],labels[i])
-                    else:
-                        plt.scatter(xdata[i],ydata[i])
-            else:
-                raise Exception("x,y need have same len")
-        else:
-            if isinstance(xdata, np.ndarray):
-                if isinstance(ydata, np.ndarray):
-                    if isinstance(labels, str):
-                        plt.scatter(xdata, ydata, labels)
-                    else:
-                        plt.scatter(xdata, ydata)
-                else: 
-                    raise Exception("x,y need have same len")
-
-
-        if isinstance(xlabel, str):
-            plt.xlabel(xlabel)
-        if isinstance(ylabel, str):
-            plt.ylabel(ylabel)
-        if isinstance(title, str):
-            plt.title(title)
-
-        if isinstance(save_string, str):
-            plt.savefig(save_string)
-        if show_plot == True:
-            plt.show()
 
 
 
@@ -426,8 +390,6 @@ def main():
 
     first_timestep_e5 = polymer(atom_coords("../../data/pva-100/cooling_tdot_e-5_time_0.txt"))
     first_timestep_e5.bond_bond_correlation()
-    make_plot.scatter_plot(first_timestep_e5.atom_coords.positions, first_timestep_e5.results.bond_bond_correlation, xlabel = "n",
-        ylabel = r"cos\theta(n)", title = "Distribution of bond-bond correlations, PVA-100", save_string = "plots/bond_bond_corr.pdf")
 
 if __name__ == "__main__":
     main()

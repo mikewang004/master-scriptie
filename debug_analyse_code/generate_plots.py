@@ -31,7 +31,7 @@ def main():
     #     ylabel = r"cos\theta(n)", title = "Distribution of bond-bond correlations, PVA-100", save_string = "plots/bond_bond_corr.pdf")
 
     make_plot.scatter_plot(positions_list, bond_bond_list, labels_list, xlabel = "n",
-        ylabel = r"cos\theta(n)", title = "Distribution of bond-bond correlations, PVA-100", save_string = "plots/bond_bond_corr_PVA_100_tdot_e5.pdf")
+        ylabel = r"$\cos\theta(n)$", title = "Distribution of bond-bond correlations, PVA-100", save_string = "plots/bond_bond_corr_PVA_100_tdot_e5.pdf", marker = ".")
 
 if __name__ == "__main__":
     main()

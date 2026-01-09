@@ -6,7 +6,7 @@ import pandas as pd
 from tqdm import tqdm
 import functools
 import sys
-from boxAlgorithmsInC import box_algos_lib
+from clibraries.boxAlgorithmsInC import box_algos_lib, hk_lib
 import ctypes
 
 from polymer_plots import *
@@ -234,69 +234,14 @@ class atom_coords:
         return self.fraction_crystallinity
 
 
-    def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8):
-        max_labels = 837
-        cryst_array = self.df_cryst.iloc[:, 1:].to_numpy()
-        rows, cols = cryst_array.shape[0], cryst_array.shape[1]
-        cryst_array_c = cryst_array.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-
-        label_matrix_np = np.zeros([nridges, nridges, nridges], dtype = int)
-        label_matrix = (ctypes.POINTER(ctypes.POINTER(ctypes.c_int)) * nridges)()
-        new_label_matrix = (ctypes.POINTER(ctypes.POINTER(ctypes.c_int)) * nridges)()
-        labels = np.zeros(max_labels, dtype = np.int32)
-        for i in range(nridges):
-            label_matrix[i] = (ctypes.POINTER(ctypes.c_int) * nridges)()
-            new_label_matrix[i] = (ctypes.POINTER(ctypes.c_int) * nridges)()
-            for j in range(nridges):
-                label_matrix[i][j] = (ctypes.c_int * nridges)()
-                new_label_matrix[i][j] = (ctypes.c_int * nridges)()
-                for k in range(nridges):
-                    label_matrix[i][j][k] = label_matrix_np[i, j, k]
-                    new_label_matrix[i][j][k] = label_matrix_np[i, j, k]
-        box_algos_lib.hoshen_kopelman_crystallisation(cryst_array_c, rows, cols, nridges, cryst_cutoff, ndot_cutoff, label_matrix, new_label_matrix, labels)
-
-        #Return label matrix to c 
-
-        for i in range(nridges):
-            for j in range(nridges):
-                for k in range(nridges):
-                    label_matrix_np[i,j,k] = label_matrix[j][i][k]
-
-
-
-        label_matrix = label_matrix_np
-        size = nridges
-        labels2 = labels[labels != 0]
-
-
-        # Loop over matrix to set all points not connected to a cluster to 0 
-
-        for i in range(0, nridges):
-            for j in range(0, nridges):
-                for k in range(0, nridges):
-                    if label_matrix[i,j,k] >0:
-                        if label_matrix[(i -1)% nridges, j,k] ==0 and label_matrix[(i +1)% nridges, j,k] == 0:
-                            if label_matrix[i, (j - 1) % nridges, k]==0 and label_matrix[i, (j + 1) %nridges, k] == 0:
-                                if label_matrix[i,j,(k -1) %nridges]==0 and label_matrix[i,j, (k + 1) %nridges] == 0:
-                                    label_matrix[i,j,k] = 0
-                        if label_matrix[i,j,k] > 0:
-                            print("position %i %i %i, current label %i, neighbours in x-direction %i and %i" %(i,j,k,label_matrix[i,j,k], label_matrix[(i -1)% nridges, j,k], label_matrix[(i +1)% nridges, j,k]))
-                            print("neighbours in y-direction %i and %i" %(label_matrix[i, (j - 1) %nridges, k], label_matrix[i, (j + 1) %nridges, k]))
-                            print("neighbours in z-direction %i and %i" %(label_matrix[i, j, (k - 1)%nridges], label_matrix[i, j, (k + 1)%nridges]))
-
-
-        unique_values, counts = np.unique(label_matrix, return_counts=True)
-        for value, count in zip(unique_values, counts):
-            print(f"  {value}: {count}")
-        print(np.sum(counts[1:]))
 
 
 
 
 
 class polymer():
-    def __init__(self, atom_coords):
-        self.atom_coords = atom_coords
+    def __init__(self, path_to_file):
+        self.atom_coords = atom_coords(path_to_file)
         self.results = results()
 
     def create_new_polymer_df(self, column_names):
@@ -372,7 +317,80 @@ class polymer():
         #plt.show()
 
 
+    def read_cryst(self, location):
+        self.df_cryst = pd.read_csv(location, sep = " ", header = None, skiprows = 1)
+        return 0;
 
+    def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8):
+        max_labels = 837
+        cryst_array = self.df_cryst.iloc[:, 1:].to_numpy()
+        rows, cols = cryst_array.shape[0], cryst_array.shape[1]
+        cryst_array_c = cryst_array.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+
+        label_matrix_np = np.zeros([nridges, nridges, nridges], dtype = int)
+        label_matrix = (ctypes.POINTER(ctypes.POINTER(ctypes.c_int)) * nridges)()
+        new_label_matrix = (ctypes.POINTER(ctypes.POINTER(ctypes.c_int)) * nridges)()
+        labels = np.zeros(max_labels, dtype = np.int32)
+        for i in range(nridges):
+            label_matrix[i] = (ctypes.POINTER(ctypes.c_int) * nridges)()
+            new_label_matrix[i] = (ctypes.POINTER(ctypes.c_int) * nridges)()
+            for j in range(nridges):
+                label_matrix[i][j] = (ctypes.c_int * nridges)()
+                new_label_matrix[i][j] = (ctypes.c_int * nridges)()
+                for k in range(nridges):
+                    label_matrix[i][j][k] = label_matrix_np[i, j, k]
+                    new_label_matrix[i][j][k] = label_matrix_np[i, j, k]
+        hk_lib.hoshen_kopelman_crystallisation(cryst_array_c, rows, cols, nridges, cryst_cutoff, ndot_cutoff, label_matrix, new_label_matrix, labels)
+
+        #Return label matrix to c 
+
+        for i in range(nridges):
+            for j in range(nridges):
+                for k in range(nridges):
+                    label_matrix_np[i,j,k] = label_matrix[j][i][k]
+
+
+
+        label_matrix = label_matrix_np
+        size = nridges
+        #print(labels[labels != 0])
+        #print(labels)
+        labels2 = labels[labels != 0]
+
+
+        # Loop over matrix to set all points not connected to a cluster to 0 
+
+        for i in range(0, nridges):
+            for j in range(0, nridges):
+                for k in range(0, nridges):
+                    if label_matrix[i,j,k] >0:
+                        if label_matrix[(i -1)% nridges, j,k] ==0 and label_matrix[(i +1)% nridges, j,k] == 0:
+                            if label_matrix[i, (j - 1) % nridges, k]==0 and label_matrix[i, (j + 1) %nridges, k] == 0:
+                                if label_matrix[i,j,(k -1) %nridges]==0 and label_matrix[i,j, (k + 1) %nridges] == 0:
+                                    label_matrix[i,j,k] = 0
+                        if label_matrix[i,j,k] > 0:
+                            print("position %i %i %i, current label %i, neighbours in x-direction %i and %i" %(i,j,k,label_matrix[i,j,k], label_matrix[(i -1)% nridges, j,k], label_matrix[(i +1)% nridges, j,k]))
+                            print("neighbours in y-direction %i and %i" %(label_matrix[i, (j - 1) %nridges, k], label_matrix[i, (j + 1) %nridges, k]))
+                            print("neighbours in z-direction %i and %i" %(label_matrix[i, j, (k - 1)%nridges], label_matrix[i, j, (k + 1)%nridges]))
+
+                        # if label_matrix[(i -1)% nridges, j,k] or label_matrix[(i +1)% nridges, j,k] != 0:
+                        #     print("position %i %i %i, current label %i, neighbours in x-direction %i and %i" %(i,j,k,label_matrix[i,j,k], label_matrix[(i -1)% nridges, j,k], label_matrix[(i +1)% nridges, j,k]))
+                        # if label_matrix[i, (j - 1) % nridges, k] or label_matrix[i, (j + 1) %nridges, k] != 0:
+                        #     print("position %i %i %i, current label %i, neighbours in y-direction %i and %i" %(i,j,k,label_matrix[i,j,k], label_matrix[i, (j - 1) %nridges, k], label_matrix[i, (j + 1) %nridges, k]))
+                        # if label_matrix[i,j,(k -1) %nridges] or label_matrix[i,j, (k + 1) %nridges] != 0:
+                        #     print("position %i %i %i, current label %i, neighbours in z-direction %i and %i" %(i,j,k,label_matrix[i,j,k], label_matrix[i, j, (k - 1)%nridges], label_matrix[i, j, (k + 1)%nridges]))
+
+
+        unique_values, counts = np.unique(label_matrix, return_counts=True)
+        #print(label_matrix[label_matrix != 0])
+        for value, count in zip(unique_values, counts):
+            print(f"  {value}: {count}")
+        #print(np.unique(label_matrix))
+        print(np.sum(counts[1:]))
+
+        #print(label_matrix[:,:,0])
+        #print(label_matrix[:,:,1])
+    
 
 
 class results(object):
@@ -388,8 +406,8 @@ class results(object):
 def main():
     """Testing function"""
 
-    first_timestep_e5 = polymer(atom_coords("../../data/pva-100/cooling_tdot_e-5_time_0.txt"))
-    first_timestep_e5.bond_bond_correlation()
+    first_timestep_e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_0.txt")
+    #first_timestep_e5.bond_bond_correlation()
 
 if __name__ == "__main__":
     main()

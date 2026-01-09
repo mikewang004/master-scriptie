@@ -23,7 +23,7 @@ time_temp_T075 = get_time_temp_from_slurm(data_path + "/slurm-T=0.75.out")
 #time_temp_run2_e3_T085 = get_time_temp_from_slurm(data_path + "/slurm-run2-e3-T=0.85.out")
 #print(time_temp_T07[:, 0])
 
-cryst_path_prefix = "../../data/crystallisation"
+cryst_path_prefix = "../crystallisation"
 cryst_T07 = "%s/all_times_cryst_equil_t_07_tdot_e-3.txt" %cryst_path_prefix
 cryst_T08 = "%s/all_times_cryst_equil_t_08_tdot_e-3.txt" %cryst_path_prefix
 cryst_T075 = "%s/all_times_cryst_equil_t_075_tdot_e-3.txt" %cryst_path_prefix

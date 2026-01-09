@@ -8,9 +8,6 @@ import matplotlib.pyplot as plt
 data_prefix = "../../data/pva-100"
 
 def plot_bond_bond_correlation():
-    pass
-
-def main():
     tdot_e5_t1 = polymer(atom_coords("%s/cooling_tdot_e-5_time_0.txt" %data_prefix))
     tdot_e5_t08 = polymer(atom_coords("%s/cooling_tdot_e-5_time_4000000.txt" %data_prefix))
     tdot_e5_t07 = polymer(atom_coords("%s/cooling_tdot_e-5_time_6000000.txt" %data_prefix))
@@ -31,7 +28,14 @@ def main():
     #     ylabel = r"cos\theta(n)", title = "Distribution of bond-bond correlations, PVA-100", save_string = "plots/bond_bond_corr.pdf")
 
     make_plot.scatter_plot(positions_list, bond_bond_list, labels_list, xlabel = "n",
-        ylabel = r"cos\theta(n)", title = "Distribution of bond-bond correlations, PVA-100", save_string = "plots/bond_bond_corr_PVA_100_tdot_e5.pdf")
+        ylabel = r"cos\theta(n)", title = "Distribution of bond-bond correlations, PVA-100", save_string = "plots/bond_bond_corr_PVA_100_tdot_e5.pdf",
+        show_plot = True)
+
+
+    
+def main():
+    pass
+
 
 if __name__ == "__main__":
     main()

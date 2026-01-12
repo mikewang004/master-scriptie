@@ -319,6 +319,9 @@ class polymer():
 
     def read_cryst(self, location):
         self.df_cryst = pd.read_csv(location, sep = " ", header = None, skiprows = 1)
+
+        self.df_cryst.columns = ["index", "xid", "yid", "zid", "cryst_bool", "x_ev", "y_ev", "z_ev"]
+        print(self.df_cryst)
         return 0;
 
     def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8):
@@ -384,6 +387,8 @@ class polymer():
         # print(np.sum(counts[1:]))
         # print(np.where(label_matrix == 48))
         # print(label_matrix[6,11,23])
+
+        np.save("hk_label_matrix.npy", label_matrix)
     
 def check_labels(label_matrix, nridges, i,j,k):
     """Helper functuion to check if label_matrix is equal to one of its neighbours. If not, print current value of label_matrix and all neighbours"""

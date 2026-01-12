@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 def main():
     last_timestep_e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
-    nridges = 6
+    nridges = 33
     if nridges == 6:
         last_timestep_e5.read_cryst("./debug_cryst_analyse_2D.txt") #Should be independent from actual last_timestep used
     else:

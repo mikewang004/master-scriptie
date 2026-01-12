@@ -1,0 +1,501 @@
+hk assigned 1 19 0 to label 1
+ev = {0.840713 -0.165656 0.515520} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 1 22 0 to label 2
+ev = {0.821690 -0.110011 0.559217} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 1 24 0 to label 3
+ev = {0.805586 -0.203637 0.556385} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 5 24 0 to label 4
+ev = {0.824412 -0.342221 0.450810} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 6 5 0 to label 5
+ev = {0.870172 -0.272007 0.410869} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 7 22 0 to label 6
+ev = {0.873068 -0.124051 -0.471555} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 8 10 0 to label 7
+ev = {0.801045 -0.066039 -0.594950} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 11 19 0 to label 8
+ev = {0.832025 0.057874 0.551711} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 11 31 0 to label 9
+ev = {0.817674 -0.163275 -0.552042} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 14 10 0 to label 1
+ev = {0.808177 0.518009 0.280208} 
+neighbours:-x 1, -y 1, -z 0 
+hk assigned 14 22 0 to label 10
+ev = {0.867534 -0.021564 -0.496910} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 15 9 0 to label 1
+ev = {0.824022 0.561902 0.072482} 
+neighbours:-x 1, -y 1, -z 1 
+hk assigned 15 16 0 to label 11
+ev = {0.839770 -0.265922 0.473362} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 16 16 0 to label 12
+ev = {0.818870 -0.361046 0.446203} 
+neighbours:-x 11, -y 0, -z 0 
+hk assigned 17 31 0 to label 13
+ev = {0.821241 -0.272565 -0.501270} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 18 21 0 to label 14
+ev = {0.801242 -0.581295 -0.141802} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 21 30 0 to label 15
+ev = {0.830152 -0.178705 -0.528122} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 23 32 0 to label 16
+ev = {0.824153 -0.420080 0.379874} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 26 8 0 to label 17
+ev = {0.824053 -0.176510 -0.538312} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 27 23 0 to label 18
+ev = {0.859953 0.505150 -0.072834} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 28 23 0 to label 19
+ev = {0.810521 -0.004780 -0.585690} 
+neighbours:-x 18, -y 0, -z 0 
+hk assigned 29 23 0 to label 20
+ev = {0.848317 -0.498941 -0.177247} 
+neighbours:-x 19, -y 0, -z 0 
+hk assigned 2 3 1 to label 21
+ev = {0.804511 0.148260 0.575136} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 3 7 1 to label 22
+ev = {0.877638 0.043414 0.477354} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 3 8 1 to label 23
+ev = {0.868314 -0.070182 0.491025} 
+neighbours:-x 0, -y 22, -z 0 
+hk assigned 4 9 1 to label 24
+ev = {0.910757 -0.370179 -0.182998} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 5 4 1 to label 1
+ev = {0.809615 -0.271379 0.520459} 
+neighbours:-x 1, -y 0, -z 0 
+hk assigned 6 0 1 to label 25
+ev = {0.858932 -0.473412 0.195236} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 7 18 1 to label 26
+ev = {0.821022 -0.304075 -0.483178} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 7 19 1 to label 27
+ev = {0.805497 -0.591018 0.043275} 
+neighbours:-x 0, -y 26, -z 0 
+hk assigned 8 6 1 to label 1
+ev = {0.934427 0.122215 -0.334528} 
+neighbours:-x 1, -y 0, -z 0 
+hk assigned 9 4 1 to label 28
+ev = {0.815960 -0.403656 -0.413849} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 11 10 1 to label 29
+ev = {0.865328 0.303669 -0.398740} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 13 10 1 to label 1
+ev = {0.843442 0.464490 0.269916} 
+neighbours:-x 0, -y 0, -z 1 
+hk assigned 15 17 1 to label 30
+ev = {0.919732 -0.180034 -0.348829} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 15 18 1 to label 31
+ev = {0.803595 0.533092 0.264666} 
+neighbours:-x 0, -y 30, -z 0 
+hk assigned 16 7 1 to label 32
+ev = {0.808871 0.500124 0.309197} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 16 27 1 to label 33
+ev = {0.802096 -0.406252 -0.437722} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 17 18 1 to label 1
+ev = {0.834518 -0.509506 0.209720} 
+neighbours:-x 1, -y 0, -z 0 
+hk assigned 17 32 1 to label 34
+ev = {0.994949 0.040453 0.091874} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 18 7 1 to label 35
+ev = {0.841446 0.299414 0.449799} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 19 0 1 to label 36
+ev = {0.913738 -0.280327 0.294109} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 19 1 1 to label 37
+ev = {0.807796 -0.396174 -0.436477} 
+neighbours:-x 0, -y 36, -z 0 
+hk assigned 20 30 1 to label 38
+ev = {0.813392 -0.538769 0.219364} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 22 3 1 to label 39
+ev = {0.856483 0.125435 -0.500702} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 23 4 1 to label 40
+ev = {0.831208 0.274890 0.483248} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 25 0 1 to label 41
+ev = {0.864262 -0.437947 0.247495} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 26 18 1 to label 42
+ev = {0.906983 0.068883 -0.415497} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 28 7 1 to label 1
+ev = {0.840550 0.399967 0.365379} 
+neighbours:-x 1, -y 0, -z 0 
+hk assigned 31 4 1 to label 43
+ev = {0.947356 -0.174318 -0.268569} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 31 17 1 to label 44
+ev = {0.958763 -0.228383 0.169158} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 31 26 1 to label 45
+ev = {0.928549 -0.368675 0.043307} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 0 8 2 to label 46
+ev = {0.929723 -0.061601 0.363071} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 0 10 2 to label 47
+ev = {0.817624 0.301221 0.490670} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 2 19 2 to label 1
+ev = {0.824182 -0.328894 0.461035} 
+neighbours:-x 0, -y 0, -z 1 
+hk assigned 2 20 2 to label 1
+ev = {0.802525 -0.358962 0.476551} 
+neighbours:-x 0, -y 1, -z 1 
+hk assigned 3 3 2 to label 1
+ev = {0.809401 -0.002207 0.587252} 
+neighbours:-x 1, -y 1, -z 1 
+hk assigned 3 10 2 to label 48
+ev = {0.838594 -0.538598 0.081679} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 4 3 2 to label 1
+ev = {0.801892 0.112239 0.586832} 
+neighbours:-x 1, -y 0, -z 0 
+hk assigned 5 2 2 to label 49
+ev = {0.840407 0.153038 0.519900} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 6 3 2 to label 50
+ev = {0.858929 0.510152 0.044568} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 6 15 2 to label 51
+ev = {0.821297 -0.375063 -0.429883} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 9 21 2 to label 52
+ev = {0.922681 -0.382268 -0.050317} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 11 20 2 to label 1
+ev = {0.857770 0.493952 0.142275} 
+neighbours:-x 0, -y 1, -z 0 
+hk assigned 12 20 2 to label 53
+ev = {0.903940 -0.425256 -0.045280} 
+neighbours:-x 1, -y 0, -z 0 
+hk assigned 13 0 2 to label 54
+ev = {0.870097 -0.097045 -0.483232} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 13 20 2 to label 55
+ev = {0.903577 -0.374366 -0.208325} 
+neighbours:-x 53, -y 0, -z 0 
+hk assigned 14 19 2 to label 56
+ev = {0.839584 -0.542678 0.024478} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 14 32 2 to label 57
+ev = {0.854760 0.147048 -0.497758} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 15 3 2 to label 58
+ev = {0.856788 -0.185095 -0.481305} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 16 12 2 to label 59
+ev = {0.882128 -0.449753 0.139903} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 16 28 2 to label 60
+ev = {0.807785 -0.310643 -0.500984} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 19 25 2 to label 61
+ev = {0.824912 -0.193501 0.531109} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 20 7 2 to label 62
+ev = {0.820195 -0.442255 0.362893} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 21 30 2 to label 63
+ev = {0.994048 -0.031010 0.104432} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 24 4 2 to label 64
+ev = {0.834602 0.093508 0.542858} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 24 30 2 to label 65
+ev = {0.835848 -0.064888 -0.545113} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 25 21 2 to label 66
+ev = {0.912489 -0.328982 -0.243175} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 26 8 2 to label 1
+ev = {0.855220 -0.429065 -0.290692} 
+neighbours:-x 0, -y 0, -z 1 
+hk assigned 27 2 2 to label 67
+ev = {0.905052 0.381424 -0.188138} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 27 30 2 to label 68
+ev = {0.836965 -0.385372 -0.388558} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 28 0 2 to label 69
+ev = {0.815130 0.453736 -0.360120} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 28 2 2 to label 70
+ev = {0.902312 0.171000 -0.395718} 
+neighbours:-x 67, -y 0, -z 0 
+hk assigned 28 6 2 to label 71
+ev = {0.961809 0.273513 0.010669} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 30 18 2 to label 72
+ev = {0.835266 -0.374303 0.402776} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 32 4 2 to label 73
+ev = {0.825597 0.136703 0.547451} 
+neighbours:-x 0, -y 0, -z 0 
+hk assigned 32 8 2 to label 74
+ev = {0.837347 -0.546666 0.002609} 
+neighbours:-x 0, -y 0, -z 0 
+position 0 8 2, current label 1 
+neighbours in -x 74 and +x 0
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 2 3 1, current label 6 
+neighbours in -x 0 and +x 3
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 3 
+
+position 2 3 2, current label 3 
+neighbours in -x 0 and +x 3
+neighbours in -y 0, +y 0
+neighbours in -z direction 6, +z 0 
+
+position 2 19 1, current label 3 
+neighbours in -x 0 and +x 0
+neighbours in -y 0, +y 3
+neighbours in -z direction 0, +z 3 
+
+position 2 19 2, current label 3 
+neighbours in -x 0 and +x 0
+neighbours in -y 0, +y 3
+neighbours in -z direction 3, +z 0 
+
+position 2 20 1, current label 3 
+neighbours in -x 0 and +x 0
+neighbours in -y 3, +y 0
+neighbours in -z direction 0, +z 3 
+
+position 2 20 2, current label 3 
+neighbours in -x 0 and +x 0
+neighbours in -y 3, +y 0
+neighbours in -z direction 3, +z 0 
+
+position 3 2 2, current label 3 
+neighbours in -x 0 and +x 0
+neighbours in -y 0, +y 3
+neighbours in -z direction 0, +z 0 
+
+position 3 3 1, current label 3 
+neighbours in -x 6 and +x 0
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 3 
+
+position 3 7 1, current label 7 
+neighbours in -x 0 and +x 0
+neighbours in -y 0, +y 8
+neighbours in -z direction 0, +z 0 
+
+position 3 8 1, current label 8 
+neighbours in -x 0 and +x 0
+neighbours in -y 7, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 4 3 2, current label 3 
+neighbours in -x 3 and +x 0
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 4 4 1, current label 3 
+neighbours in -x 0 and +x 3
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 5 4 1, current label 3 
+neighbours in -x 3 and +x 0
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 7 6 1, current label 3 
+neighbours in -x 0 and +x 3
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 7 18 1, current label 17 
+neighbours in -x 0 and +x 0
+neighbours in -y 0, +y 18
+neighbours in -z direction 0, +z 0 
+
+position 7 19 1, current label 18 
+neighbours in -x 0 and +x 0
+neighbours in -y 17, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 8 6 1, current label 3 
+neighbours in -x 3 and +x 0
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 11 19 2, current label 3 
+neighbours in -x 0 and +x 0
+neighbours in -y 0, +y 3
+neighbours in -z direction 0, +z 0 
+
+position 11 20 2, current label 3 
+neighbours in -x 0 and +x 26
+neighbours in -y 3, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 12 20 2, current label 26 
+neighbours in -x 3 and +x 28
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 13 10 0, current label 3 
+neighbours in -x 0 and +x 3
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 3 
+
+position 13 10 1, current label 3 
+neighbours in -x 0 and +x 0
+neighbours in -y 0, +y 0
+neighbours in -z direction 3, +z 0 
+
+position 13 20 2, current label 28 
+neighbours in -x 26 and +x 0
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 14 9 0, current label 3 
+neighbours in -x 0 and +x 3
+neighbours in -y 0, +y 3
+neighbours in -z direction 0, +z 0 
+
+position 14 10 0, current label 3 
+neighbours in -x 3 and +x 0
+neighbours in -y 3, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 15 8 0, current label 3 
+neighbours in -x 0 and +x 0
+neighbours in -y 0, +y 3
+neighbours in -z direction 0, +z 0 
+
+position 15 9 0, current label 3 
+neighbours in -x 3 and +x 0
+neighbours in -y 3, +y 0
+neighbours in -z direction 3, +z 0 
+
+position 15 9 32, current label 3 
+neighbours in -x 0 and +x 0
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 3 
+
+position 15 16 0, current label 33 
+neighbours in -x 0 and +x 38
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 15 17 1, current label 34 
+neighbours in -x 0 and +x 0
+neighbours in -y 0, +y 35
+neighbours in -z direction 0, +z 0 
+
+position 15 18 1, current label 35 
+neighbours in -x 0 and +x 3
+neighbours in -y 34, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 16 16 0, current label 38 
+neighbours in -x 33 and +x 0
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 16 18 1, current label 3 
+neighbours in -x 35 and +x 3
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 17 18 1, current label 3 
+neighbours in -x 3 and +x 0
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 19 0 1, current label 45 
+neighbours in -x 0 and +x 0
+neighbours in -y 0, +y 46
+neighbours in -z direction 0, +z 0 
+
+position 19 1 1, current label 46 
+neighbours in -x 0 and +x 0
+neighbours in -y 45, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 26 8 0, current label 59 
+neighbours in -x 0 and +x 0
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 3 
+
+position 26 8 1, current label 3 
+neighbours in -x 0 and +x 0
+neighbours in -y 0, +y 0
+neighbours in -z direction 59, +z 3 
+
+position 26 8 2, current label 3 
+neighbours in -x 0 and +x 0
+neighbours in -y 0, +y 0
+neighbours in -z direction 3, +z 0 
+
+position 27 2 2, current label 61 
+neighbours in -x 0 and +x 65
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 27 7 1, current label 3 
+neighbours in -x 0 and +x 3
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 27 23 0, current label 62 
+neighbours in -x 0 and +x 67
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 28 2 2, current label 65 
+neighbours in -x 61 and +x 0
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 28 7 1, current label 3 
+neighbours in -x 3 and +x 0
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 28 23 0, current label 67 
+neighbours in -x 62 and +x 68
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 29 23 0, current label 68 
+neighbours in -x 67 and +x 0
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 0 
+
+position 32 8 2, current label 74 
+neighbours in -x 0 and +x 1
+neighbours in -y 0, +y 0
+neighbours in -z direction 0, +z 0 
+

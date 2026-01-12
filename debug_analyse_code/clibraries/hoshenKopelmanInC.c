@@ -7,13 +7,29 @@
 #define max(a,b) (a>b?a:b)
 
 
+void print_double_array(const double *arr, int size) {
+    if (arr == NULL || size <= 0) {
+        printf("[]\n");
+        return;
+    }
+
+    printf("[");
+    for (int i = 0; i < size; i++) {
+        printf("%g", arr[i]);  // %g prints doubles nicely (no unnecessary zeros)
+        if (i < size - 1) {
+            printf(", ");
+        }
+    }
+    printf("]\n");
+}
+
 double* find_neighbours(double *array, int rows, int cols, 
                                   int x, int y, int z) {
     for (int i = 0; i < rows; i++) {
         // For column-major: array[j * rows + i] gives row i, column j
-        double col1_val = array[0 * rows + i];  // First column, row i
-        double col2_val = array[1 * rows + i];  // Second column, row i  
-        double col3_val = array[2 * rows + i];  // Third column, row i
+        int col1_val = array[0 * rows + i];  // First column, row i
+        int col2_val = array[1 * rows + i];  // Second column, row i  
+        int col3_val = array[2 * rows + i];  // Third column, row i
         
         // Check all three conditions
         if (col1_val == x &&    // Column 1 == x
@@ -34,7 +50,7 @@ double* find_neighbours(double *array, int rows, int cols,
     return NULL;  // No match found
 }
 
-double* check_merger_criteria(double *ev_array, double *row, float cryst_cutoff, float ndot_cutoff) {
+int check_merger_criteria(double *ev_array, double *row, float cryst_cutoff, double ndot_cutoff) {
     if (row[3] > cryst_cutoff) { // Both lattice points should be crystalline, crystalliiny central point checked in H-K main function
         double inproduct = fabs(row[4] * ev_array[0]) + fabs(row[5] * ev_array[1]) + fabs(row[6] * ev_array[2]); 
         if (inproduct >= ndot_cutoff) { 
@@ -106,14 +122,17 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
 
     int l = 0;
     for (int m = 0; m < 2; m ++ ) {
-        for (int l = 0; l < nridges*nridges*nridges; l++) {
+        //for (int l = 0; l < nridges*nridges*nridges; l++) {
+        for (int l = 0; l < nridges*nridges * 3; l++) {
+        //for (int l = 0; l < nridges * 2; l ++)
         // Note that cryst_array is sorted on y-x-z order, so that y loops most often and z loops less often. 
                     //int l = i * rows + j * rows + k;
-            if (array[l + rows * 4] > cryst_cutoff) {
+            if (array[l + rows * 3] > cryst_cutoff) {
                 //printf("%f \n", array[l]);
                 int xbox = array[l];
                 int ybox = array[l + rows];
                 int zbox = array[l + rows * 2];
+                double cryst = array[l + rows * 3];
                 double xev = array[l + rows * 4];
                 double yev = array[l + rows * 5];
                 double zev = array[l + rows * 6];
@@ -123,7 +142,7 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
                 double *row_left = find_neighbours(array, rows, cols, ((xbox-1 + nridges) % nridges), ybox, zbox);
                 double *row_before = find_neighbours(array, rows, cols, xbox, ((ybox-1 + nridges) % nridges), zbox);
                 double *row_upper = find_neighbours(array, rows, cols, xbox, ybox, ((zbox-1 + nridges) % nridges));
-
+               //printf("\n for item %i %i %i %f %f %f %f \n", xbox, ybox, zbox, cryst, xev, yev, zev);
                 int i = xbox; int j = ybox; int k = zbox;
                 //printf("%i %i %i", i,j,k);
 
@@ -132,18 +151,23 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
                 int row_left_check = check_merger_criteria(ev_array, row_left, cryst_cutoff, ndot_cutoff);
                 int row_before_check = check_merger_criteria(ev_array, row_before, cryst_cutoff, ndot_cutoff);
                 int row_upper_check = check_merger_criteria(ev_array, row_upper, cryst_cutoff, ndot_cutoff);
+                //printf("found for -x, -y, -z neighbour respectively\n");
+                //print_double_array(row_left, 7);
+                //print_double_array(row_before, 7);
+                //print_double_array(row_upper, 7);
         
 
                 // Set matrix positions to 1 if they do not have a cluster label 
-                label_matrix[(i-1 + nridges) % nridges][j][k] = hk_set_position_1(row_left_check,  label_matrix[(i-1 + nridges) % nridges][j][k]);
-                label_matrix[i][(j-1 + nridges) % nridges][k] = hk_set_position_1(row_before_check,  label_matrix[i][(j-1 + nridges) % nridges][k]);
-                label_matrix[i][j][(k-1 + nridges) %nridges] =  hk_set_position_1(row_upper_check,  label_matrix[i][j][(k-1 + nridges) %nridges]);
+                //label_matrix[(i-1 + nridges) % nridges][j][k] = hk_set_position_1(row_left_check,  label_matrix[(i-1 + nridges) % nridges][j][k]);
+                //label_matrix[i][(j-1 + nridges) % nridges][k] = hk_set_position_1(row_before_check,  label_matrix[i][(j-1 + nridges) % nridges][k]);
+                //label_matrix[i][j][(k-1 + nridges) %nridges] =  hk_set_position_1(row_upper_check,  label_matrix[i][j][(k-1 + nridges) %nridges]);
                 
 
                 // Also save actual matrix labels 
                 int position_left =  label_matrix[(i-1 + nridges) % nridges][j][k];
                 int position_before = label_matrix[i][(j-1 + nridges) % nridges][k];
                 int position_upper = label_matrix[i][j][(k-1 + nridges) %nridges];
+
 
                 //printf("check left %i actual position %i \n", row_left_check,position_left);
                 
@@ -154,14 +178,16 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
                     case 0: //Make new cluster 
                         if (m == 0) {
                             label_matrix[i][j][k] = hk_make_set(labels, n_labels);
-                            //printf("at position %i %i %i, counter %i new cluster %i \n", i,j,k,l,label_matrix[i][j][k]);
+                            printf("at position %i %i %i, counter %i new cluster %i \n", i,j,k,l,label_matrix[i][j][k]);
                         }
 
                         break;
                     case 1: //Add to cluster left/above
                         if (m == 0){
+                            printf("row check %i %i %i \n", row_left_check, row_before_check, row_upper_check);
+                            printf("%i %i %i \n", position_left, position_before, position_upper);
                             label_matrix[i][j][k] = max(position_before,max(position_upper,position_left));  
-                            //printf("at position %i %i %i, added to cluster %i \n", i,j,k,label_matrix[i][j][k]);
+                            printf("at position %i %i %i, added to cluster %i \n", i,j,k,max(position_before,max(position_upper,position_left)));
                         }
                         else {
                             if (position_before) {
@@ -176,10 +202,10 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
                         }
                         break;
                     case 2: //Combine two clusters 
-                        //printf("case 2 \n");
+                        printf("case 2 \n");
                         // label_matrix[i][j][k] = (!! position_before == 0 ? hk_union(labels, position_left, position_upper) : (!! position_upper == 0 ?
                         //     hk_union(labels, position_before, position_left) : hk_union(labels, position_before, position_upper)));
-                        //printf("merged two clusters, current position %i %i %i, new cluster %i\n",i,j,k,label_matrix[i][j][k] );
+
 
                         if (!! position_before == 0) {
                             label_matrix[i][j][k] = hk_union(labels, position_left, position_upper);
@@ -192,52 +218,62 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
                                 label_matrix[i][j][k] = hk_union(labels, position_before, position_upper);
                             }
                         }
+                        printf("merged two clusters, current position %i %i %i, new cluster %i\n",i,j,k,label_matrix[i][j][k]);
                         break;
                     case 3: //Combine three clusters
+                    //printf("case 3 \n");
                         label_matrix[i][j][k] = hk_union(labels, position_left, position_upper);
                         label_matrix[i][j][k] = hk_union(labels, position_before, position_left);
                         label_matrix[i][j][k] = hk_union(labels, position_before, position_upper);
                         break;
                 }
                 //printf("label matrix %i\n", label_matrix[i][j][k]);
+
+                // printf("hk assigned %i %i %i to label %i\n",i,j,k, label_matrix[i][j][k]);
+                // printf("ev = {%f %f %f} \n", xev, yev, zev);
+                // printf("neighbours:-x %i, -y %i, -z %i \n \n", position_left, position_before, position_upper);
             }
         }
     //printf("first loop done \n");
     }
-
-    // for (int i = 0; i < 20; i ++) {
-    //     printf("labels[%i] = %i \n", i, labels[i]);
-    //     //new_labels[i] = labels[i];
-    // }
  
-    // for (int i = 0; i < nridges; i ++) {
-    //     for (int j = 0; j < nridges; j ++) {
-    //         for (int k = 0; k < nridges; k ++) {
-    //             //printf("label matrix value %d \n", label_matrix[i][j][k]);
+    for (int i = 0; i < 3; i ++) {
+        for (int j = 0; j < nridges; j ++) {
+            for (int k = 0; k < nridges; k ++) {
+                if (label_matrix[i][j][k] != 0) {
+                    printf("label_matrix %i %i %i  = %d \n", i,j,k, label_matrix[i][j][k]);           
+                }
+
                 
-    // }
-    // }
-    // }
+    }
+    }
+    }
+
+    // Print labels 
+
+    for (int i = 0; i < 200; i ++){
+        printf("labels[%i] %i \n", i, labels[i]);
+    }
 
 
     // Do new label binding 
     // TODO fix recursive labelling
 
-    for (int i = 0; i < nridges; i ++) {
-        for (int j = 0; j < nridges; j ++) {
-            for (int k = 0; k < nridges; k ++) {
-                if (label_matrix[i][j][k] > 0) {
-                    int x = hk_find(labels, label_matrix[i][j][k]);
-                    //printf("x = %i for label_matrix[%i][%i][%i] = %i \n", x,i,j,k,label_matrix[i][j][k]);
-                    if (new_labels[x] == 0) {
-                        new_labels[0]++;
-                        new_labels[x] = new_labels[0];
-                    }
-                    label_matrix[i][j][k] = new_labels[x];
-                }
-            }
-        }
-    } 
+    // for (int i = 0; i < nridges; i ++) {
+    //     for (int j = 0; j < nridges; j ++) {
+    //         for (int k = 0; k < nridges; k ++) {
+    //             if (label_matrix[i][j][k] > 0) {
+    //                 int x = hk_find(labels, label_matrix[i][j][k]);
+    //                 //printf("x = %i for label_matrix[%i][%i][%i] = %i \n", x,i,j,k,label_matrix[i][j][k]);
+    //                 if (new_labels[x] == 0) {
+    //                     new_labels[0]++;
+    //                     new_labels[x] = new_labels[0];
+    //                 }
+    //                 label_matrix[i][j][k] = new_labels[x];
+    //             }
+    //         }
+    //     }
+    // } 
 
 
 

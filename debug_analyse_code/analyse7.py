@@ -322,7 +322,7 @@ class polymer():
         return 0;
 
     def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8):
-        max_labels = 837
+        max_labels = int(nridges**3)
         cryst_array = self.df_cryst.iloc[:, 1:].to_numpy()
         rows, cols = cryst_array.shape[0], cryst_array.shape[1]
         cryst_array_c = cryst_array.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
@@ -347,7 +347,8 @@ class polymer():
         for i in range(nridges):
             for j in range(nridges):
                 for k in range(nridges):
-                    label_matrix_np[i,j,k] = label_matrix[j][i][k]
+                    #label_matrix_np[i,j,k] = label_matrix[j][i][k]
+                    label_matrix_np[i,j,k] = label_matrix[i][j][k]
 
 
 
@@ -364,14 +365,11 @@ class polymer():
             for j in range(0, nridges):
                 for k in range(0, nridges):
                     if label_matrix[i,j,k] >0:
-                        if label_matrix[(i -1)% nridges, j,k] ==0 and label_matrix[(i +1)% nridges, j,k] == 0:
-                            if label_matrix[i, (j - 1) % nridges, k]==0 and label_matrix[i, (j + 1) %nridges, k] == 0:
-                                if label_matrix[i,j,(k -1) %nridges]==0 and label_matrix[i,j, (k + 1) %nridges] == 0:
+                        if label_matrix[(i -1 + nridges)% nridges, j,k] ==0 and label_matrix[(i +1 + nridges)% nridges, j,k] == 0:
+                            if label_matrix[i, (j - 1 + nridges) % nridges, k]==0 and label_matrix[i, (j + 1 + nridges) %nridges, k] == 0:
+                                if label_matrix[i,j,(k -1 + nridges) %nridges]==0 and label_matrix[i,j, (k + 1 + nridges) %nridges] == 0:
                                     label_matrix[i,j,k] = 0
-                        if label_matrix[i,j,k] > 0:
-                            print("position %i %i %i, current label %i, neighbours in x-direction %i and %i" %(i,j,k,label_matrix[i,j,k], label_matrix[(i -1)% nridges, j,k], label_matrix[(i +1)% nridges, j,k]))
-                            print("neighbours in y-direction %i and %i" %(label_matrix[i, (j - 1) %nridges, k], label_matrix[i, (j + 1) %nridges, k]))
-                            print("neighbours in z-direction %i and %i" %(label_matrix[i, j, (k - 1)%nridges], label_matrix[i, j, (k + 1)%nridges]))
+                        #check_labels(label_matrix, nridges, i,j,k)
 
                         # if label_matrix[(i -1)% nridges, j,k] or label_matrix[(i +1)% nridges, j,k] != 0:
                         #     print("position %i %i %i, current label %i, neighbours in x-direction %i and %i" %(i,j,k,label_matrix[i,j,k], label_matrix[(i -1)% nridges, j,k], label_matrix[(i +1)% nridges, j,k]))
@@ -383,15 +381,30 @@ class polymer():
 
         unique_values, counts = np.unique(label_matrix, return_counts=True)
         #print(label_matrix[label_matrix != 0])
-        for value, count in zip(unique_values, counts):
-            print(f"  {value}: {count}")
+        #for value, count in zip(unique_values, counts):
+            #print(f"  {value}: {count}")
         #print(np.unique(label_matrix))
-        print(np.sum(counts[1:]))
+        #print(np.sum(counts[1:]))
 
         #print(label_matrix[:,:,0])
         #print(label_matrix[:,:,1])
     
+def check_labels(label_matrix, nridges, i,j,k):
+    """Helper functuion to check if label_matrix is equal to one of its neighbours. If not, print current value of label_matrix and all neighbours"""
+    if label_matrix[i,j,k] != label_matrix[(i -1)% nridges,j,k] or label_matrix[i,j,k] != label_matrix[(i+1)%nridges, j, k]:
+        if label_matrix[i,j,k] != label_matrix[i,(j-1)% nridges,k] or label_matrix[i,j,k] != label_matrix[i, (j+1) % nridges, k]:
+            if label_matrix[i,j,k] != label_matrix[i,j,(k-1) % nridges] or label_matrix[i,j,k] != label_matrix[i, j, (k+1) % nridges]:
+                print("position %i %i %i, current label %i \nneighbours in -x %i and +x %i" %(i,j,k,label_matrix[i,j,k], label_matrix[(i -1)% nridges, j,k], label_matrix[(i +1)% nridges, j,k]))
+                print("neighbours in -y %i, +y %i" %(label_matrix[i, (j - 1) %nridges, k], label_matrix[i, (j + 1) %nridges, k]))
+                print("neighbours in -z direction %i, +z %i \n" %(label_matrix[i, j, (k - 1)%nridges], label_matrix[i, j, (k + 1)%nridges]))
 
+
+    # if label_matrix[i,j,k] != label_matrix[(i-1)% nridges,j,k]:
+    #     if label_matrix[i,j,k] != label_matrix[(i+1)%nridges, j, k]:
+    #         if label_matrix[i,j,k] != label_matrix[i,(j-1)% nridges,k]: 
+    #             if label_matrix[i,j,k] != label_matrix[i, (j+1) % nridges, k]:
+    #                 if label_matrix[i,j,k] != label_matrix[i,j,(k-1) % nridges]:
+    #                     if label_matrix[i,j,k] != label_matrix[i, j, (k+1) % nridges]:
 
 class results(object):
     def __init__(self):

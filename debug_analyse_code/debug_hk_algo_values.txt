@@ -1,0 +1,1795 @@
+at position 1 9 0, counter 42 new cluster 1 
+at position 1 13 0, counter 46 new cluster 2 
+at position 1 21 0, counter 54 new cluster 3 
+row check 0 0 1 
+0 0 0 
+at position 1 27 0, added to cluster 0 
+at position 2 15 0, counter 81 new cluster 4 
+at position 3 3 0, counter 102 new cluster 5 
+row check 0 0 1 
+0 0 0 
+at position 3 11 0, added to cluster 0 
+row check 0 0 1 
+0 0 0 
+at position 3 12 0, added to cluster 0 
+at position 3 16 0, counter 115 new cluster 6 
+at position 3 27 0, counter 126 new cluster 7 
+row check 1 0 0 
+0 0 0 
+at position 4 11 0, added to cluster 0 
+case 2 
+merged two clusters, current position 4 12 0, new cluster 7
+at position 4 18 0, counter 150 new cluster 8 
+at position 4 20 0, counter 152 new cluster 9 
+row check 0 1 0 
+0 9 0 
+at position 4 21 0, added to cluster 9 
+row check 0 1 0 
+0 9 0 
+at position 4 22 0, added to cluster 9 
+row check 0 1 0 
+0 9 0 
+at position 4 23 0, added to cluster 9 
+row check 1 0 0 
+7 0 0 
+at position 4 27 0, added to cluster 7 
+row check 0 1 0 
+0 7 0 
+at position 4 28 0, added to cluster 7 
+row check 0 1 0 
+0 7 0 
+at position 4 29 0, added to cluster 7 
+at position 4 32 0, counter 164 new cluster 10 
+at position 5 1 0, counter 166 new cluster 11 
+row check 1 0 0 
+0 0 0 
+at position 5 11 0, added to cluster 0 
+row check 0 0 1 
+0 0 0 
+at position 5 16 0, added to cluster 0 
+case 2 
+merged two clusters, current position 5 17 0, new cluster 11
+case 2 
+merged two clusters, current position 5 20 0, new cluster 11
+case 2 
+merged two clusters, current position 5 22 0, new cluster 11
+row check 0 0 1 
+0 0 0 
+at position 5 26 0, added to cluster 0 
+case 2 
+merged two clusters, current position 5 27 0, new cluster 11
+case 2 
+merged two clusters, current position 5 28 0, new cluster 11
+row check 1 0 0 
+10 0 0 
+at position 5 32 0, added to cluster 10 
+at position 6 6 0, counter 204 new cluster 12 
+at position 6 7 0, counter 205 new cluster 13 
+row check 0 1 0 
+0 13 0 
+at position 6 8 0, added to cluster 13 
+case 2 
+merged two clusters, current position 6 16 0, new cluster 13
+row check 1 0 0 
+11 0 0 
+at position 6 20 0, added to cluster 11 
+at position 6 23 0, counter 221 new cluster 14 
+row check 0 0 1 
+0 0 0 
+at position 6 25 0, added to cluster 0 
+case 2 
+merged two clusters, current position 6 27 0, new cluster 14
+row check 1 0 0 
+11 0 0 
+at position 6 29 0, added to cluster 11 
+case 2 
+merged two clusters, current position 7 6 0, new cluster 14
+case 2 
+merged two clusters, current position 7 7 0, new cluster 14
+case 2 
+merged two clusters, current position 7 8 0, new cluster 14
+at position 7 11 0, counter 242 new cluster 15 
+at position 7 14 0, counter 245 new cluster 16 
+case 2 
+merged two clusters, current position 7 17 0, new cluster 16
+row check 1 0 0 
+14 0 0 
+at position 7 26 0, added to cluster 14 
+at position 8 0 0, counter 264 new cluster 17 
+at position 8 9 0, counter 273 new cluster 18 
+row check 0 0 1 
+0 0 0 
+at position 8 15 0, added to cluster 0 
+at position 8 31 0, counter 295 new cluster 19 
+at position 9 2 0, counter 299 new cluster 20 
+at position 9 15 0, counter 312 new cluster 21 
+row check 0 0 1 
+0 0 0 
+at position 9 29 0, added to cluster 0 
+at position 10 1 0, counter 331 new cluster 22 
+at position 10 11 0, counter 341 new cluster 23 
+case 2 
+merged two clusters, current position 10 12 0, new cluster 23
+case 2 
+merged two clusters, current position 10 13 0, new cluster 23
+at position 10 23 0, counter 353 new cluster 24 
+row check 0 0 1 
+0 0 0 
+at position 10 30 0, added to cluster 0 
+at position 11 8 0, counter 371 new cluster 25 
+case 2 
+merged two clusters, current position 11 12 0, new cluster 25
+row check 0 0 1 
+0 0 0 
+at position 11 16 0, added to cluster 0 
+at position 11 18 0, counter 381 new cluster 26 
+row check 0 0 1 
+0 0 0 
+at position 11 22 0, added to cluster 0 
+case 2 
+merged two clusters, current position 11 23 0, new cluster 26
+row check 0 1 0 
+0 26 0 
+at position 11 24 0, added to cluster 26 
+at position 11 29 0, counter 392 new cluster 27 
+at position 12 4 0, counter 400 new cluster 28 
+row check 0 0 1 
+0 0 0 
+at position 12 15 0, added to cluster 0 
+case 2 
+merged two clusters, current position 12 17 0, new cluster 28
+row check 0 0 1 
+0 0 0 
+at position 12 21 0, added to cluster 0 
+at position 12 27 0, counter 423 new cluster 29 
+at position 12 29 0, counter 425 new cluster 30 
+row check 0 0 1 
+0 0 0 
+at position 12 32 0, added to cluster 0 
+at position 13 9 0, counter 438 new cluster 31 
+row check 0 1 0 
+0 31 0 
+at position 13 10 0, added to cluster 31 
+row check 1 0 0 
+0 0 0 
+at position 13 15 0, added to cluster 0 
+case 2 
+merged two clusters, current position 13 22 0, new cluster 31
+row check 0 0 1 
+0 31 0 
+at position 13 23 0, added to cluster 31 
+row check 0 0 1 
+0 0 0 
+at position 13 25 0, added to cluster 0 
+at position 14 1 0, counter 463 new cluster 32 
+row check 0 0 1 
+0 0 0 
+at position 14 3 0, added to cluster 0 
+case 2 
+merged two clusters, current position 14 9 0, new cluster 32
+case 2 
+merged two clusters, current position 14 10 0, new cluster 32
+at position 14 25 0, counter 487 new cluster 33 
+row check 0 1 0 
+0 33 0 
+at position 14 26 0, added to cluster 33 
+case 2 
+merged two clusters, current position 14 27 0, new cluster 33
+row check 1 0 0 
+32 0 0 
+at position 15 1 0, added to cluster 32 
+at position 15 4 0, counter 499 new cluster 34 
+row check 0 0 1 
+0 0 0 
+at position 15 8 0, added to cluster 0 
+at position 15 24 0, counter 519 new cluster 35 
+case 2 
+merged two clusters, current position 15 26 0, new cluster 35
+row check 0 0 1 
+0 0 0 
+at position 15 29 0, added to cluster 0 
+row check 0 1 0 
+0 0 0 
+at position 15 30 0, added to cluster 0 
+at position 16 0 0, counter 528 new cluster 36 
+at position 16 4 0, counter 532 new cluster 37 
+row check 1 0 0 
+0 0 0 
+at position 16 8 0, added to cluster 0 
+at position 16 23 0, counter 551 new cluster 38 
+row check 1 0 0 
+35 38 0 
+at position 16 24 0, added to cluster 38 
+row check 0 1 0 
+35 38 0 
+at position 16 26 0, added to cluster 38 
+at position 16 27 0, counter 555 new cluster 39 
+row check 0 1 0 
+0 39 0 
+at position 16 28 0, added to cluster 39 
+case 2 
+merged two clusters, current position 16 29 0, new cluster 39
+row check 0 0 1 
+0 0 0 
+at position 17 1 0, added to cluster 0 
+row check 0 1 0 
+0 0 0 
+at position 17 2 0, added to cluster 0 
+at position 17 13 0, counter 574 new cluster 40 
+at position 17 15 0, counter 576 new cluster 41 
+at position 17 19 0, counter 580 new cluster 42 
+at position 17 21 0, counter 582 new cluster 43 
+row check 0 0 1 
+38 0 0 
+at position 17 26 0, added to cluster 38 
+case 2 
+merged two clusters, current position 17 27 0, new cluster 38
+case 2 
+merged two clusters, current position 17 28 0, new cluster 38
+case 2 
+merged two clusters, current position 17 29 0, new cluster 38
+at position 18 7 0, counter 601 new cluster 44 
+row check 0 0 1 
+0 0 0 
+at position 18 12 0, added to cluster 0 
+at position 18 18 0, counter 612 new cluster 45 
+case 2 
+merged two clusters, current position 18 19 0, new cluster 45
+row check 1 0 0 
+38 0 0 
+at position 18 28 0, added to cluster 38 
+row check 1 0 0 
+38 38 0 
+at position 18 29 0, added to cluster 38 
+row check 1 0 0 
+44 0 0 
+at position 19 7 0, added to cluster 44 
+case 2 
+merged two clusters, current position 19 12 0, new cluster 45
+at position 19 21 0, counter 648 new cluster 46 
+case 2 
+merged two clusters, current position 19 22 0, new cluster 46
+case 2 
+merged two clusters, current position 19 23 0, new cluster 46
+row check 1 0 0 
+38 0 0 
+at position 19 29 0, added to cluster 38 
+at position 19 31 0, counter 658 new cluster 47 
+row check 0 0 1 
+0 0 0 
+at position 20 2 0, added to cluster 0 
+row check 0 1 0 
+0 0 0 
+at position 20 3 0, added to cluster 0 
+row check 0 0 1 
+0 0 0 
+at position 20 8 0, added to cluster 0 
+row check 0 1 0 
+0 0 0 
+at position 20 9 0, added to cluster 0 
+at position 20 11 0, counter 671 new cluster 48 
+case 2 
+merged two clusters, current position 20 13 0, new cluster 48
+row check 0 0 1 
+46 0 0 
+at position 20 21 0, added to cluster 46 
+case 2 
+merged two clusters, current position 20 22 0, new cluster 46
+at position 20 25 0, counter 685 new cluster 49 
+at position 20 31 0, counter 691 new cluster 50 
+at position 21 2 0, counter 695 new cluster 51 
+case 2 
+merged two clusters, current position 21 8 0, new cluster 51
+row check 1 0 0 
+48 0 0 
+at position 21 12 0, added to cluster 48 
+case 2 
+merged two clusters, current position 21 13 0, new cluster 48
+at position 21 18 0, counter 711 new cluster 52 
+row check 0 1 0 
+0 52 0 
+at position 21 19 0, added to cluster 52 
+at position 21 20 0, counter 713 new cluster 53 
+row check 1 0 0 
+46 53 0 
+at position 21 21 0, added to cluster 53 
+at position 22 5 0, counter 731 new cluster 54 
+at position 22 18 0, counter 744 new cluster 55 
+at position 22 19 0, counter 745 new cluster 56 
+at position 23 8 0, counter 767 new cluster 57 
+at position 23 14 0, counter 773 new cluster 58 
+at position 23 15 0, counter 774 new cluster 59 
+at position 23 18 0, counter 777 new cluster 60 
+at position 23 27 0, counter 786 new cluster 61 
+at position 23 29 0, counter 788 new cluster 62 
+at position 24 5 0, counter 797 new cluster 63 
+at position 24 7 0, counter 799 new cluster 64 
+row check 1 0 0 
+59 0 0 
+at position 24 15 0, added to cluster 59 
+row check 0 0 1 
+0 0 0 
+at position 24 19 0, added to cluster 0 
+row check 1 0 0 
+61 0 0 
+at position 24 27 0, added to cluster 61 
+at position 25 2 0, counter 827 new cluster 65 
+row check 0 1 0 
+0 65 0 
+at position 25 3 0, added to cluster 65 
+row check 1 0 0 
+64 0 0 
+at position 25 7 0, added to cluster 64 
+at position 25 10 0, counter 835 new cluster 66 
+row check 0 1 0 
+0 66 0 
+at position 25 11 0, added to cluster 66 
+at position 25 13 0, counter 838 new cluster 67 
+row check 1 0 0 
+0 0 0 
+at position 25 19 0, added to cluster 0 
+at position 25 23 0, counter 848 new cluster 68 
+row check 0 1 0 
+0 68 0 
+at position 25 24 0, added to cluster 68 
+at position 25 30 0, counter 855 new cluster 69 
+row check 0 1 0 
+0 0 0 
+at position 26 0 0, added to cluster 0 
+row check 1 0 0 
+65 0 0 
+at position 26 2 0, added to cluster 65 
+at position 26 9 0, counter 867 new cluster 70 
+row check 1 0 0 
+66 70 0 
+at position 26 10 0, added to cluster 70 
+case 2 
+merged two clusters, current position 26 11 0, new cluster 70
+row check 0 1 0 
+0 70 0 
+at position 26 12 0, added to cluster 70 
+at position 26 18 0, counter 876 new cluster 71 
+row check 1 0 0 
+0 71 0 
+at position 26 19 0, added to cluster 71 
+row check 1 0 0 
+68 0 0 
+at position 26 23 0, added to cluster 68 
+case 2 
+merged two clusters, current position 26 24 0, new cluster 68
+at position 26 26 0, counter 884 new cluster 72 
+at position 26 32 0, counter 890 new cluster 73 
+at position 27 1 0, counter 892 new cluster 74 
+row check 0 1 0 
+65 74 0 
+at position 27 2 0, added to cluster 74 
+at position 27 14 0, counter 905 new cluster 75 
+at position 27 17 0, counter 908 new cluster 76 
+row check 1 0 0 
+72 0 0 
+at position 27 26 0, added to cluster 72 
+row check 0 1 0 
+0 72 0 
+at position 27 27 0, added to cluster 72 
+at position 28 9 0, counter 933 new cluster 77 
+at position 28 21 0, counter 945 new cluster 78 
+row check 0 1 0 
+0 78 0 
+at position 28 22 0, added to cluster 78 
+row check 1 0 0 
+72 0 0 
+at position 28 26 0, added to cluster 72 
+at position 28 28 0, counter 952 new cluster 79 
+at position 29 1 0, counter 958 new cluster 80 
+at position 29 11 0, counter 968 new cluster 81 
+row check 0 0 1 
+0 0 0 
+at position 29 13 0, added to cluster 0 
+case 2 
+merged two clusters, current position 29 14 0, new cluster 81
+row check 0 1 0 
+0 81 0 
+at position 29 15 0, added to cluster 81 
+at position 29 19 0, counter 976 new cluster 82 
+row check 0 1 0 
+0 82 0 
+at position 29 20 0, added to cluster 82 
+case 2 
+merged two clusters, current position 29 21 0, new cluster 82
+case 2 
+merged two clusters, current position 29 22 0, new cluster 82
+at position 29 24 0, counter 981 new cluster 83 
+at position 30 10 0, counter 1000 new cluster 84 
+at position 30 12 0, counter 1002 new cluster 85 
+at position 30 13 0, counter 1003 new cluster 86 
+case 2 
+merged two clusters, current position 30 14 0, new cluster 86
+row check 0 0 1 
+0 0 0 
+at position 30 18 0, added to cluster 0 
+case 2 
+merged two clusters, current position 30 20 0, new cluster 86
+case 2 
+merged two clusters, current position 30 21 0, new cluster 86
+case 2 
+merged two clusters, current position 30 22 0, new cluster 86
+at position 30 32 0, counter 1022 new cluster 87 
+at position 31 4 0, counter 1027 new cluster 88 
+at position 31 7 0, counter 1030 new cluster 89 
+row check 0 1 0 
+0 89 0 
+at position 31 8 0, added to cluster 89 
+row check 1 0 0 
+84 0 0 
+at position 31 10 0, added to cluster 84 
+row check 0 1 0 
+0 84 0 
+at position 31 11 0, added to cluster 84 
+row check 0 0 1 
+85 84 0 
+at position 31 12 0, added to cluster 85 
+at position 31 13 0, counter 1036 new cluster 90 
+at position 31 20 0, counter 1043 new cluster 91 
+at position 31 24 0, counter 1047 new cluster 92 
+at position 31 31 0, counter 1054 new cluster 93 
+at position 0 21 1, counter 1110 new cluster 94 
+at position 1 14 1, counter 1136 new cluster 95 
+at position 1 16 1, counter 1138 new cluster 96 
+row check 0 1 0 
+0 96 0 
+at position 1 17 1, added to cluster 96 
+at position 1 22 1, counter 1144 new cluster 97 
+row check 0 1 0 
+0 97 0 
+at position 1 23 1, added to cluster 97 
+row check 0 1 0 
+0 97 0 
+at position 1 24 1, added to cluster 97 
+at position 1 32 1, counter 1154 new cluster 98 
+at position 2 3 1, counter 1158 new cluster 99 
+row check 0 1 0 
+0 99 0 
+at position 2 4 1, added to cluster 99 
+row check 0 0 1 
+0 0 4 
+at position 2 15 1, added to cluster 4 
+at position 2 17 1, counter 1172 new cluster 100 
+at position 2 19 1, counter 1174 new cluster 101 
+row check 0 1 0 
+0 101 0 
+at position 2 20 1, added to cluster 101 
+row check 1 0 0 
+97 0 0 
+at position 2 22 1, added to cluster 97 
+case 2 
+merged two clusters, current position 2 23 1, new cluster 97
+at position 2 24 1, counter 1179 new cluster 102 
+at position 2 31 1, counter 1186 new cluster 103 
+case 2 
+merged two clusters, current position 2 32 1, new cluster 103
+case 2 
+merged two clusters, current position 3 3 1, new cluster 5
+case 2 
+merged two clusters, current position 3 4 1, new cluster 5
+row check 0 0 1 
+0 0 0 
+at position 3 12 1, added to cluster 0 
+row check 0 0 1 
+0 0 6 
+at position 3 16 1, added to cluster 6 
+at position 3 17 1, counter 1205 new cluster 104 
+row check 0 1 0 
+0 104 0 
+at position 3 18 1, added to cluster 104 
+row check 1 0 0 
+97 0 0 
+at position 3 23 1, added to cluster 97 
+case 2 
+merged two clusters, current position 3 24 1, new cluster 97
+at position 3 32 1, counter 1220 new cluster 105 
+at position 4 0 1, counter 1221 new cluster 106 
+at position 4 1 1, counter 1222 new cluster 107 
+row check 1 0 0 
+5 0 0 
+at position 4 3 1, added to cluster 5 
+case 2 
+merged two clusters, current position 4 4 1, new cluster 5
+row check 0 1 0 
+0 5 0 
+at position 4 5 1, added to cluster 5 
+at position 4 7 1, counter 1228 new cluster 108 
+row check 1 0 0 
+6 0 0 
+at position 4 16 1, added to cluster 6 
+case 2 
+merged two clusters, current position 4 17 1, new cluster 6
+row check 0 0 1 
+0 0 9 
+at position 4 20 1, added to cluster 9 
+case 2 
+merged two clusters, current position 4 21 1, new cluster 16
+case 2 
+merged two clusters, current position 4 22 1, new cluster 16
+row check 1 0 0 
+97 16 0 
+at position 4 24 1, added to cluster 97 
+row check 0 0 1 
+0 0 7 
+at position 4 28 1, added to cluster 7 
+case 2 
+merged two clusters, current position 4 29 1, new cluster 16
+row check 0 1 0 
+0 16 0 
+at position 4 30 1, added to cluster 16 
+row check 0 1 0 
+0 16 0 
+at position 4 31 1, added to cluster 16 
+case 2 
+merged two clusters, current position 5 1 1, new cluster 16
+at position 5 2 1, counter 1256 new cluster 109 
+at position 5 6 1, counter 1260 new cluster 110 
+case 2 
+merged two clusters, current position 5 7 1, new cluster 110
+at position 5 8 1, counter 1262 new cluster 111 
+case 2 
+merged two clusters, current position 5 16 1, new cluster 111
+row check 1 0 0 
+16 0 0 
+at position 5 23 1, added to cluster 16 
+row check 1 0 0 
+97 16 0 
+at position 5 24 1, added to cluster 97 
+case 2 
+merged two clusters, current position 5 28 1, new cluster 111
+case 2 
+merged two clusters, current position 5 30 1, new cluster 111
+case 2 
+merged two clusters, current position 5 31 1, new cluster 111
+at position 6 4 1, counter 1291 new cluster 112 
+case 2 
+merged two clusters, current position 6 6 1, new cluster 111
+at position 6 10 1, counter 1297 new cluster 113 
+row check 0 1 0 
+0 113 0 
+at position 6 11 1, added to cluster 113 
+case 2 
+merged two clusters, current position 6 17 1, new cluster 111
+row check 1 0 0 
+16 0 14 
+at position 6 23 1, added to cluster 16 
+case 2 
+merged two clusters, current position 6 24 1, new cluster 111
+row check 0 1 0 
+0 111 0 
+at position 6 25 1, added to cluster 111 
+row check 1 0 0 
+111 0 0 
+at position 6 28 1, added to cluster 111 
+row check 1 0 0 
+111 0 0 
+at position 6 31 1, added to cluster 111 
+at position 7 3 1, counter 1323 new cluster 114 
+case 2 
+merged two clusters, current position 7 4 1, new cluster 114
+row check 1 0 0 
+111 0 14 
+at position 7 6 1, added to cluster 111 
+case 2 
+merged two clusters, current position 7 7 1, new cluster 111
+at position 7 12 1, counter 1332 new cluster 115 
+at position 7 31 1, counter 1351 new cluster 116 
+at position 7 32 1, counter 1352 new cluster 117 
+at position 8 9 1, counter 1362 new cluster 118 
+at position 8 16 1, counter 1369 new cluster 119 
+at position 8 21 1, counter 1374 new cluster 120 
+row check 0 0 1 
+116 0 19 
+at position 8 31 1, added to cluster 116 
+at position 8 32 1, counter 1385 new cluster 121 
+row check 1 0 0 
+119 0 0 
+at position 9 16 1, added to cluster 119 
+row check 0 1 0 
+0 119 0 
+at position 9 17 1, added to cluster 119 
+row check 0 1 0 
+0 119 0 
+at position 9 18 1, added to cluster 119 
+at position 9 21 1, counter 1407 new cluster 122 
+at position 9 23 1, counter 1409 new cluster 123 
+row check 0 0 1 
+0 0 23 
+at position 10 12 1, added to cluster 23 
+case 2 
+merged two clusters, current position 10 23 1, new cluster 26
+row check 0 1 0 
+0 26 0 
+at position 10 24 1, added to cluster 26 
+case 2 
+merged two clusters, current position 11 12 1, new cluster 25
+case 2 
+merged two clusters, current position 11 23 1, new cluster 26
+row check 0 0 1 
+0 0 28 
+at position 12 4 1, added to cluster 28 
+at position 12 7 1, counter 1492 new cluster 124 
+row check 0 1 0 
+0 124 0 
+at position 12 8 1, added to cluster 124 
+row check 0 0 1 
+0 0 28 
+at position 12 17 1, added to cluster 28 
+at position 13 1 1, counter 1519 new cluster 125 
+at position 13 3 1, counter 1521 new cluster 126 
+at position 13 7 1, counter 1525 new cluster 127 
+case 2 
+merged two clusters, current position 13 17 1, new cluster 37
+at position 14 0 1, counter 1551 new cluster 128 
+row check 0 1 0 
+0 37 0 
+at position 14 2 1, added to cluster 37 
+at position 14 4 1, counter 1555 new cluster 129 
+row check 0 0 1 
+0 0 32 
+at position 14 10 1, added to cluster 32 
+at position 14 23 1, counter 1574 new cluster 130 
+row check 0 0 1 
+0 0 33 
+at position 14 26 1, added to cluster 33 
+row check 0 1 0 
+0 33 33 
+at position 14 27 1, added to cluster 33 
+case 2 
+merged two clusters, current position 15 1 1, new cluster 37
+at position 15 15 1, counter 1599 new cluster 131 
+at position 15 18 1, counter 1602 new cluster 132 
+row check 1 0 0 
+130 0 0 
+at position 15 23 1, added to cluster 130 
+row check 0 0 1 
+0 130 35 
+at position 15 24 1, added to cluster 130 
+case 2 
+merged two clusters, current position 15 25 1, new cluster 38
+case 2 
+merged two clusters, current position 15 26 1, new cluster 38
+row check 0 0 1 
+0 0 0 
+at position 15 29 1, added to cluster 0 
+case 2 
+merged two clusters, current position 15 30 1, new cluster 132
+at position 15 31 1, counter 1615 new cluster 133 
+at position 16 0 1, counter 1617 new cluster 134 
+row check 1 0 0 
+131 0 0 
+at position 16 15 1, added to cluster 131 
+at position 16 16 1, counter 1633 new cluster 135 
+row check 0 1 0 
+0 135 0 
+at position 16 17 1, added to cluster 135 
+row check 1 0 0 
+132 135 0 
+at position 16 18 1, added to cluster 135 
+case 2 
+merged two clusters, current position 16 26 1, new cluster 38
+row check 0 0 1 
+0 0 39 
+at position 16 28 1, added to cluster 39 
+case 2 
+merged two clusters, current position 16 30 1, new cluster 38
+at position 17 1 1, counter 1651 new cluster 39 
+at position 17 8 1, counter 1658 new cluster 40 
+row check 0 0 1 
+0 0 40 
+at position 17 13 1, added to cluster 40 
+row check 0 0 1 
+131 0 41 
+at position 17 15 1, added to cluster 131 
+case 2 
+merged two clusters, current position 17 16 1, new cluster 131
+case 2 
+merged two clusters, current position 17 17 1, new cluster 131
+row check 0 0 1 
+0 0 43 
+at position 17 21 1, added to cluster 43 
+row check 0 1 0 
+0 43 0 
+at position 17 22 1, added to cluster 43 
+row check 0 0 1 
+0 0 38 
+at position 17 27 1, added to cluster 38 
+case 2 
+merged two clusters, current position 17 30 1, new cluster 131
+at position 17 31 1, counter 1681 new cluster 41 
+at position 18 4 1, counter 1687 new cluster 42 
+row check 0 0 1 
+40 0 44 
+at position 18 13 1, added to cluster 44 
+row check 0 0 1 
+0 0 45 
+at position 18 18 1, added to cluster 45 
+case 2 
+merged two clusters, current position 18 19 1, new cluster 48
+row check 0 1 0 
+0 48 0 
+at position 18 20 1, added to cluster 48 
+case 2 
+merged two clusters, current position 18 29 1, new cluster 131
+case 2 
+merged two clusters, current position 18 30 1, new cluster 131
+row check 1 0 0 
+42 0 0 
+at position 19 4 1, added to cluster 42 
+row check 1 0 0 
+44 0 45 
+at position 19 13 1, added to cluster 45 
+row check 1 0 0 
+45 0 0 
+at position 19 18 1, added to cluster 45 
+case 2 
+merged two clusters, current position 19 19 1, new cluster 48
+row check 0 0 1 
+0 0 46 
+at position 19 23 1, added to cluster 46 
+row check 0 0 1 
+0 0 48 
+at position 20 12 1, added to cluster 48 
+case 2 
+merged two clusters, current position 20 13 1, new cluster 48
+row check 0 1 0 
+0 48 0 
+at position 20 14 1, added to cluster 48 
+at position 20 16 1, counter 1765 new cluster 43 
+row check 0 0 1 
+0 0 46 
+at position 20 22 1, added to cluster 46 
+at position 20 30 1, counter 1779 new cluster 44 
+row check 0 0 1 
+0 0 51 
+at position 21 8 1, added to cluster 51 
+row check 0 1 0 
+0 51 0 
+at position 21 9 1, added to cluster 51 
+at position 21 11 1, counter 1793 new cluster 45 
+row check 1 0 0 
+46 0 0 
+at position 21 22 1, added to cluster 46 
+row check 1 0 0 
+48 0 0 
+at position 22 12 1, added to cluster 48 
+at position 22 28 1, counter 1843 new cluster 46 
+row check 0 1 0 
+0 46 0 
+at position 22 29 1, added to cluster 46 
+row check 0 1 0 
+0 46 0 
+at position 22 30 1, added to cluster 46 
+at position 23 13 1, counter 1861 new cluster 47 
+case 2 
+merged two clusters, current position 23 14 1, new cluster 58
+case 2 
+merged two clusters, current position 23 15 1, new cluster 59
+row check 0 1 0 
+0 59 0 
+at position 23 16 1, added to cluster 59 
+row check 1 0 0 
+46 0 0 
+at position 23 30 1, added to cluster 46 
+row check 0 0 1 
+0 0 63 
+at position 24 5 1, added to cluster 63 
+at position 24 7 1, counter 1888 new cluster 48 
+at position 24 12 1, counter 1893 new cluster 49 
+row check 1 0 0 
+58 0 0 
+at position 24 14 1, added to cluster 58 
+row check 1 0 0 
+59 0 0 
+at position 24 16 1, added to cluster 59 
+at position 24 25 1, counter 1906 new cluster 50 
+at position 24 30 1, counter 1911 new cluster 51 
+at position 25 2 1, counter 1916 new cluster 52 
+at position 25 4 1, counter 1918 new cluster 53 
+at position 25 6 1, counter 1920 new cluster 54 
+case 2 
+merged two clusters, current position 25 7 1, new cluster 64
+at position 25 10 1, counter 1924 new cluster 55 
+row check 0 0 1 
+0 0 67 
+at position 25 13 1, added to cluster 67 
+row check 0 1 0 
+58 67 0 
+at position 25 14 1, added to cluster 67 
+row check 0 0 1 
+0 0 68 
+at position 25 23 1, added to cluster 68 
+case 2 
+merged two clusters, current position 25 24 1, new cluster 68
+at position 25 29 1, counter 1943 new cluster 56 
+row check 1 0 0 
+54 0 0 
+at position 26 6 1, added to cluster 54 
+case 2 
+merged two clusters, current position 26 7 1, new cluster 64
+row check 0 1 0 
+0 64 0 
+at position 26 8 1, added to cluster 64 
+at position 26 15 1, counter 1962 new cluster 57 
+case 2 
+merged two clusters, current position 26 23 1, new cluster 68
+at position 26 31 1, counter 1978 new cluster 58 
+row check 1 0 0 
+64 0 0 
+at position 27 7 1, added to cluster 64 
+case 2 
+merged two clusters, current position 27 8 1, new cluster 64
+row check 1 0 0 
+57 0 0 
+at position 27 15 1, added to cluster 57 
+row check 0 1 0 
+0 57 0 
+at position 27 16 1, added to cluster 57 
+row check 1 0 0 
+68 0 0 
+at position 27 23 1, added to cluster 68 
+at position 28 0 1, counter 2013 new cluster 59 
+at position 28 12 1, counter 2025 new cluster 60 
+at position 28 20 1, counter 2033 new cluster 61 
+at position 28 31 1, counter 2044 new cluster 62 
+at position 29 8 1, counter 2054 new cluster 63 
+at position 29 9 1, counter 2055 new cluster 64 
+case 2 
+merged two clusters, current position 29 20 1, new cluster 91
+case 2 
+merged two clusters, current position 29 21 1, new cluster 91
+case 2 
+merged two clusters, current position 29 22 1, new cluster 91
+at position 29 24 1, counter 2070 new cluster 65 
+at position 29 25 1, counter 2071 new cluster 66 
+case 2 
+merged two clusters, current position 30 20 1, new cluster 91
+at position 30 28 1, counter 2107 new cluster 67 
+at position 31 1 1, counter 2113 new cluster 68 
+at position 31 3 1, counter 2115 new cluster 69 
+at position 31 4 1, counter 2116 new cluster 70 
+at position 31 6 1, counter 2118 new cluster 71 
+case 2 
+merged two clusters, current position 31 7 1, new cluster 89
+case 2 
+merged two clusters, current position 31 8 1, new cluster 89
+at position 31 10 1, counter 2122 new cluster 72 
+at position 31 13 1, counter 2125 new cluster 73 
+at position 31 16 1, counter 2128 new cluster 74 
+at position 31 17 1, counter 2129 new cluster 75 
+row check 1 0 0 
+91 0 91 
+at position 31 20 1, added to cluster 91 
+at position 31 24 1, counter 2136 new cluster 76 
+at position 31 27 1, counter 2139 new cluster 77 
+case 2 
+merged two clusters, current position 31 28 1, new cluster 77
+row check 0 1 0 
+0 77 0 
+at position 31 29 1, added to cluster 77 
+at position 0 20 2, counter 2198 new cluster 78 
+case 2 
+merged two clusters, current position 0 21 2, new cluster 94
+at position 1 5 2, counter 2216 new cluster 79 
+row check 0 1 0 
+0 79 0 
+at position 1 6 2, added to cluster 79 
+row check 0 0 1 
+0 0 96 
+at position 1 16 2, added to cluster 96 
+at position 1 21 2, counter 2232 new cluster 80 
+row check 0 0 1 
+0 80 97 
+at position 1 22 2, added to cluster 97 
+row check 0 0 1 
+0 0 97 
+at position 1 24 2, added to cluster 97 
+at position 1 30 2, counter 2241 new cluster 81 
+at position 1 32 2, counter 2243 new cluster 82 
+at position 2 1 2, counter 2245 new cluster 83 
+at position 2 2 2, counter 2246 new cluster 84 
+case 2 
+merged two clusters, current position 2 3 2, new cluster 5
+case 2 
+merged two clusters, current position 2 4 2, new cluster 5
+case 2 
+merged two clusters, current position 2 5 2, new cluster 5
+at position 2 11 2, counter 2255 new cluster 85 
+row check 0 0 1 
+0 0 4 
+at position 2 15 2, added to cluster 4 
+row check 1 0 0 
+96 4 0 
+at position 2 16 2, added to cluster 96 
+row check 0 0 1 
+0 0 101 
+at position 2 19 2, added to cluster 101 
+case 2 
+merged two clusters, current position 2 20 2, new cluster 101
+row check 0 1 0 
+80 101 0 
+at position 2 21 2, added to cluster 101 
+at position 2 26 2, counter 2270 new cluster 86 
+at position 2 27 2, counter 2271 new cluster 87 
+row check 0 1 0 
+0 87 0 
+at position 2 28 2, added to cluster 87 
+row check 1 0 0 
+84 0 0 
+at position 3 2 2, added to cluster 84 
+case 2 
+merged two clusters, current position 3 5 2, new cluster 5
+row check 0 1 0 
+0 5 0 
+at position 3 6 2, added to cluster 5 
+at position 3 7 2, counter 2284 new cluster 88 
+row check 0 1 0 
+0 88 0 
+at position 3 8 2, added to cluster 88 
+row check 1 0 0 
+4 0 0 
+at position 3 15 2, added to cluster 4 
+case 2 
+merged two clusters, current position 3 17 2, new cluster 111
+row check 1 0 0 
+101 0 0 
+at position 3 19 2, added to cluster 101 
+at position 3 21 2, counter 2298 new cluster 89 
+case 2 
+merged two clusters, current position 3 22 2, new cluster 89
+row check 0 0 1 
+0 0 97 
+at position 3 24 2, added to cluster 97 
+row check 1 0 0 
+86 0 0 
+at position 3 26 2, added to cluster 86 
+at position 4 0 2, counter 2310 new cluster 90 
+row check 1 0 0 
+5 0 5 
+at position 4 3 2, added to cluster 5 
+case 2 
+merged two clusters, current position 4 6 2, new cluster 5
+row check 0 0 1 
+88 5 108 
+at position 4 7 2, added to cluster 108 
+case 2 
+merged two clusters, current position 4 8 2, new cluster 89
+row check 0 1 0 
+0 89 0 
+at position 4 9 2, added to cluster 89 
+at position 4 10 2, counter 2320 new cluster 91 
+case 2 
+merged two clusters, current position 4 17 2, new cluster 89
+case 2 
+merged two clusters, current position 4 18 2, new cluster 89
+row check 0 0 1 
+89 0 16 
+at position 4 21 2, added to cluster 89 
+case 2 
+merged two clusters, current position 4 22 2, new cluster 89
+at position 4 26 2, counter 2336 new cluster 92 
+row check 0 1 0 
+0 92 0 
+at position 4 27 2, added to cluster 92 
+row check 0 0 1 
+0 92 7 
+at position 4 28 2, added to cluster 92 
+case 2 
+merged two clusters, current position 4 29 2, new cluster 89
+case 2 
+merged two clusters, current position 4 30 2, new cluster 89
+case 2 
+merged two clusters, current position 4 31 2, new cluster 89
+at position 5 3 2, counter 2346 new cluster 93 
+row check 1 0 0 
+5 93 0 
+at position 5 4 2, added to cluster 93 
+case 2 
+merged two clusters, current position 5 5 2, new cluster 93
+case 2 
+merged two clusters, current position 5 7 2, new cluster 89
+case 2 
+merged two clusters, current position 5 29 2, new cluster 89
+at position 5 32 2, counter 2375 new cluster 94 
+row check 1 0 0 
+93 0 0 
+at position 6 5 2, added to cluster 93 
+row check 0 0 1 
+0 93 111 
+at position 6 6 2, added to cluster 111 
+case 2 
+merged two clusters, current position 6 8 2, new cluster 89
+at position 6 13 2, counter 2389 new cluster 95 
+at position 6 19 2, counter 2395 new cluster 96 
+row check 0 1 0 
+0 96 0 
+at position 6 20 2, added to cluster 96 
+row check 0 0 1 
+0 0 114 
+at position 7 3 2, added to cluster 114 
+case 2 
+merged two clusters, current position 7 4 2, new cluster 114
+row check 1 0 0 
+93 114 0 
+at position 7 5 2, added to cluster 114 
+case 2 
+merged two clusters, current position 7 7 2, new cluster 89
+row check 1 0 0 
+96 0 0 
+at position 7 20 2, added to cluster 96 
+row check 0 1 0 
+0 96 0 
+at position 7 21 2, added to cluster 96 
+at position 8 13 2, counter 2455 new cluster 97 
+row check 0 0 1 
+0 0 119 
+at position 8 16 2, added to cluster 119 
+row check 0 1 0 
+0 119 0 
+at position 8 17 2, added to cluster 119 
+row check 0 1 0 
+0 119 0 
+at position 8 18 2, added to cluster 119 
+at position 8 26 2, counter 2468 new cluster 98 
+row check 0 1 0 
+0 98 0 
+at position 8 27 2, added to cluster 98 
+at position 8 28 2, counter 2470 new cluster 99 
+at position 9 2 2, counter 2477 new cluster 100 
+at position 9 15 2, counter 2490 new cluster 101 
+row check 0 1 0 
+0 119 0 
+at position 9 19 2, added to cluster 119 
+row check 1 0 0 
+98 0 0 
+at position 9 26 2, added to cluster 98 
+row check 0 0 1 
+0 0 23 
+at position 10 12 2, added to cluster 23 
+row check 1 0 0 
+101 0 0 
+at position 10 15 2, added to cluster 101 
+case 2 
+merged two clusters, current position 10 16 2, new cluster 119
+case 2 
+merged two clusters, current position 10 17 2, new cluster 119
+row check 0 0 1 
+0 0 26 
+at position 10 23 2, added to cluster 26 
+row check 1 0 0 
+98 0 0 
+at position 10 26 2, added to cluster 98 
+at position 11 13 2, counter 2554 new cluster 102 
+row check 1 0 0 
+119 0 0 
+at position 11 16 2, added to cluster 119 
+case 2 
+merged two clusters, current position 11 17 2, new cluster 119
+at position 11 19 2, counter 2560 new cluster 103 
+row check 0 0 1 
+0 0 124 
+at position 12 7 2, added to cluster 124 
+at position 12 8 2, counter 2582 new cluster 104 
+at position 12 10 2, counter 2584 new cluster 105 
+row check 1 0 0 
+119 0 0 
+at position 12 16 2, added to cluster 119 
+at position 12 32 2, counter 2606 new cluster 106 
+row check 0 0 1 
+0 0 125 
+at position 13 1 2, added to cluster 125 
+at position 13 2 2, counter 2609 new cluster 107 
+at position 13 7 2, counter 2614 new cluster 108 
+at position 13 9 2, counter 2616 new cluster 109 
+row check 1 0 0 
+106 0 0 
+at position 13 32 2, added to cluster 106 
+case 2 
+merged two clusters, current position 14 1 2, new cluster 37
+at position 14 11 2, counter 2651 new cluster 110 
+row check 0 1 0 
+0 110 0 
+at position 14 12 2, added to cluster 110 
+at position 14 29 2, counter 2669 new cluster 111 
+row check 1 0 0 
+37 0 0 
+at position 15 2 2, added to cluster 37 
+at position 15 7 2, counter 2680 new cluster 112 
+at position 15 15 2, counter 2688 new cluster 113 
+at position 15 17 2, counter 2690 new cluster 114 
+at position 15 21 2, counter 2694 new cluster 115 
+row check 0 0 1 
+111 0 0 
+at position 15 29 2, added to cluster 111 
+case 2 
+merged two clusters, current position 15 30 2, new cluster 131
+at position 15 32 2, counter 2705 new cluster 116 
+at position 16 14 2, counter 2720 new cluster 117 
+row check 1 0 0 
+113 117 131 
+at position 16 15 2, added to cluster 131 
+row check 1 0 0 
+115 0 0 
+at position 16 21 2, added to cluster 115 
+row check 0 1 0 
+0 115 0 
+at position 16 22 2, added to cluster 115 
+at position 16 28 2, counter 2734 new cluster 118 
+case 2 
+merged two clusters, current position 16 29 2, new cluster 131
+row check 0 1 0 
+0 131 0 
+at position 16 31 2, added to cluster 131 
+row check 0 1 0 
+116 131 0 
+at position 16 32 2, added to cluster 131 
+row check 0 0 1 
+0 0 40 
+at position 17 8 2, added to cluster 40 
+at position 17 19 2, counter 2758 new cluster 119 
+row check 0 1 0 
+0 119 0 
+at position 17 20 2, added to cluster 119 
+at position 17 25 2, counter 2764 new cluster 120 
+row check 0 1 0 
+0 120 0 
+at position 17 26 2, added to cluster 120 
+row check 0 0 1 
+0 120 38 
+at position 17 27 2, added to cluster 120 
+case 2 
+merged two clusters, current position 17 29 2, new cluster 131
+at position 18 10 2, counter 2782 new cluster 121 
+case 2 
+merged two clusters, current position 18 19 2, new cluster 48
+row check 1 0 0 
+43 0 0 
+at position 18 22 2, added to cluster 43 
+row check 1 0 0 
+120 0 0 
+at position 18 26 2, added to cluster 120 
+case 2 
+merged two clusters, current position 18 27 2, new cluster 120
+at position 18 31 2, counter 2803 new cluster 122 
+at position 19 7 2, counter 2812 new cluster 123 
+row check 0 1 0 
+0 123 0 
+at position 19 8 2, added to cluster 123 
+at position 19 30 2, counter 2835 new cluster 124 
+at position 20 9 2, counter 2847 new cluster 125 
+at position 20 11 2, counter 2849 new cluster 126 
+case 2 
+merged two clusters, current position 20 12 2, new cluster 48
+case 2 
+merged two clusters, current position 20 13 2, new cluster 48
+case 2 
+merged two clusters, current position 20 14 2, new cluster 48
+row check 0 0 1 
+0 0 46 
+at position 20 22 2, added to cluster 46 
+at position 20 23 2, counter 2861 new cluster 127 
+at position 21 4 2, counter 2875 new cluster 128 
+at position 21 5 2, counter 2876 new cluster 129 
+row check 0 0 1 
+125 0 51 
+at position 21 9 2, added to cluster 125 
+case 2 
+merged two clusters, current position 21 11 2, new cluster 48
+at position 21 23 2, counter 2894 new cluster 130 
+row check 1 0 0 
+48 0 0 
+at position 22 11 2, added to cluster 48 
+row check 0 0 1 
+0 0 46 
+at position 22 30 2, added to cluster 46 
+at position 23 2 2, counter 2939 new cluster 131 
+row check 0 1 0 
+0 131 0 
+at position 23 3 2, added to cluster 131 
+row check 0 0 1 
+0 0 58 
+at position 23 14 2, added to cluster 58 
+case 2 
+merged two clusters, current position 23 15 2, new cluster 59
+case 2 
+merged two clusters, current position 23 30 2, new cluster 46
+at position 23 32 2, counter 2969 new cluster 132 
+row check 1 0 0 
+131 0 0 
+at position 24 2 2, added to cluster 131 
+case 2 
+merged two clusters, current position 24 3 2, new cluster 131
+at position 24 11 2, counter 2981 new cluster 133 
+case 2 
+merged two clusters, current position 25 2 2, new cluster 52
+row check 0 1 0 
+131 52 0 
+at position 25 3 2, added to cluster 131 
+at position 25 9 2, counter 3012 new cluster 134 
+at position 25 19 2, counter 3022 new cluster 135 
+at position 25 22 2, counter 3025 new cluster 136 
+case 2 
+merged two clusters, current position 25 23 2, new cluster 68
+at position 26 2 2, counter 3038 new cluster 137 
+at position 26 4 2, counter 3040 new cluster 138 
+row check 0 1 0 
+0 138 0 
+at position 26 5 2, added to cluster 138 
+at position 26 13 2, counter 3049 new cluster 139 
+case 2 
+merged two clusters, current position 26 23 2, new cluster 68
+row check 0 1 0 
+0 68 0 
+at position 26 24 2, added to cluster 68 
+at position 27 0 2, counter 3069 new cluster 140 
+at position 28 0 2, counter 3102 new cluster 141 
+at position 28 4 2, counter 3106 new cluster 142 
+at position 28 5 2, counter 3107 new cluster 143 
+row check 0 0 1 
+0 0 61 
+at position 28 20 2, added to cluster 61 
+at position 28 22 2, counter 3124 new cluster 144 
+at position 28 26 2, counter 3128 new cluster 145 
+at position 29 16 2, counter 3151 new cluster 146 
+case 2 
+merged two clusters, current position 29 20 2, new cluster 91
+at position 29 23 2, counter 3158 new cluster 147 
+at position 29 27 2, counter 3162 new cluster 148 
+at position 30 1 2, counter 3169 new cluster 149 
+at position 30 14 2, counter 3182 new cluster 150 
+at position 30 15 2, counter 3183 new cluster 151 
+case 2 
+merged two clusters, current position 30 20 2, new cluster 91
+case 2 
+merged two clusters, current position 30 21 2, new cluster 91
+row check 0 1 0 
+0 91 0 
+at position 30 22 2, added to cluster 91 
+case 2 
+merged two clusters, current position 30 23 2, new cluster 91
+case 2 
+merged two clusters, current position 31 1 2, new cluster 68
+at position 31 2 2, counter 3203 new cluster 152 
+at position 31 8 2, counter 3209 new cluster 153 
+at position 31 15 2, counter 3216 new cluster 154 
+case 2 
+merged two clusters, current position 31 20 2, new cluster 91
+at position 31 31 2, counter 3232 new cluster 155 
+case 2 
+merged two clusters, current position 4 12 0, new cluster 155
+case 2 
+merged two clusters, current position 5 17 0, new cluster 155
+case 2 
+merged two clusters, current position 5 20 0, new cluster 155
+case 2 
+merged two clusters, current position 5 22 0, new cluster 155
+case 2 
+merged two clusters, current position 5 27 0, new cluster 155
+case 2 
+merged two clusters, current position 5 28 0, new cluster 155
+case 2 
+merged two clusters, current position 6 16 0, new cluster 155
+case 2 
+merged two clusters, current position 6 27 0, new cluster 155
+case 2 
+merged two clusters, current position 7 6 0, new cluster 155
+case 2 
+merged two clusters, current position 7 7 0, new cluster 155
+case 2 
+merged two clusters, current position 7 8 0, new cluster 155
+case 2 
+merged two clusters, current position 7 17 0, new cluster 155
+case 2 
+merged two clusters, current position 10 12 0, new cluster 25
+case 2 
+merged two clusters, current position 10 13 0, new cluster 25
+case 2 
+merged two clusters, current position 11 12 0, new cluster 25
+case 2 
+merged two clusters, current position 11 23 0, new cluster 25
+case 2 
+merged two clusters, current position 12 17 0, new cluster 25
+case 2 
+merged two clusters, current position 13 22 0, new cluster 25
+case 2 
+merged two clusters, current position 14 9 0, new cluster 25
+case 2 
+merged two clusters, current position 14 10 0, new cluster 25
+case 2 
+merged two clusters, current position 14 27 0, new cluster 25
+case 2 
+merged two clusters, current position 15 26 0, new cluster 25
+case 2 
+merged two clusters, current position 16 29 0, new cluster 25
+case 2 
+merged two clusters, current position 17 27 0, new cluster 25
+case 2 
+merged two clusters, current position 17 28 0, new cluster 25
+case 2 
+merged two clusters, current position 17 29 0, new cluster 25
+case 2 
+merged two clusters, current position 18 19 0, new cluster 48
+case 2 
+merged two clusters, current position 19 12 0, new cluster 25
+case 2 
+merged two clusters, current position 19 22 0, new cluster 46
+case 2 
+merged two clusters, current position 19 23 0, new cluster 46
+case 2 
+merged two clusters, current position 20 13 0, new cluster 46
+case 2 
+merged two clusters, current position 20 22 0, new cluster 46
+case 2 
+merged two clusters, current position 21 8 0, new cluster 46
+case 2 
+merged two clusters, current position 21 13 0, new cluster 46
+case 2 
+merged two clusters, current position 26 11 0, new cluster 66
+case 2 
+merged two clusters, current position 26 24 0, new cluster 68
+case 2 
+merged two clusters, current position 29 14 0, new cluster 46
+case 2 
+merged two clusters, current position 29 21 0, new cluster 82
+case 2 
+merged two clusters, current position 29 22 0, new cluster 82
+case 2 
+merged two clusters, current position 30 14 0, new cluster 86
+case 2 
+merged two clusters, current position 30 20 0, new cluster 86
+case 2 
+merged two clusters, current position 30 21 0, new cluster 86
+case 2 
+merged two clusters, current position 30 22 0, new cluster 86
+case 2 
+merged two clusters, current position 2 23 1, new cluster 97
+case 2 
+merged two clusters, current position 2 32 1, new cluster 103
+case 2 
+merged two clusters, current position 3 3 1, new cluster 93
+case 2 
+merged two clusters, current position 3 4 1, new cluster 93
+case 2 
+merged two clusters, current position 3 24 1, new cluster 97
+case 2 
+merged two clusters, current position 4 4 1, new cluster 93
+case 2 
+merged two clusters, current position 4 17 1, new cluster 86
+case 2 
+merged two clusters, current position 4 21 1, new cluster 86
+case 2 
+merged two clusters, current position 4 22 1, new cluster 86
+case 2 
+merged two clusters, current position 4 29 1, new cluster 86
+case 2 
+merged two clusters, current position 5 1 1, new cluster 86
+case 2 
+merged two clusters, current position 5 7 1, new cluster 110
+case 2 
+merged two clusters, current position 5 16 1, new cluster 86
+case 2 
+merged two clusters, current position 5 28 1, new cluster 86
+case 2 
+merged two clusters, current position 5 30 1, new cluster 86
+case 2 
+merged two clusters, current position 5 31 1, new cluster 86
+case 2 
+merged two clusters, current position 6 6 1, new cluster 86
+case 2 
+merged two clusters, current position 6 17 1, new cluster 86
+case 2 
+merged two clusters, current position 6 24 1, new cluster 86
+case 2 
+merged two clusters, current position 7 4 1, new cluster 114
+case 2 
+merged two clusters, current position 7 7 1, new cluster 86
+case 2 
+merged two clusters, current position 10 23 1, new cluster 86
+case 2 
+merged two clusters, current position 11 12 1, new cluster 86
+case 2 
+merged two clusters, current position 11 23 1, new cluster 86
+case 2 
+merged two clusters, current position 13 17 1, new cluster 86
+case 2 
+merged two clusters, current position 15 1 1, new cluster 86
+case 2 
+merged two clusters, current position 15 25 1, new cluster 86
+case 2 
+merged two clusters, current position 15 26 1, new cluster 86
+case 2 
+merged two clusters, current position 15 30 1, new cluster 86
+case 2 
+merged two clusters, current position 16 26 1, new cluster 86
+case 2 
+merged two clusters, current position 16 30 1, new cluster 86
+case 2 
+merged two clusters, current position 17 16 1, new cluster 86
+case 2 
+merged two clusters, current position 17 17 1, new cluster 86
+case 2 
+merged two clusters, current position 17 30 1, new cluster 86
+case 2 
+merged two clusters, current position 18 19 1, new cluster 86
+case 2 
+merged two clusters, current position 18 29 1, new cluster 86
+case 2 
+merged two clusters, current position 18 30 1, new cluster 86
+case 2 
+merged two clusters, current position 19 19 1, new cluster 86
+case 2 
+merged two clusters, current position 20 13 1, new cluster 86
+case 2 
+merged two clusters, current position 23 14 1, new cluster 59
+case 2 
+merged two clusters, current position 23 15 1, new cluster 59
+case 2 
+merged two clusters, current position 25 7 1, new cluster 64
+case 2 
+merged two clusters, current position 25 24 1, new cluster 68
+case 2 
+merged two clusters, current position 26 7 1, new cluster 64
+case 2 
+merged two clusters, current position 26 23 1, new cluster 68
+case 2 
+merged two clusters, current position 27 8 1, new cluster 64
+case 2 
+merged two clusters, current position 29 20 1, new cluster 86
+case 2 
+merged two clusters, current position 29 21 1, new cluster 86
+case 2 
+merged two clusters, current position 29 22 1, new cluster 86
+case 2 
+merged two clusters, current position 30 20 1, new cluster 86
+case 2 
+merged two clusters, current position 31 7 1, new cluster 86
+case 2 
+merged two clusters, current position 31 8 1, new cluster 86
+case 2 
+merged two clusters, current position 31 28 1, new cluster 77
+case 2 
+merged two clusters, current position 0 21 2, new cluster 86
+case 2 
+merged two clusters, current position 2 3 2, new cluster 93
+case 2 
+merged two clusters, current position 2 4 2, new cluster 93
+case 2 
+merged two clusters, current position 2 5 2, new cluster 93
+case 2 
+merged two clusters, current position 2 20 2, new cluster 86
+case 2 
+merged two clusters, current position 3 5 2, new cluster 93
+case 2 
+merged two clusters, current position 3 17 2, new cluster 86
+case 2 
+merged two clusters, current position 3 22 2, new cluster 86
+case 2 
+merged two clusters, current position 4 6 2, new cluster 93
+case 2 
+merged two clusters, current position 4 8 2, new cluster 86
+case 2 
+merged two clusters, current position 4 17 2, new cluster 86
+case 2 
+merged two clusters, current position 4 18 2, new cluster 86
+case 2 
+merged two clusters, current position 4 22 2, new cluster 86
+case 2 
+merged two clusters, current position 4 29 2, new cluster 86
+case 2 
+merged two clusters, current position 4 30 2, new cluster 86
+case 2 
+merged two clusters, current position 4 31 2, new cluster 86
+case 2 
+merged two clusters, current position 5 5 2, new cluster 93
+case 2 
+merged two clusters, current position 5 7 2, new cluster 86
+case 2 
+merged two clusters, current position 5 29 2, new cluster 86
+case 2 
+merged two clusters, current position 6 8 2, new cluster 86
+case 2 
+merged two clusters, current position 7 4 2, new cluster 114
+case 2 
+merged two clusters, current position 7 7 2, new cluster 86
+case 2 
+merged two clusters, current position 10 16 2, new cluster 86
+case 2 
+merged two clusters, current position 10 17 2, new cluster 86
+case 2 
+merged two clusters, current position 11 17 2, new cluster 86
+case 2 
+merged two clusters, current position 14 1 2, new cluster 86
+case 2 
+merged two clusters, current position 15 30 2, new cluster 86
+case 2 
+merged two clusters, current position 16 29 2, new cluster 86
+case 2 
+merged two clusters, current position 17 29 2, new cluster 86
+case 2 
+merged two clusters, current position 18 19 2, new cluster 86
+case 2 
+merged two clusters, current position 18 27 2, new cluster 120
+case 2 
+merged two clusters, current position 20 12 2, new cluster 120
+case 2 
+merged two clusters, current position 20 13 2, new cluster 120
+case 2 
+merged two clusters, current position 20 14 2, new cluster 120
+case 2 
+merged two clusters, current position 21 11 2, new cluster 120
+case 2 
+merged two clusters, current position 23 15 2, new cluster 59
+case 2 
+merged two clusters, current position 23 30 2, new cluster 120
+case 2 
+merged two clusters, current position 24 3 2, new cluster 120
+case 2 
+merged two clusters, current position 25 2 2, new cluster 120
+case 2 
+merged two clusters, current position 25 23 2, new cluster 68
+case 2 
+merged two clusters, current position 26 23 2, new cluster 68
+case 2 
+merged two clusters, current position 29 20 2, new cluster 120
+case 2 
+merged two clusters, current position 30 20 2, new cluster 120
+case 2 
+merged two clusters, current position 30 21 2, new cluster 120
+case 2 
+merged two clusters, current position 30 23 2, new cluster 120
+case 2 
+merged two clusters, current position 31 1 2, new cluster 68
+case 2 
+merged two clusters, current position 31 20 2, new cluster 120
+label_matrix 0 20 2  = 78 
+label_matrix 0 21 1  = 94 
+label_matrix 0 21 2  = 86 
+label_matrix 1 5 2  = 79 
+label_matrix 1 6 2  = 79 
+label_matrix 1 9 0  = 1 
+label_matrix 1 13 0  = 2 
+label_matrix 1 14 1  = 95 
+label_matrix 1 16 1  = 96 
+label_matrix 1 16 2  = 96 
+label_matrix 1 17 1  = 96 
+label_matrix 1 21 0  = 3 
+label_matrix 1 21 2  = 80 
+label_matrix 1 22 1  = 97 
+label_matrix 1 22 2  = 97 
+label_matrix 1 23 1  = 97 
+label_matrix 1 24 1  = 97 
+label_matrix 1 24 2  = 97 
+label_matrix 1 30 2  = 81 
+label_matrix 1 32 1  = 98 
+label_matrix 1 32 2  = 82 
+label_matrix 2 1 2  = 83 
+label_matrix 2 2 2  = 84 
+label_matrix 2 3 1  = 99 
+label_matrix 2 3 2  = 93 
+label_matrix 2 4 1  = 99 
+label_matrix 2 4 2  = 93 
+label_matrix 2 5 2  = 93 
+label_matrix 2 11 2  = 85 
+label_matrix 2 15 0  = 4 
+label_matrix 2 15 1  = 4 
+label_matrix 2 15 2  = 4 
+label_matrix 2 16 2  = 96 
+label_matrix 2 17 1  = 100 
+label_matrix 2 19 1  = 101 
+label_matrix 2 19 2  = 101 
+label_matrix 2 20 1  = 101 
+label_matrix 2 20 2  = 86 
+label_matrix 2 21 2  = 80 
+label_matrix 2 22 1  = 97 
+label_matrix 2 22 2  = 86 
+label_matrix 2 23 1  = 97 
+label_matrix 2 24 1  = 102 
+label_matrix 2 26 2  = 86 
+label_matrix 2 27 2  = 87 
+label_matrix 2 28 2  = 87 
+label_matrix 2 31 1  = 103 
+label_matrix 2 32 1  = 103 
+labels[0] 86 
+labels[1] 1 
+labels[2] 2 
+labels[3] 3 
+labels[4] 86 
+labels[5] 93 
+labels[6] 86 
+labels[7] 86 
+labels[8] 86 
+labels[9] 86 
+labels[10] 10 
+labels[11] 86 
+labels[12] 86 
+labels[13] 86 
+labels[14] 111 
+labels[15] 15 
+labels[16] 155 
+labels[17] 17 
+labels[18] 18 
+labels[19] 19 
+labels[20] 20 
+labels[21] 21 
+labels[22] 22 
+labels[23] 25 
+labels[24] 86 
+labels[25] 120 
+labels[26] 86 
+labels[27] 27 
+labels[28] 37 
+labels[29] 29 
+labels[30] 30 
+labels[31] 25 
+labels[32] 86 
+labels[33] 25 
+labels[34] 37 
+labels[35] 86 
+labels[36] 36 
+labels[37] 86 
+labels[38] 25 
+labels[39] 86 
+labels[40] 25 
+labels[41] 41 
+labels[42] 48 
+labels[43] 86 
+labels[44] 44 
+labels[45] 120 
+labels[46] 120 
+labels[47] 59 
+labels[48] 120 
+labels[49] 49 
+labels[50] 50 
+labels[51] 69 
+labels[52] 120 
+labels[53] 53 
+labels[54] 64 
+labels[55] 55 
+labels[56] 69 
+labels[57] 57 
+labels[58] 59 
+labels[59] 59 
+labels[60] 60 
+labels[61] 120 
+labels[62] 62 
+labels[63] 63 
+labels[64] 64 
+labels[65] 65 
+labels[66] 66 
+labels[67] 77 
+labels[68] 68 
+labels[69] 69 
+labels[70] 70 
+labels[71] 86 
+labels[72] 72 
+labels[73] 73 
+labels[74] 74 
+labels[75] 75 
+labels[76] 76 
+labels[77] 77 
+labels[78] 86 
+labels[79] 93 
+labels[80] 86 
+labels[81] 81 
+labels[82] 86 
+labels[83] 83 
+labels[84] 93 
+labels[85] 85 
+labels[86] 120 
+labels[87] 87 
+labels[88] 86 
+labels[89] 86 
+labels[90] 90 
+labels[91] 120 
+labels[92] 89 
+labels[93] 93 
+labels[94] 86 
+labels[95] 95 
+labels[96] 86 
+labels[97] 86 
+labels[98] 103 
+labels[99] 93 
+labels[100] 100 
+labels[101] 86 
+labels[102] 97 
+labels[103] 103 
+labels[104] 86 
+labels[105] 105 
+labels[106] 106 
+labels[107] 86 
+labels[108] 110 
+labels[109] 109 
+labels[110] 86 
+labels[111] 86 
+labels[112] 114 
+labels[113] 113 
+labels[114] 114 
+labels[115] 86 
+labels[116] 116 
+labels[117] 117 
+labels[118] 86 
+labels[119] 86 
+labels[120] 120 
+labels[121] 121 
+labels[122] 122 
+labels[123] 86 
+labels[124] 124 
+labels[125] 86 
+labels[126] 120 
+labels[127] 127 
+labels[128] 86 
+labels[129] 129 
+labels[130] 130 
+labels[131] 120 
+labels[132] 132 
+labels[133] 133 
+labels[134] 134 
+labels[135] 86 
+labels[136] 68 
+labels[137] 137 
+labels[138] 138 
+labels[139] 139 
+labels[140] 140 
+labels[141] 141 
+labels[142] 142 
+labels[143] 143 
+labels[144] 144 
+labels[145] 145 
+labels[146] 146 
+labels[147] 120 
+labels[148] 148 
+labels[149] 68 
+labels[150] 150 
+labels[151] 151 
+labels[152] 152 
+labels[153] 153 
+labels[154] 154 
+labels[155] 86 
+labels[156] 0 
+labels[157] 0 
+labels[158] 0 
+labels[159] 0 
+labels[160] 0 
+labels[161] 0 
+labels[162] 0 
+labels[163] 0 
+labels[164] 0 
+labels[165] 0 
+labels[166] 0 
+labels[167] 0 
+labels[168] 0 
+labels[169] 0 
+labels[170] 0 
+labels[171] 0 
+labels[172] 0 
+labels[173] 0 
+labels[174] 0 
+labels[175] 0 
+labels[176] 0 
+labels[177] 0 
+labels[178] 0 
+labels[179] 0 
+labels[180] 0 
+labels[181] 0 
+labels[182] 0 
+labels[183] 0 
+labels[184] 0 
+labels[185] 0 
+labels[186] 0 
+labels[187] 0 
+labels[188] 0 
+labels[189] 0 
+labels[190] 0 
+labels[191] 0 
+labels[192] 0 
+labels[193] 0 
+labels[194] 0 
+labels[195] 0 
+labels[196] 0 
+labels[197] 0 
+labels[198] 0 
+labels[199] 0 

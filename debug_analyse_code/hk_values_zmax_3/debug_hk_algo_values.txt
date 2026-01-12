@@ -1,0 +1,248 @@
+label_matrix 0 20 2  = 78 
+label_matrix 0 21 1  = 94 
+label_matrix 0 21 2  = 86 
+label_matrix 1 5 2  = 79 
+label_matrix 1 6 2  = 79 
+label_matrix 1 9 0  = 1 
+label_matrix 1 13 0  = 2 
+label_matrix 1 14 1  = 95 
+label_matrix 1 16 1  = 96 
+label_matrix 1 16 2  = 96 
+label_matrix 1 17 1  = 96 
+label_matrix 1 21 0  = 3 
+label_matrix 1 21 2  = 80 
+label_matrix 1 22 1  = 97 
+label_matrix 1 22 2  = 97 
+label_matrix 1 23 1  = 97 
+label_matrix 1 24 1  = 97 
+label_matrix 1 24 2  = 97 
+label_matrix 1 30 2  = 81 
+label_matrix 1 32 1  = 98 
+label_matrix 1 32 2  = 82 
+label_matrix 2 1 2  = 83 
+label_matrix 2 2 2  = 84 
+label_matrix 2 3 1  = 99 
+label_matrix 2 3 2  = 93 
+label_matrix 2 4 1  = 99 
+label_matrix 2 4 2  = 93 
+label_matrix 2 5 2  = 93 
+label_matrix 2 11 2  = 85 
+label_matrix 2 15 0  = 4 
+label_matrix 2 15 1  = 4 
+label_matrix 2 15 2  = 4 
+label_matrix 2 16 2  = 96 
+label_matrix 2 17 1  = 100 
+label_matrix 2 19 1  = 101 
+label_matrix 2 19 2  = 101 
+label_matrix 2 20 1  = 101 
+label_matrix 2 20 2  = 86 
+label_matrix 2 21 2  = 80 
+label_matrix 2 22 1  = 97 
+label_matrix 2 22 2  = 86 
+label_matrix 2 23 1  = 97 
+label_matrix 2 24 1  = 102 
+label_matrix 2 26 2  = 86 
+label_matrix 2 27 2  = 87 
+label_matrix 2 28 2  = 87 
+label_matrix 2 31 1  = 103 
+label_matrix 2 32 1  = 103 
+labels[0] 86 
+labels[1] 1 
+labels[2] 2 
+labels[3] 3 
+labels[4] 86 
+labels[5] 93 
+labels[6] 86 
+labels[7] 86 
+labels[8] 86 
+labels[9] 86 
+labels[10] 10 
+labels[11] 86 
+labels[12] 86 
+labels[13] 86 
+labels[14] 111 
+labels[15] 15 
+labels[16] 155 
+labels[17] 17 
+labels[18] 18 
+labels[19] 19 
+labels[20] 20 
+labels[21] 21 
+labels[22] 22 
+labels[23] 25 
+labels[24] 86 
+labels[25] 120 
+labels[26] 86 
+labels[27] 27 
+labels[28] 37 
+labels[29] 29 
+labels[30] 30 
+labels[31] 25 
+labels[32] 86 
+labels[33] 25 
+labels[34] 37 
+labels[35] 86 
+labels[36] 36 
+labels[37] 86 
+labels[38] 25 
+labels[39] 86 
+labels[40] 25 
+labels[41] 41 
+labels[42] 48 
+labels[43] 86 
+labels[44] 44 
+labels[45] 120 
+labels[46] 120 
+labels[47] 59 
+labels[48] 120 
+labels[49] 49 
+labels[50] 50 
+labels[51] 69 
+labels[52] 120 
+labels[53] 53 
+labels[54] 64 
+labels[55] 55 
+labels[56] 69 
+labels[57] 57 
+labels[58] 59 
+labels[59] 59 
+labels[60] 60 
+labels[61] 120 
+labels[62] 62 
+labels[63] 63 
+labels[64] 64 
+labels[65] 65 
+labels[66] 66 
+labels[67] 77 
+labels[68] 68 
+labels[69] 69 
+labels[70] 70 
+labels[71] 86 
+labels[72] 72 
+labels[73] 73 
+labels[74] 74 
+labels[75] 75 
+labels[76] 76 
+labels[77] 77 
+labels[78] 86 
+labels[79] 93 
+labels[80] 86 
+labels[81] 81 
+labels[82] 86 
+labels[83] 83 
+labels[84] 93 
+labels[85] 85 
+labels[86] 120 
+labels[87] 87 
+labels[88] 86 
+labels[89] 86 
+labels[90] 90 
+labels[91] 120 
+labels[92] 89 
+labels[93] 93 
+labels[94] 86 
+labels[95] 95 
+labels[96] 86 
+labels[97] 86 
+labels[98] 103 
+labels[99] 93 
+labels[100] 100 
+labels[101] 86 
+labels[102] 97 
+labels[103] 103 
+labels[104] 86 
+labels[105] 105 
+labels[106] 106 
+labels[107] 86 
+labels[108] 110 
+labels[109] 109 
+labels[110] 86 
+labels[111] 86 
+labels[112] 114 
+labels[113] 113 
+labels[114] 114 
+labels[115] 86 
+labels[116] 116 
+labels[117] 117 
+labels[118] 86 
+labels[119] 86 
+labels[120] 120 
+labels[121] 121 
+labels[122] 122 
+labels[123] 86 
+labels[124] 124 
+labels[125] 86 
+labels[126] 120 
+labels[127] 127 
+labels[128] 86 
+labels[129] 129 
+labels[130] 130 
+labels[131] 120 
+labels[132] 132 
+labels[133] 133 
+labels[134] 134 
+labels[135] 86 
+labels[136] 68 
+labels[137] 137 
+labels[138] 138 
+labels[139] 139 
+labels[140] 140 
+labels[141] 141 
+labels[142] 142 
+labels[143] 143 
+labels[144] 144 
+labels[145] 145 
+labels[146] 146 
+labels[147] 120 
+labels[148] 148 
+labels[149] 68 
+labels[150] 150 
+labels[151] 151 
+labels[152] 152 
+labels[153] 153 
+labels[154] 154 
+labels[155] 86 
+labels[156] 0 
+labels[157] 0 
+labels[158] 0 
+labels[159] 0 
+labels[160] 0 
+labels[161] 0 
+labels[162] 0 
+labels[163] 0 
+labels[164] 0 
+labels[165] 0 
+labels[166] 0 
+labels[167] 0 
+labels[168] 0 
+labels[169] 0 
+labels[170] 0 
+labels[171] 0 
+labels[172] 0 
+labels[173] 0 
+labels[174] 0 
+labels[175] 0 
+labels[176] 0 
+labels[177] 0 
+labels[178] 0 
+labels[179] 0 
+labels[180] 0 
+labels[181] 0 
+labels[182] 0 
+labels[183] 0 
+labels[184] 0 
+labels[185] 0 
+labels[186] 0 
+labels[187] 0 
+labels[188] 0 
+labels[189] 0 
+labels[190] 0 
+labels[191] 0 
+labels[192] 0 
+labels[193] 0 
+labels[194] 0 
+labels[195] 0 
+labels[196] 0 
+labels[197] 0 
+labels[198] 0 
+labels[199] 0 

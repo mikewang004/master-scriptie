@@ -1,1550 +1,3 @@
-at position 1 9 0, counter 42 new cluster 1 
-at position 1 13 0, counter 46 new cluster 2 
-at position 1 21 0, counter 54 new cluster 3 
-row check 0 0 1 
-0 0 0 
-at position 1 27 0, added to cluster 0 
-at position 2 15 0, counter 81 new cluster 4 
-at position 3 3 0, counter 102 new cluster 5 
-row check 0 0 1 
-0 0 0 
-at position 3 11 0, added to cluster 0 
-row check 0 0 1 
-0 0 0 
-at position 3 12 0, added to cluster 0 
-at position 3 16 0, counter 115 new cluster 6 
-at position 3 27 0, counter 126 new cluster 7 
-row check 1 0 0 
-0 0 0 
-at position 4 11 0, added to cluster 0 
-case 2 
-merged two clusters, current position 4 12 0, new cluster 7
-at position 4 18 0, counter 150 new cluster 8 
-at position 4 20 0, counter 152 new cluster 9 
-row check 0 1 0 
-0 9 0 
-at position 4 21 0, added to cluster 9 
-row check 0 1 0 
-0 9 0 
-at position 4 22 0, added to cluster 9 
-row check 0 1 0 
-0 9 0 
-at position 4 23 0, added to cluster 9 
-row check 1 0 0 
-7 0 0 
-at position 4 27 0, added to cluster 7 
-row check 0 1 0 
-0 7 0 
-at position 4 28 0, added to cluster 7 
-row check 0 1 0 
-0 7 0 
-at position 4 29 0, added to cluster 7 
-at position 4 32 0, counter 164 new cluster 10 
-at position 5 1 0, counter 166 new cluster 11 
-row check 1 0 0 
-0 0 0 
-at position 5 11 0, added to cluster 0 
-row check 0 0 1 
-0 0 0 
-at position 5 16 0, added to cluster 0 
-case 2 
-merged two clusters, current position 5 17 0, new cluster 11
-case 2 
-merged two clusters, current position 5 20 0, new cluster 11
-case 2 
-merged two clusters, current position 5 22 0, new cluster 11
-row check 0 0 1 
-0 0 0 
-at position 5 26 0, added to cluster 0 
-case 2 
-merged two clusters, current position 5 27 0, new cluster 11
-case 2 
-merged two clusters, current position 5 28 0, new cluster 11
-row check 1 0 0 
-10 0 0 
-at position 5 32 0, added to cluster 10 
-at position 6 6 0, counter 204 new cluster 12 
-at position 6 7 0, counter 205 new cluster 13 
-row check 0 1 0 
-0 13 0 
-at position 6 8 0, added to cluster 13 
-case 2 
-merged two clusters, current position 6 16 0, new cluster 13
-row check 1 0 0 
-11 0 0 
-at position 6 20 0, added to cluster 11 
-at position 6 23 0, counter 221 new cluster 14 
-row check 0 0 1 
-0 0 0 
-at position 6 25 0, added to cluster 0 
-case 2 
-merged two clusters, current position 6 27 0, new cluster 14
-row check 1 0 0 
-11 0 0 
-at position 6 29 0, added to cluster 11 
-case 2 
-merged two clusters, current position 7 6 0, new cluster 14
-case 2 
-merged two clusters, current position 7 7 0, new cluster 14
-case 2 
-merged two clusters, current position 7 8 0, new cluster 14
-at position 7 11 0, counter 242 new cluster 15 
-at position 7 14 0, counter 245 new cluster 16 
-case 2 
-merged two clusters, current position 7 17 0, new cluster 16
-row check 1 0 0 
-14 0 0 
-at position 7 26 0, added to cluster 14 
-at position 8 0 0, counter 264 new cluster 17 
-at position 8 9 0, counter 273 new cluster 18 
-row check 0 0 1 
-0 0 0 
-at position 8 15 0, added to cluster 0 
-at position 8 31 0, counter 295 new cluster 19 
-at position 9 2 0, counter 299 new cluster 20 
-at position 9 15 0, counter 312 new cluster 21 
-row check 0 0 1 
-0 0 0 
-at position 9 29 0, added to cluster 0 
-at position 10 1 0, counter 331 new cluster 22 
-at position 10 11 0, counter 341 new cluster 23 
-case 2 
-merged two clusters, current position 10 12 0, new cluster 23
-case 2 
-merged two clusters, current position 10 13 0, new cluster 23
-at position 10 23 0, counter 353 new cluster 24 
-row check 0 0 1 
-0 0 0 
-at position 10 30 0, added to cluster 0 
-at position 11 8 0, counter 371 new cluster 25 
-case 2 
-merged two clusters, current position 11 12 0, new cluster 25
-row check 0 0 1 
-0 0 0 
-at position 11 16 0, added to cluster 0 
-at position 11 18 0, counter 381 new cluster 26 
-row check 0 0 1 
-0 0 0 
-at position 11 22 0, added to cluster 0 
-case 2 
-merged two clusters, current position 11 23 0, new cluster 26
-row check 0 1 0 
-0 26 0 
-at position 11 24 0, added to cluster 26 
-at position 11 29 0, counter 392 new cluster 27 
-at position 12 4 0, counter 400 new cluster 28 
-row check 0 0 1 
-0 0 0 
-at position 12 15 0, added to cluster 0 
-case 2 
-merged two clusters, current position 12 17 0, new cluster 28
-row check 0 0 1 
-0 0 0 
-at position 12 21 0, added to cluster 0 
-at position 12 27 0, counter 423 new cluster 29 
-at position 12 29 0, counter 425 new cluster 30 
-row check 0 0 1 
-0 0 0 
-at position 12 32 0, added to cluster 0 
-at position 13 9 0, counter 438 new cluster 31 
-row check 0 1 0 
-0 31 0 
-at position 13 10 0, added to cluster 31 
-row check 1 0 0 
-0 0 0 
-at position 13 15 0, added to cluster 0 
-case 2 
-merged two clusters, current position 13 22 0, new cluster 31
-row check 0 0 1 
-0 31 0 
-at position 13 23 0, added to cluster 31 
-row check 0 0 1 
-0 0 0 
-at position 13 25 0, added to cluster 0 
-at position 14 1 0, counter 463 new cluster 32 
-row check 0 0 1 
-0 0 0 
-at position 14 3 0, added to cluster 0 
-case 2 
-merged two clusters, current position 14 9 0, new cluster 32
-case 2 
-merged two clusters, current position 14 10 0, new cluster 32
-at position 14 25 0, counter 487 new cluster 33 
-row check 0 1 0 
-0 33 0 
-at position 14 26 0, added to cluster 33 
-case 2 
-merged two clusters, current position 14 27 0, new cluster 33
-row check 1 0 0 
-32 0 0 
-at position 15 1 0, added to cluster 32 
-at position 15 4 0, counter 499 new cluster 34 
-row check 0 0 1 
-0 0 0 
-at position 15 8 0, added to cluster 0 
-at position 15 24 0, counter 519 new cluster 35 
-case 2 
-merged two clusters, current position 15 26 0, new cluster 35
-row check 0 0 1 
-0 0 0 
-at position 15 29 0, added to cluster 0 
-row check 0 1 0 
-0 0 0 
-at position 15 30 0, added to cluster 0 
-at position 16 0 0, counter 528 new cluster 36 
-at position 16 4 0, counter 532 new cluster 37 
-row check 1 0 0 
-0 0 0 
-at position 16 8 0, added to cluster 0 
-at position 16 23 0, counter 551 new cluster 38 
-row check 1 0 0 
-35 38 0 
-at position 16 24 0, added to cluster 38 
-row check 0 1 0 
-35 38 0 
-at position 16 26 0, added to cluster 38 
-at position 16 27 0, counter 555 new cluster 39 
-row check 0 1 0 
-0 39 0 
-at position 16 28 0, added to cluster 39 
-case 2 
-merged two clusters, current position 16 29 0, new cluster 39
-row check 0 0 1 
-0 0 0 
-at position 17 1 0, added to cluster 0 
-row check 0 1 0 
-0 0 0 
-at position 17 2 0, added to cluster 0 
-at position 17 13 0, counter 574 new cluster 40 
-at position 17 15 0, counter 576 new cluster 41 
-at position 17 19 0, counter 580 new cluster 42 
-at position 17 21 0, counter 582 new cluster 43 
-row check 0 0 1 
-38 0 0 
-at position 17 26 0, added to cluster 38 
-case 2 
-merged two clusters, current position 17 27 0, new cluster 38
-case 2 
-merged two clusters, current position 17 28 0, new cluster 38
-case 2 
-merged two clusters, current position 17 29 0, new cluster 38
-at position 18 7 0, counter 601 new cluster 44 
-row check 0 0 1 
-0 0 0 
-at position 18 12 0, added to cluster 0 
-at position 18 18 0, counter 612 new cluster 45 
-case 2 
-merged two clusters, current position 18 19 0, new cluster 45
-row check 1 0 0 
-38 0 0 
-at position 18 28 0, added to cluster 38 
-row check 1 0 0 
-38 38 0 
-at position 18 29 0, added to cluster 38 
-row check 1 0 0 
-44 0 0 
-at position 19 7 0, added to cluster 44 
-case 2 
-merged two clusters, current position 19 12 0, new cluster 45
-at position 19 21 0, counter 648 new cluster 46 
-case 2 
-merged two clusters, current position 19 22 0, new cluster 46
-case 2 
-merged two clusters, current position 19 23 0, new cluster 46
-row check 1 0 0 
-38 0 0 
-at position 19 29 0, added to cluster 38 
-at position 19 31 0, counter 658 new cluster 47 
-row check 0 0 1 
-0 0 0 
-at position 20 2 0, added to cluster 0 
-row check 0 1 0 
-0 0 0 
-at position 20 3 0, added to cluster 0 
-row check 0 0 1 
-0 0 0 
-at position 20 8 0, added to cluster 0 
-row check 0 1 0 
-0 0 0 
-at position 20 9 0, added to cluster 0 
-at position 20 11 0, counter 671 new cluster 48 
-case 2 
-merged two clusters, current position 20 13 0, new cluster 48
-row check 0 0 1 
-46 0 0 
-at position 20 21 0, added to cluster 46 
-case 2 
-merged two clusters, current position 20 22 0, new cluster 46
-at position 20 25 0, counter 685 new cluster 49 
-at position 20 31 0, counter 691 new cluster 50 
-at position 21 2 0, counter 695 new cluster 51 
-case 2 
-merged two clusters, current position 21 8 0, new cluster 51
-row check 1 0 0 
-48 0 0 
-at position 21 12 0, added to cluster 48 
-case 2 
-merged two clusters, current position 21 13 0, new cluster 48
-at position 21 18 0, counter 711 new cluster 52 
-row check 0 1 0 
-0 52 0 
-at position 21 19 0, added to cluster 52 
-at position 21 20 0, counter 713 new cluster 53 
-row check 1 0 0 
-46 53 0 
-at position 21 21 0, added to cluster 53 
-at position 22 5 0, counter 731 new cluster 54 
-at position 22 18 0, counter 744 new cluster 55 
-at position 22 19 0, counter 745 new cluster 56 
-at position 23 8 0, counter 767 new cluster 57 
-at position 23 14 0, counter 773 new cluster 58 
-at position 23 15 0, counter 774 new cluster 59 
-at position 23 18 0, counter 777 new cluster 60 
-at position 23 27 0, counter 786 new cluster 61 
-at position 23 29 0, counter 788 new cluster 62 
-at position 24 5 0, counter 797 new cluster 63 
-at position 24 7 0, counter 799 new cluster 64 
-row check 1 0 0 
-59 0 0 
-at position 24 15 0, added to cluster 59 
-row check 0 0 1 
-0 0 0 
-at position 24 19 0, added to cluster 0 
-row check 1 0 0 
-61 0 0 
-at position 24 27 0, added to cluster 61 
-at position 25 2 0, counter 827 new cluster 65 
-row check 0 1 0 
-0 65 0 
-at position 25 3 0, added to cluster 65 
-row check 1 0 0 
-64 0 0 
-at position 25 7 0, added to cluster 64 
-at position 25 10 0, counter 835 new cluster 66 
-row check 0 1 0 
-0 66 0 
-at position 25 11 0, added to cluster 66 
-at position 25 13 0, counter 838 new cluster 67 
-row check 1 0 0 
-0 0 0 
-at position 25 19 0, added to cluster 0 
-at position 25 23 0, counter 848 new cluster 68 
-row check 0 1 0 
-0 68 0 
-at position 25 24 0, added to cluster 68 
-at position 25 30 0, counter 855 new cluster 69 
-row check 0 1 0 
-0 0 0 
-at position 26 0 0, added to cluster 0 
-row check 1 0 0 
-65 0 0 
-at position 26 2 0, added to cluster 65 
-at position 26 9 0, counter 867 new cluster 70 
-row check 1 0 0 
-66 70 0 
-at position 26 10 0, added to cluster 70 
-case 2 
-merged two clusters, current position 26 11 0, new cluster 70
-row check 0 1 0 
-0 70 0 
-at position 26 12 0, added to cluster 70 
-at position 26 18 0, counter 876 new cluster 71 
-row check 1 0 0 
-0 71 0 
-at position 26 19 0, added to cluster 71 
-row check 1 0 0 
-68 0 0 
-at position 26 23 0, added to cluster 68 
-case 2 
-merged two clusters, current position 26 24 0, new cluster 68
-at position 26 26 0, counter 884 new cluster 72 
-at position 26 32 0, counter 890 new cluster 73 
-at position 27 1 0, counter 892 new cluster 74 
-row check 0 1 0 
-65 74 0 
-at position 27 2 0, added to cluster 74 
-at position 27 14 0, counter 905 new cluster 75 
-at position 27 17 0, counter 908 new cluster 76 
-row check 1 0 0 
-72 0 0 
-at position 27 26 0, added to cluster 72 
-row check 0 1 0 
-0 72 0 
-at position 27 27 0, added to cluster 72 
-at position 28 9 0, counter 933 new cluster 77 
-at position 28 21 0, counter 945 new cluster 78 
-row check 0 1 0 
-0 78 0 
-at position 28 22 0, added to cluster 78 
-row check 1 0 0 
-72 0 0 
-at position 28 26 0, added to cluster 72 
-at position 28 28 0, counter 952 new cluster 79 
-at position 29 1 0, counter 958 new cluster 80 
-at position 29 11 0, counter 968 new cluster 81 
-row check 0 0 1 
-0 0 0 
-at position 29 13 0, added to cluster 0 
-case 2 
-merged two clusters, current position 29 14 0, new cluster 81
-row check 0 1 0 
-0 81 0 
-at position 29 15 0, added to cluster 81 
-at position 29 19 0, counter 976 new cluster 82 
-row check 0 1 0 
-0 82 0 
-at position 29 20 0, added to cluster 82 
-case 2 
-merged two clusters, current position 29 21 0, new cluster 82
-case 2 
-merged two clusters, current position 29 22 0, new cluster 82
-at position 29 24 0, counter 981 new cluster 83 
-at position 30 10 0, counter 1000 new cluster 84 
-at position 30 12 0, counter 1002 new cluster 85 
-at position 30 13 0, counter 1003 new cluster 86 
-case 2 
-merged two clusters, current position 30 14 0, new cluster 86
-row check 0 0 1 
-0 0 0 
-at position 30 18 0, added to cluster 0 
-case 2 
-merged two clusters, current position 30 20 0, new cluster 86
-case 2 
-merged two clusters, current position 30 21 0, new cluster 86
-case 2 
-merged two clusters, current position 30 22 0, new cluster 86
-at position 30 32 0, counter 1022 new cluster 87 
-at position 31 4 0, counter 1027 new cluster 88 
-at position 31 7 0, counter 1030 new cluster 89 
-row check 0 1 0 
-0 89 0 
-at position 31 8 0, added to cluster 89 
-row check 1 0 0 
-84 0 0 
-at position 31 10 0, added to cluster 84 
-row check 0 1 0 
-0 84 0 
-at position 31 11 0, added to cluster 84 
-row check 0 0 1 
-85 84 0 
-at position 31 12 0, added to cluster 85 
-at position 31 13 0, counter 1036 new cluster 90 
-at position 31 20 0, counter 1043 new cluster 91 
-at position 31 24 0, counter 1047 new cluster 92 
-at position 31 31 0, counter 1054 new cluster 93 
-at position 0 21 1, counter 1110 new cluster 94 
-at position 1 14 1, counter 1136 new cluster 95 
-at position 1 16 1, counter 1138 new cluster 96 
-row check 0 1 0 
-0 96 0 
-at position 1 17 1, added to cluster 96 
-at position 1 22 1, counter 1144 new cluster 97 
-row check 0 1 0 
-0 97 0 
-at position 1 23 1, added to cluster 97 
-row check 0 1 0 
-0 97 0 
-at position 1 24 1, added to cluster 97 
-at position 1 32 1, counter 1154 new cluster 98 
-at position 2 3 1, counter 1158 new cluster 99 
-row check 0 1 0 
-0 99 0 
-at position 2 4 1, added to cluster 99 
-row check 0 0 1 
-0 0 4 
-at position 2 15 1, added to cluster 4 
-at position 2 17 1, counter 1172 new cluster 100 
-at position 2 19 1, counter 1174 new cluster 101 
-row check 0 1 0 
-0 101 0 
-at position 2 20 1, added to cluster 101 
-row check 1 0 0 
-97 0 0 
-at position 2 22 1, added to cluster 97 
-case 2 
-merged two clusters, current position 2 23 1, new cluster 97
-at position 2 24 1, counter 1179 new cluster 102 
-at position 2 31 1, counter 1186 new cluster 103 
-case 2 
-merged two clusters, current position 2 32 1, new cluster 103
-case 2 
-merged two clusters, current position 3 3 1, new cluster 5
-case 2 
-merged two clusters, current position 3 4 1, new cluster 5
-row check 0 0 1 
-0 0 0 
-at position 3 12 1, added to cluster 0 
-row check 0 0 1 
-0 0 6 
-at position 3 16 1, added to cluster 6 
-at position 3 17 1, counter 1205 new cluster 104 
-row check 0 1 0 
-0 104 0 
-at position 3 18 1, added to cluster 104 
-row check 1 0 0 
-97 0 0 
-at position 3 23 1, added to cluster 97 
-case 2 
-merged two clusters, current position 3 24 1, new cluster 97
-at position 3 32 1, counter 1220 new cluster 105 
-at position 4 0 1, counter 1221 new cluster 106 
-at position 4 1 1, counter 1222 new cluster 107 
-row check 1 0 0 
-5 0 0 
-at position 4 3 1, added to cluster 5 
-case 2 
-merged two clusters, current position 4 4 1, new cluster 5
-row check 0 1 0 
-0 5 0 
-at position 4 5 1, added to cluster 5 
-at position 4 7 1, counter 1228 new cluster 108 
-row check 1 0 0 
-6 0 0 
-at position 4 16 1, added to cluster 6 
-case 2 
-merged two clusters, current position 4 17 1, new cluster 6
-row check 0 0 1 
-0 0 9 
-at position 4 20 1, added to cluster 9 
-case 2 
-merged two clusters, current position 4 21 1, new cluster 16
-case 2 
-merged two clusters, current position 4 22 1, new cluster 16
-row check 1 0 0 
-97 16 0 
-at position 4 24 1, added to cluster 97 
-row check 0 0 1 
-0 0 7 
-at position 4 28 1, added to cluster 7 
-case 2 
-merged two clusters, current position 4 29 1, new cluster 16
-row check 0 1 0 
-0 16 0 
-at position 4 30 1, added to cluster 16 
-row check 0 1 0 
-0 16 0 
-at position 4 31 1, added to cluster 16 
-case 2 
-merged two clusters, current position 5 1 1, new cluster 16
-at position 5 2 1, counter 1256 new cluster 109 
-at position 5 6 1, counter 1260 new cluster 110 
-case 2 
-merged two clusters, current position 5 7 1, new cluster 110
-at position 5 8 1, counter 1262 new cluster 111 
-case 2 
-merged two clusters, current position 5 16 1, new cluster 111
-row check 1 0 0 
-16 0 0 
-at position 5 23 1, added to cluster 16 
-row check 1 0 0 
-97 16 0 
-at position 5 24 1, added to cluster 97 
-case 2 
-merged two clusters, current position 5 28 1, new cluster 111
-case 2 
-merged two clusters, current position 5 30 1, new cluster 111
-case 2 
-merged two clusters, current position 5 31 1, new cluster 111
-at position 6 4 1, counter 1291 new cluster 112 
-case 2 
-merged two clusters, current position 6 6 1, new cluster 111
-at position 6 10 1, counter 1297 new cluster 113 
-row check 0 1 0 
-0 113 0 
-at position 6 11 1, added to cluster 113 
-case 2 
-merged two clusters, current position 6 17 1, new cluster 111
-row check 1 0 0 
-16 0 14 
-at position 6 23 1, added to cluster 16 
-case 2 
-merged two clusters, current position 6 24 1, new cluster 111
-row check 0 1 0 
-0 111 0 
-at position 6 25 1, added to cluster 111 
-row check 1 0 0 
-111 0 0 
-at position 6 28 1, added to cluster 111 
-row check 1 0 0 
-111 0 0 
-at position 6 31 1, added to cluster 111 
-at position 7 3 1, counter 1323 new cluster 114 
-case 2 
-merged two clusters, current position 7 4 1, new cluster 114
-row check 1 0 0 
-111 0 14 
-at position 7 6 1, added to cluster 111 
-case 2 
-merged two clusters, current position 7 7 1, new cluster 111
-at position 7 12 1, counter 1332 new cluster 115 
-at position 7 31 1, counter 1351 new cluster 116 
-at position 7 32 1, counter 1352 new cluster 117 
-at position 8 9 1, counter 1362 new cluster 118 
-at position 8 16 1, counter 1369 new cluster 119 
-at position 8 21 1, counter 1374 new cluster 120 
-row check 0 0 1 
-116 0 19 
-at position 8 31 1, added to cluster 116 
-at position 8 32 1, counter 1385 new cluster 121 
-row check 1 0 0 
-119 0 0 
-at position 9 16 1, added to cluster 119 
-row check 0 1 0 
-0 119 0 
-at position 9 17 1, added to cluster 119 
-row check 0 1 0 
-0 119 0 
-at position 9 18 1, added to cluster 119 
-at position 9 21 1, counter 1407 new cluster 122 
-at position 9 23 1, counter 1409 new cluster 123 
-row check 0 0 1 
-0 0 23 
-at position 10 12 1, added to cluster 23 
-case 2 
-merged two clusters, current position 10 23 1, new cluster 26
-row check 0 1 0 
-0 26 0 
-at position 10 24 1, added to cluster 26 
-case 2 
-merged two clusters, current position 11 12 1, new cluster 25
-case 2 
-merged two clusters, current position 11 23 1, new cluster 26
-row check 0 0 1 
-0 0 28 
-at position 12 4 1, added to cluster 28 
-at position 12 7 1, counter 1492 new cluster 124 
-row check 0 1 0 
-0 124 0 
-at position 12 8 1, added to cluster 124 
-row check 0 0 1 
-0 0 28 
-at position 12 17 1, added to cluster 28 
-at position 13 1 1, counter 1519 new cluster 125 
-at position 13 3 1, counter 1521 new cluster 126 
-at position 13 7 1, counter 1525 new cluster 127 
-case 2 
-merged two clusters, current position 13 17 1, new cluster 37
-at position 14 0 1, counter 1551 new cluster 128 
-row check 0 1 0 
-0 37 0 
-at position 14 2 1, added to cluster 37 
-at position 14 4 1, counter 1555 new cluster 129 
-row check 0 0 1 
-0 0 32 
-at position 14 10 1, added to cluster 32 
-at position 14 23 1, counter 1574 new cluster 130 
-row check 0 0 1 
-0 0 33 
-at position 14 26 1, added to cluster 33 
-row check 0 1 0 
-0 33 33 
-at position 14 27 1, added to cluster 33 
-case 2 
-merged two clusters, current position 15 1 1, new cluster 37
-at position 15 15 1, counter 1599 new cluster 131 
-at position 15 18 1, counter 1602 new cluster 132 
-row check 1 0 0 
-130 0 0 
-at position 15 23 1, added to cluster 130 
-row check 0 0 1 
-0 130 35 
-at position 15 24 1, added to cluster 130 
-case 2 
-merged two clusters, current position 15 25 1, new cluster 38
-case 2 
-merged two clusters, current position 15 26 1, new cluster 38
-row check 0 0 1 
-0 0 0 
-at position 15 29 1, added to cluster 0 
-case 2 
-merged two clusters, current position 15 30 1, new cluster 132
-at position 15 31 1, counter 1615 new cluster 133 
-at position 16 0 1, counter 1617 new cluster 134 
-row check 1 0 0 
-131 0 0 
-at position 16 15 1, added to cluster 131 
-at position 16 16 1, counter 1633 new cluster 135 
-row check 0 1 0 
-0 135 0 
-at position 16 17 1, added to cluster 135 
-row check 1 0 0 
-132 135 0 
-at position 16 18 1, added to cluster 135 
-case 2 
-merged two clusters, current position 16 26 1, new cluster 38
-row check 0 0 1 
-0 0 39 
-at position 16 28 1, added to cluster 39 
-case 2 
-merged two clusters, current position 16 30 1, new cluster 38
-at position 17 1 1, counter 1651 new cluster 39 
-at position 17 8 1, counter 1658 new cluster 40 
-row check 0 0 1 
-0 0 40 
-at position 17 13 1, added to cluster 40 
-row check 0 0 1 
-131 0 41 
-at position 17 15 1, added to cluster 131 
-case 2 
-merged two clusters, current position 17 16 1, new cluster 131
-case 2 
-merged two clusters, current position 17 17 1, new cluster 131
-row check 0 0 1 
-0 0 43 
-at position 17 21 1, added to cluster 43 
-row check 0 1 0 
-0 43 0 
-at position 17 22 1, added to cluster 43 
-row check 0 0 1 
-0 0 38 
-at position 17 27 1, added to cluster 38 
-case 2 
-merged two clusters, current position 17 30 1, new cluster 131
-at position 17 31 1, counter 1681 new cluster 41 
-at position 18 4 1, counter 1687 new cluster 42 
-row check 0 0 1 
-40 0 44 
-at position 18 13 1, added to cluster 44 
-row check 0 0 1 
-0 0 45 
-at position 18 18 1, added to cluster 45 
-case 2 
-merged two clusters, current position 18 19 1, new cluster 48
-row check 0 1 0 
-0 48 0 
-at position 18 20 1, added to cluster 48 
-case 2 
-merged two clusters, current position 18 29 1, new cluster 131
-case 2 
-merged two clusters, current position 18 30 1, new cluster 131
-row check 1 0 0 
-42 0 0 
-at position 19 4 1, added to cluster 42 
-row check 1 0 0 
-44 0 45 
-at position 19 13 1, added to cluster 45 
-row check 1 0 0 
-45 0 0 
-at position 19 18 1, added to cluster 45 
-case 2 
-merged two clusters, current position 19 19 1, new cluster 48
-row check 0 0 1 
-0 0 46 
-at position 19 23 1, added to cluster 46 
-row check 0 0 1 
-0 0 48 
-at position 20 12 1, added to cluster 48 
-case 2 
-merged two clusters, current position 20 13 1, new cluster 48
-row check 0 1 0 
-0 48 0 
-at position 20 14 1, added to cluster 48 
-at position 20 16 1, counter 1765 new cluster 43 
-row check 0 0 1 
-0 0 46 
-at position 20 22 1, added to cluster 46 
-at position 20 30 1, counter 1779 new cluster 44 
-row check 0 0 1 
-0 0 51 
-at position 21 8 1, added to cluster 51 
-row check 0 1 0 
-0 51 0 
-at position 21 9 1, added to cluster 51 
-at position 21 11 1, counter 1793 new cluster 45 
-row check 1 0 0 
-46 0 0 
-at position 21 22 1, added to cluster 46 
-row check 1 0 0 
-48 0 0 
-at position 22 12 1, added to cluster 48 
-at position 22 28 1, counter 1843 new cluster 46 
-row check 0 1 0 
-0 46 0 
-at position 22 29 1, added to cluster 46 
-row check 0 1 0 
-0 46 0 
-at position 22 30 1, added to cluster 46 
-at position 23 13 1, counter 1861 new cluster 47 
-case 2 
-merged two clusters, current position 23 14 1, new cluster 58
-case 2 
-merged two clusters, current position 23 15 1, new cluster 59
-row check 0 1 0 
-0 59 0 
-at position 23 16 1, added to cluster 59 
-row check 1 0 0 
-46 0 0 
-at position 23 30 1, added to cluster 46 
-row check 0 0 1 
-0 0 63 
-at position 24 5 1, added to cluster 63 
-at position 24 7 1, counter 1888 new cluster 48 
-at position 24 12 1, counter 1893 new cluster 49 
-row check 1 0 0 
-58 0 0 
-at position 24 14 1, added to cluster 58 
-row check 1 0 0 
-59 0 0 
-at position 24 16 1, added to cluster 59 
-at position 24 25 1, counter 1906 new cluster 50 
-at position 24 30 1, counter 1911 new cluster 51 
-at position 25 2 1, counter 1916 new cluster 52 
-at position 25 4 1, counter 1918 new cluster 53 
-at position 25 6 1, counter 1920 new cluster 54 
-case 2 
-merged two clusters, current position 25 7 1, new cluster 64
-at position 25 10 1, counter 1924 new cluster 55 
-row check 0 0 1 
-0 0 67 
-at position 25 13 1, added to cluster 67 
-row check 0 1 0 
-58 67 0 
-at position 25 14 1, added to cluster 67 
-row check 0 0 1 
-0 0 68 
-at position 25 23 1, added to cluster 68 
-case 2 
-merged two clusters, current position 25 24 1, new cluster 68
-at position 25 29 1, counter 1943 new cluster 56 
-row check 1 0 0 
-54 0 0 
-at position 26 6 1, added to cluster 54 
-case 2 
-merged two clusters, current position 26 7 1, new cluster 64
-row check 0 1 0 
-0 64 0 
-at position 26 8 1, added to cluster 64 
-at position 26 15 1, counter 1962 new cluster 57 
-case 2 
-merged two clusters, current position 26 23 1, new cluster 68
-at position 26 31 1, counter 1978 new cluster 58 
-row check 1 0 0 
-64 0 0 
-at position 27 7 1, added to cluster 64 
-case 2 
-merged two clusters, current position 27 8 1, new cluster 64
-row check 1 0 0 
-57 0 0 
-at position 27 15 1, added to cluster 57 
-row check 0 1 0 
-0 57 0 
-at position 27 16 1, added to cluster 57 
-row check 1 0 0 
-68 0 0 
-at position 27 23 1, added to cluster 68 
-at position 28 0 1, counter 2013 new cluster 59 
-at position 28 12 1, counter 2025 new cluster 60 
-at position 28 20 1, counter 2033 new cluster 61 
-at position 28 31 1, counter 2044 new cluster 62 
-at position 29 8 1, counter 2054 new cluster 63 
-at position 29 9 1, counter 2055 new cluster 64 
-case 2 
-merged two clusters, current position 29 20 1, new cluster 91
-case 2 
-merged two clusters, current position 29 21 1, new cluster 91
-case 2 
-merged two clusters, current position 29 22 1, new cluster 91
-at position 29 24 1, counter 2070 new cluster 65 
-at position 29 25 1, counter 2071 new cluster 66 
-case 2 
-merged two clusters, current position 30 20 1, new cluster 91
-at position 30 28 1, counter 2107 new cluster 67 
-at position 31 1 1, counter 2113 new cluster 68 
-at position 31 3 1, counter 2115 new cluster 69 
-at position 31 4 1, counter 2116 new cluster 70 
-at position 31 6 1, counter 2118 new cluster 71 
-case 2 
-merged two clusters, current position 31 7 1, new cluster 89
-case 2 
-merged two clusters, current position 31 8 1, new cluster 89
-at position 31 10 1, counter 2122 new cluster 72 
-at position 31 13 1, counter 2125 new cluster 73 
-at position 31 16 1, counter 2128 new cluster 74 
-at position 31 17 1, counter 2129 new cluster 75 
-row check 1 0 0 
-91 0 91 
-at position 31 20 1, added to cluster 91 
-at position 31 24 1, counter 2136 new cluster 76 
-at position 31 27 1, counter 2139 new cluster 77 
-case 2 
-merged two clusters, current position 31 28 1, new cluster 77
-row check 0 1 0 
-0 77 0 
-at position 31 29 1, added to cluster 77 
-at position 0 20 2, counter 2198 new cluster 78 
-case 2 
-merged two clusters, current position 0 21 2, new cluster 94
-at position 1 5 2, counter 2216 new cluster 79 
-row check 0 1 0 
-0 79 0 
-at position 1 6 2, added to cluster 79 
-row check 0 0 1 
-0 0 96 
-at position 1 16 2, added to cluster 96 
-at position 1 21 2, counter 2232 new cluster 80 
-row check 0 0 1 
-0 80 97 
-at position 1 22 2, added to cluster 97 
-row check 0 0 1 
-0 0 97 
-at position 1 24 2, added to cluster 97 
-at position 1 30 2, counter 2241 new cluster 81 
-at position 1 32 2, counter 2243 new cluster 82 
-at position 2 1 2, counter 2245 new cluster 83 
-at position 2 2 2, counter 2246 new cluster 84 
-case 2 
-merged two clusters, current position 2 3 2, new cluster 5
-case 2 
-merged two clusters, current position 2 4 2, new cluster 5
-case 2 
-merged two clusters, current position 2 5 2, new cluster 5
-at position 2 11 2, counter 2255 new cluster 85 
-row check 0 0 1 
-0 0 4 
-at position 2 15 2, added to cluster 4 
-row check 1 0 0 
-96 4 0 
-at position 2 16 2, added to cluster 96 
-row check 0 0 1 
-0 0 101 
-at position 2 19 2, added to cluster 101 
-case 2 
-merged two clusters, current position 2 20 2, new cluster 101
-row check 0 1 0 
-80 101 0 
-at position 2 21 2, added to cluster 101 
-at position 2 26 2, counter 2270 new cluster 86 
-at position 2 27 2, counter 2271 new cluster 87 
-row check 0 1 0 
-0 87 0 
-at position 2 28 2, added to cluster 87 
-row check 1 0 0 
-84 0 0 
-at position 3 2 2, added to cluster 84 
-case 2 
-merged two clusters, current position 3 5 2, new cluster 5
-row check 0 1 0 
-0 5 0 
-at position 3 6 2, added to cluster 5 
-at position 3 7 2, counter 2284 new cluster 88 
-row check 0 1 0 
-0 88 0 
-at position 3 8 2, added to cluster 88 
-row check 1 0 0 
-4 0 0 
-at position 3 15 2, added to cluster 4 
-case 2 
-merged two clusters, current position 3 17 2, new cluster 111
-row check 1 0 0 
-101 0 0 
-at position 3 19 2, added to cluster 101 
-at position 3 21 2, counter 2298 new cluster 89 
-case 2 
-merged two clusters, current position 3 22 2, new cluster 89
-row check 0 0 1 
-0 0 97 
-at position 3 24 2, added to cluster 97 
-row check 1 0 0 
-86 0 0 
-at position 3 26 2, added to cluster 86 
-at position 4 0 2, counter 2310 new cluster 90 
-row check 1 0 0 
-5 0 5 
-at position 4 3 2, added to cluster 5 
-case 2 
-merged two clusters, current position 4 6 2, new cluster 5
-row check 0 0 1 
-88 5 108 
-at position 4 7 2, added to cluster 108 
-case 2 
-merged two clusters, current position 4 8 2, new cluster 89
-row check 0 1 0 
-0 89 0 
-at position 4 9 2, added to cluster 89 
-at position 4 10 2, counter 2320 new cluster 91 
-case 2 
-merged two clusters, current position 4 17 2, new cluster 89
-case 2 
-merged two clusters, current position 4 18 2, new cluster 89
-row check 0 0 1 
-89 0 16 
-at position 4 21 2, added to cluster 89 
-case 2 
-merged two clusters, current position 4 22 2, new cluster 89
-at position 4 26 2, counter 2336 new cluster 92 
-row check 0 1 0 
-0 92 0 
-at position 4 27 2, added to cluster 92 
-row check 0 0 1 
-0 92 7 
-at position 4 28 2, added to cluster 92 
-case 2 
-merged two clusters, current position 4 29 2, new cluster 89
-case 2 
-merged two clusters, current position 4 30 2, new cluster 89
-case 2 
-merged two clusters, current position 4 31 2, new cluster 89
-at position 5 3 2, counter 2346 new cluster 93 
-row check 1 0 0 
-5 93 0 
-at position 5 4 2, added to cluster 93 
-case 2 
-merged two clusters, current position 5 5 2, new cluster 93
-case 2 
-merged two clusters, current position 5 7 2, new cluster 89
-case 2 
-merged two clusters, current position 5 29 2, new cluster 89
-at position 5 32 2, counter 2375 new cluster 94 
-row check 1 0 0 
-93 0 0 
-at position 6 5 2, added to cluster 93 
-row check 0 0 1 
-0 93 111 
-at position 6 6 2, added to cluster 111 
-case 2 
-merged two clusters, current position 6 8 2, new cluster 89
-at position 6 13 2, counter 2389 new cluster 95 
-at position 6 19 2, counter 2395 new cluster 96 
-row check 0 1 0 
-0 96 0 
-at position 6 20 2, added to cluster 96 
-row check 0 0 1 
-0 0 114 
-at position 7 3 2, added to cluster 114 
-case 2 
-merged two clusters, current position 7 4 2, new cluster 114
-row check 1 0 0 
-93 114 0 
-at position 7 5 2, added to cluster 114 
-case 2 
-merged two clusters, current position 7 7 2, new cluster 89
-row check 1 0 0 
-96 0 0 
-at position 7 20 2, added to cluster 96 
-row check 0 1 0 
-0 96 0 
-at position 7 21 2, added to cluster 96 
-at position 8 13 2, counter 2455 new cluster 97 
-row check 0 0 1 
-0 0 119 
-at position 8 16 2, added to cluster 119 
-row check 0 1 0 
-0 119 0 
-at position 8 17 2, added to cluster 119 
-row check 0 1 0 
-0 119 0 
-at position 8 18 2, added to cluster 119 
-at position 8 26 2, counter 2468 new cluster 98 
-row check 0 1 0 
-0 98 0 
-at position 8 27 2, added to cluster 98 
-at position 8 28 2, counter 2470 new cluster 99 
-at position 9 2 2, counter 2477 new cluster 100 
-at position 9 15 2, counter 2490 new cluster 101 
-row check 0 1 0 
-0 119 0 
-at position 9 19 2, added to cluster 119 
-row check 1 0 0 
-98 0 0 
-at position 9 26 2, added to cluster 98 
-row check 0 0 1 
-0 0 23 
-at position 10 12 2, added to cluster 23 
-row check 1 0 0 
-101 0 0 
-at position 10 15 2, added to cluster 101 
-case 2 
-merged two clusters, current position 10 16 2, new cluster 119
-case 2 
-merged two clusters, current position 10 17 2, new cluster 119
-row check 0 0 1 
-0 0 26 
-at position 10 23 2, added to cluster 26 
-row check 1 0 0 
-98 0 0 
-at position 10 26 2, added to cluster 98 
-at position 11 13 2, counter 2554 new cluster 102 
-row check 1 0 0 
-119 0 0 
-at position 11 16 2, added to cluster 119 
-case 2 
-merged two clusters, current position 11 17 2, new cluster 119
-at position 11 19 2, counter 2560 new cluster 103 
-row check 0 0 1 
-0 0 124 
-at position 12 7 2, added to cluster 124 
-at position 12 8 2, counter 2582 new cluster 104 
-at position 12 10 2, counter 2584 new cluster 105 
-row check 1 0 0 
-119 0 0 
-at position 12 16 2, added to cluster 119 
-at position 12 32 2, counter 2606 new cluster 106 
-row check 0 0 1 
-0 0 125 
-at position 13 1 2, added to cluster 125 
-at position 13 2 2, counter 2609 new cluster 107 
-at position 13 7 2, counter 2614 new cluster 108 
-at position 13 9 2, counter 2616 new cluster 109 
-row check 1 0 0 
-106 0 0 
-at position 13 32 2, added to cluster 106 
-case 2 
-merged two clusters, current position 14 1 2, new cluster 37
-at position 14 11 2, counter 2651 new cluster 110 
-row check 0 1 0 
-0 110 0 
-at position 14 12 2, added to cluster 110 
-at position 14 29 2, counter 2669 new cluster 111 
-row check 1 0 0 
-37 0 0 
-at position 15 2 2, added to cluster 37 
-at position 15 7 2, counter 2680 new cluster 112 
-at position 15 15 2, counter 2688 new cluster 113 
-at position 15 17 2, counter 2690 new cluster 114 
-at position 15 21 2, counter 2694 new cluster 115 
-row check 0 0 1 
-111 0 0 
-at position 15 29 2, added to cluster 111 
-case 2 
-merged two clusters, current position 15 30 2, new cluster 131
-at position 15 32 2, counter 2705 new cluster 116 
-at position 16 14 2, counter 2720 new cluster 117 
-row check 1 0 0 
-113 117 131 
-at position 16 15 2, added to cluster 131 
-row check 1 0 0 
-115 0 0 
-at position 16 21 2, added to cluster 115 
-row check 0 1 0 
-0 115 0 
-at position 16 22 2, added to cluster 115 
-at position 16 28 2, counter 2734 new cluster 118 
-case 2 
-merged two clusters, current position 16 29 2, new cluster 131
-row check 0 1 0 
-0 131 0 
-at position 16 31 2, added to cluster 131 
-row check 0 1 0 
-116 131 0 
-at position 16 32 2, added to cluster 131 
-row check 0 0 1 
-0 0 40 
-at position 17 8 2, added to cluster 40 
-at position 17 19 2, counter 2758 new cluster 119 
-row check 0 1 0 
-0 119 0 
-at position 17 20 2, added to cluster 119 
-at position 17 25 2, counter 2764 new cluster 120 
-row check 0 1 0 
-0 120 0 
-at position 17 26 2, added to cluster 120 
-row check 0 0 1 
-0 120 38 
-at position 17 27 2, added to cluster 120 
-case 2 
-merged two clusters, current position 17 29 2, new cluster 131
-at position 18 10 2, counter 2782 new cluster 121 
-case 2 
-merged two clusters, current position 18 19 2, new cluster 48
-row check 1 0 0 
-43 0 0 
-at position 18 22 2, added to cluster 43 
-row check 1 0 0 
-120 0 0 
-at position 18 26 2, added to cluster 120 
-case 2 
-merged two clusters, current position 18 27 2, new cluster 120
-at position 18 31 2, counter 2803 new cluster 122 
-at position 19 7 2, counter 2812 new cluster 123 
-row check 0 1 0 
-0 123 0 
-at position 19 8 2, added to cluster 123 
-at position 19 30 2, counter 2835 new cluster 124 
-at position 20 9 2, counter 2847 new cluster 125 
-at position 20 11 2, counter 2849 new cluster 126 
-case 2 
-merged two clusters, current position 20 12 2, new cluster 48
-case 2 
-merged two clusters, current position 20 13 2, new cluster 48
-case 2 
-merged two clusters, current position 20 14 2, new cluster 48
-row check 0 0 1 
-0 0 46 
-at position 20 22 2, added to cluster 46 
-at position 20 23 2, counter 2861 new cluster 127 
-at position 21 4 2, counter 2875 new cluster 128 
-at position 21 5 2, counter 2876 new cluster 129 
-row check 0 0 1 
-125 0 51 
-at position 21 9 2, added to cluster 125 
-case 2 
-merged two clusters, current position 21 11 2, new cluster 48
-at position 21 23 2, counter 2894 new cluster 130 
-row check 1 0 0 
-48 0 0 
-at position 22 11 2, added to cluster 48 
-row check 0 0 1 
-0 0 46 
-at position 22 30 2, added to cluster 46 
-at position 23 2 2, counter 2939 new cluster 131 
-row check 0 1 0 
-0 131 0 
-at position 23 3 2, added to cluster 131 
-row check 0 0 1 
-0 0 58 
-at position 23 14 2, added to cluster 58 
-case 2 
-merged two clusters, current position 23 15 2, new cluster 59
-case 2 
-merged two clusters, current position 23 30 2, new cluster 46
-at position 23 32 2, counter 2969 new cluster 132 
-row check 1 0 0 
-131 0 0 
-at position 24 2 2, added to cluster 131 
-case 2 
-merged two clusters, current position 24 3 2, new cluster 131
-at position 24 11 2, counter 2981 new cluster 133 
-case 2 
-merged two clusters, current position 25 2 2, new cluster 52
-row check 0 1 0 
-131 52 0 
-at position 25 3 2, added to cluster 131 
-at position 25 9 2, counter 3012 new cluster 134 
-at position 25 19 2, counter 3022 new cluster 135 
-at position 25 22 2, counter 3025 new cluster 136 
-case 2 
-merged two clusters, current position 25 23 2, new cluster 68
-at position 26 2 2, counter 3038 new cluster 137 
-at position 26 4 2, counter 3040 new cluster 138 
-row check 0 1 0 
-0 138 0 
-at position 26 5 2, added to cluster 138 
-at position 26 13 2, counter 3049 new cluster 139 
-case 2 
-merged two clusters, current position 26 23 2, new cluster 68
-row check 0 1 0 
-0 68 0 
-at position 26 24 2, added to cluster 68 
-at position 27 0 2, counter 3069 new cluster 140 
-at position 28 0 2, counter 3102 new cluster 141 
-at position 28 4 2, counter 3106 new cluster 142 
-at position 28 5 2, counter 3107 new cluster 143 
-row check 0 0 1 
-0 0 61 
-at position 28 20 2, added to cluster 61 
-at position 28 22 2, counter 3124 new cluster 144 
-at position 28 26 2, counter 3128 new cluster 145 
-at position 29 16 2, counter 3151 new cluster 146 
-case 2 
-merged two clusters, current position 29 20 2, new cluster 91
-at position 29 23 2, counter 3158 new cluster 147 
-at position 29 27 2, counter 3162 new cluster 148 
-at position 30 1 2, counter 3169 new cluster 149 
-at position 30 14 2, counter 3182 new cluster 150 
-at position 30 15 2, counter 3183 new cluster 151 
-case 2 
-merged two clusters, current position 30 20 2, new cluster 91
-case 2 
-merged two clusters, current position 30 21 2, new cluster 91
-row check 0 1 0 
-0 91 0 
-at position 30 22 2, added to cluster 91 
-case 2 
-merged two clusters, current position 30 23 2, new cluster 91
-case 2 
-merged two clusters, current position 31 1 2, new cluster 68
-at position 31 2 2, counter 3203 new cluster 152 
-at position 31 8 2, counter 3209 new cluster 153 
-at position 31 15 2, counter 3216 new cluster 154 
-case 2 
-merged two clusters, current position 31 20 2, new cluster 91
-at position 31 31 2, counter 3232 new cluster 155 
-case 2 
-merged two clusters, current position 4 12 0, new cluster 155
-case 2 
-merged two clusters, current position 5 17 0, new cluster 155
-case 2 
-merged two clusters, current position 5 20 0, new cluster 155
-case 2 
-merged two clusters, current position 5 22 0, new cluster 155
-case 2 
-merged two clusters, current position 5 27 0, new cluster 155
-case 2 
-merged two clusters, current position 5 28 0, new cluster 155
-case 2 
-merged two clusters, current position 6 16 0, new cluster 155
-case 2 
-merged two clusters, current position 6 27 0, new cluster 155
-case 2 
-merged two clusters, current position 7 6 0, new cluster 155
-case 2 
-merged two clusters, current position 7 7 0, new cluster 155
-case 2 
-merged two clusters, current position 7 8 0, new cluster 155
-case 2 
-merged two clusters, current position 7 17 0, new cluster 155
-case 2 
-merged two clusters, current position 10 12 0, new cluster 25
-case 2 
-merged two clusters, current position 10 13 0, new cluster 25
-case 2 
-merged two clusters, current position 11 12 0, new cluster 25
-case 2 
-merged two clusters, current position 11 23 0, new cluster 25
-case 2 
-merged two clusters, current position 12 17 0, new cluster 25
-case 2 
-merged two clusters, current position 13 22 0, new cluster 25
-case 2 
-merged two clusters, current position 14 9 0, new cluster 25
-case 2 
-merged two clusters, current position 14 10 0, new cluster 25
-case 2 
-merged two clusters, current position 14 27 0, new cluster 25
-case 2 
-merged two clusters, current position 15 26 0, new cluster 25
-case 2 
-merged two clusters, current position 16 29 0, new cluster 25
-case 2 
-merged two clusters, current position 17 27 0, new cluster 25
-case 2 
-merged two clusters, current position 17 28 0, new cluster 25
-case 2 
-merged two clusters, current position 17 29 0, new cluster 25
-case 2 
-merged two clusters, current position 18 19 0, new cluster 48
-case 2 
-merged two clusters, current position 19 12 0, new cluster 25
-case 2 
-merged two clusters, current position 19 22 0, new cluster 46
-case 2 
-merged two clusters, current position 19 23 0, new cluster 46
-case 2 
-merged two clusters, current position 20 13 0, new cluster 46
-case 2 
-merged two clusters, current position 20 22 0, new cluster 46
-case 2 
-merged two clusters, current position 21 8 0, new cluster 46
-case 2 
-merged two clusters, current position 21 13 0, new cluster 46
-case 2 
-merged two clusters, current position 26 11 0, new cluster 66
-case 2 
-merged two clusters, current position 26 24 0, new cluster 68
-case 2 
-merged two clusters, current position 29 14 0, new cluster 46
-case 2 
-merged two clusters, current position 29 21 0, new cluster 82
-case 2 
-merged two clusters, current position 29 22 0, new cluster 82
-case 2 
-merged two clusters, current position 30 14 0, new cluster 86
-case 2 
-merged two clusters, current position 30 20 0, new cluster 86
-case 2 
-merged two clusters, current position 30 21 0, new cluster 86
-case 2 
-merged two clusters, current position 30 22 0, new cluster 86
-case 2 
-merged two clusters, current position 2 23 1, new cluster 97
-case 2 
-merged two clusters, current position 2 32 1, new cluster 103
-case 2 
-merged two clusters, current position 3 3 1, new cluster 93
-case 2 
-merged two clusters, current position 3 4 1, new cluster 93
-case 2 
-merged two clusters, current position 3 24 1, new cluster 97
-case 2 
-merged two clusters, current position 4 4 1, new cluster 93
-case 2 
-merged two clusters, current position 4 17 1, new cluster 86
-case 2 
-merged two clusters, current position 4 21 1, new cluster 86
-case 2 
-merged two clusters, current position 4 22 1, new cluster 86
-case 2 
-merged two clusters, current position 4 29 1, new cluster 86
-case 2 
-merged two clusters, current position 5 1 1, new cluster 86
-case 2 
-merged two clusters, current position 5 7 1, new cluster 110
-case 2 
-merged two clusters, current position 5 16 1, new cluster 86
-case 2 
-merged two clusters, current position 5 28 1, new cluster 86
-case 2 
-merged two clusters, current position 5 30 1, new cluster 86
-case 2 
-merged two clusters, current position 5 31 1, new cluster 86
-case 2 
-merged two clusters, current position 6 6 1, new cluster 86
-case 2 
-merged two clusters, current position 6 17 1, new cluster 86
-case 2 
-merged two clusters, current position 6 24 1, new cluster 86
-case 2 
-merged two clusters, current position 7 4 1, new cluster 114
-case 2 
-merged two clusters, current position 7 7 1, new cluster 86
-case 2 
-merged two clusters, current position 10 23 1, new cluster 86
-case 2 
-merged two clusters, current position 11 12 1, new cluster 86
-case 2 
-merged two clusters, current position 11 23 1, new cluster 86
-case 2 
-merged two clusters, current position 13 17 1, new cluster 86
-case 2 
-merged two clusters, current position 15 1 1, new cluster 86
-case 2 
-merged two clusters, current position 15 25 1, new cluster 86
-case 2 
-merged two clusters, current position 15 26 1, new cluster 86
-case 2 
-merged two clusters, current position 15 30 1, new cluster 86
-case 2 
-merged two clusters, current position 16 26 1, new cluster 86
-case 2 
-merged two clusters, current position 16 30 1, new cluster 86
-case 2 
-merged two clusters, current position 17 16 1, new cluster 86
-case 2 
-merged two clusters, current position 17 17 1, new cluster 86
-case 2 
-merged two clusters, current position 17 30 1, new cluster 86
-case 2 
-merged two clusters, current position 18 19 1, new cluster 86
-case 2 
-merged two clusters, current position 18 29 1, new cluster 86
-case 2 
-merged two clusters, current position 18 30 1, new cluster 86
-case 2 
-merged two clusters, current position 19 19 1, new cluster 86
-case 2 
-merged two clusters, current position 20 13 1, new cluster 86
-case 2 
-merged two clusters, current position 23 14 1, new cluster 59
-case 2 
-merged two clusters, current position 23 15 1, new cluster 59
-case 2 
-merged two clusters, current position 25 7 1, new cluster 64
-case 2 
-merged two clusters, current position 25 24 1, new cluster 68
-case 2 
-merged two clusters, current position 26 7 1, new cluster 64
-case 2 
-merged two clusters, current position 26 23 1, new cluster 68
-case 2 
-merged two clusters, current position 27 8 1, new cluster 64
-case 2 
-merged two clusters, current position 29 20 1, new cluster 86
-case 2 
-merged two clusters, current position 29 21 1, new cluster 86
-case 2 
-merged two clusters, current position 29 22 1, new cluster 86
-case 2 
-merged two clusters, current position 30 20 1, new cluster 86
-case 2 
-merged two clusters, current position 31 7 1, new cluster 86
-case 2 
-merged two clusters, current position 31 8 1, new cluster 86
-case 2 
-merged two clusters, current position 31 28 1, new cluster 77
-case 2 
-merged two clusters, current position 0 21 2, new cluster 86
-case 2 
-merged two clusters, current position 2 3 2, new cluster 93
-case 2 
-merged two clusters, current position 2 4 2, new cluster 93
-case 2 
-merged two clusters, current position 2 5 2, new cluster 93
-case 2 
-merged two clusters, current position 2 20 2, new cluster 86
-case 2 
-merged two clusters, current position 3 5 2, new cluster 93
-case 2 
-merged two clusters, current position 3 17 2, new cluster 86
-case 2 
-merged two clusters, current position 3 22 2, new cluster 86
-case 2 
-merged two clusters, current position 4 6 2, new cluster 93
-case 2 
-merged two clusters, current position 4 8 2, new cluster 86
-case 2 
-merged two clusters, current position 4 17 2, new cluster 86
-case 2 
-merged two clusters, current position 4 18 2, new cluster 86
-case 2 
-merged two clusters, current position 4 22 2, new cluster 86
-case 2 
-merged two clusters, current position 4 29 2, new cluster 86
-case 2 
-merged two clusters, current position 4 30 2, new cluster 86
-case 2 
-merged two clusters, current position 4 31 2, new cluster 86
-case 2 
-merged two clusters, current position 5 5 2, new cluster 93
-case 2 
-merged two clusters, current position 5 7 2, new cluster 86
-case 2 
-merged two clusters, current position 5 29 2, new cluster 86
-case 2 
-merged two clusters, current position 6 8 2, new cluster 86
-case 2 
-merged two clusters, current position 7 4 2, new cluster 114
-case 2 
-merged two clusters, current position 7 7 2, new cluster 86
-case 2 
-merged two clusters, current position 10 16 2, new cluster 86
-case 2 
-merged two clusters, current position 10 17 2, new cluster 86
-case 2 
-merged two clusters, current position 11 17 2, new cluster 86
-case 2 
-merged two clusters, current position 14 1 2, new cluster 86
-case 2 
-merged two clusters, current position 15 30 2, new cluster 86
-case 2 
-merged two clusters, current position 16 29 2, new cluster 86
-case 2 
-merged two clusters, current position 17 29 2, new cluster 86
-case 2 
-merged two clusters, current position 18 19 2, new cluster 86
-case 2 
-merged two clusters, current position 18 27 2, new cluster 120
-case 2 
-merged two clusters, current position 20 12 2, new cluster 120
-case 2 
-merged two clusters, current position 20 13 2, new cluster 120
-case 2 
-merged two clusters, current position 20 14 2, new cluster 120
-case 2 
-merged two clusters, current position 21 11 2, new cluster 120
-case 2 
-merged two clusters, current position 23 15 2, new cluster 59
-case 2 
-merged two clusters, current position 23 30 2, new cluster 120
-case 2 
-merged two clusters, current position 24 3 2, new cluster 120
-case 2 
-merged two clusters, current position 25 2 2, new cluster 120
-case 2 
-merged two clusters, current position 25 23 2, new cluster 68
-case 2 
-merged two clusters, current position 26 23 2, new cluster 68
-case 2 
-merged two clusters, current position 29 20 2, new cluster 120
-case 2 
-merged two clusters, current position 30 20 2, new cluster 120
-case 2 
-merged two clusters, current position 30 21 2, new cluster 120
-case 2 
-merged two clusters, current position 30 23 2, new cluster 120
-case 2 
-merged two clusters, current position 31 1 2, new cluster 68
-case 2 
-merged two clusters, current position 31 20 2, new cluster 120
 label_matrix 0 20 2  = 78 
 label_matrix 0 21 1  = 94 
 label_matrix 0 21 2  = 86 
@@ -1793,3 +246,1048 @@ labels[196] 0
 labels[197] 0 
 labels[198] 0 
 labels[199] 0 
+Frequencies as follows 
+0 occurs 933 times
+1 occurs 1 times
+2 occurs 1 times
+3 occurs 1 times
+10 occurs 1 times
+15 occurs 1 times
+17 occurs 1 times
+18 occurs 1 times
+19 occurs 1 times
+20 occurs 1 times
+21 occurs 1 times
+22 occurs 1 times
+25 occurs 5 times
+27 occurs 1 times
+29 occurs 1 times
+30 occurs 1 times
+36 occurs 1 times
+37 occurs 2 times
+41 occurs 1 times
+44 occurs 1 times
+48 occurs 1 times
+49 occurs 1 times
+50 occurs 1 times
+53 occurs 1 times
+55 occurs 1 times
+57 occurs 1 times
+59 occurs 3 times
+60 occurs 1 times
+62 occurs 1 times
+63 occurs 1 times
+64 occurs 2 times
+65 occurs 1 times
+66 occurs 1 times
+68 occurs 3 times
+69 occurs 3 times
+70 occurs 1 times
+72 occurs 1 times
+73 occurs 1 times
+74 occurs 1 times
+75 occurs 1 times
+76 occurs 1 times
+77 occurs 2 times
+81 occurs 1 times
+83 occurs 1 times
+85 occurs 1 times
+86 occurs 38 times
+87 occurs 1 times
+89 occurs 1 times
+90 occurs 1 times
+93 occurs 5 times
+95 occurs 1 times
+97 occurs 1 times
+100 occurs 1 times
+103 occurs 2 times
+105 occurs 1 times
+106 occurs 1 times
+109 occurs 1 times
+110 occurs 1 times
+111 occurs 1 times
+113 occurs 1 times
+114 occurs 2 times
+116 occurs 1 times
+117 occurs 1 times
+120 occurs 12 times
+121 occurs 1 times
+122 occurs 1 times
+124 occurs 1 times
+127 occurs 1 times
+129 occurs 1 times
+130 occurs 1 times
+132 occurs 1 times
+133 occurs 1 times
+134 occurs 1 times
+137 occurs 1 times
+138 occurs 1 times
+139 occurs 1 times
+140 occurs 1 times
+141 occurs 1 times
+142 occurs 1 times
+143 occurs 1 times
+144 occurs 1 times
+145 occurs 1 times
+146 occurs 1 times
+148 occurs 1 times
+150 occurs 1 times
+151 occurs 1 times
+152 occurs 1 times
+153 occurs 1 times
+154 occurs 1 times
+155 occurs 1 times
+total count is 90 
+New labeling as follows: 
+
+
+label_matrix 0 20 2  = 1 
+label_matrix 0 21 1  = 1 
+label_matrix 0 21 2  = 1 
+label_matrix 1 5 2  = 2 
+label_matrix 1 6 2  = 2 
+label_matrix 1 9 0  = 3 
+label_matrix 1 13 0  = 4 
+label_matrix 1 14 1  = 5 
+label_matrix 1 16 1  = 1 
+label_matrix 1 16 2  = 1 
+label_matrix 1 17 1  = 1 
+label_matrix 1 21 0  = 6 
+label_matrix 1 21 2  = 1 
+label_matrix 1 22 1  = 1 
+label_matrix 1 22 2  = 1 
+label_matrix 1 23 1  = 1 
+label_matrix 1 24 1  = 1 
+label_matrix 1 24 2  = 1 
+label_matrix 1 30 2  = 7 
+label_matrix 1 32 1  = 8 
+label_matrix 1 32 2  = 1 
+label_matrix 2 1 2  = 9 
+label_matrix 2 2 2  = 2 
+label_matrix 2 3 1  = 2 
+label_matrix 2 3 2  = 2 
+label_matrix 2 4 1  = 2 
+label_matrix 2 4 2  = 2 
+label_matrix 2 5 2  = 2 
+label_matrix 2 11 2  = 10 
+label_matrix 2 15 0  = 1 
+label_matrix 2 15 1  = 1 
+label_matrix 2 15 2  = 1 
+label_matrix 2 16 2  = 1 
+label_matrix 2 17 1  = 11 
+label_matrix 2 19 1  = 1 
+label_matrix 2 19 2  = 1 
+label_matrix 2 20 1  = 1 
+label_matrix 2 20 2  = 1 
+label_matrix 2 21 2  = 1 
+label_matrix 2 22 1  = 1 
+label_matrix 2 22 2  = 1 
+label_matrix 2 23 1  = 1 
+label_matrix 2 24 1  = 1 
+label_matrix 2 26 2  = 1 
+label_matrix 2 27 2  = 12 
+label_matrix 2 28 2  = 12 
+label_matrix 2 31 1  = 8 
+label_matrix 2 32 1  = 8 
+new_labels[0] 80 
+new_labels[1] 3 
+new_labels[2] 4 
+new_labels[3] 6 
+new_labels[4] 0 
+new_labels[5] 0 
+new_labels[6] 0 
+new_labels[7] 0 
+new_labels[8] 0 
+new_labels[9] 0 
+new_labels[10] 16 
+new_labels[11] 0 
+new_labels[12] 0 
+new_labels[13] 0 
+new_labels[14] 0 
+new_labels[15] 20 
+new_labels[16] 0 
+new_labels[17] 23 
+new_labels[18] 24 
+new_labels[19] 25 
+new_labels[20] 27 
+new_labels[21] 28 
+new_labels[22] 30 
+new_labels[23] 0 
+new_labels[24] 0 
+new_labels[25] 0 
+new_labels[26] 0 
+new_labels[27] 31 
+new_labels[28] 0 
+new_labels[29] 33 
+new_labels[30] 34 
+new_labels[31] 0 
+new_labels[32] 0 
+new_labels[33] 0 
+new_labels[34] 0 
+new_labels[35] 0 
+new_labels[36] 40 
+new_labels[37] 0 
+new_labels[38] 0 
+new_labels[39] 0 
+new_labels[40] 0 
+new_labels[41] 42 
+new_labels[42] 0 
+new_labels[43] 0 
+new_labels[44] 43 
+new_labels[45] 0 
+new_labels[46] 0 
+new_labels[47] 0 
+new_labels[48] 0 
+new_labels[49] 45 
+new_labels[50] 46 
+new_labels[51] 0 
+new_labels[52] 0 
+new_labels[53] 48 
+new_labels[54] 0 
+new_labels[55] 50 
+new_labels[56] 0 
+new_labels[57] 51 
+new_labels[58] 0 
+new_labels[59] 44 
+new_labels[60] 52 
+new_labels[61] 0 
+new_labels[62] 53 
+new_labels[63] 54 
+new_labels[64] 49 
+new_labels[65] 55 
+new_labels[66] 56 
+new_labels[67] 0 
+new_labels[68] 58 
+new_labels[69] 47 
+new_labels[70] 62 
+new_labels[71] 0 
+new_labels[72] 64 
+new_labels[73] 59 
+new_labels[74] 66 
+new_labels[75] 67 
+new_labels[76] 68 
+new_labels[77] 57 
+new_labels[78] 0 
+new_labels[79] 0 
+new_labels[80] 0 
+new_labels[81] 7 
+new_labels[82] 0 
+new_labels[83] 9 
+new_labels[84] 0 
+new_labels[85] 10 
+new_labels[86] 0 
+new_labels[87] 12 
+new_labels[88] 0 
+new_labels[89] 0 
+new_labels[90] 15 
+new_labels[91] 0 
+new_labels[92] 0 
+new_labels[93] 2 
+new_labels[94] 0 
+new_labels[95] 5 
+new_labels[96] 0 
+new_labels[97] 0 
+new_labels[98] 0 
+new_labels[99] 0 
+new_labels[100] 11 
+new_labels[101] 0 
+new_labels[102] 0 
+new_labels[103] 8 
+new_labels[104] 0 
+new_labels[105] 13 
+new_labels[106] 14 
+new_labels[107] 0 
+new_labels[108] 0 
+new_labels[109] 17 
+new_labels[110] 0 
+new_labels[111] 0 
+new_labels[112] 0 
+new_labels[113] 19 
+new_labels[114] 18 
+new_labels[115] 0 
+new_labels[116] 21 
+new_labels[117] 22 
+new_labels[118] 0 
+new_labels[119] 0 
+new_labels[120] 1 
+new_labels[121] 26 
+new_labels[122] 29 
+new_labels[123] 0 
+new_labels[124] 32 
+new_labels[125] 0 
+new_labels[126] 0 
+new_labels[127] 35 
+new_labels[128] 0 
+new_labels[129] 36 
+new_labels[130] 37 
+new_labels[131] 0 
+new_labels[132] 38 
+new_labels[133] 39 
+new_labels[134] 41 
+new_labels[135] 0 
+new_labels[136] 0 
+new_labels[137] 60 
+new_labels[138] 61 
+new_labels[139] 63 
+new_labels[140] 65 
+new_labels[141] 69 
+new_labels[142] 70 
+new_labels[143] 71 
+new_labels[144] 72 
+new_labels[145] 73 
+new_labels[146] 74 
+new_labels[147] 0 
+new_labels[148] 75 
+new_labels[149] 0 
+new_labels[150] 76 
+new_labels[151] 77 
+new_labels[152] 78 
+new_labels[153] 79 
+new_labels[154] 80 
+new_labels[155] 0 
+new_labels[156] 0 
+new_labels[157] 0 
+new_labels[158] 0 
+new_labels[159] 0 
+new_labels[160] 0 
+new_labels[161] 0 
+new_labels[162] 0 
+new_labels[163] 0 
+new_labels[164] 0 
+new_labels[165] 0 
+new_labels[166] 0 
+new_labels[167] 0 
+new_labels[168] 0 
+new_labels[169] 0 
+new_labels[170] 0 
+new_labels[171] 0 
+new_labels[172] 0 
+new_labels[173] 0 
+new_labels[174] 0 
+new_labels[175] 0 
+new_labels[176] 0 
+new_labels[177] 0 
+new_labels[178] 0 
+new_labels[179] 0 
+new_labels[180] 0 
+new_labels[181] 0 
+new_labels[182] 0 
+new_labels[183] 0 
+new_labels[184] 0 
+new_labels[185] 0 
+new_labels[186] 0 
+new_labels[187] 0 
+new_labels[188] 0 
+new_labels[189] 0 
+new_labels[190] 0 
+new_labels[191] 0 
+new_labels[192] 0 
+new_labels[193] 0 
+new_labels[194] 0 
+new_labels[195] 0 
+new_labels[196] 0 
+new_labels[197] 0 
+new_labels[198] 0 
+new_labels[199] 0 
+New labeling frequencies as follows 
+-1 occurs 2 times
+0 occurs 126 times
+1 occurs 2 times
+2 occurs 1 times
+3 occurs 1 times
+4 occurs 1 times
+5 occurs 1 times
+6 occurs 1 times
+7 occurs 1 times
+8 occurs 1 times
+9 occurs 1 times
+10 occurs 1 times
+11 occurs 1 times
+12 occurs 1 times
+13 occurs 1 times
+14 occurs 1 times
+15 occurs 1 times
+16 occurs 1 times
+17 occurs 1 times
+18 occurs 1 times
+19 occurs 1 times
+20 occurs 1 times
+21 occurs 1 times
+22 occurs 1 times
+23 occurs 1 times
+24 occurs 1 times
+25 occurs 1 times
+26 occurs 1 times
+27 occurs 1 times
+28 occurs 1 times
+29 occurs 1 times
+30 occurs 1 times
+31 occurs 1 times
+32 occurs 1 times
+33 occurs 1 times
+34 occurs 1 times
+35 occurs 1 times
+36 occurs 1 times
+37 occurs 1 times
+38 occurs 1 times
+39 occurs 1 times
+40 occurs 1 times
+41 occurs 1 times
+42 occurs 1 times
+43 occurs 1 times
+44 occurs 1 times
+45 occurs 1 times
+46 occurs 1 times
+47 occurs 1 times
+48 occurs 1 times
+49 occurs 1 times
+50 occurs 1 times
+51 occurs 1 times
+52 occurs 1 times
+53 occurs 1 times
+54 occurs 1 times
+55 occurs 1 times
+56 occurs 1 times
+57 occurs 1 times
+58 occurs 1 times
+59 occurs 1 times
+60 occurs 1 times
+61 occurs 1 times
+62 occurs 1 times
+63 occurs 1 times
+64 occurs 1 times
+65 occurs 1 times
+66 occurs 1 times
+67 occurs 1 times
+68 occurs 1 times
+69 occurs 1 times
+70 occurs 1 times
+71 occurs 1 times
+72 occurs 1 times
+73 occurs 1 times
+74 occurs 1 times
+75 occurs 1 times
+76 occurs 1 times
+77 occurs 1 times
+78 occurs 1 times
+79 occurs 1 times
+80 occurs 2 times
+83 occurs 1 times
+8136 occurs 1 times
+8209 occurs 1 times
+7613856 occurs 1 times
+168438880 occurs 3 times
+168439392 occurs 1 times
+168439410 occurs 1 times
+168442483 occurs 1 times
+168456815 occurs 1 times
+170354029 occurs 1 times
+170487407 occurs 1 times
+170680416 occurs 2 times
+170732845 occurs 1 times
+170811488 occurs 1 times
+170811764 occurs 1 times
+170812517 occurs 2 times
+170812789 occurs 1 times
+170816101 occurs 1 times
+170929713 occurs 1 times
+171664755 occurs 1 times
+174088231 occurs 1 times
+174088285 occurs 1 times
+174088317 occurs 3 times
+174354017 occurs 1 times
+174418036 occurs 1 times
+174419567 occurs 1 times
+174421356 occurs 1 times
+174421362 occurs 1 times
+174483744 occurs 1 times
+174874990 occurs 1 times
+175007080 occurs 1 times
+175273327 occurs 1 times
+175335712 occurs 1 times
+175399781 occurs 1 times
+175730273 occurs 1 times
+537528878 occurs 1 times
+537537575 occurs 1 times
+537538149 occurs 1 times
+537538164 occurs 1 times
+537550944 occurs 3 times
+537551136 occurs 1 times
+537551982 occurs 1 times
+537552238 occurs 2 times
+537552245 occurs 1 times
+537557345 occurs 1 times
+538970634 occurs 4 times
+538970670 occurs 3 times
+538970724 occurs 1 times
+538970725 occurs 1 times
+538976266 occurs 13 times
+538976288 occurs 36 times
+539764581 occurs 1 times
+539778419 occurs 1 times
+539779168 occurs 2 times
+539780464 occurs 1 times
+539780467 occurs 1 times
+539780469 occurs 1 times
+539783284 occurs 1 times
+539783796 occurs 1 times
+539786621 occurs 1 times
+539828256 occurs 3 times
+539905106 occurs 1 times
+540680288 occurs 2 times
+540680293 occurs 1 times
+540680307 occurs 2 times
+540884256 occurs 1 times
+540945696 occurs 2 times
+541138976 occurs 1 times
+541138990 occurs 1 times
+542003027 occurs 2 times
+543186985 occurs 1 times
+543187060 occurs 1 times
+543236140 occurs 1 times
+543236154 occurs 1 times
+543236206 occurs 1 times
+543450484 occurs 1 times
+543450487 occurs 1 times
+543515168 occurs 3 times
+543516756 occurs 3 times
+543517801 occurs 2 times
+543518049 occurs 1 times
+543519329 occurs 1 times
+543519602 occurs 1 times
+543519605 occurs 1 times
+543519716 occurs 1 times
+543520114 occurs 1 times
+543582496 occurs 1 times
+543584032 occurs 2 times
+543585634 occurs 1 times
+543649385 occurs 3 times
+543716457 occurs 2 times
+544105832 occurs 2 times
+544107893 occurs 2 times
+544175136 occurs 2 times
+544367974 occurs 1 times
+544370464 occurs 1 times
+544432484 occurs 1 times
+544433524 occurs 2 times
+544433525 occurs 2 times
+544434464 occurs 4 times
+544435821 occurs 1 times
+544437358 occurs 1 times
+544437360 occurs 1 times
+544498533 occurs 1 times
+544498537 occurs 2 times
+544500078 occurs 1 times
+544500853 occurs 5 times
+544501349 occurs 2 times
+544502633 occurs 1 times
+544761188 occurs 3 times
+544828993 occurs 1 times
+656416800 occurs 1 times
+656419879 occurs 1 times
+656419965 occurs 1 times
+660627488 occurs 2 times
+660890985 occurs 1 times
+660958306 occurs 1 times
+660958569 occurs 1 times
+660960353 occurs 1 times
+661874025 occurs 1 times
+661874037 occurs 1 times
+661876333 occurs 2 times
+662201700 occurs 3 times
+662403872 occurs 1 times
+673211493 occurs 2 times
+673211756 occurs 1 times
+678326131 occurs 1 times
+694514540 occurs 1 times
+695428468 occurs 2 times
+740306478 occurs 1 times
+740782948 occurs 1 times
+740783209 occurs 1 times
+741569312 occurs 1 times
+744513575 occurs 1 times
+744779624 occurs 1 times
+745567334 occurs 1 times
+745825125 occurs 1 times
+757080096 occurs 2 times
+757100141 occurs 1 times
+757935370 occurs 1 times
+757935405 occurs 1 times
+761621609 occurs 1 times
+773860477 occurs 1 times
+774774816 occurs 1 times
+775036986 occurs 1 times
+778068047 occurs 1 times
+778068069 occurs 1 times
+778398818 occurs 1 times
+778401138 occurs 1 times
+778514021 occurs 1 times
+779314544 occurs 1 times
+779379557 occurs 1 times
+779711593 occurs 1 times
+795833391 occurs 1 times
+796160879 occurs 1 times
+975200352 occurs 2 times
+975204473 occurs 1 times
+975205473 occurs 1 times
+979658100 occurs 1 times
+979722784 occurs 1 times
+979725417 occurs 1 times
+1027416176 occurs 1 times
+1043144814 occurs 2 times
+1043144819 occurs 1 times
+1043144824 occurs 1 times
+1126178848 occurs 1 times
+1176514149 occurs 1 times
+1176528489 occurs 1 times
+1176532076 occurs 1 times
+1177034868 occurs 1 times
+1226842144 occurs 3 times
+1231515241 occurs 1 times
+1243636000 occurs 1 times
+1243636837 occurs 1 times
+1310749804 occurs 1 times
+1381310496 occurs 1 times
+1394632040 occurs 1 times
+1397366884 occurs 1 times
+1397366885 occurs 1 times
+1411391520 occurs 2 times
+1411394848 occurs 1 times
+1411409481 occurs 1 times
+1411412841 occurs 1 times
+1411413100 occurs 1 times
+1428185376 occurs 1 times
+1567843701 occurs 1 times
+1568171364 occurs 1 times
+1596416096 occurs 1 times
+1601201509 occurs 1 times
+1601335135 occurs 1 times
+1601465461 occurs 1 times
+1612718112 occurs 2 times
+1612721440 occurs 1 times
+1612735598 occurs 1 times
+1612735848 occurs 1 times
+1612735851 occurs 1 times
+1612736628 occurs 1 times
+1612738149 occurs 1 times
+1612739183 occurs 1 times
+1612739433 occurs 1 times
+1612739444 occurs 2 times
+1612739696 occurs 1 times
+1613194604 occurs 1 times
+1613194605 occurs 1 times
+1613197421 occurs 1 times
+1613198190 occurs 1 times
+1613198433 occurs 1 times
+1613198441 occurs 1 times
+1613199461 occurs 2 times
+1616912429 occurs 3 times
+1616912481 occurs 1 times
+1616912485 occurs 2 times
+1616912488 occurs 1 times
+1616912492 occurs 1 times
+1616912499 occurs 1 times
+1616912500 occurs 2 times
+1616912505 occurs 1 times
+1616914277 occurs 1 times
+1616914291 occurs 3 times
+1616914728 occurs 1 times
+1616932463 occurs 1 times
+1616933998 occurs 1 times
+1616936317 occurs 1 times
+1617847664 occurs 1 times
+1617983860 occurs 1 times
+1629498464 occurs 1 times
+1629511776 occurs 1 times
+1629513289 occurs 1 times
+1631854693 occurs 1 times
+1631985780 occurs 1 times
+1632635402 occurs 1 times
+1633903986 occurs 1 times
+1633906540 occurs 1 times
+1633946122 occurs 1 times
+1633951845 occurs 1 times
+1633951847 occurs 1 times
+1633967988 occurs 3 times
+1634100580 occurs 6 times
+1634301472 occurs 1 times
+1634541683 occurs 1 times
+1634559336 occurs 1 times
+1634562671 occurs 1 times
+1634738278 occurs 1 times
+1634738287 occurs 3 times
+1634757999 occurs 1 times
+1634887207 occurs 2 times
+1635002208 occurs 1 times
+1635017028 occurs 1 times
+1635017060 occurs 2 times
+1635020901 occurs 1 times
+1635021669 occurs 1 times
+1635131454 occurs 1 times
+1635131493 occurs 3 times
+1635133228 occurs 1 times
+1635197045 occurs 1 times
+1646290021 occurs 1 times
+1646292076 occurs 1 times
+1646292577 occurs 1 times
+1650552421 occurs 1 times
+1650553895 occurs 1 times
+1651078003 occurs 1 times
+1663049760 occurs 1 times
+1663067500 occurs 1 times
+1663067759 occurs 1 times
+1663071079 occurs 1 times
+1663524960 occurs 1 times
+1667457312 occurs 1 times
+1667590754 occurs 2 times
+1667592743 occurs 1 times
+1667851296 occurs 1 times
+1668489292 occurs 1 times
+1668491131 occurs 1 times
+1668637807 occurs 1 times
+1668641568 occurs 1 times
+1669036832 occurs 1 times
+1669036896 occurs 1 times
+1679830112 occurs 1 times
+1679830124 occurs 1 times
+1679830130 occurs 2 times
+1679830304 occurs 1 times
+1679833632 occurs 1 times
+1679843616 occurs 1 times
+1679845230 occurs 1 times
+1679847013 occurs 1 times
+1679847278 occurs 1 times
+1679847284 occurs 1 times
+1679848037 occurs 1 times
+1680302176 occurs 1 times
+1684104562 occurs 1 times
+1684370531 occurs 1 times
+1684371311 occurs 1 times
+1684829551 occurs 1 times
+1684955424 occurs 2 times
+1684955496 occurs 1 times
+1684956448 occurs 1 times
+1684957479 occurs 3 times
+1685025906 occurs 1 times
+1685221219 occurs 2 times
+1685417059 occurs 1 times
+1696625509 occurs 1 times
+1698963502 occurs 1 times
+1700929636 occurs 1 times
+1700929644 occurs 1 times
+1700929647 occurs 1 times
+1700929652 occurs 2 times
+1700929657 occurs 1 times
+1701012321 occurs 1 times
+1701017701 occurs 1 times
+1701060652 occurs 3 times
+1701060709 occurs 1 times
+1701060719 occurs 1 times
+1701076848 occurs 2 times
+1701080681 occurs 1 times
+1701145376 occurs 2 times
+1701211753 occurs 1 times
+1701273971 occurs 1 times
+1701336096 occurs 2 times
+1701407856 occurs 1 times
+1701409381 occurs 1 times
+1701409391 occurs 2 times
+1701470831 occurs 1 times
+1701538156 occurs 6 times
+1701667182 occurs 1 times
+1701667186 occurs 1 times
+1701668200 occurs 1 times
+1701669236 occurs 2 times
+1701864804 occurs 3 times
+1701869669 occurs 1 times
+1701869940 occurs 2 times
+1701978213 occurs 1 times
+1701978223 occurs 1 times
+1701980000 occurs 2 times
+1701998602 occurs 1 times
+1701999215 occurs 1 times
+1702045472 occurs 1 times
+1702062435 occurs 1 times
+1702063201 occurs 3 times
+1702065440 occurs 1 times
+1702125924 occurs 4 times
+1702194273 occurs 1 times
+1702260579 occurs 1 times
+1702326124 occurs 1 times
+1702388063 occurs 1 times
+1713398048 occurs 1 times
+1713399157 occurs 3 times
+1713399662 occurs 1 times
+1713402479 occurs 2 times
+1716068384 occurs 1 times
+1717592096 occurs 1 times
+1717920800 occurs 2 times
+1718165563 occurs 1 times
+1718183023 occurs 1 times
+1718511904 occurs 1 times
+1718558836 occurs 1 times
+1735289188 occurs 2 times
+1735289202 occurs 1 times
+1750343725 occurs 1 times
+1750343726 occurs 1 times
+1751348091 occurs 1 times
+1751607656 occurs 1 times
+1751933283 occurs 1 times
+1752440876 occurs 2 times
+1752440942 occurs 1 times
+1752440943 occurs 2 times
+1752440948 occurs 2 times
+1752457584 occurs 4 times
+1752459639 occurs 1 times
+1752637482 occurs 1 times
+1763715616 occurs 2 times
+1763734373 occurs 1 times
+1763734387 occurs 1 times
+1763734388 occurs 1 times
+1763734636 occurs 2 times
+1764174887 occurs 1 times
+1768121714 occurs 1 times
+1768189513 occurs 1 times
+1768300652 occurs 1 times
+1768693874 occurs 1 times
+1768693876 occurs 1 times
+1768697189 occurs 1 times
+1768710486 occurs 1 times
+1768710518 occurs 2 times
+1769107210 occurs 1 times
+1769107232 occurs 1 times
+1769108595 occurs 2 times
+1769234787 occurs 1 times
+1769235310 occurs 3 times
+1769237609 occurs 1 times
+1769239141 occurs 1 times
+1769300512 occurs 1 times
+1769365864 occurs 1 times
+1769414771 occurs 2 times
+1769700128 occurs 1 times
+1784639348 occurs 1 times
+1784835872 occurs 4 times
+1795820078 occurs 1 times
+1802062952 occurs 1 times
+1802071072 occurs 2 times
+1802071141 occurs 1 times
+1814051360 occurs 1 times
+1814064749 occurs 1 times
+1818304557 occurs 1 times
+1818304626 occurs 1 times
+1818314272 occurs 1 times
+1818324591 occurs 1 times
+1818325605 occurs 1 times
+1818326560 occurs 3 times
+1818326567 occurs 1 times
+1818326619 occurs 1 times
+1818386804 occurs 3 times
+1818388852 occurs 1 times
+1818391919 occurs 1 times
+1818583649 occurs 1 times
+1818846752 occurs 2 times
+1818851104 occurs 1 times
+1819042080 occurs 3 times
+1819239200 occurs 3 times
+1819239207 occurs 1 times
+1819239291 occurs 1 times
+1819242338 occurs 3 times
+1819308839 occurs 2 times
+1819631974 occurs 7 times
+1819635555 occurs 1 times
+1831297120 occurs 1 times
+1835102790 occurs 1 times
+1835102822 occurs 1 times
+1835103347 occurs 1 times
+1835627559 occurs 1 times
+1836412015 occurs 4 times
+1851859065 occurs 1 times
+1851879456 occurs 1 times
+1852121204 occurs 1 times
+1852139636 occurs 2 times
+1852139890 occurs 5 times
+1852383333 occurs 1 times
+1852383347 occurs 2 times
+1852385120 occurs 3 times
+1852398368 occurs 1 times
+1852400750 occurs 2 times
+1852404340 occurs 1 times
+1852404594 occurs 1 times
+1852404844 occurs 1 times
+1852406651 occurs 1 times
+1852667244 occurs 5 times
+1852776551 occurs 2 times
+1852776563 occurs 1 times
+1852785418 occurs 1 times
+1852793610 occurs 1 times
+1852793632 occurs 3 times
+1852793640 occurs 1 times
+1852795251 occurs 1 times
+1852797043 occurs 1 times
+1852797802 occurs 1 times
+1853169776 occurs 1 times
+1864379506 occurs 1 times
+1864393838 occurs 1 times
+1864394091 occurs 1 times
+1864394092 occurs 1 times
+1864395887 occurs 1 times
+1864396399 occurs 1 times
+1864396660 occurs 1 times
+1864397423 occurs 3 times
+1864397925 occurs 1 times
+1864397939 occurs 1 times
+1866866720 occurs 1 times
+1867391092 occurs 2 times
+1868587040 occurs 2 times
+1868701754 occurs 1 times
+1868761610 occurs 1 times
+1868767276 occurs 1 times
+1868767333 occurs 3 times
+1868767343 occurs 1 times
+1868769120 occurs 1 times
+1868782368 occurs 1 times
+1868784996 occurs 1 times
+1869116448 occurs 1 times
+1869182064 occurs 1 times
+1869360943 occurs 1 times
+1869375071 occurs 1 times
+1869376609 occurs 1 times
+1869488243 occurs 1 times
+1869570592 occurs 1 times
+1869619302 occurs 1 times
+1869881454 occurs 1 times
+1870209126 occurs 1 times
+1881174629 occurs 1 times
+1885413420 occurs 1 times
+1885692792 occurs 1 times
+1885692960 occurs 1 times
+1887007840 occurs 1 times
+1887007844 occurs 1 times
+1902734965 occurs 3 times
+1915169831 occurs 1 times
+1917215092 occurs 1 times
+1918115942 occurs 1 times
+1918115955 occurs 1 times
+1918115956 occurs 1 times
+1918967923 occurs 1 times
+1918988320 occurs 1 times
+1919250543 occurs 1 times
+1919251239 occurs 1 times
+1919252078 occurs 3 times
+1919885412 occurs 1 times
+1919895072 occurs 1 times
+1919902565 occurs 1 times
+1919950949 occurs 2 times
+1919950963 occurs 1 times
+1919968612 occurs 1 times
+1920098592 occurs 1 times
+1920213103 occurs 1 times
+1920226144 occurs 1 times
+1920234272 occurs 3 times
+1931497039 occurs 2 times
+1931502952 occurs 1 times
+1931967355 occurs 1 times
+1934381653 occurs 1 times
+1935745128 occurs 1 times
+1935762542 occurs 1 times
+1935962735 occurs 1 times
+1936025970 occurs 1 times
+1936026656 occurs 1 times
+1936027769 occurs 1 times
+1936028769 occurs 2 times
+1936029036 occurs 3 times
+1936158313 occurs 1 times
+1936269353 occurs 1 times
+1936269416 occurs 1 times
+1936286565 occurs 1 times
+1936288800 occurs 1 times
+1936338533 occurs 1 times
+1936482592 occurs 1 times
+1936615783 occurs 1 times
+1936616821 occurs 3 times
+1936679008 occurs 1 times
+1936681076 occurs 1 times
+1936876916 occurs 1 times
+1936941392 occurs 1 times
+1937074720 occurs 1 times
+1946815022 occurs 1 times
+1948265587 occurs 1 times
+1948280431 occurs 1 times
+1948280686 occurs 1 times
+1948282469 occurs 1 times
+1948283749 occurs 1 times
+1948283753 occurs 1 times
+1948284003 occurs 1 times
+1948284009 occurs 1 times
+1948284014 occurs 1 times
+1948285292 occurs 1 times
+1948285298 occurs 2 times
+1948741231 occurs 1 times
+1952393056 occurs 1 times
+1952522355 occurs 1 times
+1952534574 occurs 1 times
+1952539493 occurs 1 times
+1952539680 occurs 1 times
+1952539743 occurs 1 times
+1952539771 occurs 1 times
+1952542752 occurs 1 times
+1952671088 occurs 1 times
+1952671092 occurs 1 times
+1952672100 occurs 3 times
+1952718962 occurs 1 times
+1952797472 occurs 1 times
+1952804128 occurs 1 times
+1952804193 occurs 1 times
+1952981093 occurs 1 times
+1953046570 occurs 3 times
+1953066016 occurs 1 times
+1953066096 occurs 1 times
+1953068832 occurs 1 times
+1953264993 occurs 2 times
+1953391977 occurs 1 times
+1953654134 occurs 6 times
+1953701946 occurs 2 times
+1953701988 occurs 1 times
+1953701990 occurs 1 times
+1953703968 occurs 1 times
+1953718630 occurs 1 times
+1953722216 occurs 1 times
+1953723757 occurs 3 times
+1953849888 occurs 1 times
+1965057388 occurs 1 times
+1969186164 occurs 1 times
+1969317477 occurs 5 times
+1969365093 occurs 1 times
+1969627177 occurs 1 times
+1969627232 occurs 1 times
+1969627246 occurs 1 times
+1970037110 occurs 3 times
+1970040675 occurs 5 times
+1981824557 occurs 1 times
+1986948963 occurs 1 times
+1998596640 occurs 1 times
+1998597236 occurs 1 times
+1998614127 occurs 1 times
+1998615396 occurs 1 times
+1998615412 occurs 1 times
+2019631205 occurs 1 times
+2019893350 occurs 1 times
+2019910766 occurs 2 times
+2034376736 occurs 1 times
+2036428064 occurs 1 times
+2037669984 occurs 1 times
+2037670944 occurs 2 times
+2065709607 occurs 2 times
+2065710637 occurs 1 times
+2069913632 occurs 1 times
+2071681888 occurs 1 times
+2071683168 occurs 2 times
+2099738725 occurs 1 times
+2103536997 occurs 1 times
+2103801196 occurs 1 times
+2105354085 occurs 1 times
+2105369973 occurs 1 times
+2105376097 occurs 1 times
+2105376101 occurs 1 times
+2105376125 occurs 1 times
+total count is 700 

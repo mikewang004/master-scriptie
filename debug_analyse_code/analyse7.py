@@ -323,6 +323,7 @@ class polymer():
 
     def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8):
         max_labels = int(nridges**3)
+        #max_labels = int(200)
         cryst_array = self.df_cryst.iloc[:, 1:].to_numpy()
         rows, cols = cryst_array.shape[0], cryst_array.shape[1]
         cryst_array_c = cryst_array.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
@@ -371,23 +372,18 @@ class polymer():
                                     label_matrix[i,j,k] = 0
                         #check_labels(label_matrix, nridges, i,j,k)
 
-                        # if label_matrix[(i -1)% nridges, j,k] or label_matrix[(i +1)% nridges, j,k] != 0:
-                        #     print("position %i %i %i, current label %i, neighbours in x-direction %i and %i" %(i,j,k,label_matrix[i,j,k], label_matrix[(i -1)% nridges, j,k], label_matrix[(i +1)% nridges, j,k]))
-                        # if label_matrix[i, (j - 1) % nridges, k] or label_matrix[i, (j + 1) %nridges, k] != 0:
-                        #     print("position %i %i %i, current label %i, neighbours in y-direction %i and %i" %(i,j,k,label_matrix[i,j,k], label_matrix[i, (j - 1) %nridges, k], label_matrix[i, (j + 1) %nridges, k]))
-                        # if label_matrix[i,j,(k -1) %nridges] or label_matrix[i,j, (k + 1) %nridges] != 0:
-                        #     print("position %i %i %i, current label %i, neighbours in z-direction %i and %i" %(i,j,k,label_matrix[i,j,k], label_matrix[i, j, (k - 1)%nridges], label_matrix[i, j, (k + 1)%nridges]))
-
 
         unique_values, counts = np.unique(label_matrix, return_counts=True)
-        #print(label_matrix[label_matrix != 0])
-        #for value, count in zip(unique_values, counts):
-            #print(f"  {value}: {count}")
-        #print(np.unique(label_matrix))
-        #print(np.sum(counts[1:]))
-
-        #print(label_matrix[:,:,0])
-        #print(label_matrix[:,:,1])
+        print(label_matrix[label_matrix != 0])
+        for value, count in zip(unique_values, counts):
+            if count == 1:
+                print(f"count 1 :   {value}: {count}")
+            else:
+                print(f"{value}: {count}")
+        # print(np.unique(label_matrix))
+        # print(np.sum(counts[1:]))
+        # print(np.where(label_matrix == 48))
+        # print(label_matrix[6,11,23])
     
 def check_labels(label_matrix, nridges, i,j,k):
     """Helper functuion to check if label_matrix is equal to one of its neighbours. If not, print current value of label_matrix and all neighbours"""

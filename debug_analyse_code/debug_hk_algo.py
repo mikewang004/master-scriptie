@@ -19,9 +19,16 @@ def validate_hk_matrix(cryst_file, label_matrix, nridges = 33):
                     # Find corresponding entry in spreadsheet
                     row_mask = (cryst["xid"] == i) & (cryst["yid"] == j) & (cryst["zid"] == k)
                     current_row = cryst[row_mask]
-                    print(current_row)
-                   # print(cryst[row_mask])
-                    if current_row["cryst_bool"] < 0.8:
+                    if (current_row["cryst_bool"] > 0.8).bool() == True:
+                        current_label = label_matrix[i,j,k]
+                        for a in range(0,1):
+                            a1 = 
+                            for b in range(0,1):
+                                for c in range(0,1):
+
+                        
+
+                    else: 
                         print(current_row)
 
                     # Get neighboring rows

@@ -318,9 +318,9 @@ class polymer():
 
 
     def read_cryst(self, location):
-        self.df_cryst = pd.read_csv(location, sep = " ", header = None, skiprows = 1)
+        self.df_cryst = pd.read_csv(location, sep = " ", header = None, skiprows = 1).iloc[:, 1:]
 
-        self.df_cryst.columns = ["index", "xid", "yid", "zid", "cryst_bool", "x_ev", "y_ev", "z_ev"]
+        self.df_cryst.columns = ["xid", "yid", "zid", "cryst_bool", "x_ev", "y_ev", "z_ev"]
         print(self.df_cryst)
         return 0;
 

@@ -362,24 +362,24 @@ class polymer():
 
         # Loop over matrix to set all points not connected to a cluster to 0 
 
-        for i in range(0, nridges):
-            for j in range(0, nridges):
-                for k in range(0, nridges):
-                    if label_matrix[i,j,k] >0:
-                        if label_matrix[(i -1 + nridges)% nridges, j,k] ==0 and label_matrix[(i +1 + nridges)% nridges, j,k] == 0:
-                            if label_matrix[i, (j - 1 + nridges) % nridges, k]==0 and label_matrix[i, (j + 1 + nridges) %nridges, k] == 0:
-                                if label_matrix[i,j,(k -1 + nridges) %nridges]==0 and label_matrix[i,j, (k + 1 + nridges) %nridges] == 0:
-                                    label_matrix[i,j,k] = 0
+        # for i in range(0, nridges):
+        #     for j in range(0, nridges):
+        #         for k in range(0, nridges):
+        #             if label_matrix[i,j,k] >0:
+        #                 if label_matrix[(i -1 + nridges)% nridges, j,k] ==0 and label_matrix[(i +1 + nridges)% nridges, j,k] == 0:
+        #                     if label_matrix[i, (j - 1 + nridges) % nridges, k]==0 and label_matrix[i, (j + 1 + nridges) %nridges, k] == 0:
+        #                         if label_matrix[i,j,(k -1 + nridges) %nridges]==0 and label_matrix[i,j, (k + 1 + nridges) %nridges] == 0:
+        #                             label_matrix[i,j,k] = 0
                         #check_labels(label_matrix, nridges, i,j,k)
 
 
         unique_values, counts = np.unique(label_matrix, return_counts=True)
-        print(label_matrix[label_matrix != 0])
-        for value, count in zip(unique_values, counts):
-            if count == 1:
-                print(f"count 1 :   {value}: {count}")
-            else:
-                print(f"{value}: {count}")
+        print(unique_values)
+        # for value, count in zip(unique_values, counts):
+        #     if count == 1:
+        #         print(f"count 1 :   {value}: {count}")
+        #     else:
+        #         print(f"{value}: {count}")
         # print(np.unique(label_matrix))
         # print(np.sum(counts[1:]))
         # print(np.where(label_matrix == 48))

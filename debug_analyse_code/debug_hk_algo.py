@@ -21,15 +21,16 @@ def validate_hk_matrix(cryst_file, label_matrix, nridges = 33):
                     current_row = cryst[row_mask]
                     if (current_row["cryst_bool"] > 0.8).bool() == True:
                         current_label = label_matrix[i,j,k]
-                        for a in range(0,1):
-                            a1 = 
-                            for b in range(0,1):
-                                for c in range(0,1):
-
-                        
+                        left = i-1; right = i +1;
+                        before = j - 1; after = j + 1;
+                        under = k - 1; upper = k + 1
+                        # Get neighbouring entries 
+                        label_left = label_matrix[left, j,k];
+                        label_rigth = label_matrix[right,j,k];
 
                     else: 
-                        print(current_row)
+                        #print(current_row)
+                        pass
 
                     # Get neighboring rows
                     

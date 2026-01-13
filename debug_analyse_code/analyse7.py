@@ -318,19 +318,16 @@ class polymer():
 
 
     def read_cryst(self, location):
-        self.df_cryst = pd.read_csv(location, sep = " ", header = None, skiprows = 1).iloc[:, 1:]
-
+        self.df_cryst = pd.read_csv(location, sep = " ", header = None, skiprows = 1, index_col = False).iloc[:, 1:]
         self.df_cryst.columns = ["xid", "yid", "zid", "cryst_bool", "x_ev", "y_ev", "z_ev"]
-        print(self.df_cryst)
         return 0;
 
     def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8):
         max_labels = int(nridges**3)
         #max_labels = int(200)
-        cryst_array = self.df_cryst.iloc[:, 1:].to_numpy()
+        cryst_array = self.df_cryst.to_numpy()
         rows, cols = cryst_array.shape[0], cryst_array.shape[1]
         cryst_array_c = cryst_array.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-
         label_matrix_np = np.zeros([nridges, nridges, nridges], dtype = int)
         label_matrix = (ctypes.POINTER(ctypes.POINTER(ctypes.c_int)) * nridges)()
         new_label_matrix = (ctypes.POINTER(ctypes.POINTER(ctypes.c_int)) * nridges)()
@@ -377,16 +374,21 @@ class polymer():
 
 
         unique_values, counts = np.unique(label_matrix, return_counts=True)
-        print(unique_values)
+        print(unique_values, counts)
+        print(np.mean(counts[1:]))
         # for value, count in zip(unique_values, counts):
         #     if count == 1:
-        #         print(f"count 1 :   {value}: {count}")
+        #         #print(f"count 1 :   {value}: {count}")
+        #         pass
         #     else:
         #         print(f"{value}: {count}")
-        # print(np.unique(label_matrix))
-        # print(np.sum(counts[1:]))
-        # print(np.where(label_matrix == 48))
-        # print(label_matrix[6,11,23])
+
+        total_number_merged_clusters = counts[counts > 1]
+        print("total number clusters w/ >= 2 elements: %i" %(total_number_merged_clusters.size))
+        print("total number independent crystalline domains: %i" %(unique_values.size))
+        print("average cluster size crystalline domains: %f" %np.mean(counts[1:]))
+        print("total number crystalline grid elements: %i" %(np.sum(counts[1:])))
+
 
         np.save("hk_label_matrix.npy", label_matrix)
     

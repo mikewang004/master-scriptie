@@ -258,14 +258,15 @@ class polymer():
         for i in range(0, self.atom_coords.no_polymers):
             # First calculate end to end distance 
             # defined as r_n - r_i for each position 
-            subset = self.bond_vectors[(self.bond_vectors["mol_id"] == i+1)]
+            subset = self.atom_coords.bond_vectors[(self.atom_coords.bond_vectors["mol_id"] == i+1)]
             dist = np.sum(subset.iloc[:, 1:4])
             df_end_end_length.iloc[i] = (dist.iloc[0]* dist.iloc[0] + dist.iloc[1] * dist.iloc[1] + dist.iloc[2] * dist.iloc[2])
-        end_to_end_length = (np.sum(df_end_end_length.to_numpy())/self.no_polymers)
+        end_to_end_length = (np.sum(df_end_end_length.to_numpy())/self.atom_coords.no_polymers)
         end_end_distance_normalised = np.sqrt(df_end_end_length.iloc[:])
+        self.results.end_to_end_distribution = (end_end_distance_normalised)
         self.results.end_to_end_length = end_to_end_length
         self.results.mean_squared_end_to_end = np.sqrt(end_to_end_length)
-        print("mean end-to-end is %f" %self.mean_squared_end_to_end)
+        print("mean end-to-end is %f" %self.results.mean_squared_end_to_end)
 
     def gyration_radius(self, nridges = 33, show_plot = False):
         """Should confirm to Saras 2018 paper eq. 3"""
@@ -282,9 +283,10 @@ class polymer():
             gyration_radius_squared = np.sum((subset_com**2), axis = 1)
             #print(np.mean(gyration_radius_squared))
             df_gyration_radius.iloc[i, 3] = np.mean(gyration_radius_squared) 
+        self.results.gyration_radius_distribution = np.sqrt(df_gyration_radius.iloc[:, 3])
         self.results.gyration_radius = df_gyration_radius
         self.results.mean_gyration_radius = np.mean(df_gyration_radius["gyration_radius"]) #Ensemble average
-        print("mean gyration is %f" %np.sqrt(self.mean_gyration_radius))
+        print("mean gyration is %f" %np.sqrt(self.results.mean_gyration_radius))
 
 
     def bond_bond_correlation(self, show_plot = False):

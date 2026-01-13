@@ -31,10 +31,45 @@ def plot_bond_bond_correlation():
         ylabel = r"cos\theta(n)", title = "Distribution of bond-bond correlations, PVA-100", save_string = "plots/bond_bond_corr_PVA_100_tdot_e5.pdf",
         show_plot = True)
 
+def plot_end_to_end_distance(tdot_list, temps_list):
+    dist_list = []
+    for i in range(len(tdot_list)):
+        print(tdot_list[i])
+        tdot_list[i].end_to_end_distance()
+        dist_list.append(tdot_list[i].results.end_to_end_distribution)
+        plt.hist(tdot_list[i].results.end_to_end_distribution, bins = 200)
+        plt.title(r"End-to-end length distribution, PVA-100, $\dot{T}=10^{-5}, T = %s$" %(temps_list[i]))
+        plt.xlabel("squared end-to-end distance")
+        plt.savefig("plots/10e-5_end_end_distribution_T%s.pdf" %(temps_list[i]))
+        plt.close()
+
+def plot_gyration_radius(tdot_list, temps_list):
+    dist_list = []
+    for i in range(len(tdot_list)):
+        print(tdot_list[i])
+        tdot_list[i].gyration_radius()
+        dist_list.append(tdot_list[i].results.gyration_radius_distribution)
+        plt.hist(tdot_list[i].results.gyration_radius_distribution, bins = 200)
+        plt.title(r"Gyration radius distribution, PVA-100, $\dot{T}=10^{-5}, T = %s$" %(temps_list[i]))
+        plt.xlabel("gyration radius")
+        plt.savefig("plots/10e-5_gyration_radius_T%s.pdf" %(temps_list[i]))
+        plt.close()
+
 
     
 def main():
-    pass
+    #plot_end_to_end_distance()
+    tdot_e5_t1 = polymer("%s/cooling_tdot_e-5_time_0.txt" %data_prefix)
+    tdot_e5_t08 = polymer("%s/cooling_tdot_e-5_time_4000000.txt" %data_prefix)
+    tdot_e5_t07 = polymer("%s/cooling_tdot_e-5_time_6000000.txt" %data_prefix)
+    tdot_e5_t05 = polymer("%s/cooling_tdot_e-5_time_10000000.txt" %data_prefix)
+
+
+
+
+    tdot_e5_list = [tdot_e5_t1, tdot_e5_t08, tdot_e5_t07, tdot_e5_t05]
+    temps_list = [1,0.8,0.7,0.5]
+    plot_gyration_radius(tdot_e5_list, temps_list)
 
 
 if __name__ == "__main__":

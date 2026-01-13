@@ -6,7 +6,19 @@ import scipy as sp
 import matplotlib.pyplot as plt
 
 
-def validate_hk_matrix(cryst_file, label_matrix, nridges = 33):
+def compare_hk_labels(label_matrix,check_label, nridges, i,j,k):
+    indices_list = []
+    for i1 in [-1, 1]:
+        for j1 in [-1, 1]:
+            for k1 in [-1,1]:
+                x = (i + i1)% nridges; y = (j + j1)% nridges; z = (k + k1) % nridges
+                current_label = label_matrix[x,y,z]
+                if check_label == current_label:
+                    indices_list.append([x,y,z])
+    return indices_list
+
+
+def validate_hk_matrix(cryst_file, label_matrix, nridges = 33, cryst_cutoff = 0.8, dot_cutoff = 0.97):
     """Checks if the label_matrix satifies following requirements: 
         1. Each point with a label has crystallinity > 0.8;
         2. Neighboring points, if same label, satisfy ev * ev \geq 0.97"""
@@ -19,14 +31,32 @@ def validate_hk_matrix(cryst_file, label_matrix, nridges = 33):
                     # Find corresponding entry in spreadsheet
                     row_mask = (cryst["xid"] == i) & (cryst["yid"] == j) & (cryst["zid"] == k)
                     current_row = cryst[row_mask]
-                    if (current_row["cryst_bool"] > 0.8).bool() == True:
-                        current_label = label_matrix[i,j,k]
-                        left = i-1; right = i +1;
-                        before = j - 1; after = j + 1;
-                        under = k - 1; upper = k + 1
-                        # Get neighbouring entries 
-                        label_left = label_matrix[left, j,k];
-                        label_rigth = label_matrix[right,j,k];
+                    if (current_row["cryst_bool"] > cryst_cutoff).bool() == True:
+                        print(i,j,k)
+                        indices_list = compare_hk_labels(label_matrix, label_matrix[i,j,k], nridges, i,j,k)
+                        #print(indices_list)
+                        if not indices_list:
+                            # Check if eigenvectors are larger than the cutoff
+                            pass
+                        else:
+                            error_counter = 0;
+                            for indices in indices_list: # Used to keep track of evdot < dot_cutoff
+                                x,y,z = indices
+                                next_row = cryst[(cryst["xid"] == x) & (cryst["yid"] == y) & (cryst["zid"] == z)]
+                                current_row_np, next_row_np = current_row.to_numpy()[0], next_row.to_numpy()[0]
+                                evdot = np.abs(np.dot(current_row_np[4:], next_row_np[4:]))
+                                #evdot = np.abs(current_row_np[4] * next_row_np[4]) + np.abs(current_row_np[5] + next_row_np[5]) + np.abs(current_row_np[6] * next_row_np[6])
+                                if evdot < dot_cutoff:
+                                    print(evdot)
+                                    error_counter = error_counter + 1
+                                    # Verify if other neighbours are correct, otherwise throw error 
+                                else:
+                                    error_counter = error_counter - 1
+                            if error_counter > 0:
+                                print("current index %i %i %i with label %i" %(i,j,k,label_matrix[i,j,k]))
+                                print("with neighbours")
+                                print(indices_list)
+                                print("having too small evdot to be in a box together")
 
                     else: 
                         #print(current_row)

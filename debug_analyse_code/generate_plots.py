@@ -31,6 +31,7 @@ def plot_bond_bond_correlation():
         ylabel = r"cos\theta(n)", title = "Distribution of bond-bond correlations, PVA-100", save_string = "plots/bond_bond_corr_PVA_100_tdot_e5.pdf",
         show_plot = True)
 
+
 def plot_end_to_end_distance(tdot_list, temps_list):
     dist_list = []
     for i in range(len(tdot_list)):
@@ -69,7 +70,8 @@ def main():
 
     tdot_e5_list = [tdot_e5_t1, tdot_e5_t08, tdot_e5_t07, tdot_e5_t05]
     temps_list = [1,0.8,0.7,0.5]
-    plot_gyration_radius(tdot_e5_list, temps_list)
+    #plot_gyration_radius(tdot_e5_list, temps_list)
+    plot_end_to_end_distance(tdot_e5_list, temps_list)
 
 
 if __name__ == "__main__":

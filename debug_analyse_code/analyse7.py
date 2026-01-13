@@ -390,9 +390,11 @@ class polymer():
         print("total number independent crystalline domains: %i" %(unique_values.size))
         print("average cluster size crystalline domains: %f" %np.mean(counts[1:]))
         print("total number crystalline grid elements: %i" %(np.sum(counts[1:])))
+        self.results.mean_cluster_size = np.mean(counts[1:])
+        return 0;
 
 
-        np.save("hk_label_matrix.npy", label_matrix)
+        #np.save("hk_label_matrix.npy", label_matrix)
     
 def check_labels(label_matrix, nridges, i,j,k):
     """Helper functuion to check if label_matrix is equal to one of its neighbours. If not, print current value of label_matrix and all neighbours"""

@@ -69,6 +69,13 @@ def plot_crystallisation(list_cryst_file_names, temps):
     plt.show()
 
 
+def merge_cryst_files():
+    """Help function to merge two or more crystallisation files to one"""
+    test = np.loadtxt("../crystallisation/all_times_cryst_equil_t_085_tdot_e-3_run2.txt", delimiter=",")
+    print(test[:,0])
+    test[:, 0] = test[:,0] + 60000000
+    np.savetxt("temp.txt", test, delimiter = ",")
+
 
 plot_crystallisation(cryst_list, temps)
 

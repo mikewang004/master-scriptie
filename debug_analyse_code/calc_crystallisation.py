@@ -9,6 +9,7 @@ file_name_T08 = "equil_t_08_tdot_e-3"
 file_name_T075 = "equil_t_075_tdot_e-3"
 file_name_T085 = "equil_t_085_tdot_e-3"
 file_name_e4_T085 = "equil_t_085_tdot_e-4"
+file_name_e4_T085_run2 = "equil_t_085_tdot_e-4_run2"
 file_name_run2_e3_T07 = "equil_t_07_tdot_e-3_run2"
 file_name_run2_e3_T085 = "equil_t_085_tdot_e-3_run2"
 
@@ -18,9 +19,10 @@ time_temp_T08 = get_time_temp_from_slurm(data_path + "/slurm-T=0.8.out")
 time_temp_T07 = get_time_temp_from_slurm(data_path + "/slurm-T=0.7.out")
 time_temp_T085 = get_time_temp_from_slurm(data_path + "/slurm-T=0.85.out")
 time_temp_T075 = get_time_temp_from_slurm(data_path + "/slurm-T=0.75.out")
-#time_temp_e4_T085 = get_time_temp_from_slurm(data_path + "/slurm-e4-T=0.85.out")
+time_temp_e4_T085 = get_time_temp_from_slurm(data_path + "/slurm-e4-T=0.85.out")
 #time_temp_run2_e3_T07 = get_time_temp_from_slurm(data_path + "/slurm-run2-e3-T=0.7.out")
 #time_temp_run2_e3_T085 = get_time_temp_from_slurm(data_path + "/slurm-run2-e3-T=0.85.out")
+time_temp_e4_T085_run2 = get_time_temp_from_slurm(data_path + "/equil_t_085_tdot_e-4_run2.out")
 #print(time_temp_T07[:, 0])
 
 cryst_path_prefix = "../crystallisation"
@@ -77,16 +79,16 @@ def merge_cryst_files():
     np.savetxt("temp.txt", test, delimiter = ",")
 
 
-plot_crystallisation(cryst_list, temps)
+#plot_crystallisation(cryst_list, temps)
 
 #calc_crystallisation(data_path, time_temp_T075[:, 0], file_name_T075)
 
 #calc_crystallisation(data_path, time_temp_T085[:, 0], file_name_T085)
 
-#calc_crystallisation(data_path, time_temp_e4_T085[:, 0], file_name_e4_T085)
+calc_crystallisation(data_path, time_temp_e4_T085[:, 0], file_name_e4_T085)
 
 #calc_crystallisation(data_path, time_temp_run2_e3_T07[:, 0], file_name_run2_e3_T07)
 
-#calc_crystallisation(data_path, time_temp_run2_e3_T085[:, 0], file_name_run2_e3_T085)
+calc_crystallisation(data_path, time_temp_e4_T085_run2[:, 0], file_name_e4_T085_run2)
 
 

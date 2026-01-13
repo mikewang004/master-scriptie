@@ -11,6 +11,14 @@ import ctypes
 
 from polymer_plots import *
 
+def fraction_crystallinity(data, cutoff = 0.8):
+    """Data 1d 1d list/array, defined as data > 0.8 -> crystallinity = 1;
+    data <= 0.8 -> crystallinity = 0 as in Sommer/Luo Sep 2010"""
+
+    mask = data > cutoff
+    fraction = len(data[mask]) / len(data)
+    return fraction
+
 def gaussian(x, H, A, x0, sigma):
     return H + A * np.exp(-(x - x0)**2 / (2 * sigma**2))
 

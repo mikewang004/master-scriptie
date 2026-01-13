@@ -32,46 +32,57 @@ def plot_bond_bond_correlation():
         show_plot = True)
 
 
-def plot_end_to_end_distance(tdot_list, temps_list):
+def plot_end_to_end_distance(tdot_list, temps_list, tdot):
     dist_list = []
     for i in range(len(tdot_list)):
         print(tdot_list[i])
         tdot_list[i].end_to_end_distance()
         dist_list.append(tdot_list[i].results.end_to_end_distribution)
-        plt.hist(tdot_list[i].results.end_to_end_distribution, bins = 200)
-        plt.title(r"End-to-end length distribution, PVA-100, $\dot{T}=10^{-5}, T = %s$" %(temps_list[i]))
+        values, bins, _ = plt.hist(tdot_list[i].results.end_to_end_distribution, bins = 200)
+        plt.vlines((tdot_list[i].results.mean_squared_end_to_end), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = r"mean end-to-end length = %.2f" %tdot_list[i].results.mean_squared_end_to_end)
+        plt.legend()
+        plt.title(r"End-to-end length distribution, PVA-100, $\dot{T}=10^{-%s}, T = %s$" %(tdot, temps_list[i]))
         plt.xlabel("squared end-to-end distance")
-        plt.savefig("plots/10e-5_end_end_distribution_T%s.pdf" %(temps_list[i]))
+        plt.savefig("plots/10e-%s_end_end_distribution_T%s.pdf" %(tdot, temps_list[i]))
         plt.close()
 
-def plot_gyration_radius(tdot_list, temps_list):
+def plot_gyration_radius(tdot_list, temps_list, tdot):
     dist_list = []
     for i in range(len(tdot_list)):
         print(tdot_list[i])
         tdot_list[i].gyration_radius()
         dist_list.append(tdot_list[i].results.gyration_radius_distribution)
-        plt.hist(tdot_list[i].results.gyration_radius_distribution, bins = 200)
-        plt.title(r"Gyration radius distribution, PVA-100, $\dot{T}=10^{-5}, T = %s$" %(temps_list[i]))
+        values, bins, _ = plt.hist(tdot_list[i].results.gyration_radius_distribution, bins = 200)
+        plt.vlines(np.sqrt(tdot_list[i].results.mean_gyration_radius), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "mean gyration radius = %.4f" %np.sqrt(tdot_list[i].results.mean_gyration_radius))
+        plt.legend()
+        plt.title(r"Gyration radius distribution, PVA-100, $\dot{T}=10^{-%s}, T = %s$" %(tdot, temps_list[i]))
         plt.xlabel("gyration radius")
-        plt.savefig("plots/10e-5_gyration_radius_T%s.pdf" %(temps_list[i]))
+        plt.savefig("plots/10e-%s_gyration_radius_T%s.pdf" %(tdot, temps_list[i]))
         plt.close()
 
 
     
 def main():
     #plot_end_to_end_distance()
+    tdot = 3
     tdot_e5_t1 = polymer("%s/cooling_tdot_e-5_time_0.txt" %data_prefix)
     tdot_e5_t08 = polymer("%s/cooling_tdot_e-5_time_4000000.txt" %data_prefix)
     tdot_e5_t07 = polymer("%s/cooling_tdot_e-5_time_6000000.txt" %data_prefix)
     tdot_e5_t05 = polymer("%s/cooling_tdot_e-5_time_10000000.txt" %data_prefix)
 
+    tdot_e3_t1 = polymer("%s/cooling_tdot_e-3_time_0.txt" %data_prefix)
+    tdot_e3_t08 = polymer("%s/cooling_tdot_e-3_time_40000.txt" %data_prefix)
+    tdot_e3_t07 = polymer("%s/cooling_tdot_e-3_time_60000.txt" %data_prefix)
+    tdot_e3_t05 = polymer("%s/cooling_tdot_e-3_time_100000.txt" %data_prefix)
+
 
 
 
     tdot_e5_list = [tdot_e5_t1, tdot_e5_t08, tdot_e5_t07, tdot_e5_t05]
+    tdot_e3_list = [tdot_e3_t1, tdot_e3_t08, tdot_e3_t07, tdot_e3_t05]
     temps_list = [1,0.8,0.7,0.5]
-    #plot_gyration_radius(tdot_e5_list, temps_list)
-    plot_end_to_end_distance(tdot_e5_list, temps_list)
+    plot_gyration_radius(tdot_e3_list, temps_list, tdot = 3)
+    plot_end_to_end_distance(tdot_e3_list, temps_list, tdot = 3)
 
 
 if __name__ == "__main__":

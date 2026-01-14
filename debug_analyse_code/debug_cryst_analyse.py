@@ -52,8 +52,34 @@ def convert_input_lattice_to_cryst_array(input_lattice_file, ndot_cutoff = 0.97)
 
 
 
-def plot_label_matrix(label_matrix):
-    print(label_matrix)
+def plot_label_matrix(lattice):
+    occupied = lattice > 0
+    x, y, z = np.where(occupied)
+    values = lattice[occupied]  # could be used for coloring
+
+    # --- 3. Plot as 3D scatter on cubic lattice ---
+    fig = plt.figure(figsize=(6, 6))
+    ax = fig.add_subplot(111, projection='3d')
+
+    # Color by value; remove "c=values" if you just want uniform color
+    sc = ax.scatter(x, y, z,
+                    c=values,
+                    cmap="viridis",
+                    marker="s",  # square markers look more like voxels
+                    s=20)
+
+    # Make axes look cubic
+    ax.set_box_aspect([1, 1, 1])  # equal aspect ratio
+
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+    ax.set_zlabel("z")
+
+    cbar = plt.colorbar(sc, ax=ax)
+    cbar.set_label("Site value")
+
+    plt.tight_layout()
+    plt.show()
 
 
 
@@ -88,5 +114,6 @@ nridges = 33
 
 
 
-label_matrix = np.load(hk_label_matrix.npy)
+label_matrix = np.load("hk_label_matrix.npy")
+plot_label_matrix(label_matrix)
 

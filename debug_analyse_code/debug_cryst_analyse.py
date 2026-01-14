@@ -81,6 +81,56 @@ def plot_label_matrix(lattice):
     plt.tight_layout()
     plt.show()
 
+def plot_only_largest_clusters(lattice, n_keep):
+    labels = lattice
+
+    # ---------- 3. Count size of each label ----------
+    sizes = np.bincount(labels.ravel())          # sizes[i] = voxels with label i
+    if len(sizes) > 0:
+        sizes[0] = 0                             # label 0 = background, EXCLUDE
+
+    # List of non-zero labels that actually appear
+    nonzero_labels = np.nonzero(sizes)[0]        # labels with size > 0
+    n_clusters = len(nonzero_labels)
+
+    # Adjust n_keep if user asks for more than exist
+    n_keep = min(n_keep, n_clusters)
+
+    # Indices of the n_keep largest *non-zero* labels
+    largest_labels = np.argsort(sizes)[-n_keep:]  # these are != 0 because sizes[0]=0
+    print("Largest labels (excluding 0):", largest_labels)
+    print("Their sizes:", sizes[largest_labels])
+
+    # ---------- 4. Mask: only voxels in those clusters (still excludes label 0) ----------
+    mask = np.isin(labels, largest_labels)   # True only for selected cluster labels
+    x, y, z = np.where(mask)
+    cluster_ids = labels[mask]               # used for coloring
+
+    # ---------- 5. Plot ONLY the selected clusters (no label 0) ----------
+    fig = plt.figure(figsize=(6, 6))
+    ax = fig.add_subplot(111, projection='3d')
+
+    sc = ax.scatter(
+        x, y, z,
+        c=cluster_ids,
+        cmap="tab20",     # each cluster a different color
+        marker="s",
+        s=30
+    )
+
+
+
+    ax.set_box_aspect([1, 1, 1])
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+    ax.set_zlabel("z")
+
+    cbar = plt.colorbar(sc, ax=ax)
+    cbar.set_label("Cluster label")
+
+    plt.tight_layout()
+    plt.show()
+
 
 
 nridges = 33
@@ -116,4 +166,5 @@ nridges = 33
 
 label_matrix = np.load("hk_label_matrix.npy")
 plot_label_matrix(label_matrix)
+plot_only_largest_clusters(label_matrix, 10)
 

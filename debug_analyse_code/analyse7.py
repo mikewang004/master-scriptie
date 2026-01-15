@@ -8,6 +8,9 @@ import functools
 import sys
 from clibraries.boxAlgorithmsInC import box_algos_lib, hk_lib
 import ctypes
+import time
+from numba import jit
+from nematic_vector import nematic_vector_loop
 
 from polymer_plots import *
 
@@ -207,43 +210,45 @@ class atom_coords:
         new_df.index = new_df.index + 1
         return new_df
 
-
     def get_nematic_vector_4(self, nridges = 33, save_ev = False, save_string = None):
         data = self.datapd
         # Prepare masks of all possible combinations 
         data = data[data.index % 100 != 0] # Filter out all last monomers as they do not have a bond vector per definiton
         df_cryst = pd.DataFrame(np.zeros([self.combinations.shape[0], 7]), columns = ["xid", "yid", "zid", "cryst_bool", "x_ev", "y_ev", "z_ev"])
-        df_labdas = pd.DataFrame(np.zeros([self.combinations.shape[0], 3]), columns = ["labda_1", "labda_2", "labda_3"])
+        #df_labdas = pd.DataFrame(np.zeros([self.combinations.shape[0], 3]), columns = ["labda_1", "labda_2", "labda_3"])
         df_cryst.iloc[:, :3] = self.combinations
         #for t in tqdm(range(0, len(self.combinations))):
         for t in range(0, len(self.combinations)):
-            combination = self.combinations[t]
+            combination = self.combinations[t] #Selects a random box 
             #print(combination)
             #subset = data[(data['xid'] == combination[0]) & (data['yid'] == combination[1]) & (data['zid'] == combination[2])]
             subset = filter_out_subset(data, combination)
             if subset.empty == False:
                 # Get index molecules 
                 indexes = subset.index
-                #print(indexes)
                 subset_bond_vectors = self.bond_vectors.loc[indexes]
                 order_param, order_ev, labda, ev = calc_nematic_tensor_2(subset_bond_vectors.iloc[:, 1:4])
                 df_cryst.iloc[t,3] = order_param
                 df_cryst.iloc[t,4:7] = order_ev
-                df_labdas.iloc[t, :] = labda
-        self.df_labdas = df_labdas
+                #df_labdas.iloc[t, :] = labda
+        #self.df_labdas = df_labdas
         self.fraction_crystallinity = fraction_crystallinity(df_cryst.iloc[:,3])
         self.df_cryst = df_cryst
-        print(self.df_labdas)
+        #print(self.df_labdas)
         #print(self.fraction_crystallinity)
         if save_ev == True:
-            df_labdas.to_csv("10e5_T1_debug_labdas.txt", sep = " ", mode = "w")
+            #df_labdas.to_csv("10e5_T1_debug_labdas.txt", sep = " ", mode = "w")
             df_cryst.to_csv("%s" %save_string, sep = " ", mode = "w")
-
         return self.fraction_crystallinity
 
 
-
-
+    def get_nematic_vector_5(self):
+        data = self.datapd
+        data = data[data.index % 100 != 0]
+        cryst_array = np.zeros([self.combinations.shape[0], 7])
+        cryst_array[:, :3] = self.combinations
+        print(data)
+        cryst_array = nematic_vector_loop(cryst_array, np.column_stack([data.index.to_numpy(), data.to_numpy()]), self.bond_vectors)
 
 
 
@@ -435,7 +440,7 @@ def main():
     """Testing function"""
 
     first_timestep_e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_0.txt")
-    #first_timestep_e5.bond_bond_correlation()
-
+    #print(first_timestep_e5.atom_coords.combinations)
+    first_timestep_e5.atom_coords.get_nematic_vector_5()
 if __name__ == "__main__":
     main()

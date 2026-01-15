@@ -62,6 +62,10 @@ def hoshen_kopelman_lib(rel_path):
     return lib
 
 
+def nematic_vector_lib(rel_path):
+    lib = ctypes.CDLL(os.path.join(rel_path, "libnematicVector.c"))
+
+
 here = os.path.dirname(os.path.abspath(__file__))  # directory of this .py file
 box_algos_lib = box_algos_lib(here)
 hk_lib = hoshen_kopelman_lib(here)

@@ -67,9 +67,22 @@ class Simulation:
             with open(cryst_array_string, "a") as file:
                 file.write(f"{current_time} {frac_cryst}\n")
 
-    def calc_avg_domain_size(self, boxes_eigv_file: str, polymer_box_size_file: str):
+    def calc_avg_domain_size(self, boxes_eigv_file: str, polymer_box_size_file: str, load_polymer_cryst_files: str = None):
+        #TODO test and finish function
         with open(polymer_box_size_file, "w") as file:
             file.write("") 
+        for i in range(0, (self.time_temp_array.shape[0])):
+            current_time = self.time_temp_array[i, 0]
+            current_file = self.list_lammps_files[i]
+            current_polymer = polymer(current_file)
+            if isinstance(load_polymer_cryst_files, str):
+                polymer.read_cryst("%s_time_%i.txt" %(load_polymer_cryst_files, current_time))
+            polymer.merge_boxes()
+
+            # with open(cryst_array_string, "a") as file:
+            #     file.write(f"{current_time} {frac_cryst}\n")
+
+        
 
         
 

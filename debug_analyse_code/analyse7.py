@@ -10,7 +10,7 @@ from clibraries.boxAlgorithmsInC import box_algos_lib, hk_lib
 import ctypes
 import time
 from numba import jit
-from nematic_vector import nematic_vector_loop
+from nematic_vector import calc_nematic_tensor_2, nematic_vector_loop
 
 from polymer_plots import *
 
@@ -25,21 +25,7 @@ def fraction_crystallinity(data, cutoff = 0.8):
 def gaussian(x, H, A, x0, sigma):
     return H + A * np.exp(-(x - x0)**2 / (2 * sigma**2))
 
-def calc_nematic_tensor_2(array):
-    """Calculation for the nematic tensor of a local box. NB this is not used yet in the analysis."""
-    array_length = array.shape[0]
-    array = array / np.linalg.norm(array, axis = 1, keepdims = True)
-    Q = np.zeros([3,3])
-    outer = (np.einsum('ni,nj->ij', array, array)) / array_length
-    #Q =  np.mean(outer  - (1/3) * np.eye(3), axis = 0) # According to Sommer/Luo Sep 2010
 
-    Q = 1.5 * outer - 0.5* np.eye(3) # Sara 2015
-    #order_param = np.sqrt(1.5 * np.trace(Q**2)) #Sommer/Luo 2010
-    labda, ev = np.linalg.eigh(Q)
-    max_labda = np.max(labda)
-    max_ev = ev[:, np.argmax(labda)]
-    order_param = max_labda #Sara 2015
-    return max_labda, max_ev, labda, ev
 
 
 
@@ -210,15 +196,14 @@ class atom_coords:
         new_df.index = new_df.index + 1
         return new_df
 
-    def get_nematic_vector_4(self, nridges = 33, save_ev = False, save_string = None):
+    def get_nematic_vector_4(self, save_ev: bool = False, save_string = None):
         data = self.datapd
         # Prepare masks of all possible combinations 
         data = data[data.index % 100 != 0] # Filter out all last monomers as they do not have a bond vector per definiton
         df_cryst = pd.DataFrame(np.zeros([self.combinations.shape[0], 7]), columns = ["xid", "yid", "zid", "cryst_bool", "x_ev", "y_ev", "z_ev"])
         #df_labdas = pd.DataFrame(np.zeros([self.combinations.shape[0], 3]), columns = ["labda_1", "labda_2", "labda_3"])
         df_cryst.iloc[:, :3] = self.combinations
-        #for t in tqdm(range(0, len(self.combinations))):
-        for t in range(0, len(self.combinations)):
+        for t in tqdm(range(0, len(self.combinations))):
             combination = self.combinations[t] #Selects a random box 
             #print(combination)
             #subset = data[(data['xid'] == combination[0]) & (data['yid'] == combination[1]) & (data['zid'] == combination[2])]
@@ -227,7 +212,7 @@ class atom_coords:
                 # Get index molecules 
                 indexes = subset.index
                 subset_bond_vectors = self.bond_vectors.loc[indexes]
-                order_param, order_ev, labda, ev = calc_nematic_tensor_2(subset_bond_vectors.iloc[:, 1:4])
+                order_param, order_ev, labda, ev = calc_nematic_tensor_2(subset_bond_vectors.iloc[:, 1:4].to_numpy())
                 df_cryst.iloc[t,3] = order_param
                 df_cryst.iloc[t,4:7] = order_ev
                 #df_labdas.iloc[t, :] = labda
@@ -241,14 +226,13 @@ class atom_coords:
             df_cryst.to_csv("%s" %save_string, sep = " ", mode = "w")
         return self.fraction_crystallinity
 
-
     def get_nematic_vector_5(self):
         data = self.datapd
-        data = data[data.index % 100 != 0]
-        cryst_array = np.zeros([self.combinations.shape[0], 7])
-        cryst_array[:, :3] = self.combinations
-        print(data)
-        cryst_array = nematic_vector_loop(cryst_array, np.column_stack([data.index.to_numpy(), data.to_numpy()]), self.bond_vectors)
+        data = data[data.index % 100 != 0] # Filter out all last monomers as they do not have a bond vector per definiton
+        self.df_cryst = nematic_vector_loop(data, self.bond_vectors)
+        self.fraction_crystallinity = fraction_crystallinity(self.df_cryst.iloc[:,3])
+        print(self.df_cryst)
+        return self.fraction_crystallinity
 
 
 
@@ -439,8 +423,13 @@ class results(object):
 def main():
     """Testing function"""
 
-    first_timestep_e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_0.txt")
+    #first_timestep_e5 = polymer("../../data/pva-100/quick_quench/equil_t_085_tdot_e-3_run2_goodrun_time_0.txt")
+    last_timestep_e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
     #print(first_timestep_e5.atom_coords.combinations)
-    first_timestep_e5.atom_coords.get_nematic_vector_5()
+    last_timestep_e5.atom_coords.get_nematic_vector_5()
+    print(last_timestep_e5.atom_coords.df_cryst)
+    print(last_timestep_e5.atom_coords.fraction_crystallinity)
+
+    
 if __name__ == "__main__":
     main()

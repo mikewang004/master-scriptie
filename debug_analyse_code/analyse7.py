@@ -231,7 +231,6 @@ class atom_coords:
         data = data[data.index % 100 != 0] # Filter out all last monomers as they do not have a bond vector per definiton
         self.df_cryst = nematic_vector_loop(data, self.bond_vectors)
         self.fraction_crystallinity = fraction_crystallinity(self.df_cryst.iloc[:,3])
-        print(self.df_cryst)
         return self.fraction_crystallinity
 
 

@@ -52,6 +52,10 @@ def calc_nematic_tensor_3(array):
 def calc_nematic_tensor_pandas(block: pd.DataFrame, bond_vectors) -> pd.Series:
     array = bond_vectors.loc[block["atom_id"]].to_numpy()[:, 1:4]
     array_length = array.shape[0]
+    if array_length == 0:
+        return pd.Series(
+            {"cryst_bool": 0.0, "x_ev": 0.0, "y_ev": 0.0, "z_ev": 0.0}
+        )
     array = array / norm_keep_dims_1d(array)
     Q = np.zeros((3,3))
     outer = (array.T @ array) / array_length

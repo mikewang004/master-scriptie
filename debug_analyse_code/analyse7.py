@@ -226,11 +226,13 @@ class atom_coords:
             df_cryst.to_csv("%s" %save_string, sep = " ", mode = "w")
         return self.fraction_crystallinity
 
-    def get_nematic_vector_5(self):
+    def get_nematic_vector_5(self, save_string = None):
         data = self.datapd
         data = data[data.index % 100 != 0] # Filter out all last monomers as they do not have a bond vector per definiton
         self.df_cryst = nematic_vector_loop(data, self.bond_vectors)
         self.fraction_crystallinity = fraction_crystallinity(self.df_cryst.iloc[:,3])
+        if isinstance(save_string, str):
+            self.df_cryst.to_csv("%s" %save_string, sep = " ", mode = "w")
         return self.fraction_crystallinity
 
 
@@ -371,7 +373,7 @@ class polymer():
                         #check_labels(label_matrix, nridges, i,j,k)
 
 
-        unique_values, counts = np.unique(label_matrix, return_counts=True)
+        unique_values, counts = np.unique(label_matrix, return_counts=True) #Labels and how much each label occurs
         print(unique_values, counts)
         print(np.mean(counts[1:]))
         # for value, count in zip(unique_values, counts):
@@ -382,11 +384,15 @@ class polymer():
         #         print(f"{value}: {count}")
 
         total_number_merged_clusters = counts[counts > 1]
-        print("total number clusters w/ >= 2 elements: %i" %(total_number_merged_clusters.size))
-        print("total number independent crystalline domains: %i" %(unique_values.size))
-        print("average cluster size crystalline domains: %f" %np.mean(counts[1:]))
-        print("total number crystalline grid elements: %i" %(np.sum(counts[1:])))
+        self.results.total_number_clusters = total_number_merged_clusters.size
+        self.results.total_number_independent_clusters = unique_values.size-1
         self.results.mean_cluster_size = np.mean(counts[1:])
+        self.total_number_crystalline_grid_elements = np.sum(counts[1:])
+
+        print("total number clusters w/ >= 2 elements: %i" %(self.results.total_number_clusters))
+        print("total number independent crystalline domains: %i" %(self.results.total_number_independent_clusters))
+        print("average cluster size crystalline domains: %f" %(self.results.mean_cluster_size))
+        print("total number crystalline grid elements: %i" %(self.total_number_crystalline_grid_elements))
         return 0;
 
 

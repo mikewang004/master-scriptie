@@ -316,6 +316,25 @@ class polymer():
         # plt.title("Distribution of bond-bond correlations")
         #plt.show()
 
+    def get_density_dist(self, nridges = 33):
+        #TODO speed this up
+        """Uses new method with combinations to calculate local density (i.e. density per box)"""
+        #print(self.combinations)
+        local_densities = np.zeros([len(self.atom_coords.combinations), 4]) #First three columns reserved for combination, last for corresponding density
+        local_densities[:, :3] = self.atom_coords.combinations
+        #data = self.atom_coords.assign_center_of_mass(nridges = nridges)
+        data = self.atom_coords.datapd
+        data_indexed = data.reset_index().rename({"index": "atom_id"}).set_index(["xid", "yid", "zid"]).sort_index()
+        data_grouped = data_indexed.groupby(level=["xid", "yid", "zid"])
+        print(data_indexed)
+        for t in tqdm(range(0, len(self.atom_coords.combinations))):
+            combination = self.atom_coords.combinations[t]
+            subset = data[(data['xid'] == combination[0]) & (data['yid'] == combination[1]) & (data['zid'] == combination[2])]
+            local_densities[t, 3] = len(subset.index)/self.atom_coords.local_volume
+        return local_densities
+
+
+
 
     def read_cryst(self, location):
         self.df_cryst = pd.read_csv(location, sep = " ", header = None, skiprows = 1, index_col = False).iloc[:, 1:]

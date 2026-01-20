@@ -3,6 +3,7 @@ import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
 import os
+from tqdm import tqdm
 
 
 cryst_path_prefix = "../crystallisation"
@@ -107,7 +108,7 @@ class Simulation:
 
 
     def check_polymer_attributes_file_exists(self, path_to_file):
-        if os.path.exists(path_to_file):
+        if os.path.exists(path_to_file) and os.path.getsize(path_to_file) > 0:
             # Check what latest timestep written in file
             data_array = np.loadtxt(path_to_file)
             maxtime = int(np.max(data_array[:, 0]))
@@ -125,14 +126,13 @@ class Simulation:
         return shortened_time_temp_array, current_list_lammps_files;
 
 
-    def calc_crystallisation(self, cryst_file: str, frac_cryst_save_loc: str):
+    def calc_crystallisation(self, cryst_array_string: str, frac_cryst_save_loc: str):
         """Calculates the crystallisation of all timesteps of a run and saves that to a file. 
         cryst_file: .txt containing the timestep and fraction of crystallisation
         polymer_cryst_files: .txt files containing crystallisation fraction and nematic vectors per small box per simulation"""
-        cryst_array_string = cryst_file
-        local_temp_time_array, local_list_lammps_files = self.check_polymer_attributes_file_exists(cryst_array_string)
-        for i in range(0, (local_temp_time_array.shape[0])):
-            current_time = local_temp_time_array[i, 0]
+        local_time_temp_array, local_list_lammps_files = self.check_polymer_attributes_file_exists(cryst_array_string)
+        for i in tqdm(range(0, (local_time_temp_array.shape[0]))):
+            current_time = local_time_temp_array[i, 0]
             current_file = local_list_lammps_files[i]
             current_polymer = polymer(current_file)
             frac_cryst = current_polymer.atom_coords.get_nematic_vector_5(save_string = "%s_time_%i.txt" %(frac_cryst_save_loc, current_time))
@@ -154,17 +154,30 @@ class Simulation:
             # with open(cryst_array_string, "a") as file:
             #     file.write(f"{current_time} {frac_cryst}\n")
 
-        
+
+    def calc_avg_local_density(self):
+        local_time_temp_array, local_list_lammps_files = self.time_temp_array, self.list_lammps_files
+        avg_local_density = local_time_temp_array
+        for i in tqdm(range(0, (local_time_temp_array.shape[0]))):
+            current_time = local_time_temp_array[i, 0]
+            current_file = local_list_lammps_files[i]
+            current_polymer = polymer(current_file)
+            avg_local_density[i, 1] = np.mean(current_polymer.get_density_dist())
+        return avg_local_density
 
         
 
 
     
+def main():
+    data_path = "../../data/pva-100/quick_quench/long_run"
 
-data_path = "../../data/pva-100/quick_quench/long_run"
+    cooling_e3_T07 = Simulation(0.7, -3, "%s%s" %(data_path, "/slurm-e3-T=0.7.out"), "%s/equil_t_07_tdot_e-3_time"%(data_path), no_runs = 3)
+    cooling_e3_T07.calc_crystallisation("../data_online/PVA-100/quick_quench/T07/cryst_equil_T07_e-3.txt", "../data_online/PVA-100/quick_quench/T07/boxes_eigenvalues/equil_t_085_tdot_e-3")
 
-# cooling_e3_T07 = Simulation(0.7, -3, "%s%s" %(data_path, "/slurm-T=0.7.out"), "%s/equil_t_07_tdot_e-3_time"%(data_path))
-# cooling_e3_T07.calc_crystallisation("../crystallisation/PVA-100/quick_quench/T07/cryst_equil_T07_e-3.txt", "%s/equil_t_07_tdot_e-3"%(data_path))
+    cooling_e3_T085 = Simulation(0.85, -3, "%s%s" %(data_path, "/slurm-e3-T=0.85.out"), "%s/equil_t_085_tdot_e-3_time"%(data_path), no_runs = 3)
+    cooling_e3_T085.calc_crystallisation("../data_online/PVA-100/quick_quench/T085/cryst_equil_T085_e-3.txt", "../data_online/PVA-100/quick_quench/T085/boxes_eigenvalues/equil_t_085_tdot_e-3")
 
-cooling_e3_T085 = Simulation(0.85, -3, "%s%s" %(data_path, "/slurm-e3-T=0.85.out"), "%s/equil_t_085_tdot_e-3_time"%(data_path), no_runs = 2)
-cooling_e3_T085.calc_crystallisation("../data_online/PVA-100/quick_quench/T085/cryst_equil_T085_e-3.txt", "../data_online/PVA-100/quick_quench/T085/boxes_eigenvalues/equil_t_085_tdot_e-3")
+if __name__== "__main__":
+    main()
+

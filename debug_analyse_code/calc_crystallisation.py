@@ -16,7 +16,7 @@ file_name_run2_e3_T085 = "equil_t_085_tdot_e-3_run2"
 # # Search all 
 
 # time_temp_T08 = get_time_temp_from_slurm(data_path + "/slurm-T=0.8.out")
-# time_temp_T07 = get_time_temp_from_slurm(data_path + "/slurm-T=0.7.out")
+time_temp_T07 = get_time_temp_from_slurm(data_path + "/slurm-T=0.7.out")
 # time_temp_T085 = get_time_temp_from_slurm(data_path + "/slurm-T=0.85.out")
 # time_temp_T075 = get_time_temp_from_slurm(data_path + "/slurm-T=0.75.out")
 # time_temp_e4_T085 = get_time_temp_from_slurm(data_path + "/slurm-e4-T=0.85.out")
@@ -37,6 +37,9 @@ e3_run2_cryst_T085 = "all_times_cryst_equil_t_085_tdot_e-3_run2.txt"
 #cryst_list = [cryst_T07, cryst_T075, cryst_T08, cryst_T085]
 #temps = [0.7, 0.75, 0.8, 0.85]
 
+# For testing purposes new calculation method 
+
+
 cryst_list = [cryst_T07, cryst_T085]
 temps = [0.7, 0.85]
 #cryst_list = [cryst_T085, cryst_T085_tdot_4]
@@ -51,7 +54,7 @@ def calc_crystallisation(file_name_path, times, cryst_file_name):
     for time in times:
         current_file_name = "%s/%s_time_%i.txt" %(file_name_path, cryst_file_name, time)
         current_atom_coords = atom_coords(current_file_name)
-        frac_cryst = current_atom_coords.get_nematic_vector_4(save_ev= True, save_string = "%s/cryst_%s_time_%i.txt" %(file_name_path, cryst_file_name, time))
+        frac_cryst = current_atom_coords.get_nematic_vector_5(save_string = "%s/cryst_%s_time_%i.txt" %(file_name_path, cryst_file_name, time))
         print(current_file_name)
         with open(cryst_array_string, "a") as file:
             file.write(f"{time}, {frac_cryst}\n")
@@ -85,6 +88,8 @@ def merge_cryst_files():
 
 
 #plot_crystallisation(cryst_list, temps)
+
+calc_crystallisation(data_path, time_temp_T07[:,0], file_name_T07)
 
 #calc_crystallisation(data_path, time_temp_T075[:, 0], file_name_T075)
 

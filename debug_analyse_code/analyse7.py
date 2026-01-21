@@ -386,8 +386,8 @@ class polymer():
 
 
         unique_values, counts = np.unique(label_matrix, return_counts=True) #Labels and how much each label occurs
-        print(unique_values, counts)
-        print(np.mean(counts[1:]))
+        # print(unique_values, counts)
+        # print(np.mean(counts[1:]))
         # for value, count in zip(unique_values, counts):
         #     if count == 1:
         #         #print(f"count 1 :   {value}: {count}")

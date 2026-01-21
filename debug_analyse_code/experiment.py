@@ -32,18 +32,37 @@ def polymer_density(simulation):
         plt.close()
 
 
-# def plot_crystallisation(simulation):
+def plot_crystallisation(simulation_list: list):
+    for simulation in simulation_list:
+        label = r"T=%.2f, $\dot{T}=10^{%i}$" %(simulation.temp, simulation.cooling_rate)
+        plt.scatter(simulation.cryst[:, 0], simulation.cryst[:,1], label = label)
+    plt.legend()
+    plt.title("Crystallisation as function of time, PVA-100")
+    plt.xlabel("time")
+    plt.ylabel("fraction of crystallinity")
+    plt.savefig("plots/10e%i_T%s_crystallinity.pdf" %(simulation.cooling_rate, str(simulation.temp).replace(".", "")))
+    plt.close()
 
+
+def plot_mean_cluster_length(simulation):
+    plt.scatter(simulation.mean_cluster_length[:, 0], simulation.mean_cluster_length[:, 1])
+    plt.title(r"Mean cluster length, PVA-100, T = 0.85, $\dot{T}=10^{-4}$")
+    plt.xlabel("time")
+    plt.show()
 
 def main():
     data_path = "../../data/pva-100/quick_quench/long_run"
     cooling_e3_T085 = Simulation(0.85, -3, "%s%s" %(data_path, "/slurm-e3-T085.out"), "%s/equil_t_085_tdot_e-3_time"%(data_path), no_runs = 3)
+    #cooling_e4_T085 = Simulation(0.85, -4, "%s%s" %(data_path, "/slurm-e4-T085.out"), "%s/equil_t_085_tdot_e-4_time"%(data_path), no_runs = 2)
+    #cooling_e3_T07 = Simulation(0.7, -3, "%s%s" %(data_path, "/slurm-e3-T07.out"), "%s/equil_t_07_tdot_e-3_time"%(data_path))
+    #cooling_e4_T085.calc_crystallisation("../data_online/PVA-100/quick_quench/T085/cryst_equil_T085_e-4.txt", "../data_online/PVA-100/quick_quench/T085/boxes_eigenvalues_e-4/equil_t_085_tdot_e-4_time")
 
-    # cooling_e3_T07 = Simulation(0.7, -3, "%s%s" %(data_path, "/slurm-T=0.7.out"), "%s/equil_t_07_tdot_e-3_time"%(data_path))
-    # cooling_e3_T07.calc_crystallisation("../crystallisation/PVA-100/quick_quench/T07/cryst_equil_T07_e-3.txt", "%s/equil_t_07_tdot_e-3"%(data_path))
+    plot_mean_cluster_length(cooling_e3_T085)
 
+    #plot_crystallisation([cooling_e3_T085, cooling_e4_T085])
+    #plot_crystallisation([cooling_e3_T07, cooling_e3_T085])
     
-    polymer_density(cooling_e3_T085)
+    #polymer_density(cooling_e3_T085)
     # cooling_e3_T085.calc_avg_local_density()
     # print(cooling_e3_T085.avg_local_density)
     # plt.scatter(cooling_e3_T085.avg_local_density[:, 0], cooling_e3_T085.avg_local_density[:, 1])

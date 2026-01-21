@@ -33,7 +33,8 @@ class Simulation:
         self.no_polymers = self.time_temp_array.shape[0]
         self.polymer_length = polymer_length
         self.type_simulation = type_simulation
-        self.cryst = self.get_crystallisation()
+        self.cryst = self.get_crystallisation() #2D array containing time and crystallisation at time
+        self.mean_cluster_length = self.get_mean_cluster_length()
 
     def get_polymer_by_count(self, count):
         """Gets i-th polymer"""
@@ -77,6 +78,19 @@ class Simulation:
             return cryst
         except:
             print("No crystallisation found!")
+            return 0;
+
+    def get_mean_cluster_length(self, path_to_file = None):
+        if path_to_file == None:
+            temp_str = "T" + str(self.temp).replace(".", "")
+            cooling_rate_str = "e-%i" %(np.abs(self.cooling_rate))
+            path_to_file = "../data_online/PVA-%i/%s/%s/mean_cluster_length_%s_%s.txt" %(self.polymer_length, self.type_simulation, temp_str, temp_str, cooling_rate_str)
+            print(path_to_file)
+        try:
+            cryst = np.loadtxt(path_to_file)
+            return cryst
+        except:
+            print("No mean cluster length found!")
             return 0;
 
 
@@ -171,20 +185,19 @@ class Simulation:
             with open(cryst_array_string, "a") as file:
                 file.write(f"{current_time} {frac_cryst}\n")
 
-    def calc_avg_domain_size(self, boxes_eigv_file: str, polymer_box_size_file: str, load_polymer_cryst_files: str = None):
+    def calc_avg_domain_size(self, boxes_eigv_file: str, load_polymer_cryst_files: str = None):
         #TODO test and finish function
-        with open(polymer_box_size_file, "w") as file:
-            file.write("") 
-        for i in range(0, (self.time_temp_array.shape[0])):
+        local_time_temp_array, local_list_lammps_files = self.check_polymer_attributes_file_exists(boxes_eigv_file)
+        for i in tqdm(range(0, (self.time_temp_array.shape[0]))):
             current_time = self.time_temp_array[i, 0]
             current_file = self.list_lammps_files[i]
             current_polymer = polymer(current_file)
             if isinstance(load_polymer_cryst_files, str):
-                polymer.read_cryst("%s_time_%i.txt" %(load_polymer_cryst_files, current_time))
-            polymer.merge_boxes()
+                current_polymer.read_cryst("%s_time_%i.txt" %(load_polymer_cryst_files, current_time))
+            current_polymer.merge_boxes()
 
-            # with open(cryst_array_string, "a") as file:
-            #     file.write(f"{current_time} {frac_cryst}\n")
+            with open(boxes_eigv_file, "a") as file:
+                file.write(f"{current_time} {current_polymer.results.mean_cluster_size}\n")
 
 
     def calc_avg_local_density(self):
@@ -199,6 +212,8 @@ class Simulation:
         self.avg_local_density = avg_local_density
         return avg_local_density
 
+
+
         
 
 
@@ -210,7 +225,8 @@ def main():
     #cooling_e3_T07.calc_crystallisation("../data_online/PVA-100/quick_quench/T07/cryst_equil_T07_e-3.txt", "../data_online/PVA-100/quick_quench/T07/boxes_eigenvalues/equil_t_085_tdot_e-3")
 
     cooling_e3_T085 = Simulation(0.85, -3, "%s%s" %(data_path, "/slurm-e3-T085.out"), "%s/equil_t_085_tdot_e-3_time"%(data_path), no_runs = 3)
-    cooling_e3_T085.calc_crystallisation("../data_online/PVA-100/quick_quench/T085/cryst_equil_T085_e-3.txt", "../data_online/PVA-100/quick_quench/T085/boxes_eigenvalues/equil_t_085_tdot_e-3")
+    #cooling_e3_T085.calc_crystallisation("../data_online/PVA-100/quick_quench/T085/cryst_equil_T085_e-3.txt", "../data_online/PVA-100/quick_quench/T085/boxes_eigenvalues/equil_t_085_tdot_e-3")
+    cooling_e3_T085.calc_avg_domain_size("../data_online/PVA-100/quick_quench/T085/mean_cluster_length_T085_e-3.txt","../data_online/PVA-100/quick_quench/T085/boxes_eigenvalues/equil_t_085_tdot_e-3")
 
 if __name__== "__main__":
     main()

@@ -1,0 +1,10 @@
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,Slurm_id,cooling_rate,T_start,T_end,run_in_series,run_length,used_wc_time,p,nodes,ntasks,description
+,,,,,,,,,,,
+,18461238,10**(-3),0.7,0.7,3,,,rome,2,256,
+,18461965,10**(-3),0.85,0.85,3,,,rome,2,256,
+,18569552,10**(-3),1,0.88,1,24000,2m49s,rome,1,128,Quench to 0.88
+,18570555,10**(-3),0.88,0.88,1,total 6e7,5d0m0s,rome,1,128,
+,18571140,10**(-3),0.7,0.85,1,total 6e7,5d0m0s,rome,1,128,Instantaneous heat up executed in first step

@@ -487,7 +487,7 @@ def plot_hk_matrix_2d(polymer):
                 ax.text(
                     y, x, str(val),
                     ha='center', va='center',
-                    color='white' if val > max_val / 2 else 'black',
+                    color='white' if val < max_val / 2 else 'black',
                     fontsize=6,  # smaller font
                 )
 

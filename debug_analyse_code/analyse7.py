@@ -20,7 +20,7 @@ def fraction_crystallinity(data, cutoff = 0.8):
 
     mask = data > cutoff
     fraction = len(data[mask]) / len(data)
-    return fraction
+    return fraction, len(data[mask])
 
 def gaussian(x, H, A, x0, sigma):
     return H + A * np.exp(-(x - x0)**2 / (2 * sigma**2))
@@ -215,7 +215,7 @@ class atom_coords:
                 df_cryst.iloc[t,4:7] = order_ev
                 #df_labdas.iloc[t, :] = labda
         #self.df_labdas = df_labdas
-        self.fraction_crystallinity = fraction_crystallinity(df_cryst.iloc[:,3])
+        self.fraction_crystallinity, _ = fraction_crystallinity(df_cryst.iloc[:,3])
         self.df_cryst = df_cryst
         #print(self.df_labdas)
         #print(self.fraction_crystallinity)
@@ -228,7 +228,7 @@ class atom_coords:
         data = self.datapd
         data = data[data.index % 100 != 0] # Filter out all last monomers as they do not have a bond vector per definiton
         self.df_cryst = nematic_vector_loop(data, self.bond_vectors)
-        self.fraction_crystallinity = fraction_crystallinity(self.df_cryst.iloc[:,3])
+        self.fraction_crystallinity, _ = fraction_crystallinity(self.df_cryst.iloc[:,3])
         if isinstance(save_string, str):
             self.df_cryst.to_csv("%s" %save_string, sep = " ", mode = "w")
         return self.fraction_crystallinity
@@ -345,7 +345,7 @@ class polymer():
         self.df_cryst.columns = ["xid", "yid", "zid", "cryst_bool", "x_ev", "y_ev", "z_ev"]
         return 0;
 
-    def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8):
+    def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8, save = False):
         max_labels = int(nridges**3)
         #max_labels = int(200)
         cryst_array = self.df_cryst.to_numpy()
@@ -382,20 +382,6 @@ class polymer():
         #print(labels)
         labels2 = labels[labels != 0]
 
-
-        # Loop over matrix to set all points not connected to a cluster to 0 
-
-        # for i in range(0, nridges):
-        #     for j in range(0, nridges):
-        #         for k in range(0, nridges):
-        #             if label_matrix[i,j,k] >0:
-        #                 if label_matrix[(i -1 + nridges)% nridges, j,k] ==0 and label_matrix[(i +1 + nridges)% nridges, j,k] == 0:
-        #                     if label_matrix[i, (j - 1 + nridges) % nridges, k]==0 and label_matrix[i, (j + 1 + nridges) %nridges, k] == 0:
-        #                         if label_matrix[i,j,(k -1 + nridges) %nridges]==0 and label_matrix[i,j, (k + 1 + nridges) %nridges] == 0:
-        #                             label_matrix[i,j,k] = 0
-                        #check_labels(label_matrix, nridges, i,j,k)
-
-
         unique_values, counts = np.unique(label_matrix, return_counts=True) #Labels and how much each label occurs
         # print(unique_values, counts)
         # print(np.mean(counts[1:]))
@@ -411,12 +397,31 @@ class polymer():
         self.results.total_number_independent_clusters = unique_values.size-1
         self.results.mean_cluster_size = np.mean(counts[1:])
         self.total_number_crystalline_grid_elements = np.sum(counts[1:])
-
+        fraction_of_crystallinity, no_crystalline_elements = fraction_crystallinity(self.df_cryst.iloc[:,3])
         print("total number clusters w/ >= 2 elements: %i" %(self.results.total_number_clusters))
         print("total number independent crystalline domains: %i" %(self.results.total_number_independent_clusters))
         print("average cluster size crystalline domains: %f" %(self.results.mean_cluster_size))
-        print("total number crystalline grid elements: %i" %(self.total_number_crystalline_grid_elements))
-        return 0;
+        print("total number crystalline/all grid elements: %i/%i -> cryt_frac = %f" 
+            %(self.total_number_crystalline_grid_elements,self.atom_coords.nridges**3, self.total_number_crystalline_grid_elements/self.atom_coords.nridges**3))
+        print("current crystallinity w/o h-k algo: %i/%i -> %f" %(no_crystalline_elements, self.atom_coords.nridges**3, fraction_of_crystallinity))
+        print(" ")
+        #print(label_matrix)
+
+        if save is True:
+            I, J, K = label_matrix.shape
+
+            rows = []
+            for k in range(K):        # k: slowest
+                for i in range(I):    # i: middle
+                    for j in range(J):# j: fastest
+                        l = label_matrix[i, j, k]
+                        rows.append((i, j, k, l))
+
+
+            df = pd.DataFrame(rows, columns=["x", "y", "z", "label"])
+            df.to_csv("hk_label_matrix.txt", sep = " ", index = True)
+
+        return label_matrix;
 
 
         #np.save("hk_label_matrix.npy", label_matrix)
@@ -432,7 +437,7 @@ def check_labels(label_matrix, nridges, i,j,k):
 
 
     # if label_matrix[i,j,k] != label_matrix[(i-1)% nridges,j,k]:
-    #     if label_matrix[i,j,k] != label_matrix[(i+1)%nridges, j, k]:
+    #     if label_matrix[i,j,k] != label_matrix[(i+1)%nridges, j, k]:  
     #         if label_matrix[i,j,k] != label_matrix[i,(j-1)% nridges,k]: 
     #             if label_matrix[i,j,k] != label_matrix[i, (j+1) % nridges, k]:
     #                 if label_matrix[i,j,k] != label_matrix[i,j,(k-1) % nridges]:
@@ -444,7 +449,87 @@ class results(object):
 
     # Include plotting functions here 
 
+def plot_hk_matrix_2d(polymer):
+    data = polymer.merge_boxes()
 
+
+    Nx, Ny, Nz = data.shape
+
+    for k in range(Nz):
+        slice_k = data[:, :, k]
+
+        # Scale figure size with grid size so each cell is big enough
+        cell_size = 0.3  # inches per cell (adjust up/down)
+        fig_width = max(4, Ny * cell_size)
+        fig_height = max(4, Nx * cell_size)
+
+        fig, ax = plt.subplots(figsize=(fig_width, fig_height))
+        im = ax.imshow(slice_k, cmap='viridis', origin='lower')
+
+        ax.set_title(f"Cluster labels, PVA-100, T = 0.5, Tdot = 10**(-5), T_init = 1.0, z = {k}")
+        ax.set_xlabel("y")
+        ax.set_ylabel("x")
+
+        ax.set_xlim(-0.5, Ny - 0.5)
+        ax.set_ylim(-0.5, Nx - 0.5)
+
+        # --- Control which cells get labels ---
+        label_only_nonzero = False   # set True if you only want val != 0
+        step_x = 1                   # label every 'step_x' cells in x
+        step_y = 1                   # label every 'step_y' cells in y
+
+        max_val = slice_k.max()
+        for x in range(0, Nx, step_x):
+            for y in range(0, Ny, step_y):
+                val = slice_k[x, y]
+                if label_only_nonzero and val == 0:
+                    continue
+                ax.text(
+                    y, x, str(val),
+                    ha='center', va='center',
+                    color='white' if val > max_val / 2 else 'black',
+                    fontsize=6,  # smaller font
+                )
+
+        fig.colorbar(im, ax=ax, label='cluster label')
+        fig.tight_layout()
+        plt.savefig("debug_hk_algo/10e5_T05_hk_2d_plots/zlayer_%i.pdf" %k)
+        #plt.show() 
+        plt.close()
+
+
+def plot_hk_matrix(polymer):
+    label_matrix = polymer.merge_boxes()
+
+
+    Nx, Ny, Nz = label_matrix.shape
+
+    # Create coordinate grids for x, y, z (index positions)
+    x_idx, y_idx, z_idx = np.indices((Nx, Ny, Nz))
+
+    # Flatten to 1D
+    x = x_idx.ravel()
+    y = y_idx.ravel()
+    z = z_idx.ravel()
+    l = label_matrix.ravel()      # values
+
+    mask = l > 0
+    x = x[mask]
+    y = y[mask]
+    z = z[mask]
+    l = l[mask]
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    sc = ax.scatter(x, y, z, c=l, cmap='viridis', s=10)
+
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
+    fig.colorbar(sc, ax=ax, label='l')
+
+    plt.show()
 
 
 
@@ -452,10 +537,34 @@ def main():
     """Testing function"""
 
     #first_timestep_e5 = polymer("../../data/pva-100/quick_quench/equil_t_085_tdot_e-3_run2_goodrun_time_0.txt")
-    last_timestep_e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
-    #print(first_timestep_e5.atom_coords.combinations)
-    last_timestep_e5.get_density_dist()
+    slow_quench_e5_time_100e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
+    slow_quench_e5_time_95e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_9500000.txt")
+    slow_quench_e5_time_90e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_9000000.txt")
+    slow_quench_e5_time_85e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_8500000.txt")
+    slow_quench_e5_time_80e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_8000000.txt")
 
+
+    # slow_quench_e5_time_100e5.atom_coords.get_nematic_vector_5("10e5_T05_last_timestep_boxes_ev.txt")
+    # slow_quench_e5_time_95e5.atom_coords.get_nematic_vector_5("10e5_T05_timestep_boxes_ev_time_95e5.txt")
+    # slow_quench_e5_time_90e5.atom_coords.get_nematic_vector_5("10e5_T05_timestep_boxes_ev_time_90e5.txt")
+    # slow_quench_e5_time_85e5.atom_coords.get_nematic_vector_5("10e5_T05_timestep_boxes_ev_time_85e5.txt")
+    # slow_quench_e5_time_80e5.atom_coords.get_nematic_vector_5("10e5_T05_timestep_boxes_ev_time_80e5.txt")
+    slow_quench_e5_time_100e5.read_cryst("10e5_T05_last_timestep_boxes_ev.txt")
+    slow_quench_e5_time_95e5.read_cryst("10e5_T05_timestep_boxes_ev_time_95e5.txt")
+    slow_quench_e5_time_90e5.read_cryst("10e5_T05_timestep_boxes_ev_time_90e5.txt")
+    slow_quench_e5_time_85e5.read_cryst("10e5_T05_timestep_boxes_ev_time_85e5.txt")
+    slow_quench_e5_time_80e5.read_cryst("10e5_T05_timestep_boxes_ev_time_80e5.txt")
+    #print(first_timestep_e5.atom_coords.combinations)
+    #last_timestep_e5.get_density_dist()
+    # slow_quench_e5_time_100e5.merge_boxes()
+    # slow_quench_e5_time_95e5.merge_boxes()
+    # slow_quench_e5_time_90e5.merge_boxes()
+    # slow_quench_e5_time_85e5.merge_boxes()
+    # slow_quench_e5_time_80e5.merge_boxes()
+
+
+    plot_hk_matrix_2d(slow_quench_e5_time_100e5)
+    
     
 if __name__ == "__main__":
     main()

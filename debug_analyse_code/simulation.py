@@ -17,7 +17,7 @@ class Simulation:
     """Class for one run, holds multiple polymer objects."""
 
     def __init__(self, temperature: float, cooling_rate: int, path_slurm_file: str, lammps_file_name_without_time :str, 
-        no_runs: int = 1, polymer_length: int = 100, type_simulation: str = "quick_quench", cryst_path_to_file = None):
+        no_runs: int = 1, polymer_length: int = 100, type_simulation: str = "quick_quench", home_folder: str = None):
         """lammps_file_name_without_time should not contain a time"""
         self.temp = temperature
         self.cooling_rate = cooling_rate
@@ -33,9 +33,10 @@ class Simulation:
         self.no_polymers = self.time_temp_array.shape[0]
         self.polymer_length = polymer_length
         self.type_simulation = type_simulation
-        self.cryst = self.get_crystallisation(path_to_file = cryst_path_to_file) #2D array containing time and crystallisation at time
+        self.path_to_home_folder = home_folder
+        self.cryst = self.get_crystallisation() #2D array containing time and crystallisation at time
         self.mean_cluster_length = self.get_mean_cluster_length()
-
+        #path_to_file = "%s/cryst_equil_T0%s_%i.txt" %(home_folder, str(simulation.temp).replace(".", ""), self.cooling_rate)
     def get_polymer_by_count(self, count):
         """Gets i-th polymer"""
         if isinstance(count, int):
@@ -72,7 +73,9 @@ class Simulation:
         if path_to_file == None:
             temp_str = "T" + str(self.temp).replace(".", "")
             cooling_rate_str = "e-%i" %(np.abs(self.cooling_rate))
-            path_to_file = "../data_online/PVA-%i/%s/%s/cryst_equil_%s_%s.txt" %(self.polymer_length, self.type_simulation, temp_str, temp_str, cooling_rate_str)
+            #path_to_file = "../data_online/PVA-%i/%s/%s/cryst_equil_%s_%s.txt" %(self.polymer_length, self.type_simulation, temp_str, temp_str, cooling_rate_str)
+            path_to_file = "%s/cryst_equil_%s_%s.txt" %(self.path_to_home_folder, temp_str, cooling_rate_str)
+            print(path_to_file)
         try:
             cryst = np.loadtxt(path_to_file)
             return cryst
@@ -84,7 +87,8 @@ class Simulation:
         if path_to_file == None:
             temp_str = "T" + str(self.temp).replace(".", "")
             cooling_rate_str = "e-%i" %(np.abs(self.cooling_rate))
-            path_to_file = "../data_online/PVA-%i/%s/%s/mean_cluster_length_%s_%s.txt" %(self.polymer_length, self.type_simulation, temp_str, temp_str, cooling_rate_str)
+            #path_to_file = "../data_online/PVA-%i/%s/%s/mean_cluster_length_%s_%s.txt" %(self.polymer_length, self.type_simulation, temp_str, temp_str, cooling_rate_str)
+            path_to_file = "%s/mean_cluster_length_%s_%s.txt" %(self.path_to_home_folder, temp_str, cooling_rate_str)
             print(path_to_file)
         try:
             cryst = np.loadtxt(path_to_file)
@@ -198,8 +202,11 @@ class Simulation:
             current_time = self.time_temp_array[i, 0]
             current_file = self.list_lammps_files[i]
             current_polymer = polymer(current_file)
-            if isinstance(load_polymer_cryst_files, str):
-                current_polymer.read_cryst("%s_time_%i.txt" %(load_polymer_cryst_files, current_time))
+            if load_polymer_cryst_files == None:
+                current_polymer.read_cryst("%s/boxes_eigenvalues_e%s/equil_t_%s_tdot_e%s_time_%i.txt" 
+                    %(self.path_to_home_folder, self.cooling_rate, str(self.temp).replace(".", ""),self.cooling_rate, current_time))
+            else:
+                current_polymer.read_cryst(load_polymer_cryst_files)
             current_polymer.merge_boxes()
 
             with open(boxes_eigv_file, "a") as file:

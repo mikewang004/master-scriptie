@@ -1,5 +1,5 @@
 from analyse7 import * 
-
+import pandas as pd
 
 rng = np.random.default_rng(seed = 42)
 
@@ -52,84 +52,8 @@ def convert_input_lattice_to_cryst_array(input_lattice_file, ndot_cutoff = 0.97)
 
 
 
-def plot_label_matrix(lattice):
-    occupied = lattice > 0
-    x, y, z = np.where(occupied)
-    values = lattice[occupied]  # could be used for coloring
-
-    # --- 3. Plot as 3D scatter on cubic lattice ---
-    fig = plt.figure(figsize=(6, 6))
-    ax = fig.add_subplot(111, projection='3d')
-
-    # Color by value; remove "c=values" if you just want uniform color
-    sc = ax.scatter(x, y, z,
-                    c=values,
-                    cmap="viridis",
-                    marker="s",  # square markers look more like voxels
-                    s=20)
-
-    # Make axes look cubic
-    ax.set_box_aspect([1, 1, 1])  # equal aspect ratio
-
-    ax.set_xlabel("x")
-    ax.set_ylabel("y")
-    ax.set_zlabel("z")
-
-    cbar = plt.colorbar(sc, ax=ax)
-    cbar.set_label("Site value")
-
-    plt.tight_layout()
-    plt.show()
-
-def plot_only_largest_clusters(lattice, n_keep):
-    labels = lattice
-
-    # ---------- 3. Count size of each label ----------
-    sizes = np.bincount(labels.ravel())          # sizes[i] = voxels with label i
-    if len(sizes) > 0:
-        sizes[0] = 0                             # label 0 = background, EXCLUDE
-
-    # List of non-zero labels that actually appear
-    nonzero_labels = np.nonzero(sizes)[0]        # labels with size > 0
-    n_clusters = len(nonzero_labels)
-
-    # Adjust n_keep if user asks for more than exist
-    n_keep = min(n_keep, n_clusters)
-
-    # Indices of the n_keep largest *non-zero* labels
-    largest_labels = np.argsort(sizes)[-n_keep:]  # these are != 0 because sizes[0]=0
-    print("Largest labels (excluding 0):", largest_labels)
-    print("Their sizes:", sizes[largest_labels])
-
-    # ---------- 4. Mask: only voxels in those clusters (still excludes label 0) ----------
-    mask = np.isin(labels, largest_labels)   # True only for selected cluster labels
-    x, y, z = np.where(mask)
-    cluster_ids = labels[mask]               # used for coloring
-
-    # ---------- 5. Plot ONLY the selected clusters (no label 0) ----------
-    fig = plt.figure(figsize=(6, 6))
-    ax = fig.add_subplot(111, projection='3d')
-
-    sc = ax.scatter(
-        x, y, z,
-        c=cluster_ids,
-        cmap="tab20",     # each cluster a different color
-        marker="s",
-        s=30
-    )
-
-
-
-    ax.set_box_aspect([1, 1, 1])
-    ax.set_xlabel("x")
-    ax.set_ylabel("y")
-    ax.set_zlabel("z")
-
-    cbar = plt.colorbar(sc, ax=ax)
-    cbar.set_label("Cluster label")
-
-    plt.tight_layout()
-    plt.show()
+def plot_label_matrix(label_matrix):
+    print(label_matrix)
 
 
 
@@ -164,7 +88,33 @@ nridges = 33
 
 
 
-label_matrix = np.load("hk_label_matrix.npy")
-plot_label_matrix(label_matrix)
-plot_only_largest_clusters(label_matrix, 10)
+# label_matrix = np.load(hk_label_matrix.npy)
 
+
+
+
+
+
+slow_quench_e5_time_90e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_9000000.txt")
+slow_quench_e5_time_90e5.read_cryst("10e5_T05_timestep_boxes_ev_time_90e5.txt")
+slow_quench_e5_time_90e5.merge_boxes(save = True)
+
+slow_quench_e5_time_90e5.label_matrix = pd.read_csv("10e5_T05_hk_labels_time_90e5.txt", sep = " ").drop(columns=["Unnamed: 0"])
+
+
+hk_label_matrix = slow_quench_e5_time_90e5.label_matrix
+cryst_matrix = slow_quench_e5_time_90e5.df_cryst
+
+
+# print(hk_label_matrix[hk_label_matrix.iloc[:, 3]> 0].index)
+# print(cryst_matrix[cryst_matrix.iloc[:, 3] > 0.8].index)
+
+
+hk_label_cryst = hk_label_matrix[hk_label_matrix["label"]> 0]
+cryst_matrix_cryst = cryst_matrix[cryst_matrix.iloc[:, 3] > 0.8]
+
+#print(hk_label_cryst.loc[19602])
+# print(cryst_matrix_cryst.loc[19602])
+
+list_with_both = list(set(hk_label_cryst.index) ^ set(cryst_matrix_cryst.index))
+print(list_with_both)

@@ -88,5 +88,8 @@ nridges = 33
 
 
 
-label_matrix = np.load(hk_label_matrix.npy)
+# label_matrix = np.load(hk_label_matrix.npy)
+
+
+slow_quench_e5_time_90e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_9000000.txt")
 

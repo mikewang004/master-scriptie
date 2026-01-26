@@ -111,7 +111,7 @@ class atom_coords:
         self.polymer_length = int(self.n_atoms/self.no_polymers)
         self.combinations = self.generate_box_list()
         self.bond_vectors = self.calculate_bond_vectors()
-        self.datapd, self.local_volume = self.assign_center_of_mass(nridges = nridges)
+        self.datapd, self.local_volume, _ = self.assign_center_of_mass(nridges = nridges)
         self.results = results()
 
 
@@ -171,17 +171,15 @@ class atom_coords:
         box_length =  (self.total_volume_length)/nridges
         df_com = pd.DataFrame(np.zeros([data.shape[0], 3]), columns = ["xid", "yid", "zid"], index = data.index)
         #print(self.total_volume_length, self.minlength, self.maxlength)
-        local_volume = box_length**3
+        local_volume = self.volume/self.nridges**3
         wrapped_coordinates = self.wrap_coordinates(data.iloc[:, 1:5])
         df_com.iloc[:, 0] = find_box_id(midpoint_ridges, wrapped_coordinates.iloc[:, 0].to_numpy())
         df_com.iloc[:, 1] = find_box_id(midpoint_ridges, wrapped_coordinates.iloc[:, 1].to_numpy())
         df_com.iloc[:, 2] = find_box_id(midpoint_ridges, wrapped_coordinates.iloc[:, 2].to_numpy())
 
-            
+    
         data = pd.concat([data, df_com], axis=1)
-        #data = data.iloc[:-1, :]
-        #data.to_csv("data_test_ctypes.txt", sep = " ", mode = "w")
-        return data, local_volume
+        return data, local_volume, df_com
 
 
     def generate_box_list(self, nridges = 33):
@@ -316,15 +314,28 @@ class polymer():
         # plt.title("Distribution of bond-bond correlations")
         #plt.show()
 
-    def get_density_dist(self, nridges = 33):
+    def get_density_dist_per_box(self, nridges = 33):
         """Uses new method with combinations to calculate local density (i.e. density per box)"""
         data = self.atom_coords.datapd
         data_indexed = data.reset_index().rename({"index": "atom_id"}).set_index(["xid", "yid", "zid"]).sort_index()
+        #print(data_indexed)
         data_grouped = data_indexed.groupby(level=["xid", "yid", "zid"])
         no_points_per_box = data_grouped.size()
+        print(no_points_per_box)
         local_densities = no_points_per_box / self.atom_coords.local_volume
+        print(data.shape[0]/self.atom_coords.volume)
+        #no_points_per_box.to_csv("local_densities.txt")
         self.results.avg_local_density = np.mean(local_densities)
         return local_densities
+
+    def get_density_dist(self, nridges = None):
+        if nridges is None:
+            nridges = self.atom_coords.nridges
+        _, _, boxes = self.atom_coords.assign_center_of_mass(nridges = nridges)
+        boxes = boxes.set_index(["xid", "yid", "zid"]).sort_index()
+        data_grouped = boxes.groupby(level=["xid", "yid", "zid"])
+        no_points_per_box = data_grouped.size()
+        return no_points_per_box
 
 
 
@@ -443,9 +454,7 @@ def main():
     #first_timestep_e5 = polymer("../../data/pva-100/quick_quench/equil_t_085_tdot_e-3_run2_goodrun_time_0.txt")
     last_timestep_e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
     #print(first_timestep_e5.atom_coords.combinations)
-    last_timestep_e5.atom_coords.get_nematic_vector_5()
-    print(last_timestep_e5.atom_coords.df_cryst)
-    print(last_timestep_e5.atom_coords.fraction_crystallinity)
+    last_timestep_e5.get_density_dist()
 
     
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ import scipy as sp
 import matplotlib.pyplot as plt
 import os
 from tqdm import tqdm
-
+from pathlib import Path
 
 cryst_path_prefix = "../crystallisation"
 
@@ -17,7 +17,7 @@ class Simulation:
     """Class for one run, holds multiple polymer objects."""
 
     def __init__(self, temperature: float, cooling_rate: int, path_slurm_file: str, lammps_file_name_without_time :str, 
-        no_runs: int = 1, polymer_length: int = 100, type_simulation: str = "quick_quench"):
+        no_runs: int = 1, polymer_length: int = 100, type_simulation: str = "quick_quench", cryst_path_to_file = None):
         """lammps_file_name_without_time should not contain a time"""
         self.temp = temperature
         self.cooling_rate = cooling_rate
@@ -33,7 +33,7 @@ class Simulation:
         self.no_polymers = self.time_temp_array.shape[0]
         self.polymer_length = polymer_length
         self.type_simulation = type_simulation
-        self.cryst = self.get_crystallisation() #2D array containing time and crystallisation at time
+        self.cryst = self.get_crystallisation(path_to_file = cryst_path_to_file) #2D array containing time and crystallisation at time
         self.mean_cluster_length = self.get_mean_cluster_length()
 
     def get_polymer_by_count(self, count):
@@ -176,6 +176,12 @@ class Simulation:
         """Calculates the crystallisation of all timesteps of a run and saves that to a file. 
         cryst_file: .txt containing the timestep and fraction of crystallisation
         polymer_cryst_files: .txt files containing crystallisation fraction and nematic vectors per small box per simulation"""
+        # Check if dirs exists and if not, create them 
+        cryst_path = Path(cryst_array_string).parent
+        cryst_path.mkdir(parents=True, exist_ok = True)
+        boxes_eigenvalues_path = Path(frac_cryst_save_loc).parent
+        boxes_eigenvalues_path.mkdir(parents=True, exist_ok = True)
+
         local_time_temp_array, local_list_lammps_files = self.check_polymer_attributes_file_exists(cryst_array_string)
         for i in tqdm(range(0, (local_time_temp_array.shape[0]))):
             current_time = local_time_temp_array[i, 0]

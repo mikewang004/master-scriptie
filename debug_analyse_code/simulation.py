@@ -61,8 +61,10 @@ class Simulation:
                 break
         collected_rows = []
         for line in lines[start_index:]:
-            if "error: *** JOB" in line:
-                print(line)
+            # if "error: *** JOB" in line:
+            #     #print(line)
+            #     break
+            if any(c.isalpha() for c in line):
                 break
             row = line.strip().split()
             collected_rows.append(row[:n_columns])
@@ -162,7 +164,6 @@ class Simulation:
             # Check what latest timestep written in file
             data_array = np.loadtxt(path_to_file)
             maxtime = int(np.max(data_array[:, 0]))
-            print(maxtime)
             #Only continue at given time
             shortened_time_temp_array = self.time_temp_array[self.time_temp_array[:, 0] > maxtime]
             #Also delete first [n] entries of the list_lammps_files
@@ -198,9 +199,10 @@ class Simulation:
     def calc_avg_domain_size(self, boxes_eigv_file: str, load_polymer_cryst_files: str = None):
         #TODO test and finish function
         local_time_temp_array, local_list_lammps_files = self.check_polymer_attributes_file_exists(boxes_eigv_file)
-        for i in tqdm(range(0, (self.time_temp_array.shape[0]))):
-            current_time = self.time_temp_array[i, 0]
-            current_file = self.list_lammps_files[i]
+        print(local_time_temp_array)
+        for i in tqdm(range(0, (local_time_temp_array.shape[0]))):
+            current_time = local_time_temp_array[i, 0]
+            current_file = local_list_lammps_files[i]
             current_polymer = polymer(current_file)
             if load_polymer_cryst_files == None:
                 current_polymer.read_cryst("%s/boxes_eigenvalues_e%s/equil_t_%s_tdot_e%s_time_%i.txt" 
@@ -236,10 +238,10 @@ def main():
 
     #cooling_e3_T07 = Simulation(0.7, -3, "%s%s" %(data_path, "/slurm-e3-T=07.out"), "%s/equil_t_07_tdot_e-3_time"%(data_path), no_runs = 3)
     #cooling_e3_T07.calc_crystallisation("../data_online/PVA-100/quick_quench/T07/cryst_equil_T07_e-3.txt", "../data_online/PVA-100/quick_quench/T07/boxes_eigenvalues/equil_t_085_tdot_e-3")
-
-    cooling_e3_T085 = Simulation(0.85, -3, "%s%s" %(data_path, "/slurm-e3-T085.out"), "%s/equil_t_085_tdot_e-3_time"%(data_path), no_runs = 3)
+    cooling_e3_T085 = Simulation(0.85, -3, "%s%s" %(data_path, "/slurm-e3-T085.out"), "%s/equil_t_085_tdot_e-3_time"%(data_path), no_runs = 3, 
+        home_folder= "../data_online/PVA-100/quick_quench/T085")
     #cooling_e3_T085.calc_crystallisation("../data_online/PVA-100/quick_quench/T085/cryst_equil_T085_e-3.txt", "../data_online/PVA-100/quick_quench/T085/boxes_eigenvalues/equil_t_085_tdot_e-3")
-    cooling_e3_T085.calc_avg_domain_size("../data_online/PVA-100/quick_quench/T085/mean_cluster_length_T085_e-3.txt","../data_online/PVA-100/quick_quench/T085/boxes_eigenvalues/equil_t_085_tdot_e-3")
+    cooling_e3_T085.calc_avg_domain_size("../data_online/PVA-100/quick_quench/T085/mean_cluster_length_T085_e-3.txt")
 
 if __name__== "__main__":
     main()

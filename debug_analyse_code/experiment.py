@@ -84,6 +84,10 @@ def plot_mean_cluster_length(simulation_list: list, save: bool = False, savestri
         plt.savefig(savestring)
     plt.show()
 
+
+def plot_mean_cluster_vs_crystallisation(simulation_list: list, save: bool = False, savestring = None, labels_list: list = None):
+    pass
+
 def main():
     data_path = "../../data/pva-100/quick_quench/long_run"
     home_folder_path = "../data_online"
@@ -93,16 +97,17 @@ def main():
     #cooling_e3_T07 = Simulation(0.7, -3, "%s%s" %(data_path, "/slurm-e3-T07.out"), "%s/equil_t_07_tdot_e-3_time"%(data_path))
     cooling_e3_T07to085 = Simulation(0.85, -3, "%s%s" %(data_path, "/slurm-e3-T07to085.out"), "%s/equil_t_07to085_tdot_e-3_time"%(data_path), 
         home_folder= "../data_online/PVA-100/quick_quench/T07to085")
-    #cooling_e3_T088 = Simulation(0.88, -3, "%s%s" %(data_path, "/slurm-e3-T088.out"), "%s/equil_t_088_tdot_e-3_time"%(data_path))
+    cooling_e3_T088 = Simulation(0.88, -3, "%s%s" %(data_path, "/slurm-e3-T088.out"), "%s/equil_t_088_tdot_e-3_time"%(data_path), 
+        home_folder = "../data_online/PVA-100/quick_quench/T088")
     #cooling_e3_T088.calc_crystallisation("../data_online/PVA-100/quick_quench/T088/cryst_equil_T088_e-3.txt", "../data_online/PVA-100/quick_quench/T088/boxes_eigenvalues_e-3/equil_t_088_tdot_e-3_time")
     #cooling_e3_T07to085.calc_crystallisation("../data_online/PVA-100/quick_quench/T07to085/cryst_equil_T07to085_e-3.txt", "../data_online/PVA-100/quick_quench/T07to085/boxes_eigenvalues_e-3/equil_t_07to085_tdot_e-3_time")
-    #cooling_e4_T085.calc_crystallisation("../data_online/PVA-100/quick_quench/T085/cryst_equil_T085_e-4.txt", "../data_online/PVA-100/quick_quench/T085/boxes_eigenvalues_e-4/equil_t_085_tdot_e-4")
+    #cooling_e3_T085.calc_crystallisation("../data_online/PVA-100/quick_quench/T085/cryst_equil_T085_e-3.txt", "../data_online/PVA-100/quick_quench/T085/boxes_eigenvalues_e-3/equil_t_085_tdot_e-3")
     #cooling_e3_T085.calc_avg_domain_size("../data_online/PVA-100/quick_quench/T085/mean_cluster_length_T085_e-3.txt")
     #cooling_e3_T088.calc_avg_domain_size("../data_online/PVA-100/quick_quench/T088/mean_cluster_length_T088_e-3.txt")
     #cooling_e3_T07to085.calc_avg_domain_size("../data_online/PVA-100/quick_quench/T07to085/mean_cluster_length_T085_e-3.txt")
     plot_mean_cluster_length([cooling_e3_T07to085, cooling_e3_T085], labels_list = ["T= 0.85, instantaneous warmup from T = 0.7", "T = 0.85 constant"])
 
-    #plot_crystallisation([cooling_e3_T085, cooling_e4_T08calc_avg_domain_size5])
+    #plot_crystallisation([cooling_e3_T085, cooling_e4_T08])
     #plot_crystallisation([cooling_e3_T07, cooling_e3_T085])
     #plot_crystallisation([cooling_e3_T085, cooling_e3_T088], savestring = "plots/10e-3_T085_T088_crystallinity.pdf")
     

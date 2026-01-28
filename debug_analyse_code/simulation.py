@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import os
 from tqdm import tqdm
 from pathlib import Path
+import pandas as pd
 
 cryst_path_prefix = "../crystallisation"
 
@@ -204,9 +205,10 @@ class Simulation:
                 file.write(f"{current_time} {frac_cryst}\n")
 
     def calc_avg_domain_size(self, boxes_eigv_file: str, load_polymer_cryst_files: str = None, calc_all: bool = False):
-        
+        #TODO: implement more sophisticated data structure 
         local_time_temp_array, local_list_lammps_files = self.check_polymer_attributes_file_exists(boxes_eigv_file, calc_all = calc_all)
-        print(local_time_temp_array)
+        cryst_domain_array = pd.DataFrame(np.zeros([local_time_temp_array.shape[0], 6]), columns = ["time", "crystallinity", "clusters w/ >= 2 members", 
+            "independent clusters", "mean size cryst domains", "crystalline grid elements"])
         for i in tqdm(range(0, (local_time_temp_array.shape[0]))):
             current_time = local_time_temp_array[i, 0]
             current_file = local_list_lammps_files[i]
@@ -218,8 +220,13 @@ class Simulation:
                 current_polymer.read_cryst(load_polymer_cryst_files)
             current_polymer.merge_boxes()
 
-            with open(boxes_eigv_file, "a") as file:
-                file.write(f"{current_time} {current_polymer.results.mean_cluster_size}\n")
+            # with open(boxes_eigv_file, "a") as file:
+            #     file.write(f"{current_time} {current_polymer.results.mean_cluster_size}\n")
+            test = np.array([current_time, current_polymer.results.fraction_crystallinity,
+                current_polymer.results.total_number_clusters, current_polymer.results.total_number_independent_clusters, 
+                current_polymer.results.mean_cluster_size, current_polymer.results.total_number_crystalline_grid_elements])
+            cryst_domain_array.iloc[i, :] = test
+        cryst_domain_array.to_csv("%s" %(boxes_eigv_file), sep = " ", mode = "a")
 
 
     def calc_avg_local_density(self):

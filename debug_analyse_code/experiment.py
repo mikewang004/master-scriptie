@@ -8,7 +8,8 @@ from simulation import Simulation
 
 
 
-
+#TODO: rewrite all plotting functions to support more sophisticated data structures as implemented in 
+# simulation.[py].calc_avg_domain_size 
 
 def polymer_density(simulation):
     #TODO: fix this so that two peaks can be seen.
@@ -128,6 +129,7 @@ def plot_mean_cluster_vs_crystallisation_single_temp(simulation_list: list, save
 
 
 def plot_mean_cluster_vs_crystallisation_single_cooling_rate(simulation_list: list, save: bool = False, savestring = None, labels_list: list = None, plot_equal_length: bool = False):
+    """This does not work with new file structure"""
     if plot_equal_length == True:
         length_list =[]
 
@@ -176,11 +178,11 @@ def main():
     #    "../data_online/PVA-100/quick_quench/T07to085/boxes_eigenvalues_e-3/equil_t_07to085_tdot_e-3", calc_all = False)
     #cooling_e3_T085.calc_crystallisation("../data_online/PVA-100/quick_quench/T085/cryst_equil_T085_e-3.txt", "../data_online/PVA-100/quick_quench/T085/boxes_eigenvalues_e-3/equil_t_085_tdot_e-3")
     #cooling_e3_T085.calc_avg_domain_size("../data_online/PVA-100/quick_quench/T085/mean_cluster_length_T085_e-3.txt")
-    #cooling_e3_T088.calc_avg_domain_size("../data_online/PVA-100/quick_quench/T088/mean_cluster_length_T088_e-3.txt")
+    cooling_e3_T088.calc_avg_domain_size("../data_online/PVA-100/quick_quench/T088/mean_cluster_length_T088_e-3.txt", calc_all = True)
     #cooling_e4_T085.calc_avg_domain_size("../data_online/PVA-100/quick_quench/T085/mean_cluster_length_T085_e-4.txt")
     #cooling_e3_T07to085.calc_avg_domain_size("../data_online/PVA-100/quick_quench/T07to085/mean_cluster_length_T085_e-3.txt")
     #plot_mean_cluster_vs_crystallisation([cooling_e3_T07to085, cooling_e3_T085], plot_equal_length= True)
-    plot_mean_cluster_vs_crystallisation_single_temp([cooling_e3_T085, cooling_e3_T07to085], plot_equal_length= True)
+   # plot_mean_cluster_vs_crystallisation_single_temp([cooling_e3_T085, cooling_e3_T07to085], plot_equal_length= True)
 
 
 

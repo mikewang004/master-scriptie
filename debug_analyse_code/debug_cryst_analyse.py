@@ -1,5 +1,7 @@
 from analyse7 import * 
 import pandas as pd
+from simulation import Simulation
+import matplotlib.pyplot as plt
 
 rng = np.random.default_rng(seed = 42)
 
@@ -95,26 +97,49 @@ nridges = 33
 
 
 
-slow_quench_e5_time_90e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_9000000.txt")
-slow_quench_e5_time_90e5.read_cryst("10e5_T05_timestep_boxes_ev_time_90e5.txt")
-slow_quench_e5_time_90e5.merge_boxes(save = True)
+# slow_quench_e5_time_90e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_9000000.txt")
+# slow_quench_e5_time_90e5.read_cryst("10e5_T05_timestep_boxes_ev_time_90e5.txt")
+# slow_quench_e5_time_90e5.merge_boxes(save = True)
 
-slow_quench_e5_time_90e5.label_matrix = pd.read_csv("10e5_T05_hk_labels_time_90e5.txt", sep = " ").drop(columns=["Unnamed: 0"])
-
-
-hk_label_matrix = slow_quench_e5_time_90e5.label_matrix
-cryst_matrix = slow_quench_e5_time_90e5.df_cryst
+# slow_quench_e5_time_90e5.label_matrix = pd.read_csv("10e5_T05_hk_labels_time_90e5.txt", sep = " ").drop(columns=["Unnamed: 0"])
 
 
-# print(hk_label_matrix[hk_label_matrix.iloc[:, 3]> 0].index)
-# print(cryst_matrix[cryst_matrix.iloc[:, 3] > 0.8].index)
 
 
-hk_label_cryst = hk_label_matrix[hk_label_matrix["label"]> 0]
-cryst_matrix_cryst = cryst_matrix[cryst_matrix.iloc[:, 3] > 0.8]
+
+# hk_label_matrix = slow_quench_e5_time_90e5.label_matrix
+# cryst_matrix = slow_quench_e5_time_90e5.df_cryst
+
+
+# # print(hk_label_matrix[hk_label_matrix.iloc[:, 3]> 0].index)
+# # print(cryst_matrix[cryst_matrix.iloc[:, 3] > 0.8].index)
+
+
+# hk_label_cryst = hk_label_matrix[hk_label_matrix["label"]> 0]
+# cryst_matrix_cryst = cryst_matrix[cryst_matrix.iloc[:, 3] > 0.8]
 
 #print(hk_label_cryst.loc[19602])
 # print(cryst_matrix_cryst.loc[19602])
 
-list_with_both = list(set(hk_label_cryst.index) ^ set(cryst_matrix_cryst.index))
-print(list_with_both)
+# list_with_both = list(set(hk_label_cryst.index) ^ set(cryst_matrix_cryst.index))
+# print(list_with_both)
+
+
+data_path = "../../data/pva-100/quick_quench/long_run"
+home_folder_path = "../data_online"
+
+cooling_e3_T088 = Simulation(0.88, -3, "%s%s" %(data_path, "/slurm-e3-T088.out"), "%s/equil_t_088_tdot_e-3_time"%(data_path), 
+    home_folder = "../data_online/PVA-100/quick_quench/T088")
+cooling_e3_T088.cryst_boxes = pd.read_csv("../data_online/PVA-100/quick_quench/T088/mean_cluster_length_T088_e-3.txt", sep = " ").drop(columns=["Unnamed: 0"])
+print(cooling_e3_T088.cryst_boxes)
+
+#plt.scatter(cooling_e3_T088.cryst_boxes.iloc[:, 0], cooling_e3_T088.cryst_boxes.iloc[:, 2], label = "clusters w/ >= 2 members")
+plt.scatter(cooling_e3_T088.cryst_boxes.iloc[:, 0], cooling_e3_T088.cryst_boxes.iloc[:, 3], label = "independent clusters")
+plt.scatter(cooling_e3_T088.cryst_boxes.iloc[:, 0], cooling_e3_T088.cryst_boxes.iloc[:, 4], label = "mean size cryst domains")
+#plt.scatter(cooling_e3_T088.cryst_boxes.iloc[:, 0], cooling_e3_T088.cryst_boxes.iloc[:, 5], label = "crystalline grid elements")
+
+plt.title(r"Crystallisation properties, PVA-100, T = 0.88, $\dot{T} = 10^{-3}$")
+plt.xlabel("time")
+plt.legend()
+plt.savefig("T088_e-3_independent_clusters_mean_size_cryst_domains.pdf")
+plt.show()

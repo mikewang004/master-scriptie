@@ -396,13 +396,13 @@ class polymer():
         self.results.total_number_clusters = total_number_merged_clusters.size
         self.results.total_number_independent_clusters = unique_values.size-1
         self.results.mean_cluster_size = np.mean(counts[1:])
-        self.total_number_crystalline_grid_elements = np.sum(counts[1:])
-        fraction_of_crystallinity, no_crystalline_elements = fraction_crystallinity(self.df_cryst.iloc[:,3])
+        self.results.total_number_crystalline_grid_elements = np.sum(counts[1:])
+        self.results.fraction_crystallinity, no_crystalline_elements = fraction_crystallinity(self.df_cryst.iloc[:,3])
         print("total number clusters w/ >= 2 elements: %i" %(self.results.total_number_clusters))
         print("total number independent crystalline domains: %i" %(self.results.total_number_independent_clusters))
         print("average cluster size crystalline domains: %f" %(self.results.mean_cluster_size))
         print("total number crystalline/all grid elements: %i/%i -> cryt_frac = %f" 
-            %(self.total_number_crystalline_grid_elements,self.atom_coords.nridges**3, self.total_number_crystalline_grid_elements/self.atom_coords.nridges**3))
+            %(self.results.total_number_crystalline_grid_elements,self.atom_coords.nridges**3, self.results.total_number_crystalline_grid_elements/self.atom_coords.nridges**3))
         #print("current crystallinity w/o h-k algo: %i/%i -> %f" %(no_crystalline_elements, self.atom_coords.nridges**3, fraction_of_crystallinity))
         print(" ")
         #print(label_matrix)

@@ -159,7 +159,13 @@ class Simulation:
 
 
 
-    def check_polymer_attributes_file_exists(self, path_to_file):
+    def check_polymer_attributes_file_exists(self, path_to_file, calc_all = False):
+        if calc_all == True:
+            try:
+                os.remove(path_to_file)
+            except OSError:
+                pass
+            return self.time_temp_array, self.list_lammps_files
         if os.path.exists(path_to_file) and os.path.getsize(path_to_file) > 0:
             # Check what latest timestep written in file
             data_array = np.loadtxt(path_to_file)
@@ -177,7 +183,7 @@ class Simulation:
         return shortened_time_temp_array, current_list_lammps_files;
 
 
-    def calc_crystallisation(self, cryst_array_string: str, frac_cryst_save_loc: str):
+    def calc_crystallisation(self, cryst_array_string: str, frac_cryst_save_loc: str, calc_all = False):
         """Calculates the crystallisation of all timesteps of a run and saves that to a file. 
         cryst_file: .txt containing the timestep and fraction of crystallisation
         polymer_cryst_files: .txt files containing crystallisation fraction and nematic vectors per small box per simulation"""
@@ -187,7 +193,8 @@ class Simulation:
         boxes_eigenvalues_path = Path(frac_cryst_save_loc).parent
         boxes_eigenvalues_path.mkdir(parents=True, exist_ok = True)
 
-        local_time_temp_array, local_list_lammps_files = self.check_polymer_attributes_file_exists(cryst_array_string)
+
+        local_time_temp_array, local_list_lammps_files = self.check_polymer_attributes_file_exists(cryst_array_string, calc_all = calc_all)
         for i in tqdm(range(0, (local_time_temp_array.shape[0]))):
             current_time = local_time_temp_array[i, 0]
             current_file = local_list_lammps_files[i]
@@ -196,9 +203,9 @@ class Simulation:
             with open(cryst_array_string, "a") as file:
                 file.write(f"{current_time} {frac_cryst}\n")
 
-    def calc_avg_domain_size(self, boxes_eigv_file: str, load_polymer_cryst_files: str = None):
-        #TODO test and finish function
-        local_time_temp_array, local_list_lammps_files = self.check_polymer_attributes_file_exists(boxes_eigv_file)
+    def calc_avg_domain_size(self, boxes_eigv_file: str, load_polymer_cryst_files: str = None, calc_all: bool = False):
+        
+        local_time_temp_array, local_list_lammps_files = self.check_polymer_attributes_file_exists(boxes_eigv_file, calc_all = calc_all)
         print(local_time_temp_array)
         for i in tqdm(range(0, (local_time_temp_array.shape[0]))):
             current_time = local_time_temp_array[i, 0]

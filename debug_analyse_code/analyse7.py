@@ -403,7 +403,7 @@ class polymer():
         print("average cluster size crystalline domains: %f" %(self.results.mean_cluster_size))
         print("total number crystalline/all grid elements: %i/%i -> cryt_frac = %f" 
             %(self.total_number_crystalline_grid_elements,self.atom_coords.nridges**3, self.total_number_crystalline_grid_elements/self.atom_coords.nridges**3))
-        print("current crystallinity w/o h-k algo: %i/%i -> %f" %(no_crystalline_elements, self.atom_coords.nridges**3, fraction_of_crystallinity))
+        #print("current crystallinity w/o h-k algo: %i/%i -> %f" %(no_crystalline_elements, self.atom_coords.nridges**3, fraction_of_crystallinity))
         print(" ")
         #print(label_matrix)
 
@@ -556,14 +556,14 @@ def main():
     slow_quench_e5_time_80e5.read_cryst("10e5_T05_timestep_boxes_ev_time_80e5.txt")
     #print(first_timestep_e5.atom_coords.combinations)
     #last_timestep_e5.get_density_dist()
-    # slow_quench_e5_time_100e5.merge_boxes()
-    # slow_quench_e5_time_95e5.merge_boxes()
-    # slow_quench_e5_time_90e5.merge_boxes()
-    # slow_quench_e5_time_85e5.merge_boxes()
-    # slow_quench_e5_time_80e5.merge_boxes()
+    slow_quench_e5_time_100e5.merge_boxes()
+    slow_quench_e5_time_95e5.merge_boxes()
+    slow_quench_e5_time_90e5.merge_boxes()
+    slow_quench_e5_time_85e5.merge_boxes()
+    slow_quench_e5_time_80e5.merge_boxes()
 
 
-    plot_hk_matrix_2d(slow_quench_e5_time_100e5)
+    # plot_hk_matrix_2d(slow_quench_e5_time_100e5)
     
     
 if __name__ == "__main__":

@@ -222,11 +222,11 @@ class atom_coords:
             df_cryst.to_csv("%s" %save_string, sep = " ", mode = "w")
         return self.fraction_crystallinity
 
-    def get_nematic_vector_5(self, save_string = None):
+    def get_nematic_vector_5(self, save_string = None, cryst_cutoff = 0.8):
         data = self.datapd
         data = data[data.index % 100 != 0] # Filter out all last monomers as they do not have a bond vector per definiton
         self.df_cryst = nematic_vector_loop(data, self.bond_vectors)
-        self.fraction_crystallinity, _ = fraction_crystallinity(self.df_cryst.iloc[:,3])
+        self.fraction_crystallinity, _ = fraction_crystallinity(self.df_cryst.iloc[:,3], cutoff= cryst_cutoff)
         if isinstance(save_string, str):
             self.df_cryst.to_csv("%s" %save_string, sep = " ", mode = "w")
         return self.fraction_crystallinity
@@ -343,7 +343,7 @@ class polymer():
         self.df_cryst.columns = ["xid", "yid", "zid", "cryst_bool", "x_ev", "y_ev", "z_ev"]
         return 0;
 
-    def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8, save = False):
+    def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8, save = False, print_results: bool = False):
         max_labels = int(nridges**3)
         #max_labels = int(200)
         cryst_array = self.df_cryst.to_numpy()
@@ -396,13 +396,15 @@ class polymer():
         self.results.mean_cluster_size = np.mean(counts[1:])
         self.results.total_number_crystalline_grid_elements = np.sum(counts[1:])
         self.results.fraction_crystallinity, no_crystalline_elements = fraction_crystallinity(self.df_cryst.iloc[:,3])
-        print("total number clusters w/ >= 2 elements: %i" %(self.results.total_number_clusters))
-        print("total number independent crystalline domains: %i" %(self.results.total_number_independent_clusters))
-        print("average cluster size crystalline domains: %f" %(self.results.mean_cluster_size))
-        print("total number crystalline/all grid elements: %i/%i -> cryt_frac = %f" 
-            %(self.results.total_number_crystalline_grid_elements,self.atom_coords.nridges**3, self.results.total_number_crystalline_grid_elements/self.atom_coords.nridges**3))
+        if print_results == True:
+            print("total number clusters w/ >= 2 elements: %i" %(self.results.total_number_clusters))
+            print("total number independent crystalline domains: %i" %(self.results.total_number_independent_clusters))
+            print("average cluster size crystalline domains: %f" %(self.results.mean_cluster_size))
+            print("total number crystalline/all grid elements: %i/%i -> cryt_frac = %f" 
+                %(self.results.total_number_crystalline_grid_elements,self.atom_coords.nridges**3, 
+                    self.results.total_number_crystalline_grid_elements/self.atom_coords.nridges**3))
         #print("current crystallinity w/o h-k algo: %i/%i -> %f" %(no_crystalline_elements, self.atom_coords.nridges**3, fraction_of_crystallinity))
-        print(" ")
+            print(" ")
         #print(label_matrix)
 
         if save is True:

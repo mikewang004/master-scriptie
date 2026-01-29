@@ -6,7 +6,11 @@ import os
 from simulation import Simulation
 
 
+#TODO fix bug in check_polymer_attributes_file_exists
+# Global variables
 
+ndot_cutoff = 0.97 #Threshold above which the crystalline domains can be merged 
+cryst_cutoff = 0.8 #Threshold for a cell to be considered crystalline
 
 #TODO: rewrite all plotting functions to support more sophisticated data structures as implemented in 
 # simulation.[py].calc_avg_domain_size 
@@ -166,6 +170,11 @@ def main():
     home_folder_path = "../data_online"
     cooling_e3_T085 = Simulation(0.85, -3, "%s%s" %(data_path, "/slurm-e3-T085.out"), "%s/equil_t_085_tdot_e-3_time"%(data_path), no_runs = 3, 
         home_folder= "../data_online/PVA-100/quick_quench/T085")
+    #cooling_e3_T085.calc_crystallisation()
+    cooling_e3_T085.calc_avg_domain_size()
 
+
+    cooling_e3_T088 = Simulation(0.88, -3, "%s%s" %(data_path, "/slurm-e3-T088.out"), "%s/equil_t_088_tdot_e-3_time"%(data_path), no_runs = 1, 
+        home_folder= "../data_online/PVA-100/quick_quench/T088")
 if __name__== "__main__":
     main()

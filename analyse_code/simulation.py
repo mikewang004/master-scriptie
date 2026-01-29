@@ -18,7 +18,7 @@ class Simulation:
     """Class for one run, holds multiple polymer objects."""
 
     def __init__(self, temperature: float, cooling_rate: int, path_slurm_file: str, lammps_file_name_without_time :str, run_id: int = 1,
-        no_runs: int = 1, polymer_length: int = 100, home_folder: str = None):
+        no_runs: int = 1, polymer_length: int = 100, home_folder: str = None, cryst_cutoff: float = 0.8, ndot_cutoff: float = 0.97):
         """lammps_file_name_without_time should not contain a time"""
         self.temp = temperature
         self.cooling_rate = cooling_rate
@@ -28,10 +28,12 @@ class Simulation:
         self.max_temp, self.min_temp = np.max(self.time_temp_array[:, 0]), np.min(self.time_temp_array[:, 0])
         self.no_polymers = self.time_temp_array.shape[0]
         self.polymer_length = polymer_length
-        self.path_to_home_folder = home_folder
+        self.path_to_home_folder = "%s/run_%i" %(home_folder, run_id)
         self.cryst = self.get_crystallisation() #2D array containing time and crystallisation at time
         self.mean_cluster_length = self.get_mean_cluster_length()
         Path(home_folder).mkdir(parents = True, exist_ok = True) #Make home directory if not exists
+
+        self.cryst_cutoff, self.ndot_cutoff = cryst_cutoff, ndot_cutoff
 
     def get_polymer_by_count(self, count):
         """Gets i-th polymer"""
@@ -163,14 +165,20 @@ class Simulation:
                 pass
             return self.time_temp_array, self.list_lammps_files
         if os.path.exists(path_to_file) and os.path.getsize(path_to_file) > 0:
+            #TODO fix this
             # Check what latest timestep written in file
-            data_array = np.loadtxt(path_to_file)
-            maxtime = int(np.max(data_array[:, 0]))
+            try:
+                data_array = np.loadtxt(path_to_file)
+                maxtime = int(np.max(data_array[:, 0]))
+            except ValueError: 
+                data_array = pd.read_csv(path_to_file, sep = " ").drop(columns = "Unnamed: 0")
+                maxtime = int(np.max(data_array.iloc[:, 0]))
+            print(path_to_file, data_array)
             #Only continue at given time
             shortened_time_temp_array = self.time_temp_array[self.time_temp_array[:, 0] > maxtime]
             #Also delete first [n] entries of the list_lammps_files
             current_list_lammps_files = self.list_lammps_files[(self.time_temp_array.shape[0] - shortened_time_temp_array.shape[0]):]
-
+            return shortened_time_temp_array, current_list_lammps_files
         else:
             with open(path_to_file, "w") as file:
                 file.write("")
@@ -179,28 +187,30 @@ class Simulation:
         return shortened_time_temp_array, current_list_lammps_files;
 
 
-    def calc_crystallisation(self, cryst_array_string: str, frac_cryst_save_loc: str, calc_all = False):
+    def calc_crystallisation(self, cryst_array_string: str = None, frac_cryst_save_loc: str = None, calc_all = False, cryst_cutoff: float = 0.8):
         """Calculates the crystallisation of all timesteps of a run and saves that to a file. 
         cryst_file: .txt containing the timestep and fraction of crystallisation
         polymer_cryst_files: .txt files containing crystallisation fraction and nematic vectors per small box per simulation"""
-        # Check if dirs exists and if not, create them 
-        cryst_path = Path(cryst_array_string).parent
-        cryst_path.mkdir(parents=True, exist_ok = True)
-        boxes_eigenvalues_path = Path(frac_cryst_save_loc).parent
-        boxes_eigenvalues_path.mkdir(parents=True, exist_ok = True)
 
-
+        if cryst_array_string == None: 
+            cryst_array_string = "%s/%s" %(self.path_to_home_folder, "frac_cryst.txt")
+        if frac_cryst_save_loc == None: 
+            path_to_nem_vectors_dir = "%s/%s" %(self.path_to_home_folder, "nematic_vectors")
+            Path(path_to_nem_vectors_dir).mkdir(parents = True, exist_ok = True) #Make home directory if not exists
+            frac_cryst_save_loc = "%s/%s" %(path_to_nem_vectors_dir, "nem_vectors")
         local_time_temp_array, local_list_lammps_files = self.check_polymer_attributes_file_exists(cryst_array_string, calc_all = calc_all)
         for i in tqdm(range(0, (local_time_temp_array.shape[0]))):
             current_time = local_time_temp_array[i, 0]
             current_file = local_list_lammps_files[i]
             current_polymer = polymer(current_file)
-            frac_cryst = current_polymer.atom_coords.get_nematic_vector_5(save_string = "%s_time_%i.txt" %(frac_cryst_save_loc, current_time))
+            frac_cryst = current_polymer.atom_coords.get_nematic_vector_5(save_string = "%s_time_%i.txt" %(frac_cryst_save_loc, current_time), 
+                cryst_cutoff = cryst_cutoff)
             with open(cryst_array_string, "a") as file:
                 file.write(f"{current_time} {frac_cryst}\n")
 
-    def calc_avg_domain_size(self, boxes_eigv_file: str, load_polymer_cryst_files: str = None, calc_all: bool = False):
-        #TODO: implement more sophisticated data structure 
+    def calc_avg_domain_size(self, boxes_eigv_file: str = None, load_polymer_cryst_files: str = None, calc_all: bool = False, print_results: bool = False):
+        if boxes_eigv_file == None:
+            boxes_eigv_file = "%s/domain_analysis.txt" %(self.path_to_home_folder)
         local_time_temp_array, local_list_lammps_files = self.check_polymer_attributes_file_exists(boxes_eigv_file, calc_all = calc_all)
         cryst_domain_array = pd.DataFrame(np.zeros([local_time_temp_array.shape[0], 6]), columns = ["time", "crystallinity", "clusters w/ >= 2 members", 
             "independent clusters", "mean size cryst domains", "crystalline grid elements"])
@@ -209,11 +219,11 @@ class Simulation:
             current_file = local_list_lammps_files[i]
             current_polymer = polymer(current_file)
             if load_polymer_cryst_files == None:
-                current_polymer.read_cryst("%s/boxes_eigenvalues_e%s/equil_t_%s_tdot_e%s_time_%i.txt" 
-                    %(self.path_to_home_folder, self.cooling_rate, str(self.temp).replace(".", ""),self.cooling_rate, current_time))
+                current_polymer.read_cryst("%s/nematic_vectors/nem_vectors_time_%i.txt" 
+                    %(self.path_to_home_folder, current_time))
             else:
                 current_polymer.read_cryst(load_polymer_cryst_files)
-            current_polymer.merge_boxes()
+            current_polymer.merge_boxes(print_results = print_results)
 
             # with open(boxes_eigv_file, "a") as file:
             #     file.write(f"{current_time} {current_polymer.results.mean_cluster_size}\n")
@@ -252,7 +262,7 @@ def main():
     cooling_e3_T085 = Simulation(0.85, -3, "%s%s" %(data_path, "/slurm-e3-T085.out"), "%s/equil_t_085_tdot_e-3_time"%(data_path), no_runs = 3, 
         home_folder= "../data_online/PVA-100/quick_quench/T085")
     #cooling_e3_T085.calc_crystallisation("../data_online/PVA-100/quick_quench/T085/cryst_equil_T085_e-3.txt", "../data_online/PVA-100/quick_quench/T085/boxes_eigenvalues/equil_t_085_tdot_e-3")
-    cooling_e3_T085.calc_avg_domain_size("../data_online/PVA-100/quick_quench/T085/mean_cluster_length_T085_e-3.txt")
+    #cooling_e3_T085.calc_avg_domain_size("../data_online/PVA-100/quick_quench/T085/mean_cluster_length_T085_e-3.txt")
 
 if __name__== "__main__":
     main()

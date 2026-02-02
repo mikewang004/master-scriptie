@@ -18,7 +18,7 @@ class Simulation:
     """Class for one run, holds multiple polymer objects."""
 
     def __init__(self, temperature: float, cooling_rate: int, path_slurm_file: str, lammps_file_name_without_time :str, run_id: int = 1,
-        no_runs: int = 1, polymer_length: int = 100, home_folder: str = None, cryst_cutoff: float = 0.8, ndot_cutoff: float = 0.97):
+        no_runs: int = 1, polymer_length: int = 100, home_folder: str = None, cryst_cutoff: float = 0.8, ndot_cutoff: float = 0.97, home_folder_override: bool = False):
         """lammps_file_name_without_time should not contain a time"""
         self.temp = temperature
         self.cooling_rate = cooling_rate
@@ -29,7 +29,10 @@ class Simulation:
         self.no_polymers = self.time_temp_array.shape[0]
         self.polymer_length = polymer_length
         temp_str = "T" + str(self.temp).replace(".", "")
-        self.path_to_home_folder = "%s/e%i/%s/run_%i" %(home_folder, cooling_rate, temp_str, run_id)
+        if home_folder_override == True:
+            self.path_to_home_folder = "%s/run_%i" %(home_folder, run_id)
+        else:
+            self.path_to_home_folder = "%s/e%i/%s/run_%i" %(home_folder, cooling_rate, temp_str, run_id)
         self.cryst = self.get_crystallisation() #2D array containing time and crystallisation at time
         self.mean_cluster_length = self.get_mean_cluster_length()
         Path(home_folder).mkdir(parents = True, exist_ok = True) #Make home directory if not exists
@@ -95,7 +98,6 @@ class Simulation:
             path_to_file = "%s/domain_analysis.txt" %(self.path_to_home_folder)
         try:
             cryst = pd.read_csv(path_to_file, sep = " ", index_col = 0)
-            print(cryst)
             return cryst
         except:
             print("No mean cluster length found!")

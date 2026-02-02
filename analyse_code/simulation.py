@@ -74,7 +74,9 @@ class Simulation:
             temp_str = "T" + str(self.temp).replace(".", "")
             cooling_rate_str = "e-%i" %(np.abs(self.cooling_rate))
             #path_to_file = "../data_online/PVA-%i/%s/%s/cryst_equil_%s_%s.txt" %(self.polymer_length, self.type_simulation, temp_str, temp_str, cooling_rate_str)
-            path_to_file = "%s/cryst_equil_%s_%s.txt" %(self.path_to_home_folder, temp_str, cooling_rate_str)
+            # path_to_file = "%s/cryst_equil_%s_%s.txt" %(self.path_to_home_folder, temp_str, cooling_rate_str)
+            # print(path_to_file)
+            path_to_file = "%s/frac_cryst.txt" %(self.path_to_home_folder)
             print(path_to_file)
         try:
             cryst = np.loadtxt(path_to_file)
@@ -88,10 +90,11 @@ class Simulation:
             temp_str = "T" + str(self.temp).replace(".", "")
             cooling_rate_str = "e-%i" %(np.abs(self.cooling_rate))
             #path_to_file = "../data_online/PVA-%i/%s/%s/mean_cluster_length_%s_%s.txt" %(self.polymer_length, self.type_simulation, temp_str, temp_str, cooling_rate_str)
-            path_to_file = "%s/mean_cluster_length_%s_%s.txt" %(self.path_to_home_folder, temp_str, cooling_rate_str)
-            print(path_to_file)
+            #path_to_file = "%s/mean_cluster_length_%s_%s.txt" %(self.path_to_home_folder, temp_str, cooling_rate_str)
+            path_to_file = "%s/domain_analysis.txt" %(self.path_to_home_folder)
         try:
-            cryst = np.loadtxt(path_to_file)
+            cryst = pd.read_csv(path_to_file, sep = " ")
+            print(cryst)
             return cryst
         except:
             print("No mean cluster length found!")
@@ -165,15 +168,12 @@ class Simulation:
                 pass
             return self.time_temp_array, self.list_lammps_files
         if os.path.exists(path_to_file) and os.path.getsize(path_to_file) > 0:
-            #TODO fix this
-            # Check what latest timestep written in file
             try:
                 data_array = np.loadtxt(path_to_file)
                 maxtime = int(np.max(data_array[:, 0]))
             except ValueError: 
                 data_array = pd.read_csv(path_to_file, sep = " ").drop(columns = "Unnamed: 0")
                 maxtime = int(np.max(data_array.iloc[:, 0]))
-            print(path_to_file, data_array)
             #Only continue at given time
             shortened_time_temp_array = self.time_temp_array[self.time_temp_array[:, 0] > maxtime]
             #Also delete first [n] entries of the list_lammps_files
@@ -212,8 +212,9 @@ class Simulation:
         if boxes_eigv_file == None:
             boxes_eigv_file = "%s/domain_analysis.txt" %(self.path_to_home_folder)
         local_time_temp_array, local_list_lammps_files = self.check_polymer_attributes_file_exists(boxes_eigv_file, calc_all = calc_all)
-        cryst_domain_array = pd.DataFrame(np.zeros([local_time_temp_array.shape[0], 6]), columns = ["time", "crystallinity", "clusters w/ >= 2 members", 
-            "independent clusters", "mean size cryst domains", "crystalline grid elements"])
+        if local_time_temp_array.shape[0] != 0:
+            cryst_domain_array = pd.DataFrame(np.zeros([local_time_temp_array.shape[0], 6]), columns = ["time", "crystallinity", "clusters w/ >= 2 members", 
+            "   independent clusters", "mean size cryst domains", "crystalline grid elements"])
         for i in tqdm(range(0, (local_time_temp_array.shape[0]))):
             current_time = local_time_temp_array[i, 0]
             current_file = local_list_lammps_files[i]
@@ -231,7 +232,8 @@ class Simulation:
                 current_polymer.results.total_number_clusters, current_polymer.results.total_number_independent_clusters, 
                 current_polymer.results.mean_cluster_size, current_polymer.results.total_number_crystalline_grid_elements])
             cryst_domain_array.iloc[i, :] = test
-        cryst_domain_array.to_csv("%s" %(boxes_eigv_file), sep = " ", mode = "a")
+        if local_time_temp_array.shape[0] != 0:
+            cryst_domain_array.to_csv("%s" %(boxes_eigv_file), sep = " ", mode = "a")
 
 
 

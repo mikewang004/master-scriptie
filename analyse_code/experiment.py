@@ -6,7 +6,6 @@ import os
 from simulation import Simulation
 
 
-#TODO fix bug in check_polymer_attributes_file_exists
 
 # Global variables
 
@@ -153,9 +152,9 @@ def plot_mean_cluster_vs_crystallisation_single_cooling_rate(simulation_list: li
     else:
         for simulation in simulation_list:
             ax1.plot(simulation.cryst[:, 0], simulation.cryst[:, 1], 
-                label =  r"crystallinity $T = .2f$" %(simulation.temp))
+                label =  r"crystallinity $T = %.2f$" %(simulation.temp))
             ax2.scatter(simulation.mean_cluster_length[:, 0], simulation.mean_cluster_length[:, 1], 
-                label =  r"mean domain size $T = .2f$" %(simulation.temp))
+                label =  r"mean domain size $T = %.2f$" %(simulation.temp))
 
     ax1.set_xlabel("time")
     ax1.set_ylabel(r"$\phi$")
@@ -166,21 +165,32 @@ def plot_mean_cluster_vs_crystallisation_single_cooling_rate(simulation_list: li
     fig.savefig("plots/%i_crystallisation_mean_domain_size.pdf"%(simulation.cooling_rate))
     plt.show()
 
+
+
+
 def main():
     data_path = "../../data/pva-100/quick_quench/long_run"
     home_folder_path = "../data_online"
     cooling_e3_T085 = Simulation(0.85, -3, "%s%s" %(data_path, "/slurm-e3-T085.out"), "%s/equil_t_085_tdot_e-3_time"%(data_path), no_runs = 3, 
         home_folder= "../data_online/PVA-100/quick_quench/T085")
     cooling_e3_T085.calc_crystallisation()
-    #cooling_e3_T085.calc_avg_domain_size()
+    cooling_e3_T085.calc_avg_domain_size()
 
 
     cooling_e3_T088 = Simulation(0.88, -3, "%s%s" %(data_path, "/slurm-e3-T088.out"), "%s/equil_t_088_tdot_e-3_time"%(data_path), no_runs = 1, 
         home_folder= "../data_online/PVA-100/quick_quench/T088")
     cooling_e3_T088.calc_crystallisation()
+    cooling_e3_T088.calc_avg_domain_size()
 
-    cooling_e4_T085 = Simulation(0.88, -4, "%s%s" %(data_path, "/slurm-e4-T088.out"), "%s/equil_t_088_tdot_e-4_time"%(data_path), no_runs = 2, 
+    cooling_e4_T085 = Simulation(0.88, -4, "%s%s" %(data_path, "/slurm-e4-T085.out"), "%s/equil_t_085_tdot_e-4_time"%(data_path), no_runs = 2, 
         home_folder= "../data_online/PVA-100/quick_quench/T085")
     cooling_e4_T085.calc_crystallisation()
+    cooling_e4_T085.calc_avg_domain_size()
+
+
+    simulation_list = [cooling_e3_T085, cooling_e4_T085]
+    plot_mean_cluster_vs_crystallisation_single_cooling_rate(simulation_list)
+
+
 if __name__== "__main__":
     main()

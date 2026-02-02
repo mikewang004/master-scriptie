@@ -81,7 +81,6 @@ class Simulation:
             # path_to_file = "%s/cryst_equil_%s_%s.txt" %(self.path_to_home_folder, temp_str, cooling_rate_str)
             # print(path_to_file)
             path_to_file = "%s/frac_cryst.txt" %(self.path_to_home_folder)
-            print(path_to_file)
         try:
             cryst = np.loadtxt(path_to_file)
             return cryst
@@ -172,11 +171,14 @@ class Simulation:
             return self.time_temp_array, self.list_lammps_files
         if os.path.exists(path_to_file) and os.path.getsize(path_to_file) > 0:
             try:
+                print(path_to_file)
                 data_array = np.loadtxt(path_to_file)
+                print(data_array)
                 maxtime = int(np.max(data_array[:, 0]))
             except ValueError: 
                 data_array = pd.read_csv(path_to_file, sep = " ").drop(columns = "Unnamed: 0")
-                maxtime = int(np.max(data_array.iloc[:, 0]))
+                print(data_array)
+                maxtime = int(np.max(data_array.iloc[1:, 0]))
             #Only continue at given time
             shortened_time_temp_array = self.time_temp_array[self.time_temp_array[:, 0] > maxtime]
             #Also delete first [n] entries of the list_lammps_files
@@ -218,6 +220,8 @@ class Simulation:
         if local_time_temp_array.shape[0] != 0:
             cryst_domain_array = pd.DataFrame(np.zeros([local_time_temp_array.shape[0], 6]), columns = ["time", "crystallinity", "clusters w/ >= 2 members", 
             "   independent clusters", "mean size cryst domains", "crystalline grid elements"])
+            if local_time_temp_array.shape[0] < self.time_temp_array.shape[0]:
+                old_cryst_array = pd.read_csv("%s" %(boxes_eigv_file), sep = " ", index_col = 0)
         for i in tqdm(range(0, (local_time_temp_array.shape[0]))):
             current_time = local_time_temp_array[i, 0]
             current_file = local_list_lammps_files[i]
@@ -236,6 +240,8 @@ class Simulation:
                 current_polymer.results.mean_cluster_size, current_polymer.results.total_number_crystalline_grid_elements])
             cryst_domain_array.iloc[i, :] = test
         if local_time_temp_array.shape[0] != 0:
+            if local_time_temp_array.shape[0] < self.time_temp_array.shape[0]:
+                cryst_domain_array = pd.concat([old_cryst_array, cryst_domain_array], ignore_index= True)
             cryst_domain_array.to_csv("%s" %(boxes_eigv_file), sep = " ", mode = "a")
 
 

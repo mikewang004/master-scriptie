@@ -18,11 +18,11 @@ cryst_cutoff = 0.8 #Threshold for a cell to be considered crystalline
 def polymer_density(simulation):
     #TODO: fix this so that two peaks can be seen.
     # Gets 4 different polymers
-    nridges, bins = 5, 25
-    polymer_ids = np.linspace(0, simulation.no_polymers-1, dtype = int, num = 4)
+    nridges, bins = 33,12 
+    polymer_ids = np.linspace(0, simulation.no_polymers-1, dtype = int, num = 2)
     #polymer_ids = np.array([0, 5, 8, 10, 130])
     polymer_ids = np.array([130])
-    times = simulation.times[polymer_ids]
+    times = simulation.time_temp_array[polymer_ids, 0]
     polymers = simulation.get_polymer_by_count(polymer_ids)
     list_density_dists = []
     for polymer in polymers:
@@ -35,7 +35,7 @@ def polymer_density(simulation):
         # time_str = rf"time = (${time_val:.1e}) \tau$"
 
         current_cryst = simulation.cryst[polymer_ids[i], 1]
-        #plt.hist(density, bins = bins, density = True)
+        plt.hist(density, bins = bins)
         #density.plot(kind = "kde")
         #binwidth = density.std()/5
         #plt.hist(density, bins = np.arange(min(density), max(density) + binwidth, binwidth))
@@ -113,13 +113,13 @@ def plot_mean_cluster_vs_crystallisation_single_temp(simulation_list: list, save
             label_domain = r"mean domain size, $\dot{T}=10^{%i}$" %(simulation.cooling_rate)
             ax1.plot(simulation.cryst[:length, 0], simulation.cryst[:length, 1], 
                 label = label_cryst)
-            ax2.scatter(simulation.mean_cluster_length[:length, 0], simulation.mean_cluster_length[:length, 1], 
+            ax2.scatter(simulation.mean_cluster_length.iloc[:length, 0], simulation.mean_cluster_length[:length, 4], 
                 label =  label_domain)
     else:
         for simulation in simulation_list:
             ax1.plot(simulation.cryst[:, 0], simulation.cryst[:, 1], 
                 label =  r"crystallinity $\dot{T}=10^{%i}$" %(simulation.cooling_rate))
-            ax2.scatter(simulation.mean_cluster_length[:, 0], simulation.mean_cluster_length[:, 1], 
+            ax2.scatter(simulation.mean_cluster_length.iloc[:length, 0], simulation.mean_cluster_length[:length, 4],
                 label =  r"mean domain size $\dot{T}=10^{%i}$" %( simulation.cooling_rate))
 
     ax1.set_xlabel("time")
@@ -133,7 +133,6 @@ def plot_mean_cluster_vs_crystallisation_single_temp(simulation_list: list, save
 
 
 def plot_mean_cluster_vs_crystallisation_single_cooling_rate(simulation_list: list, save: bool = False, savestring = None, labels_list: list = None, plot_equal_length: bool = False):
-    """This does not work with new file structure"""
     if plot_equal_length == True:
         length_list =[]
 
@@ -147,13 +146,13 @@ def plot_mean_cluster_vs_crystallisation_single_cooling_rate(simulation_list: li
         for simulation in simulation_list:
             ax1.plot(simulation.cryst[:length, 0], simulation.cryst[:length, 1], 
                 label = r"crystallinity,  $T = .2f$" %(simulation.temp))
-            ax2.scatter(simulation.mean_cluster_length[:length, 0], simulation.mean_cluster_length[:length, 1], 
+            ax2.scatter(simulation.mean_cluster_length.iloc[:length, 0], simulation.mean_cluster_length.iloc[:length, 4],
                 label =  r"mean domain size, $T = .2f$" %(simulation.temp))
     else:
         for simulation in simulation_list:
             ax1.plot(simulation.cryst[:, 0], simulation.cryst[:, 1], 
                 label =  r"crystallinity $T = %.2f$" %(simulation.temp))
-            ax2.scatter(simulation.mean_cluster_length[:, 0], simulation.mean_cluster_length[:, 1], 
+            ax2.scatter(simulation.mean_cluster_length.iloc[:, 0], simulation.mean_cluster_length.iloc[:, 4], 
                 label =  r"mean domain size $T = %.2f$" %(simulation.temp))
 
     ax1.set_xlabel("time")
@@ -162,9 +161,36 @@ def plot_mean_cluster_vs_crystallisation_single_cooling_rate(simulation_list: li
     #fig.tight_layout()
     fig.legend(loc = "lower right", bbox_to_anchor=(0.895, 0.115))
     fig.suptitle(r"Crystallinity and mean domain size, $\dot{T} = %i$" %(simulation.cooling_rate))
-    fig.savefig("plots/%i_crystallisation_mean_domain_size.pdf"%(simulation.cooling_rate))
+    fig.savefig("plots/e%i_crystallisation_mean_domain_size.pdf"%(simulation.cooling_rate))
     plt.show()
 
+def plot_mean_cluster_vs_no_clusters_single_cooling_rate(simulation_list: list, save: bool = False, savestring = None, labels_list: list = None, plot_equal_length: bool = False):
+
+    length_list =[]
+
+    for simulation in simulation_list:
+        length_list.append(simulation.cryst.shape[0])
+        if plot_equal_length == True:
+            length = min(length_list)
+        else:
+            length = max(length_list)
+    fig, ax1 = plt.subplots()
+    ax2 = ax1.twinx()
+    # First plot mean cluster length 
+    for simulation in simulation_list:
+        ax1.plot(simulation.mean_cluster_length.iloc[:length, 0], simulation.mean_cluster_length.iloc[:length, 3], 
+            label = r"independent clusters,  $T = %.2f$" %(simulation.temp))
+        ax2.scatter(simulation.mean_cluster_length.iloc[:length, 0], simulation.mean_cluster_length.iloc[:length, 4],
+            label =  r"mean domain size, $T = %.2f$" %(simulation.temp))
+
+    ax1.set_xlabel("time")
+    ax1.set_ylabel(r"amount of independent clusters")
+    ax2.set_ylabel(r"mean domain size")
+    #fig.tight_layout()
+    fig.legend(loc = "lower right", bbox_to_anchor=(0.895, 0.115))
+    fig.suptitle(r"Independent clusters and mean domain size, $\dot{T} = %i$" %(simulation.cooling_rate))
+    fig.savefig("plots/e%i_no_clusters_mean_domain_size.pdf"%(simulation.cooling_rate))
+    plt.show()
 
 
 
@@ -172,24 +198,27 @@ def main():
     data_path = "../../data/pva-100/quick_quench/long_run"
     home_folder_path = "../data_online"
     cooling_e3_T085 = Simulation(0.85, -3, "%s%s" %(data_path, "/slurm-e3-T085.out"), "%s/equil_t_085_tdot_e-3_time"%(data_path), no_runs = 3, 
-        home_folder= "../data_online/PVA-100/quick_quench/T085")
+        home_folder= "../data_online/PVA-100/quick_quench")
     cooling_e3_T085.calc_crystallisation()
     cooling_e3_T085.calc_avg_domain_size()
 
 
     cooling_e3_T088 = Simulation(0.88, -3, "%s%s" %(data_path, "/slurm-e3-T088.out"), "%s/equil_t_088_tdot_e-3_time"%(data_path), no_runs = 1, 
-        home_folder= "../data_online/PVA-100/quick_quench/T088")
+        home_folder= "../data_online/PVA-100/quick_quench")
     cooling_e3_T088.calc_crystallisation()
     cooling_e3_T088.calc_avg_domain_size()
 
     cooling_e4_T085 = Simulation(0.88, -4, "%s%s" %(data_path, "/slurm-e4-T085.out"), "%s/equil_t_085_tdot_e-4_time"%(data_path), no_runs = 2, 
-        home_folder= "../data_online/PVA-100/quick_quench/T085")
+        home_folder= "../data_online/PVA-100/quick_quench")
     cooling_e4_T085.calc_crystallisation()
     cooling_e4_T085.calc_avg_domain_size()
 
 
     simulation_list = [cooling_e3_T085, cooling_e4_T085]
-    plot_mean_cluster_vs_crystallisation_single_cooling_rate(simulation_list)
+    #plot_mean_cluster_vs_crystallisation_single_cooling_rate(simulation_list)
+    #plot_mean_cluster_vs_no_clusters_single_cooling_rate(simulation_list, plot_equal_length= True)
+
+    polymer_density(cooling_e3_T085)
 
 
 if __name__== "__main__":

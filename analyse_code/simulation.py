@@ -28,7 +28,8 @@ class Simulation:
         self.max_temp, self.min_temp = np.max(self.time_temp_array[:, 0]), np.min(self.time_temp_array[:, 0])
         self.no_polymers = self.time_temp_array.shape[0]
         self.polymer_length = polymer_length
-        self.path_to_home_folder = "%s/run_%i" %(home_folder, run_id)
+        temp_str = "T" + str(self.temp).replace(".", "")
+        self.path_to_home_folder = "%s/e%i/%s/run_%i" %(home_folder, cooling_rate, temp_str, run_id)
         self.cryst = self.get_crystallisation() #2D array containing time and crystallisation at time
         self.mean_cluster_length = self.get_mean_cluster_length()
         Path(home_folder).mkdir(parents = True, exist_ok = True) #Make home directory if not exists
@@ -93,7 +94,7 @@ class Simulation:
             #path_to_file = "%s/mean_cluster_length_%s_%s.txt" %(self.path_to_home_folder, temp_str, cooling_rate_str)
             path_to_file = "%s/domain_analysis.txt" %(self.path_to_home_folder)
         try:
-            cryst = pd.read_csv(path_to_file, sep = " ")
+            cryst = pd.read_csv(path_to_file, sep = " ", index_col = 0)
             print(cryst)
             return cryst
         except:

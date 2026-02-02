@@ -333,7 +333,7 @@ class polymer():
         boxes = boxes.set_index(["xid", "yid", "zid"]).sort_index()
         data_grouped = boxes.groupby(level=["xid", "yid", "zid"])
         no_points_per_box = data_grouped.size()
-        return no_points_per_box
+        return no_points_per_box/self.atom_coords.local_volume
 
 
 

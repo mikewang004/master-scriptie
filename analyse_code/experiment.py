@@ -15,6 +15,43 @@ cryst_cutoff = 0.8 #Threshold for a cell to be considered crystalline
 #TODO: rewrite all plotting functions to support more sophisticated data structures as implemented in 
 # simulation.[py].calc_avg_domain_size 
 
+
+def avrami_eq(t, a, n, b):
+    return a * (t**n) + b
+
+def avrami_fit(t, y):
+    popt, pcov = sp.optimize.curve_fit(avrami_eq, t, np.log(1- y), maxfev = 100000)
+    return popt, pcov
+
+
+def plot_avrami(simulation_list: list, save: bool = False, savestring = None, show_plot = False):
+
+    plt.title("Crystallisation as function of time, PVA-100")
+    plt.xlabel("time")
+    plt.ylabel("fraction of crystallinity")
+    plt.xscale("log")
+    plt.yscale("log")
+    plt.ylim(0.1, 0.6)
+    plt.xlim(10**7, 10**8)
+    for simulation in simulation_list:
+        used_simulation_cryst = simulation.cryst[:, :]
+        print(used_simulation_cryst)
+        print(np.log(1 - (used_simulation_cryst[:, 1])))
+        popt, pcov = avrami_fit(used_simulation_cryst[:, 0], np.log(1 - (used_simulation_cryst[:, 1])))
+        plt.plot(used_simulation_cryst[:, 0], avrami_eq(used_simulation_cryst[:, 0], *popt))
+        label = r"T=%.2f, $\dot{T}=10^{%i}$" %(simulation.temp, simulation.cooling_rate)
+        plt.scatter(used_simulation_cryst[:, 0], used_simulation_cryst[:, 1], label = label)
+
+    plt.legend()
+    if save is True:
+        if savestring is None:
+            savestring = "plots/10e%i_T%s_crystallinity.pdf" %(simulation.cooling_rate, str(simulation.temp).replace(".", ""))
+        plt.savefig(savestring)
+    if show_plot is True:
+        plt.show()
+    plt.close()
+
+
 def polymer_density(simulation):
     #TODO: fix this so that two peaks can be seen.
     # Gets 4 different polymers
@@ -46,25 +83,37 @@ def polymer_density(simulation):
         #plt.close()
 
 
-def plot_crystallisation(simulation_list: list, save: bool = False, savestring = None):
-    for simulation in simulation_list:
-        label = r"T=%.2f, $\dot{T}=10^{%i}$" %(simulation.temp, simulation.cooling_rate)
-        #data = np.log(1-simulation.cryst[:, 1])
-        #plt.loglog(simulation.cryst[:, 0], data, label = label)
-        plt.scatter(simulation.cryst[:, 0], simulation.cryst[:, 1], label = label)
-        
-    plt.legend()
-    #plt.set_xscale("log")
-    #plt.set_yscale("log")
-    #plt.ylim(0.1, 0.6)
-    #plt.xlim(10**7, 10**8)
+def plot_crystallisation(simulation_list: list, save: bool = False, savestring = None, show_plot = False, fit_avrami = False):
+
     plt.title("Crystallisation as function of time, PVA-100")
     plt.xlabel("time")
     plt.ylabel("fraction of crystallinity")
+    if fit_avrami == True:
+        plt.xscale("log")
+        plt.yscale("log")
+        plt.ylim(0.1, 0.6)
+        plt.xlim(10**7, 10**8)
+        for simulation in simulation_list:
+            print(simulation.cryst)
+            used_simulation_cryst = simulation.cryst[:, :]
+            label = r"T=%.2f, $\dot{T}=10^{%i}$" %(simulation.temp, simulation.cooling_rate)
+            plt.scatter(used_simulation_cryst[:, 0], used_simulation_cryst[:, 1], label = label)
+            popt, pcov = avrami_fit(used_simulation_cryst[:, 0], used_simulation_cryst[:, 1])
+            print(popt)
+            plt.plot(used_simulation_cryst[:, 0], avrami_eq(used_simulation_cryst[:, 1], *popt))
+    else:
+        for simulation in simulation_list:
+            label = r"T=%.2f, $\dot{T}=10^{%i}$" %(simulation.temp, simulation.cooling_rate)
+            data = np.log(1-simulation.cryst[:, 1])
+            plt.loglog(simulation.cryst[:, 0], data, label = label)
+            plt.scatter(simulation.cryst[:, 0], simulation.cryst[:, 1], label = label)
+    plt.legend()
     if save is True:
         if savestring is None:
             savestring = "plots/10e%i_T%s_crystallinity.pdf" %(simulation.cooling_rate, str(simulation.temp).replace(".", ""))
         plt.savefig(savestring)
+    if show_plot is True:
+        plt.show()
     plt.close()
 
 
@@ -74,8 +123,11 @@ def plot_mean_cluster_length(simulation_list: list, save: bool = False, savestri
         if labels_list == None:
             label = r"T=%.2f, $\dot{T}=10^{%i}$" %(simulation.temp, simulation.cooling_rate)
         else:
-            label = labels_list[counter]
-            counter = counter + 1
+            if len(labels_list) == len(simulation_list):
+                label = labels_list[counter]
+                counter = counter + 1
+            else:
+                label = None
         #data = np.log(1-simulation.cryst[:, 1])
         #plt.loglog(simulation.cryst[:, 0], data, label = label)
         plt.scatter(simulation.mean_cluster_length[:, 0], simulation.mean_cluster_length[:, 1], label = label)
@@ -208,8 +260,8 @@ def main():
     # cooling_e3_T088.calc_crystallisation()
     # cooling_e3_T088.calc_avg_domain_size()
 
-    # cooling_e4_T085 = Simulation(0.88, -4, "%s%s" %(data_path, "/slurm-e4-T085.out"), "%s/equil_t_085_tdot_e-4_time"%(data_path), no_runs = 2, 
-    #     home_folder= "../data_online/PVA-100/quick_quench")
+    cooling_e4_T085 = Simulation(0.88, -4, "%s%s" %(data_path, "/slurm-e4-T085.out"), "%s/equil_t_085_tdot_e-4_time"%(data_path), no_runs = 2, 
+        home_folder= "../data_online/PVA-100/quick_quench")
     # cooling_e4_T085.calc_crystallisation()
     # cooling_e4_T085.calc_avg_domain_size()
 
@@ -228,7 +280,8 @@ def main():
     #plot_mean_cluster_vs_crystallisation_single_cooling_rate(simulation_list, plot_equal_length= True)
     #plot_mean_cluster_vs_no_clusters_single_cooling_rate(simulation_list, plot_equal_length= True)
 
-    plot_mean_cluster_vs_crystallisation_single_cooling_rate([cooling_e3_T085], plot_equal_length= True)
+    #plot_mean_cluster_vs_crystallisation_single_cooling_rate([cooling_e3_T085], plot_equal_length= True)
+    plot_avrami([cooling_e3_T085], show_plot = True)
 
     #polymer_density(cooling_e3_T085)
 

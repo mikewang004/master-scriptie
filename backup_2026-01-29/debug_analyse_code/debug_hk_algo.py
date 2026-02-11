@@ -104,13 +104,13 @@ def print_hk_matrix(label_matrix, nridges =33):
                     
 
 def main():
-    last_timestep_e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
+    last_timestep_e5 = polymer("../../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
     #last_timestep_e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
     nridges = 33
     if nridges == 6:
         last_timestep_e5.read_cryst("./debug_cryst_analyse_2D.txt") #Should be independent from actual last_timestep used
     else:
-        last_timestep_e5.read_cryst("../test_run/10e5_debug_cryst.txt")
+        last_timestep_e5.read_cryst("../../test_run/10e5_debug_cryst.txt")
         #label_matrix = np.load("hk_label_matrix.npy")
         #last_timestep_e5.read_cryst("../test_run/10e5_T1_debug_cryst.txt")
         ndriges = 33

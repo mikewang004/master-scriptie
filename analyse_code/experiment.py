@@ -246,6 +246,60 @@ def plot_mean_cluster_vs_no_clusters_single_cooling_rate(simulation_list: list, 
 
 
 
+
+def plot_bond_bond_correlation_polymer():
+    tdot_e5_t1 = polymer("%s/cooling_tdot_e-5_time_0.txt" %data_prefix)
+    tdot_e5_t08 = polymer("%s/cooling_tdot_e-5_time_4000000.txt" %data_prefix)
+    tdot_e5_t07 = polymer("%s/cooling_tdot_e-5_time_6000000.txt" %data_prefix)
+    tdot_e5_t05 = polymer("%s/cooling_tdot_e-5_time_10000000.txt" %data_prefix)
+
+    #polymer_ids = np.array([0, 5, 8, 10, 130])
+    polymer_ids = np.array([130])
+    times = simulation.time_temp_array[polymer_ids, 0]
+    tdot_list = [tdot_e5_t1, tdot_e5_t08, tdot_e5_t07, tdot_e5_t05]
+    temps_list = [1,0.8,0.7,0.5]
+    positions_list = []
+    bond_bond_list = []
+    labels_list = []
+    for i in range(len(tdot_list)):
+        print(tdot_list[i])
+        tdot_list[i].bond_bond_correlation()
+        bond_bond_list.append(tdot_list[i].results.bond_bond_correlation)
+        positions_list.append(tdot_list[i].atom_coords.positions)
+        labels_list = [r"T = %.1f" % temps for temps in temps_list]
+    #first_timestep_e5.bond_bond_correlation()
+    # make_plot.scatter_plot(first_timestep_e5.atom_coords.positions, first_timestep_e5.results.bond_bond_correlation, xlabel = "n",
+    #     ylabel = r"cos\theta(n)", title = "Distribution of bond-bond correlations, PVA-100", save_string = "plots/bond_bond_corr.pdf")
+
+    make_plot.scatter_plot(positions_list, bond_bond_list, labels_list, xlabel = "n",
+        ylabel = r"$cos\theta(n)$", title = r"Distribution of bond-bond correlations, PVA-100, $\dot{T} = 10^{-5}$", save_string = "plots/bond_bond_corr_PVA_100_tdot_e5.pdf",
+        show_plot = True, marker=".")
+
+def plot_bond_bond_correlation(simulation):
+
+    #polymer_ids = np.array([0, 5, 8, 10, 130])
+    polymer_ids = np.array([130])
+    times = simulation.time_temp_array[polymer_ids, 0]
+    polymers = simulation.get_polymer_by_count(polymer_ids)
+    bond_bond_list = []
+    positions_list = []
+    for polymer in polymers:
+        polymer.bond_bond_correlation()
+        bond_bond_list.append(polymer.results.bond_bond_correlation)
+        positions_list.append(polymer.atom_coords.positions)
+    #first_timestep_e5.bond_bond_correlation()
+    # make_plot.scatter_plot(first_timestep_e5.atom_coords.positions, first_timestep_e5.results.bond_bond_correlation, xlabel = "n",
+    #     ylabel = r"cos\theta(n)", title = "Distribution of bond-bond correlations, PVA-100", save_string = "plots/bond_bond_corr.pdf")
+
+    # make_plot.scatter_plot(positions_list, bond_bond_list, labels_list, xlabel = "n",
+    #     ylabel = r"$cos\theta(n)$", title = r"Distribution of bond-bond correlations, PVA-100, $\dot{T} = 10^{-5}$", save_string = "plots/bond_bond_corr_PVA_100_tdot_e5.pdf",
+    #     show_plot = True, marker=".")
+    for i in range(len(bond_bond_list)):
+        plt.scatter(positions_list[i], bond_bond_list[i], marker = ".")
+    plt.show()
+
+
+
 def main():
     data_path = "../../data/pva-100/quick_quench/long_run"
     home_folder_path = "../data_online"
@@ -260,8 +314,8 @@ def main():
     # cooling_e3_T088.calc_crystallisation()
     # cooling_e3_T088.calc_avg_domain_size()
 
-    cooling_e4_T085 = Simulation(0.88, -4, "%s%s" %(data_path, "/slurm-e4-T085.out"), "%s/equil_t_085_tdot_e-4_time"%(data_path), no_runs = 2, 
-        home_folder= "../data_online/PVA-100/quick_quench")
+    # cooling_e4_T085 = Simulation(0.88, -4, "%s%s" %(data_path, "/slurm-e4-T085.out"), "%s/equil_t_085_tdot_e-4_time"%(data_path), no_runs = 2, 
+    #     home_folder= "../data_online/PVA-100/quick_quench")
     # cooling_e4_T085.calc_crystallisation()
     # cooling_e4_T085.calc_avg_domain_size()
 
@@ -282,6 +336,7 @@ def main():
 
     #plot_mean_cluster_vs_crystallisation_single_cooling_rate([cooling_e3_T085], plot_equal_length= True)
     plot_avrami([cooling_e3_T085], show_plot = True)
+    plot_bond_bond_correlation(cooling_e3_T085)
 
     #polymer_density(cooling_e3_T085)
 

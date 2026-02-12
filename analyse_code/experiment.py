@@ -205,8 +205,8 @@ def plot_mean_cluster_vs_crystallisation_single_cooling_rate(simulation_list: li
                 iso_string = ",heated from T=0.7"
             ax1.plot(simulation.cryst[:length, 0], simulation.cryst[:length, 1], 
                 label = r"crystallinity,  $T = %.2f$%s" %(simulation.temp, iso_string))
-            ax2.scatter(simulation.mean_cluster_length.iloc[:length, 0], simulation.mean_cluster_length.iloc[:length, 4],
-                label =  r"mean domain size, $T = %.2f$%s" %(simulation.temp, iso_string))
+            ax2.scatter(simulation.mean_cluster_length.iloc[:length, 0], (simulation.mean_cluster_length.iloc[:length, 4])**(1/3)/2,
+                label =  r"Length scale ($\sigma$), $T = %.2f$%s" %(simulation.temp, iso_string))
 
             #i = i + 1
     else:
@@ -218,7 +218,7 @@ def plot_mean_cluster_vs_crystallisation_single_cooling_rate(simulation_list: li
 
     ax1.set_xlabel("time")
     ax1.set_ylabel(r"$\phi$")
-    ax2.set_ylabel(r"mean domain size")
+    ax2.set_ylabel(r"Mean domain length ($\sigma$)")
     #fig.tight_layout()
     fig.legend(loc = "lower right", bbox_to_anchor=(0.895, 0.115))
     fig.suptitle(r"Crystallinity and mean domain size, $\dot{T} = 10^{%i}$" %(simulation.cooling_rate))

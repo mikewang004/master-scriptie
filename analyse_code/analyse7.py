@@ -421,10 +421,18 @@ class polymer():
             df = pd.DataFrame(rows, columns=["x", "y", "z", "label"])
             df.to_csv("hk_label_matrix.txt", sep = " ", index = True)
 
+        #np.save("hk_label_matrix.npy", label_matrix)
         return label_matrix;
 
+def bin_label_matrix(label_matrix, bins: np.array):
+    """Function to bin the cluster size into a histogram"""
+    unique_values, counts = np.unique(label_matrix, return_counts=True)
 
-        #np.save("hk_label_matrix.npy", label_matrix)
+    print(unique_values, counts)
+    hist, bin_edges = np.histogram(counts[1:], bins)
+
+
+
     
 def check_labels(label_matrix, nridges, i,j,k):
     """Helper functuion to check if label_matrix is equal to one of its neighbours. If not, print current value of label_matrix and all neighbours"""
@@ -549,18 +557,20 @@ def main():
     # slow_quench_e5_time_90e5.atom_coords.get_nematic_vector_5("10e5_T05_timestep_boxes_ev_time_90e5.txt")
     # slow_quench_e5_time_85e5.atom_coords.get_nematic_vector_5("10e5_T05_timestep_boxes_ev_time_85e5.txt")
     # slow_quench_e5_time_80e5.atom_coords.get_nematic_vector_5("10e5_T05_timestep_boxes_ev_time_80e5.txt")
-    slow_quench_e5_time_100e5.read_cryst("10e5_T05_last_timestep_boxes_ev.txt")
-    slow_quench_e5_time_95e5.read_cryst("10e5_T05_timestep_boxes_ev_time_95e5.txt")
-    slow_quench_e5_time_90e5.read_cryst("10e5_T05_timestep_boxes_ev_time_90e5.txt")
-    slow_quench_e5_time_85e5.read_cryst("10e5_T05_timestep_boxes_ev_time_85e5.txt")
-    slow_quench_e5_time_80e5.read_cryst("10e5_T05_timestep_boxes_ev_time_80e5.txt")
+    slow_quench_e5_time_100e5.read_cryst("hk_debug/10e5_T05_last_timestep_boxes_ev.txt")
+    # slow_quench_e5_time_95e5.read_cryst("hk_debug/10e5_T05_timestep_boxes_ev_time_95e5.txt")
+    # slow_quench_e5_time_90e5.read_cryst("hk_debug/10e5_T05_timestep_boxes_ev_time_90e5.txt")
+    # slow_quench_e5_time_85e5.read_cryst("hk_debug/10e5_T05_timestep_boxes_ev_time_85e5.txt")
+    # slow_quench_e5_time_80e5.read_cryst("hk_debug/10e5_T05_timestep_boxes_ev_time_80e5.txt")
     #print(first_timestep_e5.atom_coords.combinations)
     #last_timestep_e5.get_density_dist()
-    slow_quench_e5_time_100e5.merge_boxes()
-    slow_quench_e5_time_95e5.merge_boxes()
-    slow_quench_e5_time_90e5.merge_boxes()
-    slow_quench_e5_time_85e5.merge_boxes()
-    slow_quench_e5_time_80e5.merge_boxes()
+    label_matrix = slow_quench_e5_time_100e5.merge_boxes()
+    # slow_quench_e5_time_95e5.merge_boxes()
+    # slow_quench_e5_time_90e5.merge_boxes()
+    # slow_quench_e5_time_85e5.merge_boxes()
+    # slow_quench_e5_time_80e5.merge_boxes()
+    bins = np.array([1,2,3,4,5,7,10,20,30,40,50,60,70])
+    bin_label_matrix(label_matrix, bins)
 
 
     # plot_hk_matrix_2d(slow_quench_e5_time_100e5)

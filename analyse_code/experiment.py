@@ -336,7 +336,7 @@ def main():
 
     #plot_mean_cluster_vs_crystallisation_single_cooling_rate([cooling_e3_T085], plot_equal_length= True)
     plot_avrami([cooling_e3_T085], show_plot = True)
-    plot_bond_bond_correlation(cooling_e3_T085)
+    #plot_bond_bond_correlation(cooling_e3_T085)
 
     #polymer_density(cooling_e3_T085)
 

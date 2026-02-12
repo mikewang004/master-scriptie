@@ -165,8 +165,10 @@ def plot_mean_cluster_vs_crystallisation_single_temp(simulation_list: list, save
             label_domain = r"mean domain size, $\dot{T}=10^{%i}$" %(simulation.cooling_rate)
             ax1.plot(simulation.cryst[:length, 0], simulation.cryst[:length, 1], 
                 label = label_cryst)
-            ax2.scatter(simulation.mean_cluster_length.iloc[:length, 0], simulation.mean_cluster_length[:length, 4], 
+            ax2.scatter(simulation.mean_cluster_length.iloc[:length, 0], simulation.mean_cluster_length.iloc[:length, 4], 
                 label =  label_domain)
+            ax2.scatter(simulation.mean_cluster_length.iloc[:length, 0], simulation.mean_cluster_length.iloc[:length, 3],
+                label =  r"number of domains, $\dot{T}=10^{%i}$" %(simulation.cooling_rate))
     else:
         for simulation in simulation_list:
             ax1.plot(simulation.cryst[:, 0], simulation.cryst[:, 1], 
@@ -176,11 +178,11 @@ def plot_mean_cluster_vs_crystallisation_single_temp(simulation_list: list, save
 
     ax1.set_xlabel("time")
     ax1.set_ylabel(r"$\phi$")
-    ax2.set_ylabel(r"mean domain size")
+    #ax2.set_ylabel(r"count")
     #fig.tight_layout()
     fig.legend(loc = "lower right", bbox_to_anchor=(0.895, 0.115))
     fig.suptitle(r"Crystallinity and mean domain size, T = %.2f" %(simulation.temp))
-    fig.savefig("plots/T085_crystallisation_mean_domain_size.pdf")
+    fig.savefig("plots/T088_crystallisation_mean_domain_size.pdf")
     plt.show()
 
 
@@ -194,12 +196,19 @@ def plot_mean_cluster_vs_crystallisation_single_cooling_rate(simulation_list: li
     fig, ax1 = plt.subplots()
     ax2 = ax1.twinx()
     # First plot mean cluster length 
+    i = 0
     if plot_equal_length == True:
         for simulation in simulation_list:
+            if i == 0:
+                iso_string = ""
+            else:
+                iso_string = ",heated from T=0.7"
             ax1.plot(simulation.cryst[:length, 0], simulation.cryst[:length, 1], 
-                label = r"crystallinity,  $T = %.2f$" %(simulation.temp))
+                label = r"crystallinity,  $T = %.2f$%s" %(simulation.temp, iso_string))
             ax2.scatter(simulation.mean_cluster_length.iloc[:length, 0], simulation.mean_cluster_length.iloc[:length, 4],
-                label =  r"mean domain size, $T = %.2f$" %(simulation.temp))
+                label =  r"mean domain size, $T = %.2f$%s" %(simulation.temp, iso_string))
+
+            #i = i + 1
     else:
         for simulation in simulation_list:
             ax1.plot(simulation.cryst[:, 0], simulation.cryst[:, 1], 
@@ -247,38 +256,10 @@ def plot_mean_cluster_vs_no_clusters_single_cooling_rate(simulation_list: list, 
 
 
 
-def plot_bond_bond_correlation_polymer():
-    tdot_e5_t1 = polymer("%s/cooling_tdot_e-5_time_0.txt" %data_prefix)
-    tdot_e5_t08 = polymer("%s/cooling_tdot_e-5_time_4000000.txt" %data_prefix)
-    tdot_e5_t07 = polymer("%s/cooling_tdot_e-5_time_6000000.txt" %data_prefix)
-    tdot_e5_t05 = polymer("%s/cooling_tdot_e-5_time_10000000.txt" %data_prefix)
-
-    #polymer_ids = np.array([0, 5, 8, 10, 130])
-    polymer_ids = np.array([130])
-    times = simulation.time_temp_array[polymer_ids, 0]
-    tdot_list = [tdot_e5_t1, tdot_e5_t08, tdot_e5_t07, tdot_e5_t05]
-    temps_list = [1,0.8,0.7,0.5]
-    positions_list = []
-    bond_bond_list = []
-    labels_list = []
-    for i in range(len(tdot_list)):
-        print(tdot_list[i])
-        tdot_list[i].bond_bond_correlation()
-        bond_bond_list.append(tdot_list[i].results.bond_bond_correlation)
-        positions_list.append(tdot_list[i].atom_coords.positions)
-        labels_list = [r"T = %.1f" % temps for temps in temps_list]
-    #first_timestep_e5.bond_bond_correlation()
-    # make_plot.scatter_plot(first_timestep_e5.atom_coords.positions, first_timestep_e5.results.bond_bond_correlation, xlabel = "n",
-    #     ylabel = r"cos\theta(n)", title = "Distribution of bond-bond correlations, PVA-100", save_string = "plots/bond_bond_corr.pdf")
-
-    make_plot.scatter_plot(positions_list, bond_bond_list, labels_list, xlabel = "n",
-        ylabel = r"$cos\theta(n)$", title = r"Distribution of bond-bond correlations, PVA-100, $\dot{T} = 10^{-5}$", save_string = "plots/bond_bond_corr_PVA_100_tdot_e5.pdf",
-        show_plot = True, marker=".")
-
 def plot_bond_bond_correlation(simulation):
-
-    #polymer_ids = np.array([0, 5, 8, 10, 130])
-    polymer_ids = np.array([130])
+    print(simulation.no_polymers)
+    polymer_ids = np.array([0, 5, 8, 10, 45])
+    #polymer_ids = np.array([])
     times = simulation.time_temp_array[polymer_ids, 0]
     polymers = simulation.get_polymer_by_count(polymer_ids)
     bond_bond_list = []
@@ -295,8 +276,15 @@ def plot_bond_bond_correlation(simulation):
     #     ylabel = r"$cos\theta(n)$", title = r"Distribution of bond-bond correlations, PVA-100, $\dot{T} = 10^{-5}$", save_string = "plots/bond_bond_corr_PVA_100_tdot_e5.pdf",
     #     show_plot = True, marker=".")
     for i in range(len(bond_bond_list)):
-        plt.scatter(positions_list[i], bond_bond_list[i], marker = ".")
-    plt.show()
+        plt.scatter(positions_list[i], bond_bond_list[i], marker = ".", label = "t=%i" %times[i])
+    plt.title(r"Bond-bond correlation, PVA-%i, $T=%.2f, \dot{T}=10^{%.1f}$" %(simulation.polymer_length, simulation.temp, simulation.cooling_rate))
+    plt.xlabel("monomer position (n)")
+    plt.ylabel(r"$cos\theta(n)$")
+    plt.ylim((-0.3, 1.1))
+    plt.legend()
+    plt.savefig("plots/bond_bond_e%i_T%s.pdf" %(simulation.cooling_rate, str(simulation.temp).replace(".", "")))
+    #plt.show()
+    plt.close()
 
 
 
@@ -305,40 +293,48 @@ def main():
     home_folder_path = "../data_online"
     cooling_e3_T085 = Simulation(0.85, -3, "%s%s" %(data_path, "/slurm-e3-T085.out"), "%s/equil_t_085_tdot_e-3_time"%(data_path), no_runs = 3, 
         home_folder= "../data_online/PVA-100/quick_quench")
-    #cooling_e3_T085.calc_crystallisation()
+    cooling_e3_T085.calc_crystallisation()
     cooling_e3_T085.calc_avg_domain_size()
 
 
-    # cooling_e3_T088 = Simulation(0.88, -3, "%s%s" %(data_path, "/slurm-e3-T088.out"), "%s/equil_t_088_tdot_e-3_time"%(data_path), no_runs = 1, 
-    #     home_folder= "../data_online/PVA-100/quick_quench")
-    # cooling_e3_T088.calc_crystallisation()
-    # cooling_e3_T088.calc_avg_domain_size()
+    cooling_e3_T088 = Simulation(0.88, -3, "%s%s" %(data_path, "/slurm-e3-T088.out"), "%s/equil_t_088_tdot_e-3_time"%(data_path), no_runs = 1, 
+        home_folder= "../data_online/PVA-100/quick_quench")
+    cooling_e3_T088.calc_crystallisation()
+    cooling_e3_T088.calc_avg_domain_size()
 
-    # cooling_e4_T085 = Simulation(0.88, -4, "%s%s" %(data_path, "/slurm-e4-T085.out"), "%s/equil_t_085_tdot_e-4_time"%(data_path), no_runs = 2, 
-    #     home_folder= "../data_online/PVA-100/quick_quench")
-    # cooling_e4_T085.calc_crystallisation()
-    # cooling_e4_T085.calc_avg_domain_size()
+    cooling_e4_T085 = Simulation(0.85, -4, "%s%s" %(data_path, "/slurm-e4-T085.out"), "%s/equil_t_085_tdot_e-4_time"%(data_path), no_runs = 2, 
+        home_folder= "../data_online/PVA-100/quick_quench")
+    cooling_e4_T085.calc_crystallisation()
+    cooling_e4_T085.calc_avg_domain_size()
 
     # cooling_e3_T070 = Simulation(0.7, -4, "%s%s" %(data_path, "/slurm-e3-T07.out"), "%s/equil_t_07_tdot_e-3_time"%(data_path), no_runs = 3, 
     #     home_folder= "../data_online/PVA-100/quick_quench")
     # cooling_e3_T070.calc_crystallisation()
     # cooling_e3_T070.calc_avg_domain_size()
 
-    # cooling_e3_T07to085 = Simulation(0.85, -3, "%s%s" %(data_path, "/slurm-e3-T07to085.out"), "%s/equil_t_07to085_tdot_e-3_time"%(data_path), no_runs = 1, 
-    #     home_folder= "../data_online/PVA-100/quick_quench/e-3/T07to085/run_1", home_folder_override= True)
-    # cooling_e3_T07to085.calc_crystallisation()
-    # cooling_e3_T07to085.calc_avg_domain_size()
+    cooling_e3_T07to085 = Simulation(0.85, -3, "%s%s" %(data_path, "/slurm-e3-T07to085.out"), "%s/equil_t_07to085_tdot_e-3_time"%(data_path), no_runs = 1, 
+        home_folder= "../data_online/PVA-100/quick_quench/e-3/T07to085/run_1", home_folder_override= True)
+    cooling_e3_T07to085.calc_crystallisation()
+    cooling_e3_T07to085.calc_avg_domain_size()
 
 
-    #simulation_list = [cooling_e3_T085, cooling_e4_T085, cooling_e3_T07to085]
-    #plot_mean_cluster_vs_crystallisation_single_cooling_rate(simulation_list, plot_equal_length= True)
+    simulation_list = [cooling_e3_T085, cooling_e3_T088]
+    plot_mean_cluster_vs_crystallisation_single_cooling_rate(simulation_list, plot_equal_length= True)
     #plot_mean_cluster_vs_no_clusters_single_cooling_rate(simulation_list, plot_equal_length= True)
 
-    #plot_mean_cluster_vs_crystallisation_single_cooling_rate([cooling_e3_T085], plot_equal_length= True)
-    plot_avrami([cooling_e3_T085], show_plot = True)
-    plot_bond_bond_correlation(cooling_e3_T085)
+    # plot_mean_cluster_vs_crystallisation_single_temp(simulation_list, plot_equal_length= True, labels_list = [r"T=0.85, \dot{T}=10^{-3}, isothermal", 
+    #     r"T=0.85, \dot{T}=10^{-4}, isothermal", r"T=0.85, \dot{T}=10^{-3}, cold crystallsation"])
+    #plot_avrami([cooling_e3_T085], show_plot = True)
+    # plot_bond_bond_correlation(cooling_e3_T085)
+    # #plot_bond_bond_correlation(cooling_e3_T088)
+    # plot_bond_bond_correlation(cooling_e4_T085)
 
+
+    # simulation_list_same_temperature = [cooling_e3_T088]
+    # plot_mean_cluster_vs_crystallisation_single_temp(simulation_list_same_temperature, plot_equal_length= True)
     #polymer_density(cooling_e3_T085)
+
+    #plot_mean_cluster_vs_crystallisation_single_cooling_rate([cooling_e3_T085])
 
 
 if __name__== "__main__":

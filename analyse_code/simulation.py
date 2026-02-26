@@ -10,7 +10,12 @@ import pandas as pd
 cryst_path_prefix = "../crystallisation"
 
 
+def avrami_eq(t, a, n, b):
+    return a * (t**n) + b
 
+def avrami_fit(t, y):
+    popt, pcov = sp.optimize.curve_fit(avrami_eq, t, np.log(1- y), maxfev = 100000)
+    return popt, pcov
 
 
 
@@ -50,6 +55,8 @@ class Simulation:
             return polymer_list
         else:
             raise Exception("count must be an int or a numpy.ndarray")
+
+
 
 
     def get_time_temp_from_slurm(self, file_to_path):
@@ -171,13 +178,13 @@ class Simulation:
             return self.time_temp_array, self.list_lammps_files
         if os.path.exists(path_to_file) and os.path.getsize(path_to_file) > 0:
             try:
-                print(path_to_file)
+                #print(path_to_file)
                 data_array = np.loadtxt(path_to_file)
-                print(data_array)
+                #print(data_array)
                 maxtime = int(np.max(data_array[:, 0]))
             except ValueError: 
                 data_array = pd.read_csv(path_to_file, sep = " ").drop(columns = "Unnamed: 0")
-                print(data_array)
+                #print(data_array)
                 maxtime = int(np.max(data_array.iloc[1:, 0]))
             #Only continue at given time
             shortened_time_temp_array = self.time_temp_array[self.time_temp_array[:, 0] > maxtime]

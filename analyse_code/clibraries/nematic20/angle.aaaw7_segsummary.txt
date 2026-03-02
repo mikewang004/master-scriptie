@@ -1,0 +1,4 @@
+S_Ree lambda_1_Ree  lambda_2_Ree  lambda_3_Ree director_1_Ree  director_2_Ree  director_3_Ree  
+-nan -nan -nan -nan 0 0 0
+Max_Nseg  Min_Nseg_amorph Max_Nseg_crys Max_Lseg_amorph    aveseg_crys aveseg_amorph   Lseg_crys Lseg_amorph   Lseg_tie ftie 
+10 10 1 1 -nan -nan -nan -nan -nan -nan

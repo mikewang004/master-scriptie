@@ -1,0 +1,4 @@
+m  countseg_amorph  countseg_crys  countseg_tie  pdfseg_amorph[m]  pdfseg_crys  pdfseg_tie
+1 0 0 -nan  -nan  -nan
+the  average length of crystalline segments is=-nan of  amorphous segments is =-nan
+the length weighted  average length of crystalline segments is=-nan of  amorphous segments is =-nan

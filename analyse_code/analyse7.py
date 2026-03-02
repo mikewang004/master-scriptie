@@ -97,12 +97,13 @@ class atom_coords:
 
     """Read in files and do basic data preprocessing"""
 
-    def __init__(self, file_to_path, nridges = 33):
+    def __init__(self, path_to_file, nridges = 33):
         #Read in data 
         self.nridges = nridges
-        self.datapd = self.prepare_position_data(file_to_path)
-        self.volume, self.maxlength, self.minlength, self.total_volume_length = self.get_volume_box(file_to_path)
-        self.current_timestep = self.get_timestep_from_file_name(file_to_path) 
+        self.path_to_file = path_to_file
+        self.datapd = self.prepare_position_data(path_to_file)
+        self.volume, self.maxlength, self.minlength, self.total_volume_length = self.get_volume_box(path_to_file)
+        self.current_timestep = self.get_timestep_from_file_name(path_to_file) 
         #Calculate box properties 
         self.n_atoms = len(self.datapd.index)
         self.no_polymers = self.datapd["mol_id"].max()
@@ -113,18 +114,18 @@ class atom_coords:
         self.results = results()
 
 
-    def prepare_position_data(self, file_to_path):
+    def prepare_position_data(self, path_to_file):
         """Reads position data (starts from line 9) in given a file name"""
-        datapd = pd.read_csv(file_to_path, sep = " ", header = None, skiprows = 9)
+        datapd = pd.read_csv(path_to_file, sep = " ", header = None, skiprows = 9)
         datapd.columns = ["atom_id", "mol_id", "xu", "yu", "zu"]
         datapd = datapd.sort_values("atom_id")
         datapd = datapd.set_index("atom_id")
 
         return datapd
 
-    def get_volume_box(self, file_to_path):
+    def get_volume_box(self, path_to_file):
         """Calculates volume of the total (!) simulation box."""
-        datapd_first_rows = (pd.read_csv(file_to_path, sep = " ", header = None, skiprows = 5, nrows = 3))
+        datapd_first_rows = (pd.read_csv(path_to_file, sep = " ", header = None, skiprows = 5, nrows = 3))
         minlength = float(datapd_first_rows.iloc[0, 0])
         maxlength = float(datapd_first_rows.iloc[0, 1])
         total_volume_length = maxlength - minlength
@@ -133,10 +134,10 @@ class atom_coords:
         volume = (axes_length[0] * axes_length[1] * axes_length[2])
         return volume, maxlength, minlength, total_volume_length
 
-    def get_timestep_from_file_name(self, file_to_path):
+    def get_timestep_from_file_name(self, path_to_file):
         """Only reads timestep from the file name."""
         pattern = r"_(\d+)\.txt$"
-        timestep = re.search(pattern, file_to_path).group(1)
+        timestep = re.search(pattern, path_to_file).group(1)
         return int(timestep)
 
 
@@ -346,6 +347,11 @@ class polymer():
     def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8, save = False, print_results: bool = False):
         max_labels = int(nridges**3)
         #max_labels = int(200)
+        try:
+            self.df_cryst
+        except(AttributeError):
+            print(self.atom_coords.path_to_file)
+            self.read_cryst()
         cryst_array = self.df_cryst.to_numpy()
         rows, cols = cryst_array.shape[0], cryst_array.shape[1]
         cryst_array_c = cryst_array.ctypes.data_as(ctypes.POINTER(ctypes.c_double))

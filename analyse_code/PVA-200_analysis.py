@@ -14,17 +14,30 @@ cryst_cutoff = 0.8 #Threshold for a cell to be considered crystalline
 
 def pva_200_analysis(data_path):
     icryst_PVA_200_T088 = Simulation(0.88, -3, "%s/slurm-PVA-200_equil_t_088_tdot_e-3.out" %(data_path), "%s/PVA-200_equil_t_088_tdot_e-3_time" %(data_path), no_runs=1,
-        home_folder="../data_online/PVA-200/icryst_T088_Tdot_e-3", polymer_length=200)
+        home_folder="../data_online/PVA-200/icryst_T088_Tdot_e-3", polymer_length=200, home_folder_override= True)
     icryst_PVA_200_T088.calc_crystallisation()
     icryst_PVA_200_T088.calc_avg_domain_size()
     return icryst_PVA_200_T088
 
 def pva_50_analysis(data_path):
     icryst_PVA_50_T088 = Simulation(0.88, -3, "%s/slurm-PVA-50_equil_t_088_tdot_e-3.out" %(data_path), "%s/PVA-50_equil_t_088_tdot_e-3_time" %(data_path), no_runs=1,
-        home_folder="../data_online/PVA-50/icryst_T088_Tdot_e-3",polymer_length=50)
+        home_folder="../data_online/PVA-50/icryst_T088_Tdot_e-3",polymer_length=50, home_folder_override= True)
     icryst_PVA_50_T088.calc_crystallisation()
     icryst_PVA_50_T088.calc_avg_domain_size()
     return icryst_PVA_50_T088
+
+
+def get_domain_distribution_polymer(polymer):
+    """Returns distribution of domain sizes"""
+    label_matrix = polymer.merge_boxes(print_results= True)
+
+    #Get distribution by counting label occurances
+    bins = [1,2,3,4,5,7,10,20,30,40,50,60,70,100]
+    n, _, _ = plt.hist(label_matrix.flatten(), bins = bins)
+    print(n, bins)
+    plt.show()
+    return 0;
+
 
 def plot_crystallisation_different_polymer_lengths(simulation_list, save: bool = False, savestring = None, labels_list: list = None, plot_equal_length: bool = False):
 
@@ -108,10 +121,11 @@ def main():
     icryst_PVA_100_T088 = Simulation(0.88, -3, "%s%s" %(data_path_100, "/slurm-e3-T088.out"), "%s/equil_t_088_tdot_e-3_time"%(data_path_100), no_runs = 1, 
         home_folder= "../data_online/PVA-100/quick_quench")
 
+    get_domain_distribution_polymer(icryst_PVA_200_T088.get_polymer_by_count(20))
 
     polymer_list = [icryst_PVA_50_T088, icryst_PVA_100_T088, icryst_PVA_200_T088]
     #plot_crystallisation_different_polymer_lengths(polymer_list)
-    plot_avrami([icryst_PVA_100_T088], show_plot= True)
+    #plot_avrami([icryst_PVA_100_T088], show_plot= True)
 
 
 if __name__ == "__main__":

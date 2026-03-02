@@ -47,11 +47,18 @@ class Simulation:
     def get_polymer_by_count(self, count):
         """Gets i-th polymer"""
         if isinstance(count, int):
-            return polymer(self.list_lammps_files[count])
+            #Also get corresponding crystallisation array 
+            current_polymer = polymer(self.list_lammps_files[count])
+            print(self.time_temp_array[count, 0])
+            current_polymer.read_cryst("%s/nematic_vectors/nem_vectors_time_%i.txt" %(self.path_to_home_folder, self.time_temp_array[count, 0]))
+            print(current_polymer.df_cryst)
+            return current_polymer
         elif isinstance(count, np.ndarray):
             polymer_list = []
             for i in count:
-                polymer_list.append(polymer(self.list_lammps_files[i]))
+                current_polymer = polymer(self.list_lammps_files[count])
+                current_polymer.read_cryst("%s/nematic_vectors/nem_vectors_time_%i.txt" %(self.path_to_home_folder, self.time_temp_array[count, 1]))
+                polymer_list.append(current_polymer)
             return polymer_list
         else:
             raise Exception("count must be an int or a numpy.ndarray")
@@ -229,6 +236,9 @@ class Simulation:
             "   independent clusters", "mean size cryst domains", "crystalline grid elements"])
             if local_time_temp_array.shape[0] < self.time_temp_array.shape[0]:
                 old_cryst_array = pd.read_csv("%s" %(boxes_eigv_file), sep = " ", index_col = 0)
+        else:
+            self.cryst_domain_array = pd.read_csv("%s" %(boxes_eigv_file), sep = " ", index_col = 0) #Read in domain file if it exists
+            return 0;
         for i in tqdm(range(0, (local_time_temp_array.shape[0]))):
             current_time = local_time_temp_array[i, 0]
             current_file = local_list_lammps_files[i]

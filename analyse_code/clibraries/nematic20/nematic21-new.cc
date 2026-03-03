@@ -223,27 +223,27 @@ double cnd[4];
 cout << "New long array created successfully" << endl;
 
 
-// cout << "argv[1] = "<< argv[1] << "   its length is" <<  strlen(argv[1]) << endl;// anouncing the name of input file for initial values
+cout << "argv[1] = "<< argv[1] << "   its length is" <<  strlen(argv[1]) << endl;// anouncing the name of input file for initial values
 
-// const int fnamelength=strlen(argv[1]);
+const int fnamelength=strlen(argv[1]);
 
-// char filename[fnamelength];  
-// for(i=0; i<= fnamelength; i++)
+char filename[fnamelength];  
+for(i=0; i<= fnamelength; i++)
 
-// 		filename[i] = argv[1][i];  //converting the input argument to the file name string
+		filename[i] = argv[1][i];  //converting the input argument to the file name string
 
-// argv[1] MUST be valid; ideally ensure argc >= 2 earlier in main
-cout << "argv[1] = " << argv[1]
-     << "   its length is " << strlen(argv[1]) << endl;  // prints length
+// // argv[1] MUST be valid; ideally ensure argc >= 2 earlier in main
+// cout << "argv[1] = " << argv[1]
+//      << "   its length is " << strlen(argv[1]) << endl;  // prints length
 
-const int fnamelength = strlen(argv[1]) + 1;  // +1 for the '\0'
+// const int fnamelength = strlen(argv[1]) + 1;  // +1 for the '\0'
 
-char filename[fnamelength];  // valid indices: 0 .. fnamelength-1
+// char filename[fnamelength];  // valid indices: 0 .. fnamelength-1
 
-// Copy all characters INCLUDING the terminating '\0'
-for (int i = 0; i < fnamelength; ++i) {
-    filename[i] = argv[1][i];
-}
+// // Copy all characters INCLUDING the terminating '\0'
+// for (int i = 0; i < fnamelength; ++i) {
+//     filename[i] = argv[1][i];
+// }
 
 
 

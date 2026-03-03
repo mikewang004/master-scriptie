@@ -20,6 +20,7 @@
 #include<fstream>
 #include <complex>
 #include <algorithm>
+#include <cstring>
 //#include <string>
 // #include <nr3.h>
 // #include <ran.h>
@@ -186,10 +187,10 @@ int Nchain; //number of chains
 double xlo, xhi, ylo, yhi, zlo, zhi,Lx,Ly,Lz ;
 int index, id1,id2, molid, ix,iy,iz;
 int m,n,Natom;
-//int Nmax=4330000;
-//int Mchain=1000;
-int Nmax = 720000;
-int Mchain = 100;
+int Nmax=4330000;
+int Mchain=1000;
+//int Nmax = 720000;
+//int Mchain = 100;
 double xx,yy, zz;
 
 
@@ -223,14 +224,27 @@ double cnd[4];
 cout << "New long array created successfully" << endl;
 
 
-cout << "argv[1] = "<< argv[1] << "   its length is" <<  strlen(argv[1]) << endl;// anouncing the name of input file for initial values
+// cout << "argv[1] = "<< argv[1] << "   its length is" <<  strlen(argv[1]) << endl;// anouncing the name of input file for initial values
 
-const int fnamelength=strlen(argv[1]);
+// const int fnamelength=strlen(argv[1]);
 
-char filename[fnamelength];  
-for(i=0; i<= fnamelength; i++)
+// char filename[fnamelength];  
+// for(i=0; i<= fnamelength; i++)
 
-		filename[i] = argv[1][i];  //converting the input argument to the file name string
+// 		filename[i] = argv[1][i];  //converting the input argument to the file name string
+
+// argv[1] MUST be valid; ideally ensure argc >= 2 earlier in main
+cout << "argv[1] = " << argv[1]
+     << "   its length is " << strlen(argv[1]) << endl;  // prints length
+
+const int fnamelength = strlen(argv[1]) + 1;  // +1 for the '\0'
+
+char filename[fnamelength];  // valid indices: 0 .. fnamelength-1
+
+// Copy all characters INCLUDING the terminating '\0'
+for (int i = 0; i < fnamelength; ++i) {
+    filename[i] = argv[1][i];
+}
 
 
 
@@ -272,53 +286,54 @@ double   Lxhalf=Lx/2.;
 
  xyzfile >>  str1   ;
 
-for(i=1;i<=Natomtype;i++)
- xyzfile >>  j >> l   ;
+// for(i=1;i<=Natomtype;i++)
+//  xyzfile >>  j >> l   ;
 
- xyzfile >>  str1 >> str2 >> str3 >> str4  ;
-cout << str4 << endl;
-for(i=1;i<=Natomtype;i++)
-xyzfile >> xx >> yy >> zz ;
+//  xyzfile >>  str1 >> str2 >> str3 >> str4  ;
+// cout << str4 << endl;
+// for(i=1;i<=Natomtype;i++)
+// xyzfile >> xx >> yy >> zz ;
 
+/// Bonds block
+//     xyzfile >> str1;
+// cout <<  str1<<  endl;
 
-xyzfile >>  str1  >> str2 >> str3 >> str4 ;
-
-xyzfile >> xx >> yy >> zz ;
-
-xyzfile >> str1 >> str2 >> str3   ;
-
-cout << str3 << endl;
-
-      for(i=1;i<=Nmon; i++)
-     { xyzfile >>  id >> molid>> type >> xx >> yy >> zz >> ix >> iy >> iz  ;
-        xu[id]=xx+ix*Lx;
-     yu[id]=yy+iy*Ly;
-     zu[id]=zz+iz*Lz;
-    xp[id]=xx-xlo; //shifting coordinates so that they are all positive starting from 0
-    yp[id]=yy-ylo;
-    zp[id]=zz-zlo;
-   
-}
-
-// xyzfile >> str1;
-//cout <<  str1<< endl;
-// xyzfile >> str1;
-//cout <<  str1<< endl;
- xyzfile >> str1;
-cout <<  str1<<  endl;
-      
-     for(i=1;i<=Nmon; i++)
-     { xyzfile >>  id >>  xx >> yy >> zz   ;
-    if(i==10000) cout << id <<  xx << " "<< yy << " " << zz << endl;  } 
-    xyzfile >> str1;
-cout <<  str1<<  endl;
-
- for(i=1;i<=Nbond; i++)
-     { xyzfile >>  j>> l >> id1 >> id2   ;
-      //bond1[i][0]=id1;
-    // bond1[i][1]=id2; 
-    if(i==9900) cout << j << " "<<  l << " "<< id1 << " " << id2 << endl;  } 
+//  for(i=1;i<=Nbond; i++)
+//      { xyzfile >>  j>> l >> id1 >> id2   ;
+//       cout << j << " "<<  l << " "<< id1 << " " << id2 << endl;
+//       //bond1[i][0]=id1;
+//     // bond1[i][1]=id2; 
+//     if(i==9900) cout << j << " "<<  l << " "<< id1 << " " << id2 << endl;  } 
     
+/// End bond block
+
+
+// Read and discard the header line:
+// "ITEM: ATOMS id mol xu yu zu"
+std::string line;
+std::getline(xyzfile, line);   // assumes we're positioned right before this line
+
+// Now read Nmon atoms: id, molid, xu, yu, zu
+for (i = 1; i <= Nmon; i++) {
+    xyzfile >> id >> molid >> xu[id] >> yu[id] >> zu[id];
+    // If you still want shifted coordinates starting at (0,0,0) from xlo,ylo,zlo:
+    xp[id] = xu[id] - xlo;
+    yp[id] = yu[id] - ylo;
+    zp[id] = zu[id] - zlo;
+}
+// xyzfile >> str1;
+//cout <<  str1<< endl;
+// xyzfile >> str1;
+//cout <<  str1<< endl;
+///Velocities block 
+//  xyzfile >> str1;
+// cout <<  str1<<  endl;
+      
+//      for(i=1;i<=Nmon; i++)
+//      { xyzfile >>  id >>  xx >> yy >> zz   ;
+//     if(i==10000) cout << id <<  xx << " "<< yy << " " << zz << endl;  } 
+/// end velocities block
+
 
 
  xyzfile.close();
@@ -379,28 +394,55 @@ count[n]=0;
 nematiccount[n]=0;}
 
 
-for(n=1; n <= Nchain;n++)
- for(i=1;i< Lchain;i++){
-l=(n-1)*(Lchain-1)+i;
-//cout << "l="<< l<< endl;
+// Assumptions:
+// - Atoms are ordered by chain:
+//   chain 1: 1..Lchain
+//   chain 2: Lchain+1..2*Lchain
+//   ...
+//   chain n: (n-1)*Lchain+1 .. n*Lchain
+// - Nmon = Nchain * Lchain
+// - Nbond = Nchain * (Lchain - 1)
+// - Arrays xp,yp,zp,xu,yu,zu are valid for indices 1..Nmon
+// - xm,ym,zm,bond,lbond are valid for 1..Nbond
 
-bond[l][0]=xu[l+1+(n-1)]-xu[l+(n-1)];
-bond[l][1]=yu[l+1+(n-1)]-yu[l+(n-1)];
-bond[l][2]=zu[l+1+(n-1)]-zu[l+(n-1)];
-xm[l]=(xp[l+1+(n-1)]+xp[l+(n-1)])/2;
-if(xm[l]> Lx)  cout<< "l=" << l << "xm=  "<< xm[l] << endl;
-ym[l]=(yp[l+1+(n-1)]+yp[l+(n-1)])/2;
-//yum[l]=(yu[l+1+(n-1)]+yu[l+(n-1)])/2;
-if(ym[l]> Ly)  cout<< "l=" << l << "ym=  "<< ym[l] << endl;
-zm[l]=(zp[l+1+(n-1)]+zp[l+(n-1)])/2;
-//zum[l]=(zu[l+1+(n-1)]+zu[l+(n-1)])/2;
-if(zm[l]> Lz)  cout<< "l=" << l << "zm=  "<< zm[l] << endl;
-lbond[l]=sqrt(bond[l][0]*bond[l][0]+bond[l][1]*bond[l][1]+bond[l][2]*bond[l][2]);
-if(lbond[l]> 1) cout << "l=" << l << " lbond[l]=" << lbond[l] << endl;
-bond[l][0]=bond[l][0]/lbond[l];
-bond[l][1]=bond[l][1]/lbond[l];
-bond[l][2]=bond[l][2]/lbond[l];
-//if(l==100) cout << "bond10" << bond[10][0] << " " << bond[10][1]<<  " " << bond[10][2] << endl;
+for (int n = 1; n <= Nchain; ++n) {
+    for (int i = 1; i < Lchain; ++i) {
+        int atom1 = (n - 1) * Lchain + i;   // 1 .. Nmon-1
+        int atom2 = atom1 + 1;              // 2 .. Nmon
+        int l     = (n - 1) * (Lchain - 1) + i; // 1 .. Nbond
+
+        // TEMP: runtime checks – leave these in until it works
+        if (atom1 < 1 || atom1 > Nmon ||
+            atom2 < 1 || atom2 > Nmon ||
+            l     < 1 || l     > Nbond) {
+            std::cerr << "Index error in bond loop: "
+                      << "n=" << n << " i=" << i
+                      << " atom1=" << atom1
+                      << " atom2=" << atom2
+                      << " l=" << l << "\n";
+            std::abort();
+        }
+
+        double bx = xu[atom2] - xu[atom1];
+        double by = yu[atom2] - yu[atom1];
+        double bz = zu[atom2] - zu[atom1];
+
+        bond[l][0] = bx;
+        bond[l][1] = by;
+        bond[l][2] = bz;
+
+        xm[l] = (xp[atom1] + xp[atom2]) / 2.0;
+        ym[l] = (yp[atom1] + yp[atom2]) / 2.0;
+        zm[l] = (zp[atom1] + zp[atom2]) / 2.0;
+
+        double len = std::sqrt(bx*bx + by*by + bz*bz);
+
+        bond[l][0] /= len;
+        bond[l][1] /= len;
+        bond[l][2] /= len;
+
+
+    }
 }
 cout<< "l=" << l << endl;
 
@@ -432,6 +474,8 @@ ofstream vmdfile1;
 vmdfile1.open(outname1);
 vmdfile1 << "mol new" << endl;
 vmdfile1 << "color Display Background silver" << endl;
+
+
 
 ////////// calculation of R_g ////////////////////////////////////
  
@@ -477,6 +521,8 @@ Rgz+= Rg3[i]/Lchain;
 //Rg+=sqrt((Rg1[i]+ Rg2[i]+Rg3[i])/Lchain);
 Rg+=(Rg1[i]+ Rg2[i]+Rg3[i])/Lchain;
 }// end for i
+
+
 
 Rg=Rg/Nchain;
 Rgx=Rgx/Nchain;
@@ -560,10 +606,11 @@ MSIDz[n]=MSIDz[n]/Nchain;
 double**  Ree=Allocate_2D_Double_Array(Nchain+1,3);
 double *Re;
 Re=new double [Nchain+1];
- 
+
  for(i=0; i<Nchain;i++){
    id1=i*Lchain+1; // id of firstth atom in the chain i
    id2=id1+Lchain-1; // id of Lchain_th atom in the chain i
+
    Ree[i+1][0]=xu[id1]-xu[id2];
    Ree[i+1][1]=yu[id1]-yu[id2];
    Ree[i+1][2]=zu[id1]-zu[id2];
@@ -611,6 +658,8 @@ for(i=1;i< Lchain;i++) {
 P2Qi[i]=0;
 P1Qi[i]=0;
 }
+
+// Until here all ok
 
 //////////////////////////////////////////////////////////////////// calculation of intra bond-bond correlation ///////////////////////////////////////////////
 
@@ -1748,6 +1797,8 @@ delete []Ngrcrys ;
 delete []Ngramorph;
 */
 ////////////////////////////////////////////   Cluster analysis     ///////////////////////////////////////////////////////////////
+
+cout << "test2" << endl;
  int LL[gridcount+2], ni,nj; // label of labels
  for(i=0;i<=(gridcount+1);i++) LL[i]=0;
 int gridtest=0;

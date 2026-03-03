@@ -1,0 +1,2 @@
+S_Ree lambda_1_Ree  lambda_2_Ree  lambda_3_Ree director_1_Ree  director_2_Ree  director_3_Ree  
+0.0271446 0.0271446 -0.0232564 -0.00388825 -0.821881 -0.504709 0.264161

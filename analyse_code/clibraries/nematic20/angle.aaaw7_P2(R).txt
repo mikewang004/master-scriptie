@@ -1,1 +1,0 @@
-r   g0(r)    P2(r)    P2_par(r)     P2_per(r)   

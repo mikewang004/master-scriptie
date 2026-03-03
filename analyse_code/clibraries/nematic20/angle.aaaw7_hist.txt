@@ -1,6 +1,0 @@
-m  count[m]  count[m]*1.0/Nbond  nematic_count[m]  fraction_ nematic_cell[m] 
- total number of grid elements is:0
- total number of bonds from sumcount is:0
- total number of nematic grid elements is:0
- total number of bonds in the nematic grid elements is:0
- degree of crystallinity is:-nan

@@ -480,7 +480,7 @@ vmdfile1 << "color Display Background silver" << endl;
  
 int idm,idnext,idpast;
 ofstream  MSIDfile;
-char MSIDname[50];
+char MSIDname[200];
 strcpy(MSIDname,filename);
 strcat(MSIDname, "_MSID.dat");
 
@@ -840,7 +840,7 @@ double r1,r2,r3,rr,P2Q,cosQ, P2Q1,cosQ1 , P2Q2,cosQ2;
 
 
 
-char nemname[50];
+char nemname[200];
 strcpy(nemname,filename);
 strcat(nemname, "_nematic.dat");
 
@@ -999,7 +999,7 @@ delete idbond;
     double rho_nem=0, rho_amorph=0;
 //double SS;
 
-char outname[50];
+char outname[200];
 strcpy(outname,filename);
 strcat(outname, "_hist.txt");
 
@@ -1136,7 +1136,7 @@ double IDelta2=1.0/Deltas;
 
 
 ofstream P2file;
-char P2name[50];
+char P2name[200];
 strcpy(P2name,filename);
 strcat(P2name, "_P2(R).txt");
 P2file.open(P2name); 

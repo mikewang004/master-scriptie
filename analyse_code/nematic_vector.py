@@ -62,8 +62,9 @@ def calc_nematic_tensor_pandas(block: pd.DataFrame, bond_vectors) -> pd.Series:
 
     Q = 1.5 * outer - 0.5* np.eye(3) 
     labda, ev = np.linalg.eigh(Q)
-    max_labda = np.max(labda)
+    max_labda = np.max(np.abs(labda)) #Try also without the np.abs()
     max_ev = ev[:, np.argmax(labda)]
+    #max_ev = np.abs(ev[:, np.argmax(labda)])
     return pd.Series({"cryst_bool": max_labda, "x_ev": max_ev[0], "y_ev":max_ev[1], "z_ev": max_ev[2]})
 
 

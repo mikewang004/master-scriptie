@@ -1804,7 +1804,7 @@ delete []Ngramorph;
 */
 ////////////////////////////////////////////   Cluster analysis     ///////////////////////////////////////////////////////////////
 
-cout << "test2" << endl;
+
  int LL[gridcount+2], ni,nj; // label of labels
  for(i=0;i<=(gridcount+1);i++) LL[i]=0;
 int gridtest=0;

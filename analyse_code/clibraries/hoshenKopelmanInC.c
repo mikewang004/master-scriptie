@@ -170,7 +170,7 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
 
     
 
-    for (int m = 0; m < 2; m ++ ) {
+    for (int m = 0; m < 1; m ++ ) {
         //for (int l = 0; l < nridges*nridges*nridges; l++) {
         for (int l = 0; l < nridges*nridges *nridges; l++) {
 

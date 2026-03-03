@@ -120,8 +120,10 @@ def main():
     icryst_PVA_50_T088 = pva_50_analysis(data_path_50)
     icryst_PVA_100_T088 = Simulation(0.85, -3, "%s%s" %(data_path_100, "/slurm-e3-T085.out"), "%s/equil_t_085_tdot_e-3_time"%(data_path_100), no_runs = 3, 
         home_folder= "../data_online/PVA-100/quick_quench")
-
-    get_domain_distribution_polymer(icryst_PVA_100_T088.get_polymer_by_count(99))
+    current_polymer = icryst_PVA_100_T088.get_polymer_by_count(99)
+    #current_polymer.atom_coords.get_nematic_vector_5(save_string= "test.txt")
+    get_domain_distribution_polymer(current_polymer)
+    #icryst_PVA_100_T088.get_polymer_by_count(99).atom_coords.get_nematic_vector_5()
 
     polymer_list = [icryst_PVA_50_T088, icryst_PVA_100_T088, icryst_PVA_200_T088]
     #plot_crystallisation_different_polymer_lengths(polymer_list)

@@ -1,0 +1,11 @@
+clustersize volume  vol/VtotNcluster[i]  pdf1  volume-pdf
+0 0 0 1 0 0 0
+1 8.63394 5.08053e-05 1281 0.986143 0.486333 0.0325408
+2 17.2679 0.000101611 18 0.0138568 0.0205011 0.00137174
+the total number of clusters with at least 2 elements is 18 nematic grid elements
+ The total number of independent crystalline domains is:  1299
+ The average cluster size of crystalline domains is :  1.01386
+ The average volume fraction of crystalline domains is :  5.2194e-05
+ The total number of  crystalline grid elements is:  1317
+ S_Ree globalNem Vtotal  Ngrid  crystallinity  avenclust avecclust/Ngrid avevol  avevol/Vtot 
+-0.0453842 -0.00425277 169942 19683 0.0669105 1.01386 5.15093e-05 8.86995 5.2194e-05

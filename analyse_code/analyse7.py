@@ -342,6 +342,7 @@ class polymer():
     def read_cryst(self, location):
         self.df_cryst = pd.read_csv(location, sep = " ", header = None, skiprows = 1, index_col = False).iloc[:, 1:]
         self.df_cryst.columns = ["xid", "yid", "zid", "cryst_bool", "x_ev", "y_ev", "z_ev"]
+        self.frac_cryst, _ = fraction_crystallinity(self.df_cryst.iloc[:, 3])
         return 0;
 
     def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8, save = False, print_results: bool = False):

@@ -1,0 +1,6 @@
+S_Ree lambda_1_Ree  lambda_2_Ree  lambda_3_Ree director_1_Ree  director_2_Ree  director_3_Ree  
+0.0112003 0.0112003 -0.00971373 -0.00148654 -0.844499 -0.374323 0.383019
+Max_Nseg  Min_Nseg_amorph Max_Nseg_crys Max_Lseg_amorph    aveseg_crys aveseg_amorph   Lseg_crys Lseg_amorph   Lseg_tie ftie 
+23 1 99 99 56.3318 21.8982 20.5311 10.9454 13.1347 0.19422
+f_tail f_loop f_tie f_tie+f_loop+f_tail f_tie+f_loop+f_tail f_amorph fchainend Ave_tie Ave_loop Ave_tail N_tiechain N_loopchain N_tailchain 
+0.087695  0.0902553  0.16532  0.34327  0.375304  0.448542  14.6358  10.769  9.71148  8055  5974  6457

@@ -32,9 +32,13 @@ def get_domain_distribution_polymer(polymer):
     label_matrix = polymer.merge_boxes(print_results= True)
 
     #Get distribution by counting label occurances
+    label_matrix = label_matrix[label_matrix != 0]
+    #print(label_matrix[label_matrix != 0])
     bins = [1,2,3,4,5,7,10,20,30,40,50,60,70,100]
     n, _, _ = plt.hist(label_matrix.flatten(), bins = bins)
     print(n, bins)
+    plt.title(r"Crystalline domain size distribution, PVA-100, time %i, $\phi = %.3f$" %(polymer.timestep, polymer.frac_cryst))
+    plt.savefig("cryst_domain_distro_pva_100_time_%i.pdf" %polymer.timestep)
     plt.show()
     return 0;
 
@@ -58,22 +62,22 @@ def plot_crystallisation_different_polymer_lengths(simulation_list, save: bool =
         label_cryst = r"crystallinity,  PVA-%i" %(simulation.polymer_length)
         ax1.plot(simulation.cryst[:length, 0], simulation.cryst[:length, 1], 
             label = label_cryst)
-        ax2.scatter(simulation.mean_cluster_length.iloc[:length, 0], simulation.mean_cluster_length.iloc[:length, 4],
+        ax2.scatter(simulation.mean_cluster_length.iloc[:length, 0], (simulation.mean_cluster_length.iloc[:length, 4])**(1/3) *2,
             label =  r"mean domain size, PVA-%i" %(simulation.polymer_length))
         temp = simulation.temp
 
     ax1.set_xlabel("time")
     #ax1.set_ylabel(r"amount of independent clusters")
     ax1.set_ylabel(r"$\phi$")
-    ax2.set_ylabel(r"mean domain size")
+    ax2.set_ylabel(r"length scale ($\sigma$)")
     #fig.tight_layout()
     fig.legend(loc = "lower right", bbox_to_anchor=(0.895, 0.115))
     #fig.suptitle(r"Independent clusters and mean domain size, $\dot{T} = 10^{%i}$" %(simulation.cooling_rate))
     fig.suptitle(r"Isothermal crystallisation, T=%.2f"%(temp))
-    #fig.savefig("plots/e%i_no_clusters_mean_domain_size.pdf"%(simulation.cooling_rate))
+    fig.savefig("plots/e%i_no_clusters_mean_domain_size.pdf"%(simulation.cooling_rate))
     plt.show()
 
-def avrami_eq(t, a, n, b):
+def avrami_eq(t, n, b, a):
     #return np.log(1-t)
     return a * (t**n) + b
 
@@ -83,28 +87,33 @@ def avrami_fit(t, y):
 
 def plot_avrami(simulation_list: list, save: bool = False, savestring = None, show_plot = False):
 
-    plt.title("Crystallisation as function of time, PVA-200")
-    plt.xlabel("time")
-    plt.ylabel("fraction of crystallinity")
     #plt.xscale("log")
     #plt.yscale("log")
     #plt.ylim(0.1, 0.6)
     #plt.xlim(10**7, 10**8)
     for simulation in simulation_list:
-        used_simulation_cryst = simulation.cryst[:, :]
-        phi0 = np.log(1 - (used_simulation_cryst[:, 1]))
+        print(simulation.cryst.shape)
+        used_simulation_cryst = simulation.cryst[:10, :]# / 12000000
+        #phi0 = np.log(1 - (used_simulation_cryst[:, 1]))
+        phi0 = used_simulation_cryst[:, 1]
+        #print(used_simulation_cryst)
         #print(used_simulation_cryst)
         #print(np.log(1 - (used_simulation_cryst[:, 1])))
         popt, pcov = avrami_fit(used_simulation_cryst[:, 0], phi0)
         print(popt)
-        plt.plot(used_simulation_cryst[:, 0], avrami_eq(used_simulation_cryst[:, 0], *popt))
-        label = r"T=%.2f, $\dot{T}=10^{%i}$" %(simulation.temp, simulation.cooling_rate)
-        plt.scatter(used_simulation_cryst[:, 0], phi0, label = label)
+        #plt.xscale("log")        # make y-axis logarithmic
+        plt.plot(used_simulation_cryst[:, 0], avrami_eq(used_simulation_cryst[:, 0], *popt),
+             label=f"n = {popt[0]:.4f}, b = {popt[1]:.4f}, a = {popt[2]:.10f}")
+        plt.scatter(used_simulation_cryst[:, 0], phi0, label = "experimental data")
+
+    plt.title(r"$\phi(t)$, PVA-100, T=%.2f, $\dot{T}=10^{%i}$" %(simulation.temp, simulation.cooling_rate))
+    plt.xlabel("time")
+    plt.ylabel("fraction of crystallinity")
 
     plt.legend()
     if save is True:
         if savestring is None:
-            savestring = "plots/10e%i_T%s_crystallinity.pdf" %(simulation.cooling_rate, str(simulation.temp).replace(".", ""))
+            savestring = "plots/avrami_10e%i_T%s_crystallinity_early.pdf" %(simulation.cooling_rate, str(simulation.temp).replace(".", ""))
         plt.savefig(savestring)
     if show_plot is True:
         plt.show()
@@ -118,16 +127,16 @@ def main():
     #pva_50_analysis(data_path_50)
     icryst_PVA_200_T088 = pva_200_analysis(data_path_200)
     icryst_PVA_50_T088 = pva_50_analysis(data_path_50)
-    icryst_PVA_100_T088 = Simulation(0.85, -3, "%s%s" %(data_path_100, "/slurm-e3-T085.out"), "%s/equil_t_085_tdot_e-3_time"%(data_path_100), no_runs = 3, 
+    icryst_PVA_100_T085 = Simulation(0.85, -3, "%s%s" %(data_path_100, "/slurm-e3-T085.out"), "%s/equil_t_085_tdot_e-3_time"%(data_path_100), no_runs = 3, 
         home_folder= "../data_online/PVA-100/quick_quench")
-    current_polymer = icryst_PVA_100_T088.get_polymer_by_count(99)
+    current_polymer = icryst_PVA_100_T085.get_polymer_by_count(20)
     #current_polymer.atom_coords.get_nematic_vector_5(save_string= "test.txt")
-    get_domain_distribution_polymer(current_polymer)
+    #get_domain_distribution_polymer(current_polymer)
     #icryst_PVA_100_T088.get_polymer_by_count(99).atom_coords.get_nematic_vector_5()
 
-    polymer_list = [icryst_PVA_50_T088, icryst_PVA_100_T088, icryst_PVA_200_T088]
-    #plot_crystallisation_different_polymer_lengths(polymer_list)
-    #plot_avrami([icryst_PVA_100_T088], show_plot= True)
+    #polymer_list = [icryst_PVA_50_T088, icryst_PVA_100_T085, icryst_PVA_200_T088]
+    #plot_crystallisation_different_polymer_lengths(polymer_list, plot_equal_length= True, save= True)
+    plot_avrami([icryst_PVA_100_T085], show_plot= True, save = False)
 
 
 if __name__ == "__main__":

@@ -49,15 +49,17 @@ class Simulation:
         if isinstance(count, int):
             #Also get corresponding crystallisation array 
             current_polymer = polymer(self.list_lammps_files[count])
-            print(self.time_temp_array[count, 0])
+            #print(self.time_temp_array[count, 0])
             current_polymer.read_cryst("%s/nematic_vectors/nem_vectors_time_%i.txt" %(self.path_to_home_folder, self.time_temp_array[count, 0]))
-            print(current_polymer.df_cryst)
+            current_polymer.timestep = self.time_temp_array[count, 0]
+            #print(current_polymer.df_cryst)
             return current_polymer
         elif isinstance(count, np.ndarray):
             polymer_list = []
             for i in count:
                 current_polymer = polymer(self.list_lammps_files[count])
                 current_polymer.read_cryst("%s/nematic_vectors/nem_vectors_time_%i.txt" %(self.path_to_home_folder, self.time_temp_array[count, 1]))
+                current_polymer.timestep = self.time_temp_array[count, 0]
                 polymer_list.append(current_polymer)
             return polymer_list
         else:

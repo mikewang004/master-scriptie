@@ -136,7 +136,7 @@ def main():
 
     #polymer_list = [icryst_PVA_50_T088, icryst_PVA_100_T085, icryst_PVA_200_T088]
     #plot_crystallisation_different_polymer_lengths(polymer_list, plot_equal_length= True, save= True)
-    plot_avrami([icryst_PVA_100_T085], show_plot= True, save = False)
+    #plot_avrami([icryst_PVA_100_T085], show_plot= True, save = False)
 
 
 if __name__ == "__main__":

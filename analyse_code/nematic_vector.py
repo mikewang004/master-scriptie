@@ -72,9 +72,19 @@ def calc_nematic_tensor_pandas(block: pd.DataFrame, bond_vectors) -> pd.Series:
 def nematic_vector_loop(data: pd.DataFrame, bond_vectors):
     data_indexed = data.reset_index().rename({"index": "atom_id"}).set_index(["xid", "yid", "zid"]).sort_index()
     g = data_indexed.groupby(level=["xid", "yid", "zid"])
-
     df_cryst = g.apply(calc_nematic_tensor_pandas, bond_vectors)
     df_cryst = df_cryst.reset_index()
     df_cryst = df_cryst.sort_values(by=["zid", "xid", "yid"]).reset_index(drop=True)
     #df_cryst.to_csv("fast_cryst.txt", sep = " ", mode = "w")
+    return df_cryst
+
+
+
+
+def nematic_vector_loop_2(bond_vectors):
+    bond_vectors_indexed = bond_vectors.reset_index().rename({"index": "atom_id"}).set_index(["xid", "yid", "zid"]).sort_index()
+    g = bond_vectors_indexed.groupby(level=["xid", "yid", "zid"])
+    df_cryst = g.apply(calc_nematic_tensor_pandas, bond_vectors)
+    df_cryst = df_cryst.reset_index()
+    df_cryst = df_cryst.sort_values(by=["zid", "xid", "yid"]).reset_index(drop=True)
     return df_cryst

@@ -10,7 +10,7 @@ from clibraries.boxAlgorithmsInC import box_algos_lib, hk_lib
 import ctypes
 import time
 from numba import jit
-from nematic_vector import calc_nematic_tensor_2, nematic_vector_loop
+from nematic_vector import calc_nematic_tensor_2, nematic_vector_loop, nematic_vector_loop_2
 
 def fraction_crystallinity(data, cutoff = 0.8):
     """Data 1d 1d list/array, defined as data > 0.8 -> crystallinity = 1;
@@ -145,7 +145,8 @@ class atom_coords:
         """Returns np.diff in positions except for each 100th particle."""
         # Filter out every nth row
         data = self.datapd 
-        bond_vectors_array = np.diff(data.iloc[:, 1:4], axis = 0)
+        midpoint_ridges = self.make_midpoint_ridges()
+        bond_vectors_array = (np.diff(data.iloc[:, 1:4], axis = 0))
         polymer_mask = np.ones(len(bond_vectors_array), dtype = bool)
         polymer_mask[99::100] = False
         bond_vectors_array = bond_vectors_array[polymer_mask]
@@ -153,11 +154,29 @@ class atom_coords:
         bond_vectors = bond_vectors[bond_vectors.index % 100 != 0]
         bond_vectors.iloc[:, 1:4] = bond_vectors_array
         bond_vectors = bond_vectors.rename(columns = {"xu" : "bondx", "yu" : "bondy", "zu" : "bondz"})
-        return bond_vectors
+        #Append center of mass to bond_vectors
+
+        wrapped_coordinates = self.wrap_coordinates(data.iloc[:, 1:5])
+        #wrapped_coordinates = wrapped_coordinates[wrapped_coordinates.index % 100 != 0]
+        midpoints = (wrapped_coordinates.rolling(window = 2).sum().dropna())/2
+        midpoints.index = midpoints.index - 1
+        midpoints = midpoints[midpoints.index % 100 != 0]
+        midpoints.iloc[:, 0] = find_box_id(midpoint_ridges, midpoints.iloc[:, 0].to_numpy())
+        midpoints.iloc[:, 1] = find_box_id(midpoint_ridges, midpoints.iloc[:, 1].to_numpy())
+        midpoints.iloc[:, 2] = find_box_id(midpoint_ridges, midpoints.iloc[:, 2].to_numpy())
+        bond_vectors_2 = pd.concat([bond_vectors, midpoints], axis =1).rename(columns = {"xu" : "xid", "yu" : "yid", "zu" : "zid"})
+        #return bond_vectors
+        return bond_vectors_2
+
 
     def wrap_coordinates(self, data):
         """Converts coordinates to wrapped coordinates. Input can be float or array (float)"""
         return (data - self.minlength) % self.total_volume_length + self.minlength
+
+    def make_midpoint_ridges(self):
+        length_array = np.linspace(self.minlength, self.maxlength, self.nridges+1)
+        midpoint_ridges = ((length_array + np.roll(length_array, 1))/2)[1:] #Serves as box id 
+        return midpoint_ridges
 
     def assign_center_of_mass(self, nridges = 33):
         """Loops over all polymers to assign center of mass 
@@ -165,11 +184,9 @@ class atom_coords:
         Takes about 110 seconds over dataset 720k big"""
 
         data = self.datapd
-        length_array = np.linspace(self.minlength, self.maxlength, nridges+1)
-        midpoint_ridges = ((length_array + np.roll(length_array, 1))/2)[1:] #Serves as box id 
+        midpoint_ridges = self.make_midpoint_ridges()
         box_length =  (self.total_volume_length)/nridges
         df_com = pd.DataFrame(np.zeros([data.shape[0], 3]), columns = ["xid", "yid", "zid"], index = data.index)
-        #print(self.total_volume_length, self.minlength, self.maxlength)
         local_volume = self.volume/self.nridges**3
         wrapped_coordinates = self.wrap_coordinates(data.iloc[:, 1:5])
         df_com.iloc[:, 0] = find_box_id(midpoint_ridges, wrapped_coordinates.iloc[:, 0].to_numpy())
@@ -226,7 +243,8 @@ class atom_coords:
     def get_nematic_vector_5(self, save_string = None, cryst_cutoff = 0.8):
         data = self.datapd
         data = data[data.index % 100 != 0] # Filter out all last monomers as they do not have a bond vector per definiton
-        self.df_cryst = nematic_vector_loop(data, self.bond_vectors)
+        #self.df_cryst = nematic_vector_loop(data, self.bond_vectors)
+        self.df_cryst = nematic_vector_loop_2(self.bond_vectors)
         self.fraction_crystallinity, _ = fraction_crystallinity(self.df_cryst.iloc[:,3], cutoff= cryst_cutoff)
         if isinstance(save_string, str):
             self.df_cryst.to_csv("%s" %save_string, sep = " ", mode = "w")
@@ -553,13 +571,13 @@ def main():
 
     #first_timestep_e5 = polymer("../../data/pva-100/quick_quench/equil_t_085_tdot_e-3_run2_goodrun_time_0.txt")
     slow_quench_e5_time_100e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
-    slow_quench_e5_time_95e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_9500000.txt")
-    slow_quench_e5_time_90e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_9000000.txt")
-    slow_quench_e5_time_85e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_8500000.txt")
-    slow_quench_e5_time_80e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_8000000.txt")
+    # slow_quench_e5_time_95e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_9500000.txt")
+    # slow_quench_e5_time_90e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_9000000.txt")
+    # slow_quench_e5_time_85e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_8500000.txt")
+    # slow_quench_e5_time_80e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_8000000.txt")
 
 
-    # slow_quench_e5_time_100e5.atom_coords.get_nematic_vector_5("10e5_T05_last_timestep_boxes_ev.txt")
+    slow_quench_e5_time_100e5.atom_coords.get_nematic_vector_5("10e5_T05_last_timestep_boxes_ev.txt")
     # slow_quench_e5_time_95e5.atom_coords.get_nematic_vector_5("10e5_T05_timestep_boxes_ev_time_95e5.txt")
     # slow_quench_e5_time_90e5.atom_coords.get_nematic_vector_5("10e5_T05_timestep_boxes_ev_time_90e5.txt")
     # slow_quench_e5_time_85e5.atom_coords.get_nematic_vector_5("10e5_T05_timestep_boxes_ev_time_85e5.txt")

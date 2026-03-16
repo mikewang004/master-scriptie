@@ -11,6 +11,7 @@ import ctypes
 import time
 from numba import jit
 from nematic_vector import calc_nematic_tensor_2, nematic_vector_loop, nematic_vector_loop_2
+from matplotlib.colors import ListedColormap, BoundaryNorm
 
 def fraction_crystallinity(data, cutoff = 0.8):
     """Data 1d 1d list/array, defined as data > 0.8 -> crystallinity = 1;
@@ -331,6 +332,22 @@ class polymer():
         # plt.title("Distribution of bond-bond correlations")
         #plt.show()
 
+    def bond_distribution(self):
+        #self.atom_coords.get_nematic_vector_5()
+        print(self.atom_coords.bond_vectors)
+        counts = (
+            self.atom_coords.bond_vectors
+            .groupby(["xid", "yid", "zid"])
+            .size()                      # count rows per combination
+            .reset_index(name="count")   # put counts in a column
+        )
+
+        dist = counts["count"].value_counts().sort_index()
+        print(dist)
+
+
+
+
     def get_density_dist_per_box(self, nridges = 33):
         """Uses new method with combinations to calculate local density (i.e. density per box)"""
         data = self.atom_coords.datapd
@@ -483,11 +500,23 @@ class results(object):
     # Include plotting functions here 
 
 def plot_hk_matrix_2d(polymer):
-    data = polymer.merge_boxes()
-
-
+    data = polymer.merge_boxes(print_results = True)
     Nx, Ny, Nz = data.shape
 
+    # ---- GLOBAL COLOUR SCALE (same for all k) ----
+    global_max = int(data.max())
+    n_labels = max(global_max, 0)
+
+    # Base colours from viridis
+    base_colors = plt.cm.viridis(np.linspace(0, 1, n_labels + 1))
+    # Make label 0 stand out (e.g. bright red)
+    base_colors[0] = np.array([1.0, 0.0, 0.0, 1.0])  # RGBA
+
+    cmap = ListedColormap(base_colors)
+    bounds = np.arange(-0.5, n_labels + 1.5, 1)
+    norm = BoundaryNorm(bounds, cmap.N)
+
+    # ----------------------------------------------
     for k in range(Nz):
         slice_k = data[:, :, k]
 
@@ -497,9 +526,14 @@ def plot_hk_matrix_2d(polymer):
         fig_height = max(4, Nx * cell_size)
 
         fig, ax = plt.subplots(figsize=(fig_width, fig_height))
-        im = ax.imshow(slice_k, cmap='viridis', origin='lower')
 
-        ax.set_title(f"Cluster labels, PVA-100, T = 0.5, Tdot = 10**(-5), T_init = 1.0, z = {k}")
+        # use the same cmap/norm for every slice
+        im = ax.imshow(slice_k, cmap=cmap, norm=norm, origin='lower')
+
+        ax.set_title(
+            f"Cluster labels, PVA-100, T = 0.5, Tdot = 10**(-5), "
+            f"T_init = 1.0, z = {k}"
+        )
         ax.set_xlabel("y")
         ax.set_ylabel("x")
 
@@ -511,23 +545,24 @@ def plot_hk_matrix_2d(polymer):
         step_x = 1                   # label every 'step_x' cells in x
         step_y = 1                   # label every 'step_y' cells in y
 
-        max_val = slice_k.max()
         for x in range(0, Nx, step_x):
             for y in range(0, Ny, step_y):
                 val = slice_k[x, y]
                 if label_only_nonzero and val == 0:
                     continue
                 ax.text(
-                    y, x, str(val),
+                    y, x, str(int(val)),
                     ha='center', va='center',
-                    color='white' if val < max_val / 2 else 'black',
-                    fontsize=6,  # smaller font
+                    color='white' if val < global_max / 2 else 'black',
+                    fontsize=6,
                 )
 
-        fig.colorbar(im, ax=ax, label='cluster label')
+        cbar = fig.colorbar(im, ax=ax, label='cluster label')
+        cbar.set_ticks(np.arange(0, n_labels + 1))
+
         fig.tight_layout()
-        plt.savefig("debug_hk_algo/10e5_T05_hk_2d_plots/zlayer_%i.pdf" %k)
-        #plt.show() 
+        plt.savefig(f"hk_debug/PVA_100_t=20_zlayer_{k}.pdf")
+        # plt.show()
         plt.close()
 
 

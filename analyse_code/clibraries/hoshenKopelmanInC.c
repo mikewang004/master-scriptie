@@ -103,9 +103,10 @@ int check_merger_criteria(double *ev_array, double *row, float cryst_cutoff, dou
     }
     if (row[3] > cryst_cutoff) { // Both lattice points should be crystalline, crystalliiny central point checked in H-K main function
         double inproduct = fabs(row[4])*fabs(ev_array[0]) + fabs(row[5]) * fabs(ev_array[1]) + fabs(row[6]) * fabs(ev_array[2]);
+        double inproduct2 = 1.5 * inproduct*inproduct - 0.5;
         //double inproduct = fabs(row[4] * ev_array[0]) + fabs(row[5] * ev_array[1]) + fabs(row[6] * ev_array[2]); 
         //double inproduct = fabs(row[4]*ev_array[0] + row[5] * ev_array[1] + row[6] * ev_array[2]);
-        if (inproduct >= ndot_cutoff) { 
+        if (inproduct2 >= ndot_cutoff) { 
             // Look up label
             return 1;
         }
@@ -170,7 +171,7 @@ void hoshen_kopelman_crystallisation(double *array, int rows, int cols, int nrid
 
     
 
-    for (int m = 0; m < 1; m ++ ) {
+    for (int m = 0; m < 2; m ++ ) {
         //for (int l = 0; l < nridges*nridges*nridges; l++) {
         for (int l = 0; l < nridges*nridges *nridges; l++) {
 

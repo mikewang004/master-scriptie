@@ -319,13 +319,13 @@ def main():
 
 
     simulation_list = [cooling_e3_T085, cooling_e3_T088]
-    plot_mean_cluster_vs_crystallisation_single_cooling_rate(simulation_list, plot_equal_length= True)
+    #plot_mean_cluster_vs_crystallisation_single_cooling_rate(simulation_list, plot_equal_length= True)
     #plot_mean_cluster_vs_no_clusters_single_cooling_rate(simulation_list, plot_equal_length= True)
 
     # plot_mean_cluster_vs_crystallisation_single_temp(simulation_list, plot_equal_length= True, labels_list = [r"T=0.85, \dot{T}=10^{-3}, isothermal", 
     #     r"T=0.85, \dot{T}=10^{-4}, isothermal", r"T=0.85, \dot{T}=10^{-3}, cold crystallsation"])
     #plot_avrami([cooling_e3_T085], show_plot = True)
-    # #plot_bond_bond_correlation(cooling_e3_T085)
+    #plot_bond_bond_correlation(cooling_e3_T085)
     # #plot_bond_bond_correlation(cooling_e3_T088)
     # plot_bond_bond_correlation(cooling_e4_T085)
 

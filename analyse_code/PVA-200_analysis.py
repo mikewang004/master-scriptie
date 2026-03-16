@@ -1,4 +1,4 @@
-from analyse7 import polymer, atom_coords
+from analyse7 import polymer, atom_coords, plot_hk_matrix_2d
 import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
@@ -26,11 +26,17 @@ def pva_50_analysis(data_path):
     icryst_PVA_50_T088.calc_avg_domain_size()
     return icryst_PVA_50_T088
 
+def pva_100_analysis(data_path):
+    icryst_PVA_100_T085 = Simulation(0.85, -3, "%s%s" %(data_path, "/slurm-e3-T085.out"), "%s/equil_t_085_tdot_e-3_time"%(data_path), no_runs = 3, 
+        home_folder= "../data_online/PVA-100/quick_quench")
+    icryst_PVA_100_T085.calc_crystallisation()
+    icryst_PVA_100_T085.calc_avg_domain_size()
+    return icryst_PVA_100_T085
 
 def get_domain_distribution_polymer(polymer):
     """Returns distribution of domain sizes"""
     label_matrix = polymer.merge_boxes(print_results= True)
-
+    print(label_matrix)
     #Get distribution by counting label occurances
     label_matrix = label_matrix[label_matrix != 0]
     #print(label_matrix[label_matrix != 0])
@@ -127,11 +133,12 @@ def main():
     #pva_50_analysis(data_path_50)
     icryst_PVA_200_T088 = pva_200_analysis(data_path_200)
     icryst_PVA_50_T088 = pva_50_analysis(data_path_50)
-    icryst_PVA_100_T085 = Simulation(0.85, -3, "%s%s" %(data_path_100, "/slurm-e3-T085.out"), "%s/equil_t_085_tdot_e-3_time"%(data_path_100), no_runs = 3, 
-        home_folder= "../data_online/PVA-100/quick_quench")
-    current_polymer = icryst_PVA_100_T085.get_polymer_by_count(20)
+    icryst_PVA_100_T085 = pva_100_analysis(data_path_100)
+    current_polymer = icryst_PVA_100_T085.get_polymer_by_count(10)
+    print(current_polymer.bond_distribution())
     #current_polymer.atom_coords.get_nematic_vector_5(save_string= "test.txt")
     #get_domain_distribution_polymer(current_polymer)
+    #plot_hk_matrix_2d(current_polymer)
     #icryst_PVA_100_T088.get_polymer_by_count(99).atom_coords.get_nematic_vector_5()
 
     #polymer_list = [icryst_PVA_50_T088, icryst_PVA_100_T085, icryst_PVA_200_T088]

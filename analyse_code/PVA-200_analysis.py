@@ -35,7 +35,7 @@ def pva_100_analysis(data_path):
 
 def get_domain_distribution_polymer(polymer):
     """Returns distribution of domain sizes"""
-    label_matrix = polymer.merge_boxes(print_results= True)
+    label_matrix = polymer.merge_boxes(print_results= True, ndot_cutoff=0.98)
     print(label_matrix)
     #Get distribution by counting label occurances
     label_matrix = label_matrix[label_matrix != 0]
@@ -135,9 +135,10 @@ def main():
     icryst_PVA_50_T088 = pva_50_analysis(data_path_50)
     icryst_PVA_100_T085 = pva_100_analysis(data_path_100)
     current_polymer = icryst_PVA_100_T085.get_polymer_by_count(10)
-    print(current_polymer.bond_distribution())
+    print(current_polymer.atom_distribution())
+    #print(current_polymer.bond_distribution())
     #current_polymer.atom_coords.get_nematic_vector_5(save_string= "test.txt")
-    #get_domain_distribution_polymer(current_polymer)
+    get_domain_distribution_polymer(current_polymer)
     #plot_hk_matrix_2d(current_polymer)
     #icryst_PVA_100_T088.get_polymer_by_count(99).atom_coords.get_nematic_vector_5()
 

@@ -170,6 +170,35 @@ class atom_coords:
         return bond_vectors_2
 
 
+    def bond_vectors_nem_20cc(self):
+        data = self.datapd 
+        midpoint_ridges = self.make_midpoint_ridges()
+        print(midpoint_ridges)
+        print(data)
+        bond_vectors_array = (np.diff(data.iloc[:, 1:4], axis = 0))
+        print(bond_vectors_array)
+        data = self.wrap_coordinates(data)
+        xp = data.iloc[:, 1:4] - self.minlength
+        print(xp)
+        xm = (xp.rolling(2).sum().dropna())/2
+        xm.index = xm.index - 1
+        print(xm)
+        n = int(self.total_volume_length/2.0)
+        lx = self.total_volume_length/n
+        m = (xm/lx).astype(int)
+
+        counts = (
+            m
+            .groupby(["xu", "yu", "zu"])
+            .size()                      # count rows per combination
+            .reset_index(name="count")   # put counts in a column
+        )
+
+        dist = counts["count"].value_counts().sort_index()
+        print(dist)
+        #Above corresponds to about line 906 in nematic20.calc_nematic_tensor
+        
+
     def wrap_coordinates(self, data):
         """Converts coordinates to wrapped coordinates. Input can be float or array (float)"""
         return (data - self.minlength) % self.total_volume_length + self.minlength
@@ -345,6 +374,38 @@ class polymer():
         dist = counts["count"].value_counts().sort_index()
         print(dist)
 
+    def atom_distribution(self):
+        wrapped_coords = self.atom_coords.wrap_coordinates(self.atom_coords.datapd.iloc[:, 1:4])
+        #wrapped_coords = self.atom_coords.datapd.iloc[:, 1:4]
+        print(wrapped_coords)
+
+        coords = wrapped_coords[['xu', 'yu', 'zu']].to_numpy()
+
+        # Define 33 bins between min and max for each axis
+        ranges = [
+            (wrapped_coords['xu'].min(), wrapped_coords['xu'].max()),
+            (wrapped_coords['yu'].min(), wrapped_coords['yu'].max()),
+            (wrapped_coords['zu'].min(), wrapped_coords['zu'].max()),
+        ]
+
+        # 3D histogram: 33 bins along each of x, y, z
+        H, edges = np.histogramdd(
+            coords,
+            bins=(33, 33, 33),
+            range=ranges,
+        )
+
+        print("Histogram shape:", H.shape)   # (33, 33, 33)
+        print("Total count in histogram:", int(H.sum()))
+
+
+
+
+        H_1d = H.ravel()
+        unique_counts, freqs = np.unique(H_1d, return_counts=True)
+
+        for c, f in zip(unique_counts, freqs):
+            print(f"count={int(c)} in {int(f)} cells")
 
 
 

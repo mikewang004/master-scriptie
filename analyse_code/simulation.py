@@ -229,7 +229,7 @@ class Simulation:
             with open(cryst_array_string, "a") as file:
                 file.write(f"{current_time} {frac_cryst}\n")
 
-    def calc_avg_domain_size(self, boxes_eigv_file: str = None, load_polymer_cryst_files: str = None, calc_all: bool = False, print_results: bool = False):
+    def calc_avg_domain_size(self, boxes_eigv_file: str = None, load_polymer_cryst_files: str = None, calc_all: bool = False, print_results: bool = False, ndot_cutoff = 0.97):
         if boxes_eigv_file == None:
             boxes_eigv_file = "%s/domain_analysis.txt" %(self.path_to_home_folder)
         local_time_temp_array, local_list_lammps_files = self.check_polymer_attributes_file_exists(boxes_eigv_file, calc_all = calc_all)
@@ -250,7 +250,7 @@ class Simulation:
                     %(self.path_to_home_folder, current_time))
             else:
                 current_polymer.read_cryst(load_polymer_cryst_files)
-            current_polymer.merge_boxes(print_results = print_results)
+            current_polymer.merge_boxes(print_results = print_results, ndot_cutoff = ndot_cutoff)
 
             # with open(boxes_eigv_file, "a") as file:
             #     file.write(f"{current_time} {current_polymer.results.mean_cluster_size}\n")

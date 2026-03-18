@@ -130,6 +130,11 @@ def main():
     data_path_50 = "../../data/PVA-50"
     data_path_200 = "../../data/PVA-200"
     data_path_100 = "../../data/pva-100/quick_quench/long_run"
+
+    cooling_e4_T085 = Simulation(0.85, -4, "%s%s" %(data_path_100, "/slurm-e4-T085.out"), "%s/equil_t_085_tdot_e-4_time"%(data_path_100), no_runs = 1, 
+        home_folder= "../data_online/PVA-100/quick_quench")
+    cooling_e4_T085.calc_crystallisation()
+    cooling_e4_T085.calc_avg_domain_size()
     #pva_50_analysis(data_path_50)
     icryst_PVA_200_T088 = pva_200_analysis(data_path_200)
     icryst_PVA_50_T088 = pva_50_analysis(data_path_50)

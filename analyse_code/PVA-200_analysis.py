@@ -125,6 +125,167 @@ def plot_avrami(simulation_list: list, save: bool = False, savestring = None, sh
         plt.show()
     plt.close()
 
+def log_binning(imax):
+    """
+    Create bin edges corresponding to the C++ binning scheme
+    for integer cluster sizes 1..imax.
+
+    Bins:
+        1,2,3,4,5
+        6-7
+        8-10
+        11-20, 21-30, ..., 61-70
+        71-100
+        101-200, 201-300, ..., 601-700
+        701-1000
+        1001-2000, 2001-3000, ... up to imax
+
+    Uses [edge[k], edge[k+1]) with 0.5 offsets so integers fall correctly.
+    """
+    edges = [0.5]  # so size 1 is in [0.5, 1.5)
+
+    # 1–5 : one bin per integer
+    for i in range(1, 6):
+        if i > imax:
+            edges.append(imax + 0.5)
+            return np.array(edges)
+        edges.append(i + 0.5)
+
+    # 6–7
+    if imax >= 6:
+        edges.append(min(7, imax) + 0.5)
+        if imax <= 7:
+            return np.array(edges)
+    else:
+        edges.append(imax + 0.5)
+        return np.array(edges)
+
+    # 8–10
+    if imax >= 8:
+        edges.append(min(10, imax) + 0.5)
+        if imax <= 10:
+            return np.array(edges)
+    else:
+        edges.append(imax + 0.5)
+        return np.array(edges)
+
+    # 11–20, 21–30, ..., 61–70 (width 10)
+    for upper in range(20, 71, 10):
+        lower = upper - 9
+        if imax > lower:
+            edges.append(min(upper, imax) + 0.5)
+            if imax <= upper:
+                return np.array(edges)
+        else:
+            edges.append(imax + 0.5)
+            return np.array(edges)
+
+    # 71–100
+    if imax > 70:
+        edges.append(min(100, imax) + 0.5)
+        if imax <= 100:
+            return np.array(edges)
+    else:
+        edges.append(imax + 0.5)
+        return np.array(edges)
+
+    # 101–200, 201–300, ..., 601–700 (width 100)
+    for upper in range(200, 701, 100):
+        lower = upper - 99
+        if imax > lower:
+            edges.append(min(upper, imax) + 0.5)
+            if imax <= upper:
+                return np.array(edges)
+        else:
+            edges.append(imax + 0.5)
+            return np.array(edges)
+
+    # 701–1000
+    if imax > 700:
+        edges.append(min(1000, imax) + 0.5)
+        if imax <= 1000:
+            return np.array(edges)
+    else:
+        edges.append(imax + 0.5)
+        return np.array(edges)
+
+    # 1001–2000, 2001–3000, ... up to imax (step 1000)
+    upper = 2000
+    while upper < imax:
+        edges.append(min(upper, imax) + 0.5)
+        if imax <= upper:
+            return np.array(edges)
+        upper += 1000
+
+    if edges[-1] < imax + 0.5:
+        edges.append(imax + 0.5)
+
+    return np.array(edges)
+
+def cpp_style_cluster_hist(polymer, plot=True):
+    """
+    Parameters
+    ----------
+    label_array : np.ndarray
+        3D array (e.g. 33x33x33) with integer labels in [0..n],
+        where 0 is background and 1..n are cluster labels.
+    plot : bool
+        If True, plot a histogram using Matplotlib.
+
+    Returns
+    -------
+    bin_centers : np.ndarray
+        Center of each bin (approximate cluster size).
+    bin_counts : np.ndarray
+        Number of clusters in each bin.
+    bin_edges : np.ndarray
+        Edges used for the histogram.
+    """
+
+    # ---- 1. Compute cluster sizes ----
+    label_array = polymer.merge_boxes(print_results= True, ndot_cutoff=0.98)
+    flat = label_array.ravel()
+    max_label = flat.max()
+
+    # counts_per_label[i] = number of voxels with label i
+    counts_per_label = np.bincount(flat, minlength=max_label + 1)
+
+    # Assume label 0 is background
+    cluster_sizes = counts_per_label[1:]  # sizes for labels 1..max_label
+    # Remove any empty labels (should be rare but safe)
+    cluster_sizes = cluster_sizes[cluster_sizes > 0]
+
+    if cluster_sizes.size == 0:
+        raise ValueError("No non-zero cluster labels found in the array.")
+
+    imax = int(cluster_sizes.max())
+
+    # ---- 2. Build C++-style bin edges ----
+
+
+    bin_edges = log_binning(imax)
+
+    # ---- 3. Histogram of cluster sizes ----
+    bin_counts, edges_used = np.histogram(cluster_sizes, bins=bin_edges)
+
+    bin_centers = 0.5 * (edges_used[:-1] + edges_used[1:])
+    bin_widths = np.diff(edges_used)
+
+    # ---- 4. Optional plotting ----
+    if plot:
+        #plt.figure(figsize=(6, 4))
+        plt.bar(bin_centers, bin_counts,
+                width=bin_widths, align='center', edgecolor='k')
+        plt.xlabel("Cluster size")
+        plt.ylabel("Number of clusters in bin")
+        plt.xscale("log")  # optional but typically useful here
+        #plt.tight_layout()
+        plt.title(r"Crystalline domain size distribution, PVA-%i, \dot{T}=10^{-$i}, $\phi = %.3f$" %(polymer.atom_coords.polymer_length, polymer.timestep, polymer.frac_cryst))
+        plt.savefig("cryst_domain_distro_pva_100_time_%i.pdf" %polymer.timestep)
+        plt.show()
+
+    return bin_centers, bin_counts, edges_used
+
 
 def main():
     data_path_50 = "../../data/PVA-50"
@@ -139,15 +300,16 @@ def main():
     icryst_PVA_200_T088 = pva_200_analysis(data_path_200)
     icryst_PVA_50_T088 = pva_50_analysis(data_path_50)
     icryst_PVA_100_T085 = pva_100_analysis(data_path_100)
-    current_polymer = icryst_PVA_100_T085.get_polymer_by_count(100)
+    current_polymer = icryst_PVA_100_T085.get_polymer_by_count(20)
     print(current_polymer.atom_distribution())
+    #cpp_style_cluster_hist(current_polymer)
     #print(current_polymer.bond_distribution())
     #current_polymer.atom_coords.get_nematic_vector_5(save_string= "test.txt")
-    get_domain_distribution_polymer(current_polymer)
+    #get_domain_distribution_polymer(current_polymer)
     #plot_hk_matrix_2d(current_polymer)
     #icryst_PVA_100_T088.get_polymer_by_count(99).atom_coords.get_nematic_vector_5()
 
-    #polymer_list = [icryst_PVA_50_T088, icryst_PVA_100_T085, icryst_PVA_200_T088]
+    polymer_list = [icryst_PVA_50_T088, icryst_PVA_100_T085, icryst_PVA_200_T088]
     #plot_crystallisation_different_polymer_lengths(polymer_list, plot_equal_length= True, save= True)
     #plot_avrami([icryst_PVA_100_T085], show_plot= True, save = False)
 

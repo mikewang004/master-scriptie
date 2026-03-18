@@ -622,7 +622,7 @@ def plot_hk_matrix_2d(polymer):
         cbar.set_ticks(np.arange(0, n_labels + 1))
 
         fig.tight_layout()
-        plt.savefig(f"hk_debug/PVA_100_t=20_zlayer_{k}.pdf")
+        plt.savefig(f"hk_debug/PVA_100_quench_zlayer_{k}.pdf")
         # plt.show()
         plt.close()
 

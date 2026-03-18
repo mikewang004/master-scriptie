@@ -85,10 +85,12 @@ def plot_crystallisation_different_polymer_lengths(simulation_list, save: bool =
 
 def avrami_eq(t, n, b, a):
     #return np.log(1-t)
-    return a * (t**n) + b
+    return a * (t**n) 
+    #return np.exp(-a*t**n) + b
+
 
 def avrami_fit(t, y):
-    popt, pcov = sp.optimize.curve_fit(avrami_eq, t, y, maxfev = 100000)
+    popt, pcov = sp.optimize.curve_fit(avrami_eq, t, y, maxfev = 1000000)
     return popt, pcov
 
 def plot_avrami(simulation_list: list, save: bool = False, savestring = None, show_plot = False):
@@ -99,7 +101,8 @@ def plot_avrami(simulation_list: list, save: bool = False, savestring = None, sh
     #plt.xlim(10**7, 10**8)
     for simulation in simulation_list:
         print(simulation.cryst.shape)
-        used_simulation_cryst = simulation.cryst[:10, :]# / 12000000
+        used_simulation_cryst = simulation.cryst[:50, :]# / 12000000
+        used_simulation_cryst[:, 0] /= 10000000
         #phi0 = np.log(1 - (used_simulation_cryst[:, 1]))
         phi0 = used_simulation_cryst[:, 1]
         #print(used_simulation_cryst)
@@ -107,10 +110,13 @@ def plot_avrami(simulation_list: list, save: bool = False, savestring = None, sh
         #print(np.log(1 - (used_simulation_cryst[:, 1])))
         popt, pcov = avrami_fit(used_simulation_cryst[:, 0], phi0)
         print(popt)
+        sim_times = np.linspace(np.min(used_simulation_cryst[:, 0]), np.max(used_simulation_cryst[:, 0]), 10000)
         #plt.xscale("log")        # make y-axis logarithmic
-        plt.plot(used_simulation_cryst[:, 0], avrami_eq(used_simulation_cryst[:, 0], *popt),
+        plt.plot(sim_times, avrami_eq(sim_times, *popt),
              label=f"n = {popt[0]:.4f}, b = {popt[1]:.4f}, a = {popt[2]:.10f}")
         plt.scatter(used_simulation_cryst[:, 0], phi0, label = "experimental data")
+        #plt.xscale("log")
+        #plt.yscale("log")
 
     plt.title(r"$\phi(t)$, PVA-100, T=%.2f, $\dot{T}=10^{%i}$" %(simulation.temp, simulation.cooling_rate))
     plt.xlabel("time")
@@ -124,6 +130,8 @@ def plot_avrami(simulation_list: list, save: bool = False, savestring = None, sh
     if show_plot is True:
         plt.show()
     plt.close()
+
+
 
 def log_binning(imax):
     """
@@ -271,6 +279,8 @@ def cpp_style_cluster_hist(polymer, plot=True):
     bin_centers = 0.5 * (edges_used[:-1] + edges_used[1:])
     bin_widths = np.diff(edges_used)
 
+
+
     # ---- 4. Optional plotting ----
     if plot:
         #plt.figure(figsize=(6, 4))
@@ -280,8 +290,9 @@ def cpp_style_cluster_hist(polymer, plot=True):
         plt.ylabel("Number of clusters in bin")
         plt.xscale("log")  # optional but typically useful here
         #plt.tight_layout()
-        plt.title(r"Crystalline domain size distribution, PVA-%i, \dot{T}=10^{-$i}, $\phi = %.3f$" %(polymer.atom_coords.polymer_length, polymer.timestep, polymer.frac_cryst))
-        plt.savefig("cryst_domain_distro_pva_100_time_%i.pdf" %polymer.timestep)
+        print(polymer.timestep)
+        plt.title(r"Crystalline domain size distribution, PVA-%i, $\phi = %.3f$" %(polymer.atom_coords.polymer_length, polymer.frac_cryst))
+        plt.savefig("cryst_domain_distro_pva_200_quench_time_%i.pdf" %polymer.timestep)
         plt.show()
 
     return bin_centers, bin_counts, edges_used
@@ -300,18 +311,25 @@ def main():
     icryst_PVA_200_T088 = pva_200_analysis(data_path_200)
     icryst_PVA_50_T088 = pva_50_analysis(data_path_50)
     icryst_PVA_100_T085 = pva_100_analysis(data_path_100)
-    current_polymer = icryst_PVA_100_T085.get_polymer_by_count(20)
-    print(current_polymer.atom_distribution())
-    #cpp_style_cluster_hist(current_polymer)
+
+    quench_e5 = Simulation(0.5, -5, "../../data/pva-100/genua_cooling_100_ttime_10e7.out", "../../data/pva-100/genua_cooling_100_tmin_0.5_ttime_10e7",
+        no_runs=1, home_folder = "../data_online/PVA-100/quench/cryst_quench_e-5", home_folder_override= True)
+    quench_e5.calc_crystallisation()
+    quench_e5.calc_avg_domain_size()
+    current_polymer = icryst_PVA_200_T088.get_polymer_by_count(20)
+    #print(current_polymer.atom_distribution())
+    cpp_style_cluster_hist(current_polymer)
     #print(current_polymer.bond_distribution())
     #current_polymer.atom_coords.get_nematic_vector_5(save_string= "test.txt")
     #get_domain_distribution_polymer(current_polymer)
     #plot_hk_matrix_2d(current_polymer)
     #icryst_PVA_100_T088.get_polymer_by_count(99).atom_coords.get_nematic_vector_5()
 
-    polymer_list = [icryst_PVA_50_T088, icryst_PVA_100_T085, icryst_PVA_200_T088]
-    #plot_crystallisation_different_polymer_lengths(polymer_list, plot_equal_length= True, save= True)
+    #polymer_list = [icryst_PVA_50_T088, icryst_PVA_100_T085, icryst_PVA_200_T088]
+    polymer_list = [quench_e5]
+    #plot_crystallisation_different_polymer_lengths(polymer_list, plot_equal_length= True, save= False)
     #plot_avrami([icryst_PVA_100_T085], show_plot= True, save = False)
+
 
 
 if __name__ == "__main__":

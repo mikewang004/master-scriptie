@@ -194,7 +194,7 @@ class Simulation:
             except ValueError: 
                 data_array = pd.read_csv(path_to_file, sep = " ").drop(columns = "Unnamed: 0")
                 #print(data_array)
-                maxtime = int(np.max(data_array.iloc[1:, 0]))
+                maxtime = (data_array['time'].max())
             #Only continue at given time
             shortened_time_temp_array = self.time_temp_array[self.time_temp_array[:, 0] > maxtime]
             #Also delete first [n] entries of the list_lammps_files

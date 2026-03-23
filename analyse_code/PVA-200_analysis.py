@@ -27,11 +27,11 @@ def pva_50_analysis(data_path):
     return icryst_PVA_50_T088
 
 def pva_100_analysis(data_path):
-    icryst_PVA_100_T085 = Simulation(0.85, -3, "%s%s" %(data_path, "/slurm-e3-T085.out"), "%s/equil_t_085_tdot_e-3_time"%(data_path), no_runs = 3, 
+    icryst_PVA_100_T088 = Simulation(0.88, -3, "%s%s" %(data_path, "/slurm-e3-T088.out"), "%s/equil_t_088_tdot_e-3_time"%(data_path), no_runs = 1, 
         home_folder= "../data_online/PVA-100/quick_quench")
-    icryst_PVA_100_T085.calc_crystallisation()
-    icryst_PVA_100_T085.calc_avg_domain_size(ndot_cutoff= 0.98)
-    return icryst_PVA_100_T085
+    icryst_PVA_100_T088.calc_crystallisation()
+    icryst_PVA_100_T088.calc_avg_domain_size(ndot_cutoff= 0.98)
+    return icryst_PVA_100_T088
 
 def get_domain_distribution_polymer(polymer):
     """Returns distribution of domain sizes"""
@@ -303,10 +303,10 @@ def main():
     data_path_200 = "../../data/PVA-200"
     data_path_100 = "../../data/pva-100/quick_quench/long_run"
 
-    cooling_e4_T085 = Simulation(0.85, -4, "%s%s" %(data_path_100, "/slurm-e4-T085.out"), "%s/equil_t_085_tdot_e-4_time"%(data_path_100), no_runs = 1, 
-        home_folder= "../data_online/PVA-100/quick_quench")
-    cooling_e4_T085.calc_crystallisation()
-    cooling_e4_T085.calc_avg_domain_size()
+    # cooling_e4_T085 = Simulation(0.85, -4, "%s%s" %(data_path_100, "/slurm-e4-T085.out"), "%s/equil_t_085_tdot_e-4_time"%(data_path_100), no_runs = 1, 
+    #     home_folder= "../data_online/PVA-100/quick_quench")
+    # cooling_e4_T085.calc_crystallisation()
+    # cooling_e4_T085.calc_avg_domain_size()
     #pva_50_analysis(data_path_50)
     icryst_PVA_200_T088 = pva_200_analysis(data_path_200)
     icryst_PVA_50_T088 = pva_50_analysis(data_path_50)
@@ -316,17 +316,17 @@ def main():
         no_runs=1, home_folder = "../data_online/PVA-100/quench/cryst_quench_e-5", home_folder_override= True)
     quench_e5.calc_crystallisation()
     quench_e5.calc_avg_domain_size()
-    current_polymer = icryst_PVA_200_T088.get_polymer_by_count(20)
+    current_polymer = icryst_PVA_100_T085.get_polymer_by_count(20)
     #print(current_polymer.atom_distribution())
-    cpp_style_cluster_hist(current_polymer)
+    #cpp_style_cluster_hist(current_polymer)
     #print(current_polymer.bond_distribution())
     #current_polymer.atom_coords.get_nematic_vector_5(save_string= "test.txt")
     #get_domain_distribution_polymer(current_polymer)
-    #plot_hk_matrix_2d(current_polymer)
+    plot_hk_matrix_2d(current_polymer)
     #icryst_PVA_100_T088.get_polymer_by_count(99).atom_coords.get_nematic_vector_5()
 
-    #polymer_list = [icryst_PVA_50_T088, icryst_PVA_100_T085, icryst_PVA_200_T088]
-    polymer_list = [quench_e5]
+    polymer_list = [icryst_PVA_50_T088, icryst_PVA_100_T085, icryst_PVA_200_T088]
+    #polymer_list = [quench_e5]
     #plot_crystallisation_different_polymer_lengths(polymer_list, plot_equal_length= True, save= False)
     #plot_avrami([icryst_PVA_100_T085], show_plot= True, save = False)
 

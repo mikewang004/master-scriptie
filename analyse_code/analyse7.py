@@ -560,35 +560,49 @@ class results(object):
 
     # Include plotting functions here 
 
-def plot_hk_matrix_2d(polymer):
-    data = polymer.merge_boxes(print_results = True)
+
+def plot_hk_matrix_2d(polymer, ndot_cutoff=0.98, cryst_threshold=0.8):
+    # 3D array of cluster labels
+    data = polymer.merge_boxes(print_results=True)
     Nx, Ny, Nz = data.shape
 
-    # ---- GLOBAL COLOUR SCALE (same for all k) ----
+    dfc = polymer.df_cryst.copy()
+
+    # Integer indices for the grid
+    ix = dfc["xid"].astype(int).to_numpy()
+    iy = dfc["yid"].astype(int).to_numpy()
+    iz = dfc["zid"].astype(int).to_numpy()
+
+    # ---- Build cryst_bool, x_ev, y_ev, z_ev arrays aligned with data ----
+    cryst_vals = np.full((Nx, Ny, Nz), np.nan, dtype=float)
+    xev_vals   = np.full((Nx, Ny, Nz), np.nan, dtype=float)
+    yev_vals   = np.full((Nx, Ny, Nz), np.nan, dtype=float)
+    zev_vals   = np.full((Nx, Ny, Nz), np.nan, dtype=float)
+
+    cryst_vals[ix, iy, iz] = dfc["cryst_bool"].to_numpy()
+    xev_vals[ix, iy, iz]   = dfc["x_ev"].to_numpy()
+    yev_vals[ix, iy, iz]   = dfc["y_ev"].to_numpy()
+    zev_vals[ix, iy, iz]   = dfc["z_ev"].to_numpy()
+
+    # ---- Global colour scale for cluster labels ----
     global_max = int(data.max())
     n_labels = max(global_max, 0)
 
-    # Base colours from viridis
     base_colors = plt.cm.viridis(np.linspace(0, 1, n_labels + 1))
-    # Make label 0 stand out (e.g. bright red)
     base_colors[0] = np.array([1.0, 0.0, 0.0, 1.0])  # RGBA
-
     cmap = ListedColormap(base_colors)
     bounds = np.arange(-0.5, n_labels + 1.5, 1)
     norm = BoundaryNorm(bounds, cmap.N)
 
-    # ----------------------------------------------
     for k in range(Nz):
         slice_k = data[:, :, k]
+        cryst_k = cryst_vals[:, :, k]
 
-        # Scale figure size with grid size so each cell is big enough
-        cell_size = 0.3  # inches per cell (adjust up/down)
+        cell_size = 0.8
         fig_width = max(4, Ny * cell_size)
         fig_height = max(4, Nx * cell_size)
-
         fig, ax = plt.subplots(figsize=(fig_width, fig_height))
 
-        # use the same cmap/norm for every slice
         im = ax.imshow(slice_k, cmap=cmap, norm=norm, origin='lower')
 
         ax.set_title(
@@ -597,33 +611,175 @@ def plot_hk_matrix_2d(polymer):
         )
         ax.set_xlabel("y")
         ax.set_ylabel("x")
-
         ax.set_xlim(-0.5, Ny - 0.5)
         ax.set_ylim(-0.5, Nx - 0.5)
 
-        # --- Control which cells get labels ---
-        label_only_nonzero = False   # set True if you only want val != 0
-        step_x = 1                   # label every 'step_x' cells in x
-        step_y = 1                   # label every 'step_y' cells in y
+        # --- Cell labels: cluster + cryst_bool, plus z-edge values above/below ---
+        label_only_nonzero = False
+        step_x = 1
+        step_y = 1
 
         for x in range(0, Nx, step_x):
             for y in range(0, Ny, step_y):
                 val = slice_k[x, y]
                 if label_only_nonzero and val == 0:
                     continue
+
+                cryst_val = cryst_k[x, y]
+
+                # Central cell text: cluster + cryst_bool
+                lines = [f"{int(val)}"]
+                if not np.isnan(cryst_val):
+                    lines.append(f"{cryst_val:.3f}")
+                text_str = "\n".join(lines)
+
                 ax.text(
-                    y, x, str(int(val)),
+                    y, x, text_str,
                     ha='center', va='center',
                     color='white' if val < global_max / 2 else 'black',
-                    fontsize=6,
+                    fontsize=5,
+                )
+
+                # If this cell is "red" (cryst_bool < threshold), skip z-val_edge
+                if np.isnan(cryst_val) or cryst_val < cryst_threshold:
+                    continue
+
+                # Periodic neighbors in z
+                k_above = (k + 1) % Nz   # border "above" current slice
+                k_below = (k - 1) % Nz   # border "below" current slice
+
+                # z-edge above: between (x,y,k) and (x,y,k_above)
+                val_above = None
+                if (not np.isnan(xev_vals[x, y, k]) and
+                    not np.isnan(xev_vals[x, y, k_above]) and
+                    not np.isnan(yev_vals[x, y, k]) and
+                    not np.isnan(yev_vals[x, y, k_above]) and
+                    not np.isnan(zev_vals[x, y, k]) and
+                    not np.isnan(zev_vals[x, y, k_above])):
+
+                    P2Q_above = (
+                        np.abs(xev_vals[x, y, k] * xev_vals[x, y, k_above]) +
+                        np.abs(yev_vals[x, y, k] * yev_vals[x, y, k_above]) +
+                        np.abs(zev_vals[x, y, k] * zev_vals[x, y, k_above])
+                    )
+                    val_above = 1.5 * P2Q_above - 0.5
+
+                # z-edge below: between (x,y,k_below) and (x,y,k)
+                val_below = None
+                if (not np.isnan(xev_vals[x, y, k_below]) and
+                    not np.isnan(xev_vals[x, y, k]) and
+                    not np.isnan(yev_vals[x, y, k_below]) and
+                    not np.isnan(yev_vals[x, y, k]) and
+                    not np.isnan(zev_vals[x, y, k_below]) and
+                    not np.isnan(zev_vals[x, y, k])):
+
+                    P2Q_below = (
+                        np.abs(xev_vals[x, y, k_below] * xev_vals[x, y, k]) +
+                        np.abs(yev_vals[x, y, k_below] * yev_vals[x, y, k]) +
+                        np.abs(zev_vals[x, y, k_below] * zev_vals[x, y, k])
+                    )
+                    val_below = 1.5 * P2Q_below - 0.5
+
+                # Z-edge values: separate texts, colored by ndot_cutoff, with z+/z- prefix
+                if val_above is not None:
+                    color_above = 'blue' if val_above >= ndot_cutoff else 'red'
+                    ax.text(
+                        y, x + 0.35, f"z+ {val_above:.2f}",
+                        ha='center', va='center',
+                        color=color_above,
+                        fontsize=4,
+                    )
+
+                if val_below is not None:
+                    color_below = 'blue' if val_below >= ndot_cutoff else 'red'
+                    ax.text(
+                        y, x - 0.35, f"z- {val_below:.2f}",
+                        ha='center', va='center',
+                        color=color_below,
+                        fontsize=4,
+                    )
+
+        # --- Edge labels in x,y directions with periodic BC, colored by ndot_cutoff ---
+
+        edge_step_x = 1
+        edge_step_y = 1
+
+        # "Horizontal" borders (between rows): (x,y)–(x_next,y), x_next periodic
+        for x in range(0, Nx, edge_step_x):
+            x_next = (x + 1) % Nx
+            for y in range(0, Ny, edge_step_y):
+                c1 = cryst_vals[x, y, k]
+                # only require THIS cell not red
+                if np.isnan(c1) or c1 < cryst_threshold:
+                    continue
+
+                if (np.isnan(xev_vals[x,     y, k]) or np.isnan(xev_vals[x_next, y, k]) or
+                    np.isnan(yev_vals[x,     y, k]) or np.isnan(yev_vals[x_next, y, k]) or
+                    np.isnan(zev_vals[x,     y, k]) or np.isnan(zev_vals[x_next, y, k])):
+                    continue
+
+                P2Q = (
+                    np.abs(xev_vals[x,     y, k] * xev_vals[x_next, y, k]) +
+                    np.abs(yev_vals[x,     y, k] * yev_vals[x_next, y, k]) +
+                    np.abs(zev_vals[x,     y, k] * zev_vals[x_next, y, k])
+                )
+                val_edge = 1.5 * P2Q - 0.5
+                edge_color = 'blue' if val_edge >= ndot_cutoff else 'red'
+
+                # Midpoint in x with special handling for wrap edge (Nx-1 ↔ 0)
+                if x == Nx - 1 and x_next == 0:
+                    mid_x = Nx - 0.5  # bottom boundary
+                else:
+                    mid_x = x + 0.5
+
+                mid_y = y
+                ax.text(
+                    mid_y, mid_x, f"{val_edge:.2f}",
+                    ha='center', va='center',
+                    color=edge_color,
+                    fontsize=4,
+                )
+
+        # "Vertical" borders (between columns): (x,y)–(x,y_next), y_next periodic
+        for x in range(0, Nx, edge_step_x):
+            for y in range(0, Ny, edge_step_y):
+                y_next = (y + 1) % Ny
+
+                c1 = cryst_vals[x, y, k]
+                if np.isnan(c1) or c1 < cryst_threshold:
+                    continue
+
+                if (np.isnan(xev_vals[x, y,     k]) or np.isnan(xev_vals[x, y_next, k]) or
+                    np.isnan(yev_vals[x, y,     k]) or np.isnan(yev_vals[x, y_next, k]) or
+                    np.isnan(zev_vals[x, y,     k]) or np.isnan(zev_vals[x, y_next, k])):
+                    continue
+
+                P2Q = (
+                    np.abs(xev_vals[x, y,     k] * xev_vals[x, y_next, k]) +
+                    np.abs(yev_vals[x, y,     k] * yev_vals[x, y_next, k]) +
+                    np.abs(zev_vals[x, y,     k] * zev_vals[x, y_next, k])
+                )
+                val_edge = 1.5 * P2Q - 0.5
+                edge_color = 'blue' if val_edge >= ndot_cutoff else 'red'
+
+                # Midpoint in y with special handling for wrap edge (Ny-1 ↔ 0)
+                if y == Ny - 1 and y_next == 0:
+                    mid_y = Ny - 0.5  # right boundary
+                else:
+                    mid_y = y + 0.5
+
+                mid_x = x
+                ax.text(
+                    mid_y, mid_x, f"{val_edge:.2f}",
+                    ha='center', va='center',
+                    color=edge_color,
+                    fontsize=4,
                 )
 
         cbar = fig.colorbar(im, ax=ax, label='cluster label')
         cbar.set_ticks(np.arange(0, n_labels + 1))
-
         fig.tight_layout()
-        plt.savefig(f"hk_debug/PVA_100_quench_zlayer_{k}.pdf")
-        # plt.show()
+        plt.savefig(f"hk_debug/test_PVA_100_T088_zlayer_{k}.pdf")
         plt.close()
 
 

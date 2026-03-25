@@ -250,7 +250,7 @@ class Simulation:
                     %(self.path_to_home_folder, current_time))
             else:
                 current_polymer.read_cryst(load_polymer_cryst_files)
-            current_polymer.merge_boxes(print_results = print_results, ndot_cutoff = ndot_cutoff)
+            current_polymer.merge_boxes_2(print_results = print_results, ndot_cutoff = ndot_cutoff)
 
             # with open(boxes_eigv_file, "a") as file:
             #     file.write(f"{current_time} {current_polymer.results.mean_cluster_size}\n")

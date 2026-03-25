@@ -102,11 +102,12 @@ int check_merger_criteria(double *ev_array, double *row, float cryst_cutoff, dou
         return 0;
     }
     if (row[3] > cryst_cutoff) { // Both lattice points should be crystalline, crystalliiny central point checked in H-K main function
-        double inproduct = fabs(row[4])*fabs(ev_array[0]) + fabs(row[5]) * fabs(ev_array[1]) + fabs(row[6]) * fabs(ev_array[2]);
-        double inproduct2 = 1.5 * inproduct*inproduct - 0.5;
+        // double inproduct = fabs(row[4])*fabs(ev_array[0]) + fabs(row[5]) * fabs(ev_array[1]) + fabs(row[6]) * fabs(ev_array[2]);
+        // double inproduct2 = 1.5 * inproduct*inproduct - 0.5;
         //double inproduct = fabs(row[4] * ev_array[0]) + fabs(row[5] * ev_array[1]) + fabs(row[6] * ev_array[2]); 
         //double inproduct = fabs(row[4]*ev_array[0] + row[5] * ev_array[1] + row[6] * ev_array[2]);
-        if (inproduct2 >= ndot_cutoff) { 
+        double inproduct = row[4]*ev_array[0] + row[5] * ev_array[1] + row[6] * ev_array[2];
+        if (inproduct >= ndot_cutoff) { 
             // Look up label
             return 1;
         }

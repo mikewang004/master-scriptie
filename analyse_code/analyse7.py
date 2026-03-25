@@ -12,6 +12,7 @@ import time
 from numba import jit
 from nematic_vector import calc_nematic_tensor_2, nematic_vector_loop, nematic_vector_loop_2
 from matplotlib.colors import ListedColormap, BoundaryNorm
+from hoshenKopelmanInPython import hk_in_python
 
 def fraction_crystallinity(data, cutoff = 0.8):
     """Data 1d 1d list/array, defined as data > 0.8 -> crystallinity = 1;
@@ -527,6 +528,28 @@ class polymer():
         #np.save("hk_label_matrix.npy", label_matrix)
         return label_matrix;
 
+    def merge_boxes_2(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8, save = False, print_results: bool = False):
+        label_matrix = hk_in_python(self.df_cryst, self.frac_cryst, ndot_cutoff = ndot_cutoff, nridges = nridges, cryst_cutoff = cryst_cutoff)
+
+        unique_values, counts = np.unique(label_matrix, return_counts=True) #Labels and how much each label occurs
+
+
+        total_number_merged_clusters = counts[counts > 1]
+        self.results.total_number_clusters = total_number_merged_clusters.size
+        self.results.total_number_independent_clusters = unique_values.size-1
+        self.results.mean_cluster_size = np.mean(counts[1:])
+        self.results.total_number_crystalline_grid_elements = np.sum(counts[1:])
+        self.results.fraction_crystallinity, no_crystalline_elements = fraction_crystallinity(self.df_cryst.iloc[:,3])
+        if print_results == True:
+            print("total number clusters w/ >= 2 elements: %i" %(self.results.total_number_clusters))
+            print("total number independent crystalline domains: %i" %(self.results.total_number_independent_clusters))
+            print("average cluster size crystalline domains: %f" %(self.results.mean_cluster_size))
+            print("total number crystalline/all grid elements: %i/%i -> cryt_frac = %f" 
+                %(self.results.total_number_crystalline_grid_elements,self.atom_coords.nridges**3, 
+                    self.results.total_number_crystalline_grid_elements/self.atom_coords.nridges**3))
+            print("earlier calculated frac_cryst = %f" %(self.frac_cryst))
+        return label_matrix
+
 def bin_label_matrix(label_matrix, bins: np.array):
     """Function to bin the cluster size into a histogram"""
     unique_values, counts = np.unique(label_matrix, return_counts=True)
@@ -563,7 +586,7 @@ class results(object):
 
 def plot_hk_matrix_2d(polymer, ndot_cutoff=0.98, cryst_threshold=0.8):
     # 3D array of cluster labels
-    data = polymer.merge_boxes(print_results=True)
+    data = polymer.merge_boxes_2(ndot_cutoff = ndot_cutoff, print_results=True)
     Nx, Ny, Nz = data.shape
 
     dfc = polymer.df_cryst.copy()
@@ -658,11 +681,11 @@ def plot_hk_matrix_2d(polymer, ndot_cutoff=0.98, cryst_threshold=0.8):
                     not np.isnan(zev_vals[x, y, k_above])):
 
                     P2Q_above = (
-                        np.abs(xev_vals[x, y, k] * xev_vals[x, y, k_above]) +
-                        np.abs(yev_vals[x, y, k] * yev_vals[x, y, k_above]) +
-                        np.abs(zev_vals[x, y, k] * zev_vals[x, y, k_above])
+                        (xev_vals[x, y, k] * xev_vals[x, y, k_above]) +
+                        (yev_vals[x, y, k] * yev_vals[x, y, k_above]) +
+                        (zev_vals[x, y, k] * zev_vals[x, y, k_above])
                     )
-                    val_above = 1.5 * P2Q_above - 0.5
+                    val_above = 1.5 * P2Q_above**2 - 0.5
 
                 # z-edge below: between (x,y,k_below) and (x,y,k)
                 val_below = None
@@ -674,11 +697,11 @@ def plot_hk_matrix_2d(polymer, ndot_cutoff=0.98, cryst_threshold=0.8):
                     not np.isnan(zev_vals[x, y, k])):
 
                     P2Q_below = (
-                        np.abs(xev_vals[x, y, k_below] * xev_vals[x, y, k]) +
-                        np.abs(yev_vals[x, y, k_below] * yev_vals[x, y, k]) +
-                        np.abs(zev_vals[x, y, k_below] * zev_vals[x, y, k])
+                        (xev_vals[x, y, k_below] * xev_vals[x, y, k]) +
+                        (yev_vals[x, y, k_below] * yev_vals[x, y, k]) +
+                        (zev_vals[x, y, k_below] * zev_vals[x, y, k])
                     )
-                    val_below = 1.5 * P2Q_below - 0.5
+                    val_below = 1.5 * P2Q_below**2 - 0.5
 
                 # Z-edge values: separate texts, colored by ndot_cutoff, with z+/z- prefix
                 if val_above is not None:
@@ -719,11 +742,11 @@ def plot_hk_matrix_2d(polymer, ndot_cutoff=0.98, cryst_threshold=0.8):
                     continue
 
                 P2Q = (
-                    np.abs(xev_vals[x,     y, k] * xev_vals[x_next, y, k]) +
-                    np.abs(yev_vals[x,     y, k] * yev_vals[x_next, y, k]) +
-                    np.abs(zev_vals[x,     y, k] * zev_vals[x_next, y, k])
+                    (xev_vals[x,     y, k] * xev_vals[x_next, y, k]) +
+                    (yev_vals[x,     y, k] * yev_vals[x_next, y, k]) +
+                    (zev_vals[x,     y, k] * zev_vals[x_next, y, k])
                 )
-                val_edge = 1.5 * P2Q - 0.5
+                val_edge = 1.5 * P2Q**2 - 0.5
                 edge_color = 'blue' if val_edge >= ndot_cutoff else 'red'
 
                 # Midpoint in x with special handling for wrap edge (Nx-1 ↔ 0)
@@ -755,11 +778,11 @@ def plot_hk_matrix_2d(polymer, ndot_cutoff=0.98, cryst_threshold=0.8):
                     continue
 
                 P2Q = (
-                    np.abs(xev_vals[x, y,     k] * xev_vals[x, y_next, k]) +
-                    np.abs(yev_vals[x, y,     k] * yev_vals[x, y_next, k]) +
-                    np.abs(zev_vals[x, y,     k] * zev_vals[x, y_next, k])
+                    (xev_vals[x, y,     k] * xev_vals[x, y_next, k]) +
+                    (yev_vals[x, y,     k] * yev_vals[x, y_next, k]) +
+                    (zev_vals[x, y,     k] * zev_vals[x, y_next, k])
                 )
-                val_edge = 1.5 * P2Q - 0.5
+                val_edge = 1.5 * P2Q**2 - 0.5
                 edge_color = 'blue' if val_edge >= ndot_cutoff else 'red'
 
                 # Midpoint in y with special handling for wrap edge (Ny-1 ↔ 0)

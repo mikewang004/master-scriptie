@@ -5,7 +5,8 @@ import numpy as np
 import scipy as sp 
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # may be needed for some MPL versions
-
+import os 
+from matplotlib.colors import ListedColormap, BoundaryNorm
 
 
 def return_cell(df, x,y,z):
@@ -273,18 +274,134 @@ def plot_3d_with_nematic_cell_center_bond_vector(
     plt.tight_layout()
     plt.show()
 
+
+def load_ncolor_3d(path):
+    # Load all numeric rows; comment lines starting with '#' are skipped
+    data2d = np.loadtxt(path, comments='#')
+    # data2d.shape = ((nz+1)*(ny+1), nx+1)
+
+    # Count how many z-slices there are from the headers
+    with open(path) as f:
+        nz_plus_1 = sum(
+            1 for line in f
+            if line.lstrip().startswith("# z =")
+        )
+
+    total_rows, nx_plus_1 = data2d.shape
+    ny_plus_1 = total_rows // nz_plus_1
+
+    # Reshape to [z, y, x]
+    arr_zyx = data2d.reshape(nz_plus_1, ny_plus_1, nx_plus_1)
+
+    # Transpose to [x, y, z]
+    arr_xyz = np.transpose(arr_zyx, (2, 1, 0))
+
+    # Make sure it's integer type
+    return arr_xyz.astype(int)
+
+def plot_hk_matrix_2d_from_array(path,
+    title_prefix="PVA-100, T = 0.88, clusters via nematic20cc",
+    output_prefix="hk_debug/pva-100_T088_nematic20cc_npolymer20",
+    label_cells=True,
+):
+    """
+    Plot z-slices of a 3D integer array 'data' (shape: Nx, Ny, Nz).
+
+    Parameters
+    ----------
+    data : np.ndarray
+        3D array of cluster labels, shape (Nx, Ny, Nz).
+    title_prefix : str
+        Text prefix for the plot title (before ', z = k').
+    output_prefix : str
+        Prefix for output PDF filenames. Files will be:
+        f"{output_prefix}_{k}.pdf"
+    label_cells : bool
+        If True, write the integer cluster label in each cell.
+    """
+    # Ensure output directory exists
+    data = load_ncolor_3d(path)
+    data = data.astype(float)
+    data[data > 35937] = np.nan
+    out_dir = os.path.dirname(output_prefix)
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
+    # Shape of the data
+    Nx, Ny, Nz = data.shape
+
+    # ---- Global colour scale for cluster labels ----
+    global_max = int(np.nanmax(data))
+    print(global_max)
+    n_labels = max(global_max, 0)
+
+    # Build colormap: label 0 is red, the rest use viridis
+    base_colors = plt.cm.viridis(np.linspace(0, 1, n_labels + 1))
+    base_colors[0] = np.array([1.0, 0.0, 0.0, 1.0])  # label 0 = red
+    cmap = ListedColormap(base_colors)
+    cmap.set_bad(color="black")  # how NaNs will appear
+    bounds = np.arange(-0.5, n_labels + 1.5, 1)
+    norm = BoundaryNorm(bounds, cmap.N)
+    for k in range(Nz):
+        slice_k = data[:, :, k]
+
+        cell_size = 0.8
+        fig_width = max(4, Ny * cell_size)
+        fig_height = max(4, Nx * cell_size)
+        fig, ax = plt.subplots(figsize=(fig_width, fig_height))
+
+        im = ax.imshow(slice_k, cmap=cmap, norm=norm, origin='lower')
+
+        ax.set_title(f"{title_prefix}, z = {k}")
+        ax.set_xlabel("y")
+        ax.set_ylabel("x")
+        ax.set_xlim(-0.5, Ny - 0.5)
+        ax.set_ylim(-0.5, Nx - 0.5)
+
+        # --- Optional cell labels: just the cluster ID ---
+        if label_cells:
+            for x in range(Nx):
+                for y in range(Ny):
+                    print(x,y)
+                    val = slice_k[x, y]
+                    ax.text(
+                        y, x, f"{int(val)}",
+                        ha='center', va='center',
+                        color='white' if val < global_max / 2 else 'black',
+                        fontsize=5,
+                    )
+        print("test")
+        # Colorbar
+        # cbar = fig.colorbar(im, ax=ax, label='cluster label')
+
+        # max_ticks = 20
+        # if n_labels <= max_ticks:
+        #     cbar.set_ticks(np.arange(0, n_labels + 1))
+        # elif n_labels > 0:
+        #     step = max(1, n_labels // max_ticks)
+        #     ticks = np.arange(0, n_labels + 1, step)
+        #     cbar.set_ticks(ticks)
+        fig.tight_layout()
+        out_name = f"{output_prefix}_{k}.pdf"
+        plt.savefig(out_name)
+        plt.close()
+        print(f"Saved {out_name}")
+
+
 def main():
-    last_timestep_e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
-    last_timestep_e5.atom_coords.get_nematic_vector_5()
-    #print(last_timestep_e5.atom_coords.bond_vectors)
-    x,y,z = 6,11,25
-    #x,y,z = 6,6,25
-    cryst_row = return_cell(last_timestep_e5.atom_coords.df_cryst, x,y,z)
-    single_cell = return_cell(last_timestep_e5.atom_coords.datapd, x,y,z)
-    bond_with_cells = last_timestep_e5.atom_coords.bond_vectors.join(last_timestep_e5.atom_coords.datapd[['xid','yid','zid']], how = "right")
-    single_bonds = return_cell(bond_with_cells,x,y,z)
-    print(single_cell, single_bonds)
-    plot_3d_with_nematic_cell_center_bond_vector(single_cell, cryst_row,single_bonds,  x,y,z)
+    # last_timestep_e5 = polymer("../../data/pva-100/cooling_tdot_e-5_time_10000000.txt")
+    # last_timestep_e5.atom_coords.get_nematic_vector_5()
+    # #print(last_timestep_e5.atom_coords.bond_vectors)
+    # x,y,z = 6,11,25
+    # #x,y,z = 6,6,25
+    # cryst_row = return_cell(last_timestep_e5.atom_coords.df_cryst, x,y,z)
+    # single_cell = return_cell(last_timestep_e5.atom_coords.datapd, x,y,z)
+    # bond_with_cells = last_timestep_e5.atom_coords.bond_vectors.join(last_timestep_e5.atom_coords.datapd[['xid','yid','zid']], how = "right")
+    # single_bonds = return_cell(bond_with_cells,x,y,z)
+    # print(single_cell, single_bonds)
+    # plot_3d_with_nematic_cell_center_bond_vector(single_cell, cryst_row,single_bonds,  x,y,z)
+    path = "clibraries/nematic20/pva-100_comparison/equil_t_088_tdot_e-3_time_24000000.txt_ncolourprint.txt"
+    plot_hk_matrix_2d_from_array(path)
+    
 
 if __name__ == "__main__":
     main()

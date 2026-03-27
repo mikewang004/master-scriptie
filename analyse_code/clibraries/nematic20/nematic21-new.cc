@@ -3025,6 +3025,41 @@ vmdfile1 <<  "graphics 0 cylinder {" << xp1[j] << " "<< yp1[j]<< " " << zp1[j]<<
 
 } //end if ncolor
 
+char ncolorlabel[200];
+
+strcpy(ncolorlabel,filename);
+strcat(ncolorlabel, "_ncolourprint.txt");
+
+std::ofstream ncolourfile;
+ncolourfile.open(ncolorlabel);
+
+if (!ncolourfile) {
+    std::cerr << "Error opening file " << ncolorlabel << "\n";
+}
+
+// Write in the format:
+// # z = 0
+// <rows for this z>
+// ...
+for (int z = 0; z <= nz; ++z) {
+    // Header for this slice
+    ncolourfile << "# z = " << z << '\n';
+
+    for (int y = 0; y <= ny; ++y) {
+        for (int x = 0; x <= nx; ++x) {
+            ncolourfile << ncolor[x][y][z];
+            if (x < nx) {
+                ncolourfile << ' ';  // space between numbers, no trailing space at end
+            }
+        }
+        ncolourfile << '\n';        // end of row
+    }
+
+    ncolourfile << '\n';            // blank line between z-slices (like in your example)
+}
+
+ncolourfile.close();
+
 /*
 for(i=89000;i<=89020;i++)
 cout << i <<" "<< clusterIDbond[i]<< endl;
@@ -3739,5 +3774,6 @@ nematicfile << "ss= " << ss << endl;
       return;
 
      }
+
 
  

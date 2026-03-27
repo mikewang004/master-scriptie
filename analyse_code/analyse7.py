@@ -629,8 +629,7 @@ def plot_hk_matrix_2d(polymer, ndot_cutoff=0.98, cryst_threshold=0.8):
         im = ax.imshow(slice_k, cmap=cmap, norm=norm, origin='lower')
 
         ax.set_title(
-            f"Cluster labels, PVA-100, T = 0.5, Tdot = 10**(-5), "
-            f"T_init = 1.0, z = {k}"
+            f"Cluster labels, PVA-100, T = 0.88, Tdot = 10**(-3), z = {k}"
         )
         ax.set_xlabel("y")
         ax.set_ylabel("x")
@@ -802,7 +801,7 @@ def plot_hk_matrix_2d(polymer, ndot_cutoff=0.98, cryst_threshold=0.8):
         cbar = fig.colorbar(im, ax=ax, label='cluster label')
         cbar.set_ticks(np.arange(0, n_labels + 1))
         fig.tight_layout()
-        plt.savefig(f"hk_debug/test_PVA_100_T088_zlayer_{k}.pdf")
+        plt.savefig(f"hk_debug/test_PVA_100_polynumber_20_T088_zlayer_{k}.pdf")
         plt.close()
 
 

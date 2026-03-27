@@ -33,6 +33,8 @@ def pva_100_analysis(data_path):
     icryst_PVA_100_T088.calc_avg_domain_size(ndot_cutoff= 0.98)
     return icryst_PVA_100_T088
 
+
+
 def pva_300_analysis(data_path):
     icryst_PVA_300_T088 = Simulation(0.88, -3, "%s/slurm-PVA-300_equil_t_088_tdot_e-3_sim1.out" %(data_path), "%s/PVA-300_equil_t_088_tdot_e-3_sim1_time" %(data_path), no_runs=1,
         home_folder="../data_online/PVA-300/icryst_T088_Tdot_e-3/sim1", polymer_length=300, home_folder_override= True)
@@ -343,7 +345,7 @@ def main():
     #     no_runs=1, home_folder = "../data_online/PVA-100/quench/cryst_quench_e-5", home_folder_override= True)
     # quench_e5.calc_crystallisation()
     # quench_e5.calc_avg_domain_size()
-    #current_polymer = icryst_PVA_100_T085.get_polymer_by_count(20)
+    current_polymer = icryst_PVA_100_T085.get_polymer_by_count(20)
     #current_polymer.merge_boxes()
     #current_polymer.merge_boxes_2(ndot_cutoff= 0.97, print_results= True)
     #print(current_polymer.atom_distribution())
@@ -351,12 +353,12 @@ def main():
     #print(current_polymer.bond_distribution())
     #current_polymer.atom_coords.get_nematic_vector_5(save_string= "test.txt")
     #get_domain_distribution_polymer(current_polymer)
-    #plot_hk_matrix_2d(current_polymer, ndot_cutoff= 0.97)
+    plot_hk_matrix_2d(current_polymer, ndot_cutoff= 0.97)
     #icryst_PVA_100_T088.get_polymer_by_count(99).atom_coords.get_nematic_vector_5()
 
-    polymer_list = [icryst_PVA_50_T088, icryst_PVA_200_T088, icryst_PVA_300_T088, icryst_PVA_500_T088, icryst_PVA_1000_T088]
+    #polymer_list = [icryst_PVA_50_T088, icryst_PVA_200_T088, icryst_PVA_300_T088, icryst_PVA_500_T088, icryst_PVA_1000_T088]
     #polymer_list = [icryst_PVA_100_T085]
-    plot_crystallisation_different_polymer_lengths(polymer_list, plot_equal_length= False, save= False)
+    #plot_crystallisation_different_polymer_lengths(polymer_list, plot_equal_length= False, save= False)
     #plot_avrami([icryst_PVA_100_T085], show_plot= True, save = False)
 
 

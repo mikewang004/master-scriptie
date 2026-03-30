@@ -1,5 +1,5 @@
 // For linux g++ -I ./ -O2 -Wno-deprecated nematic21-new.cc -o nematic21-new
-// To run ./nematic21-new equil_t_085_tdot_e-3_run3_time_0.xyz
+// To run ./nematic21-new equil_t_085_tdot_e-3_time_24000000.txt
 //***This program is very similar to nematic15.cc,   it is optimized for memory via using dynamical arrays and it does a different binning for pdf of nematic order and directors.***
 // This program calculates the nematic order parameter within each grid element and does the cluster analysis and bond-bond correlations along the chains and interchains bond correlations
 //additional feature: obtaining the MSID and Rg for amorphous regions. 
@@ -952,6 +952,43 @@ if(SS[n1][n2][n3] > 0.8){
 ncolor[n1][n2][n3]=1; // initial label of all the nematic grid elements
 ++nematiccount[m];
 ++gridcount;
+
+char ncrystbool[200];
+
+strcpy(ncrystbool,filename);
+strcat(ncrystbool, "_ncrystbool.txt");
+
+std::ofstream ncrystboolfile;
+ncrystboolfile.open(ncrystbool);
+
+if (!ncrystboolfile) {
+    std::cerr << "Error opening file " << ncrystbool << "\n";
+}
+
+// Write in the format:
+// # z = 0
+// <rows for this z>
+// ...
+for (int z = 0; z <= nz; ++z) {
+    // Header for this slice
+    ncrystboolfile << "# z = " << z << '\n';
+
+    for (int y = 0; y <= ny; ++y) {
+        for (int x = 0; x <= nx; ++x) {
+            ncrystboolfile << ncolor[x][y][z];
+            if (x < nx) {
+                ncrystboolfile << ' ';  // space between numbers, no trailing space at end
+            }
+        }
+        ncrystboolfile << '\n';        // end of row
+    }
+
+    ncrystboolfile << '\n';            // blank line between z-slices (like in your example)
+}
+
+ncrystboolfile.close();
+
+
 
  thetaz=acos(abs(director[2]));
 	  nS= (int) (thetaz/bintheta);

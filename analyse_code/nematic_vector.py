@@ -62,9 +62,12 @@ def calc_nematic_tensor_pandas(block: pd.DataFrame, bond_vectors) -> pd.Series:
 
     Q = 1.5 * outer - 0.5* np.eye(3) 
     labda, ev = np.linalg.eigh(Q)
-    max_labda = np.max(np.abs(labda)) #Try also without the np.abs()
-    max_ev = ev[:, np.argmax(labda)]
-    #max_ev = np.abs(ev[:, np.argmax(labda)])
+    idx = np.argmax(labda)  # or np.argmax(np.abs(labda)), just be consistent
+    max_labda = labda[idx]
+    max_ev = ev[:, idx]
+
+    if max_ev[2] < 0:
+        max_ev = -max_ev
     return pd.Series({"cryst_bool": max_labda, "x_ev": max_ev[0], "y_ev":max_ev[1], "z_ev": max_ev[2]})
 
 
@@ -82,6 +85,7 @@ def nematic_vector_loop(data: pd.DataFrame, bond_vectors):
 
 
 def nematic_vector_loop_2(bond_vectors):
+    """Uses bond vector cell alignment to calculate crystallinity per cell"""
     bond_vectors_indexed = bond_vectors.reset_index().rename({"index": "atom_id"}).set_index(["xid", "yid", "zid"]).sort_index()
     g = bond_vectors_indexed.groupby(level=["xid", "yid", "zid"])
     df_cryst = g.apply(calc_nematic_tensor_pandas, bond_vectors)

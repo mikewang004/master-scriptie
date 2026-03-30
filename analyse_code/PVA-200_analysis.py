@@ -334,12 +334,12 @@ def main():
     # cooling_e4_T085.calc_crystallisation()
     # cooling_e4_T085.calc_avg_domain_size()
     #pva_50_analysis(data_path_50)
-    icryst_PVA_200_T088 = pva_200_analysis(data_path_200)
-    icryst_PVA_50_T088 = pva_50_analysis(data_path_50)
+    #icryst_PVA_200_T088 = pva_200_analysis(data_path_200)
+    #icryst_PVA_50_T088 = pva_50_analysis(data_path_50)
     icryst_PVA_100_T085 = pva_100_analysis(data_path_100)
-    icryst_PVA_300_T088 = pva_300_analysis(data_path_300)
-    icryst_PVA_500_T088 = pva_500_analysis(data_path_500)
-    icryst_PVA_1000_T088 = pva_1000_analysis(data_path_1000)
+    #icryst_PVA_300_T088 = pva_300_analysis(data_path_300)
+    #icryst_PVA_500_T088 = pva_500_analysis(data_path_500)
+    #icryst_PVA_1000_T088 = pva_1000_analysis(data_path_1000)
 
     # quench_e5 = Simulation(0.5, -5, "../../data/pva-100/genua_cooling_100_ttime_10e7.out", "../../data/pva-100/genua_cooling_100_tmin_0.5_ttime_10e7",
     #     no_runs=1, home_folder = "../data_online/PVA-100/quench/cryst_quench_e-5", home_folder_override= True)
@@ -353,7 +353,7 @@ def main():
     #print(current_polymer.bond_distribution())
     #current_polymer.atom_coords.get_nematic_vector_5(save_string= "test.txt")
     #get_domain_distribution_polymer(current_polymer)
-    plot_hk_matrix_2d(current_polymer, ndot_cutoff= 0.97)
+    #plot_hk_matrix_2d(current_polymer, ndot_cutoff= 0.97)
     #icryst_PVA_100_T088.get_polymer_by_count(99).atom_coords.get_nematic_vector_5()
 
     #polymer_list = [icryst_PVA_50_T088, icryst_PVA_200_T088, icryst_PVA_300_T088, icryst_PVA_500_T088, icryst_PVA_1000_T088]

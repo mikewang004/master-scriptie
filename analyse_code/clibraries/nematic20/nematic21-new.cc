@@ -1,5 +1,5 @@
 // For linux g++ -I ./ -O2 -Wno-deprecated nematic21-new.cc -o nematic21-new
-// To run ./nematic21-new equil_t_085_tdot_e-3_time_24000000.txt
+// To run ./nematic21-new equil_t_088_tdot_e-3_time_24000000.txt
 //***This program is very similar to nematic15.cc,   it is optimized for memory via using dynamical arrays and it does a different binning for pdf of nematic order and directors.***
 // This program calculates the nematic order parameter within each grid element and does the cluster analysis and bond-bond correlations along the chains and interchains bond correlations
 //additional feature: obtaining the MSID and Rg for amorphous regions. 

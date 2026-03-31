@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # may be needed for some MPL versions
 import os 
 from matplotlib.colors import ListedColormap, BoundaryNorm
+import math
 
 
 def return_cell(df, x,y,z):
@@ -300,9 +301,10 @@ def load_ncolor_3d(path):
     return arr_xyz.astype(int)
 
 def plot_hk_matrix_2d_from_array(path,
-    title_prefix="PVA-100, T = 0.88, clusters via nematic20cc",
+    title_prefix="PVA-100, T = 0.88, crystallisation via nematic20cc",
     output_prefix="hk_debug/pva-100_T088_nematic20cc_npolymer20",
     label_cells=True,
+    level = "z"
 ):
     """
     Plot z-slices of a 3D integer array 'data' (shape: Nx, Ny, Nz).
@@ -342,7 +344,12 @@ def plot_hk_matrix_2d_from_array(path,
     bounds = np.arange(-0.5, n_labels + 1.5, 1)
     norm = BoundaryNorm(bounds, cmap.N)
     for k in range(Nz):
-        slice_k = data[:, :, k]
+        if level == "z":
+            slice_k = data[:, :, k]
+        elif level == "x":
+            slice_k = data[k, :, :]
+        else: 
+            slice_k = data[:, k, :]
 
         cell_size = 0.8
         fig_width = max(4, Ny * cell_size)
@@ -351,7 +358,7 @@ def plot_hk_matrix_2d_from_array(path,
 
         im = ax.imshow(slice_k, cmap=cmap, norm=norm, origin='lower')
 
-        ax.set_title(f"{title_prefix}, z = {k}")
+        ax.set_title(f"{title_prefix}, {level} = {k}")
         ax.set_xlabel("y")
         ax.set_ylabel("x")
         ax.set_xlim(-0.5, Ny - 0.5)
@@ -363,6 +370,8 @@ def plot_hk_matrix_2d_from_array(path,
                 for y in range(Ny):
                     print(x,y)
                     val = slice_k[x, y]
+                    if math.isnan(val):
+                        val = 0  # or any default integer value
                     ax.text(
                         y, x, f"{int(val)}",
                         ha='center', va='center',
@@ -399,8 +408,13 @@ def main():
     # single_bonds = return_cell(bond_with_cells,x,y,z)
     # print(single_cell, single_bonds)
     # plot_3d_with_nematic_cell_center_bond_vector(single_cell, cryst_row,single_bonds,  x,y,z)
-    path = "clibraries/nematic20/pva-100_comparison/equil_t_088_tdot_e-3_time_24000000.txt_ncolourprint.txt"
-    plot_hk_matrix_2d_from_array(path)
+    path = "clibraries/nematic20/equil_t_085_tdot_e-3_time_24000000.txt_ncrystbool.txt"
+    plot_hk_matrix_2d_from_array(path, 
+    title_prefix="PVA-100, T = 0.88, crystallisation via nematic20cc, yz crosssection",
+    output_prefix="hk_debug/pva-100_T088_nematic20cc_npolymer20_yz",level = "x")
+    plot_hk_matrix_2d_from_array(path, 
+    title_prefix="PVA-100, T = 0.88, crystallisation via nematic20cc, xz crosssection",
+    output_prefix="hk_debug/pva-100_T088_nematic20cc_npolymer20_xz",level = "y")
     
 
 if __name__ == "__main__":

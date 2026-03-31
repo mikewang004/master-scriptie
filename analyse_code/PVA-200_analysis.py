@@ -353,7 +353,7 @@ def main():
     #print(current_polymer.bond_distribution())
     #current_polymer.atom_coords.get_nematic_vector_5(save_string= "test.txt")
     #get_domain_distribution_polymer(current_polymer)
-    #plot_hk_matrix_2d(current_polymer, ndot_cutoff= 0.97)
+    plot_hk_matrix_2d(current_polymer, ndot_cutoff= 0.97)
     #icryst_PVA_100_T088.get_polymer_by_count(99).atom_coords.get_nematic_vector_5()
 
     #polymer_list = [icryst_PVA_50_T088, icryst_PVA_200_T088, icryst_PVA_300_T088, icryst_PVA_500_T088, icryst_PVA_1000_T088]

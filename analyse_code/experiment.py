@@ -254,6 +254,29 @@ def plot_mean_cluster_vs_no_clusters_single_cooling_rate(simulation_list: list, 
     plt.show()
 
 
+def plot_volume_per_monomer(simulation_list: list, save: bool = False, savestring = None, plot_equal_length: bool = False):
+
+    length_list =[]
+
+    for simulation in simulation_list:
+        length_list.append(simulation.cryst.shape[0])
+        if plot_equal_length == True:
+            length = min(length_list)
+        else:
+            length = max(length_list)
+    
+
+    for simulation in simulation_list:
+        time_volume = simulation.get_volume_per_monomer()
+        plt.scatter(time_volume[:length, 0], time_volume[:length, 1], label = "PVA-%i" %(simulation.polymer_length))
+    plt.xlabel("time")
+    plt.ylabel("volume/monomer")
+    plt.title("Volume per monomer, T = 0.88")
+    plt.legend()
+    if save == True:
+        plt.savefig(savestring)
+    plt.show()
+
 
 
 def plot_bond_bond_correlation(simulation):

@@ -337,6 +337,7 @@ def main():
     #icryst_PVA_200_T088 = pva_200_analysis(data_path_200)
     #icryst_PVA_50_T088 = pva_50_analysis(data_path_50)
     icryst_PVA_100_T085 = pva_100_analysis(data_path_100)
+    print(icryst_PVA_100_T085.get_volume_per_monomer())
     #icryst_PVA_300_T088 = pva_300_analysis(data_path_300)
     #icryst_PVA_500_T088 = pva_500_analysis(data_path_500)
     #icryst_PVA_1000_T088 = pva_1000_analysis(data_path_1000)

@@ -279,6 +279,18 @@ class Simulation:
         return avg_local_density
 
 
+    def get_volume_per_monomer(self):
+        """Returns a nx2 array with in the first column the time and the second volume/amount of monomers"""
+        local_time_temp_array, local_list_lammps_files = self.time_temp_array, self.list_lammps_files
+        volume_monomer_array = local_time_temp_array
+        for i in tqdm(range(0, (local_time_temp_array.shape[0]))):
+            current_time = local_time_temp_array[i, 0]
+            current_polymer = polymer(local_list_lammps_files[i])
+            volume, n_monomers = current_polymer.atom_coords.volume, current_polymer.atom_coords.n_atoms
+            volume_monomer_array[i, 1] = volume/n_monomers
+
+        return volume_monomer_array
+            
 
         
 

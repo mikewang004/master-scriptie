@@ -435,7 +435,7 @@ for (int n = 1; n <= Nchain; ++n) {
         zm[l] = (zp[atom1] + zp[atom2]) / 2.0;
 
         double len = std::sqrt(bx*bx + by*by + bz*bz);
-
+        // cout << "bond length = " << len << endl;
         bond[l][0] /= len;
         bond[l][1] /= len;
         bond[l][2] /= len;

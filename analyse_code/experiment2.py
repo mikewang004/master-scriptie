@@ -3,7 +3,7 @@ import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
 import os
-from simulation import Simulation#, avrami_fit, avrami_eq
+from simulation import Simulation, plot_crystallisation_different_polymer_lengths#, avrami_fit, avrami_eq
 from experiment import * 
 
 
@@ -45,8 +45,8 @@ def main():
     icryst_PVA_1000_T088 = pva_1000_analysis()
 
     simulation_list = [icryst_PVA_100_T088, icryst_PVA_300_T088, icryst_PVA_500_T088, icryst_PVA_1000_T088]
-
-    plot_volume_per_monomer(simulation_list, save= True, savestring = "volume_monomer_T088_Tdot_e-3.pdf")
+    plot_crystallisation_different_polymer_lengths(simulation_list, plot_equal_length= False, save= False)
+    #plot_volume_per_monomer(simulation_list, save= True, savestring = "volume_monomer_T088_Tdot_e-3.pdf")
 
 
 if __name__ == "__main__":

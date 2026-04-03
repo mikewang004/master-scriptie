@@ -293,7 +293,39 @@ class Simulation:
             
 
         
+def plot_crystallisation_different_polymer_lengths(simulation_list, save: bool = False, savestring = None, labels_list: list = None, plot_equal_length: bool = False):
 
+    length_list =[]
+
+    for simulation in simulation_list:
+        length_list.append(simulation.cryst.shape[0])
+        if plot_equal_length == True:
+            length = min(length_list)
+        else:
+            length = max(length_list)
+    fig, ax1 = plt.subplots()
+    ax2 = ax1.twinx()
+    # First plot mean cluster length 
+    for simulation in simulation_list:
+        # ax1.plot(simulation.mean_cluster_length.iloc[:length, 0], simulation.mean_cluster_length.iloc[:length, 3], 
+        #     label = r"independent clusters, PVA-%i" %(simulation.polymer_length))
+        label_cryst = r"crystallinity,  PVA-%i" %(simulation.polymer_length)
+        ax1.plot(simulation.cryst[:length, 0], simulation.cryst[:length, 1], 
+            label = label_cryst)
+        ax2.scatter(simulation.mean_cluster_length.iloc[:length, 0], (simulation.mean_cluster_length.iloc[:length, 4])**(1/3) *2,
+            label =  r"mean domain size, PVA-%i" %(simulation.polymer_length))
+        temp = simulation.temp
+
+    ax1.set_xlabel("time")
+    #ax1.set_ylabel(r"amount of independent clusters")
+    ax1.set_ylabel(r"$\phi$")
+    ax2.set_ylabel(r"length scale ($\sigma$)")
+    #fig.tight_layout()
+    fig.legend(loc = "lower right", bbox_to_anchor=(0.895, 0.115))
+    #fig.suptitle(r"Independent clusters and mean domain size, $\dot{T} = 10^{%i}$" %(simulation.cooling_rate))
+    fig.suptitle(r"Isothermal crystallisation, T=%.2f"%(temp))
+    fig.savefig("plots/e%i_no_clusters_mean_domain_size.pdf"%(simulation.cooling_rate))
+    plt.show()
 
     
 def main():

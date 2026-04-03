@@ -114,7 +114,7 @@ class atom_coords:
         self.no_polymers = self.datapd["mol_id"].max()
         self.polymer_length = int(self.n_atoms/self.no_polymers)
         self.bond_vectors = self.calculate_bond_vectors()
-        self.bond_vectors = self.make_cell_grid()
+        self.bond_vectors, self.nridges = self.make_cell_grid()
         self.df_cryst = self.get_nematic_vector_5()
         self.results = results()
 
@@ -181,7 +181,7 @@ class atom_coords:
             nz=nz,
         )
 
-        return self.bond_vectors
+        return self.bond_vectors, nridges
 
     def get_nematic_vector_5(self, save_string = None, cryst_cutoff = 0.8):
         #self.df_cryst = nematic_vector_loop(data, self.bond_vectors)

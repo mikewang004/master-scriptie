@@ -71,6 +71,32 @@ def calc_nematic_tensor_pandas(block: pd.DataFrame) -> pd.Series:
         {"cryst_bool": max_labda, "x_ev": max_ev[0], "y_ev": max_ev[1], "z_ev": max_ev[2]}
     )
 
+
+def compute_Q(block: pd.DataFrame) -> pd.Series:
+    vecs = block[['bx', 'by', 'bz']].to_numpy()
+    if len(vecs) == 0:
+        return pd.Series({f"Q{a}{b}": 0.0 for a in range(3) for b in range(3)})
+
+    norms = np.linalg.norm(vecs, axis=1, keepdims=True)
+    vecs_unit = vecs / norms
+    N = vecs_unit.shape[0]
+    outer = (vecs_unit.T @ vecs_unit) / N
+    Q = 1.5 * outer - 0.5 * np.eye(3)
+
+    # symmetric eigen-decomposition
+    vals, vecs_ev = np.linalg.eigh(Q)               # vals ascending
+
+    # largest eigenvalue & eigenvector
+    idx = np.argmax(vals)
+    S = vals[idx]                                   # order parameter
+    director = vecs_ev[:, idx]                      # eigenvector
+
+    # enforce a consistent sign (optional; e.g. nz >= 0)
+    if director[2] < 0:
+        director = -director
+
+    return pd.Series({'cryst_bool': S, 'x_ev': director[0], 'y_ev': director[1], 'z_ev': director[2]})
+
 def plot_cryst_bool(df):
     df_plot = df.copy()
     df_plot['nx'] = df_plot['nx'].astype(int)
@@ -241,6 +267,9 @@ class atom_coords():
         nx = pd.cut(self.wrapped_monomers["xu"] + self.bond_vectors["bx"]/2, bins = gridx, right = False, labels = False)
         ny = pd.cut(self.wrapped_monomers["yu"] + self.bond_vectors["by"]/2, bins = gridy, right = False, labels = False)
         nz = pd.cut(self.wrapped_monomers["zu"] + self.bond_vectors["bz"]/2, bins = gridz, right = False, labels = False)
+        # nx = pd.cut(self.wrapped_monomers["xu"], bins = gridx, right = False, labels = False)
+        # ny = pd.cut(self.wrapped_monomers["yu"], bins = gridy, right = False, labels = False)
+        # nz = pd.cut(self.wrapped_monomers["zu"], bins = gridz, right = False, labels = False)
         self.bond_vectors = self.bond_vectors.assign(
             nx=nx,
             ny=ny,
@@ -252,8 +281,13 @@ class atom_coords():
 
 
     def calc_cryst(self):
-        df_cryst = nematic_vector_loop_2(self.bond_vectors)
-        print(df_cryst.loc)
+        #df_cryst = nematic_vector_loop_2(self.bond_vectors)
+        #print(df_cryst.loc)
+        df_cryst = (
+            self.bond_vectors.groupby(['nx', 'ny', 'nz'])
+            .apply(compute_Q)
+            .reset_index()
+        )
         return df_cryst
 
 
@@ -261,6 +295,9 @@ def main():
     filename = "equil_t_088_tdot_e-3_time_24000000.txt"
     pva_100_tnumber_20 = atom_coords(filename)
     df_cryst = pva_100_tnumber_20.df_cryst
+    print(df_cryst)
+    print(df_cryst[df_cryst["cryst_bool"]>0.8])
+    #print(33*33*33)
     plot_cryst_bool(df_cryst)
     #print(pva_100_tnumber_20.datapd)
 

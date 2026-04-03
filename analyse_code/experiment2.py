@@ -1,4 +1,4 @@
-from analyse7 import polymer, atom_coords, plot_hk_matrix_2d
+from analyse8 import polymer, atom_coords, plot_hk_matrix_2d
 import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt

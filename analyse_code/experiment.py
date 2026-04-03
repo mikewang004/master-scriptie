@@ -1,4 +1,4 @@
-from analyse7 import polymer, atom_coords
+from analyse8 import polymer, atom_coords
 import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt

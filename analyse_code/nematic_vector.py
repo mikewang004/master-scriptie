@@ -92,3 +92,28 @@ def nematic_vector_loop_2(bond_vectors):
     df_cryst = df_cryst.reset_index()
     df_cryst = df_cryst.sort_values(by=["zid", "xid", "yid"]).reset_index(drop=True)
     return df_cryst
+
+def compute_Q(block: pd.DataFrame) -> pd.Series:
+    vecs = block[['bx', 'by', 'bz']].to_numpy()
+    if len(vecs) == 0:
+        return pd.Series({f"Q{a}{b}": 0.0 for a in range(3) for b in range(3)})
+
+    norms = np.linalg.norm(vecs, axis=1, keepdims=True)
+    vecs_unit = vecs / norms
+    N = vecs_unit.shape[0]
+    outer = (vecs_unit.T @ vecs_unit) / N
+    Q = 1.5 * outer - 0.5 * np.eye(3)
+
+    # symmetric eigen-decomposition
+    vals, vecs_ev = np.linalg.eigh(Q)               # vals ascending
+
+    # largest eigenvalue & eigenvector
+    idx = np.argmax(vals)
+    S = vals[idx]                                   # order parameter
+    director = vecs_ev[:, idx]                      # eigenvector
+
+    # enforce a consistent sign (optional; e.g. nz >= 0)
+    if director[2] < 0:
+        director = -director
+
+    return pd.Series({'cryst_bool': S, 'x_ev': director[0], 'y_ev': director[1], 'z_ev': director[2]})

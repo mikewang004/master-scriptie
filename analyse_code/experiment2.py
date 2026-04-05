@@ -40,12 +40,13 @@ def pva_1000_analysis(data_path = "../../data/PVA-1000"):
 def main():
 
     icryst_PVA_100_T088 = pva_100_analysis()
+    poly = icryst_PVA_100_T088.get_polymer_by_count(20)
     icryst_PVA_300_T088 = pva_300_analysis()
     icryst_PVA_500_T088 = pva_500_analysis()
     icryst_PVA_1000_T088 = pva_1000_analysis()
 
-    simulation_list = [icryst_PVA_100_T088, icryst_PVA_300_T088, icryst_PVA_500_T088, icryst_PVA_1000_T088]
-    plot_crystallisation_different_polymer_lengths(simulation_list, plot_equal_length= False, save= False)
+   # simulation_list = [icryst_PVA_100_T088, icryst_PVA_300_T088, icryst_PVA_500_T088, icryst_PVA_1000_T088]
+   # plot_crystallisation_different_polymer_lengths(simulation_list, plot_equal_length= False, save= False)
     #plot_volume_per_monomer(simulation_list, save= True, savestring = "volume_monomer_T088_Tdot_e-3.pdf")
 
 

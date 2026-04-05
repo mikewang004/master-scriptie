@@ -10,7 +10,7 @@ from clibraries.boxAlgorithmsInC import box_algos_lib, hk_lib
 import ctypes
 import time
 from numba import jit
-from nematic_vector import calc_nematic_tensor_2, nematic_vector_loop, nematic_vector_loop_2, compute_Q
+from nematic_vector import calc_nematic_tensor_2, nematic_vector_loop, nematic_vector_loop_2, compute_Q, orderparameter
 from matplotlib.colors import ListedColormap, BoundaryNorm
 from hoshenKopelmanInPython import hk_in_python
 
@@ -154,40 +154,64 @@ class atom_coords:
     def calculate_bond_vectors(self):
 
         shifted = self.datapd.groupby('mol_id')[['xu', 'yu', 'zu']].shift(-1)
+        print(self.datapd)
         bond_vecs = shifted - self.datapd[['xu', 'yu', 'zu']]
 
         bond_vecs.columns = ['bx', 'by', 'bz']
         bond_vecs = bond_vecs.dropna()
+        norms = np.linalg.norm(bond_vecs[['bx','by','bz']].to_numpy(), axis=1)
+        bond_vecs[['bx','by','bz']] = bond_vecs[['bx','by','bz']].div(norms, axis=0)
         return bond_vecs
 
 
+    def return_positive_midpoint_coords(self):
+        pos_coords = self.wrapped_monomers[['mol_id', 'xu', 'yu', 'zu']]# - self.dimensions.iloc[:, 0]
+        pos_coords = pos_coords.copy()
+        pos_coords["xu"] = pos_coords["xu"] - self.dimensions.loc["x", "min"]
+        pos_coords["yu"] = pos_coords["yu"] - self.dimensions.loc["y", "min"]
+        pos_coords["zu"] = pos_coords["zu"] - self.dimensions.loc["z", "min"]
+        # #print(self.dimensions.iloc[:, :])
+
+
+        shifted = pos_coords.groupby('mol_id')[['xu', 'yu', 'zu']].shift(-1)
+        xm = (shifted + pos_coords[["xu", "yu", "zu"]])/2 #bond vector position
+        xm = xm.dropna()
+
+        return xm
     def make_cell_grid(self, cell_length = 2):
         nridges = (self.boxlengths/cell_length).astype(int)
         actual_cell_length = self.boxlengths/nridges
-        gridx = np.linspace(self.dimensions.loc["x", "min"], self.dimensions.loc["x", "max"], nridges.loc["x"]+1)
-        gridy = np.linspace(self.dimensions.loc["y", "min"], self.dimensions.loc["y", "max"], nridges.loc["y"]+1)
-        gridz = np.linspace(self.dimensions.loc["z", "min"], self.dimensions.loc["z", "max"], nridges.loc["z"]+1)
+
         #Shift monomers to start from 0 
         #print(self.bond_vectors)
-        nx = pd.cut(self.wrapped_monomers["xu"] + self.bond_vectors["bx"]/2, bins = gridx, right = False, labels = False)
-        ny = pd.cut(self.wrapped_monomers["yu"] + self.bond_vectors["by"]/2, bins = gridy, right = False, labels = False)
-        nz = pd.cut(self.wrapped_monomers["zu"] + self.bond_vectors["bz"]/2, bins = gridz, right = False, labels = False)
+        xm = self.return_positive_midpoint_coords() #Modify this binning to use (int) xm / lx 
+        #gridx = np.linspace(0, np.abs(self.dimensions.loc["x", "min"]) +np.abs(self.dimensions.loc["x", "max"]), nridges.loc["x"]+1)
+        #gridy = np.linspace(0,np.abs(self.dimensions.loc["y", "min"])+ np.abs(self.dimensions.loc["y", "max"]), nridges.loc["y"]+1)
+        #gridz = np.linspace(0,np.abs(self.dimensions.loc["z", "min"])+ np.abs(self.dimensions.loc["z", "max"]), nridges.loc["z"]+1)
+        #nx = pd.cut(xm["xu"], bins = gridx, right = False, labels = False)
+        #ny = pd.cut(xm["yu"], bins = gridx, right = False, labels = False)
+        #nz = pd.cut(xm["zu"], bins = gridx, right = False, labels = False)
         # nx = pd.cut(self.wrapped_monomers["xu"], bins = gridx, right = False, labels = False)
         # ny = pd.cut(self.wrapped_monomers["yu"], bins = gridy, right = False, labels = False)
         # nz = pd.cut(self.wrapped_monomers["zu"], bins = gridz, right = False, labels = False)
+
+        nx = (xm[["xu"]]/ actual_cell_length[["x"]].to_numpy()).apply(np.int16)
+        ny = (xm[["yu"]]/ actual_cell_length[["y"]].to_numpy()).apply(np.int16)
+        nz = (xm[["zu"]]/ actual_cell_length[["z"]].to_numpy()).apply(np.int16)
+
         self.bond_vectors = self.bond_vectors.assign(
             nx=nx,
             ny=ny,
             nz=nz,
         )
-
         return self.bond_vectors, nridges
 
     def get_nematic_vector_5(self, save_string = None, cryst_cutoff = 0.8):
         #self.df_cryst = nematic_vector_loop(data, self.bond_vectors)
         self.df_cryst = (
             self.bond_vectors.groupby(['nx', 'ny', 'nz'])
-            .apply(compute_Q)
+            #.apply(compute_Q)
+            .apply(orderparameter)
             .reset_index()
         )
         self.fraction_crystallinity, _ = fraction_crystallinity(self.df_cryst.iloc[:,3], cutoff= cryst_cutoff)

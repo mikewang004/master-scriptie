@@ -12,9 +12,22 @@ def sort_files_by_atom_id(filename):
     datapd = datapd.set_index("atom_id")
     datapd.to_csv("test.txt", sep = " ")
 
+def sort_files_by_atom1(filename2):
+    datapd = pd.read_csv(filename2, sep = " ", header = None, skiprows = 1)
+    datapd.columns = ["atom1", "atom2", "bx", "by", "bz", "nx", "ny", "nz"]
+    datapd = datapd.drop(["atom2"], axis = 1)
+    datapd = datapd.sort_values("atom1")
+
+
+    datapd = datapd.set_index("atom1")
+    print(datapd)
+    datapd.to_csv("test.txt", sep = " ")
+
 def main():
     filename = "equil_t_088_tdot_e-3_time_24000000.txt"
-    sort_files_by_atom_id(filename)
+    filename2 = "equil_t_088_tdot_e-3_time_24000000.txt_bondvecs.txt"
+    sort_files_by_atom1(filename2)
+    #sort_files_by_atom_id(filename)
 
 if __name__ == "__main__":
     main()

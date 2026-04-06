@@ -388,6 +388,9 @@ cout << "Long array was created successfully" << endl;
 
 int count[1000], nematiccount[1000];
 
+std::vector<int> atom1_of_bond(Nbond + 1);
+std::vector<int> atom2_of_bond(Nbond + 1);
+
 for(n=0;n<1000;n++){
 count[n]=0;
 nematiccount[n]=0;}
@@ -429,6 +432,9 @@ for (int n = 1; n <= Nchain; ++n) { // n <= number of chains
         bond[l][1] /= len;
         bond[l][2] /= len;
 
+        atom1_of_bond[l] = atom1;
+        atom2_of_bond[l] = atom2;
+
 
     }
 }
@@ -456,16 +462,70 @@ bondvecfile1.open(bondvec);
 bondvecfile1 << "atom1 atom2 bx by bz"  << endl;
 
 
-for (int n = 1; n <= Nchain; ++n) { // n <= number of chains
-    for (int i = 1; i < Lchain; ++i) { //l < length of chain 
-        int atom1 = (n - 1) * Lchain + i;   // 1 .. Nmon-1
-        int atom2 = atom1 + 1;              // 2 .. Nmon
-        int l     = (n - 1) * (Lchain - 1) + i; // 1 .. Nbond
+// for (int n = 1; n <= Nchain; ++n) { // n <= number of chains
+//     for (int i = 1; i < Lchain; ++i) { //l < length of chain 
+//         int atom1 = (n - 1) * Lchain + i;   // 1 .. Nmon-1
+//         int atom2 = atom1 + 1;              // 2 .. Nmon
+//         int l     = (n - 1) * (Lchain - 1) + i; // 1 .. Nbond
 
-        bondvecfile1 << atom1 << " " << atom2 << " " << bond[l][0] << " " << bond[l][1] << " " << bond[l][2] << endl;
-    }
+//         bondvecfile1 << atom1 << " " << atom2 << " " << bond[l][0] << " " << bond[l][1] << " " << bond[l][2] << endl;
+//     }
+// }
+
+// Grid assignment 
+
+double*** nn1=Allocate_3D_Double_Array(nx+1, ny+1, nz+1);
+double*** nn2=Allocate_3D_Double_Array(nx+1, ny+1, nz+1);
+double*** nn3=Allocate_3D_Double_Array(nx+1, ny+1, nz+1);
+
+double Lgrid;
+Lgrid=2.0;
+
+nx=(int) Lx/Lgrid;
+ny=(int) Ly/Lgrid;
+nz=(int) Lz/Lgrid;
+cout<< "nx=" << nx<< " ny= " << ny << " nz=  "<< nz << endl;
+lx=Lx/(nx*1.0);
+ly=Ly/(ny*1.0);
+lz=Lz/(nz*1.0);   // we have a  nx*ny*nzy grid whose mesh sides are given by lx, ly, lz
+double vol=lx*ly*lz;
+//lx=ly=lz=Lgrid
+ int Ngrid=nx*ny*nz;
+cout<< "lx=" << lx<< " ly= " << ly << " lz=  "<< lz << "   Ngrids=" << nx*ny*nz << endl;
+double u[1000][4];
+
+
+for(n1=0;n1<nx;n1++)
+  for(n2=0;n2<ny;n2++)
+    for(n3=0;n3<nz;n3++){
+      m=0;
+
+//cout << n1<< " " << n2 << " "<< n3 << endl;
+      for(l=1; l<=Nbond;l++){
+    //cout << "l=" << l << endl;
+        m1=(int) xm[l]/lx;
+        m2=(int) ym[l]/ly;
+        m3=(int) zm[l]/lz;
+
+        if( (m1==n1) && ( m2==n2) && (m3==n3) ){
+
+          ++m;
+          u[m][1]=bond[l][0];
+          u[m][2]=bond[l][1];
+          u[m][3]=bond[l][2];
+
+          bondvecfile1 << atom1_of_bond[l] << " "
+                       << atom2_of_bond[l] << " "
+                       << bond[l][0] << " "
+                       << bond[l][1] << " "
+                       << bond[l][2] << " "
+                       << n1 << " "
+                       << n2 << " "
+                       << n3 << std::endl;
+        }
+
+      }
 }
-
 
 
 

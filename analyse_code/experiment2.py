@@ -45,13 +45,14 @@ def main():
 
 
     icryst_PVA_100_T088 = pva_100_analysis()
-    poly = icryst_PVA_100_T088.get_polymer_by_count(20)
-    print(poly.atom_coords.bond_vectors)
-    poly.atom_coords.bond_vectors.to_csv("PVA_100_T088_poly20_bondvecs.txt", sep = " ")
+    #icryst_PVA_300_T088 = pva_300_analysis()
+    #poly = icryst_PVA_100_T088.get_polymer_by_count(20)
+    #print(poly.atom_coords.bond_vectors)
+    #poly.atom_coords.bond_vectors.to_csv("PVA_100_T088_poly20_bondvecs.txt", sep = " ")
+    #poly.merge_boxes_2(print_results = True)
 
-
-   # simulation_list = [icryst_PVA_100_T088, icryst_PVA_300_T088, icryst_PVA_500_T088, icryst_PVA_1000_T088]
-   # plot_crystallisation_different_polymer_lengths(simulation_list, plot_equal_length= False, save= False)
+    simulation_list = [icryst_PVA_100_T088]#, icryst_PVA_300_T088, icryst_PVA_500_T088, icryst_PVA_1000_T088]
+    plot_crystallisation_different_polymer_lengths(simulation_list, plot_equal_length= False, save= False)
     #plot_volume_per_monomer(simulation_list, save= True, savestring = "volume_monomer_T088_Tdot_e-3.pdf")
 
 

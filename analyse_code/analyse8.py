@@ -115,7 +115,7 @@ class atom_coords:
         self.polymer_length = int(self.n_atoms/self.no_polymers)
         self.bond_vectors = self.calculate_bond_vectors()
         self.bond_vectors, self.nridges = self.make_cell_grid()
-        self.df_cryst = self.get_nematic_vector_5()
+        #self.df_cryst = self.get_nematic_vector_5()
         self.results = results()
 
 
@@ -124,6 +124,7 @@ class atom_coords:
         datapd.columns = ["atom_id", "mol_id", "xu", "yu", "zu"]
         datapd = datapd.sort_values("atom_id")
         datapd = datapd.set_index("atom_id")
+        print(datapd)
 
         return datapd
 
@@ -146,6 +147,7 @@ class atom_coords:
     def wrap_coordinates_all_data(self):
         """Converts coordinates to wrapped coordinates. Input can be float or array (float)"""
         wrapped_coords = self.datapd
+        wrapped_coords = wrapped_coords.copy()
         wrapped_coords["xu"] = wrap_coordinates(self.datapd["xu"], self.dimensions.loc["x", "min"], self.boxlengths["x"])
         wrapped_coords["yu"] = wrap_coordinates(self.datapd["yu"], self.dimensions.loc["y", "min"], self.boxlengths["y"])
         wrapped_coords["zu"] = wrap_coordinates(self.datapd["zu"], self.dimensions.loc["z", "min"], self.boxlengths["z"])
@@ -154,37 +156,55 @@ class atom_coords:
     def calculate_bond_vectors(self):
 
         shifted = self.datapd.groupby('mol_id')[['xu', 'yu', 'zu']].shift(-1)
-        print(self.datapd)
         bond_vecs = shifted - self.datapd[['xu', 'yu', 'zu']]
 
         bond_vecs.columns = ['bx', 'by', 'bz']
         bond_vecs = bond_vecs.dropna()
         norms = np.linalg.norm(bond_vecs[['bx','by','bz']].to_numpy(), axis=1)
         bond_vecs[['bx','by','bz']] = bond_vecs[['bx','by','bz']].div(norms, axis=0)
+        bond_vecs = bond_vecs.apply(np.float16)
         return bond_vecs
 
 
     def return_positive_midpoint_coords(self):
         pos_coords = self.wrapped_monomers[['mol_id', 'xu', 'yu', 'zu']]# - self.dimensions.iloc[:, 0]
+        # pos_coords = pos_coords.copy()
+        # pos_coords["xu"] = pos_coords["xu"] - self.dimensions.loc["x", "min"]
+        # pos_coords["yu"] = pos_coords["yu"] - self.dimensions.loc["y", "min"]
+        # pos_coords["zu"] = pos_coords["zu"] - self.dimensions.loc["z", "min"]
+        # # #print(self.dimensions.iloc[:, :])
+
+
+        # shifted = pos_coords.groupby('mol_id')[['xu', 'yu', 'zu']].shift(-1)
+        # xm = (shifted + pos_coords[["xu", "yu", "zu"]])/2 #bond vector position
+
+        pos_coords = self.datapd[['mol_id', 'xu', 'yu', 'zu']]# - self.dimensions.iloc[:, 0]
         pos_coords = pos_coords.copy()
+        print(pos_coords)
+        print(self.dimensions)
         pos_coords["xu"] = pos_coords["xu"] - self.dimensions.loc["x", "min"]
         pos_coords["yu"] = pos_coords["yu"] - self.dimensions.loc["y", "min"]
         pos_coords["zu"] = pos_coords["zu"] - self.dimensions.loc["z", "min"]
+        # pos_coords.to_csv("pva-100-t088-poly20-pos_coords.txt", sep = " ")
         # #print(self.dimensions.iloc[:, :])
 
 
         shifted = pos_coords.groupby('mol_id')[['xu', 'yu', 'zu']].shift(-1)
-        xm = (shifted + pos_coords[["xu", "yu", "zu"]])/2 #bond vector position
+        xm = (shifted + pos_coords[["xu", "yu", "zu"]])/2.0 #bond vector position
         xm = xm.dropna()
+        # xm["xu"] = wrap_coordinates(xm["xu"], self.dimensions.loc["x", "min"], self.boxlengths["x"])
+        # xm["yu"] = wrap_coordinates(xm["yu"], self.dimensions.loc["y", "min"], self.boxlengths["y"])
+        # xm["zu"] = wrap_coordinates(xm["zu"], self.dimensions.loc["z", "min"], self.boxlengths["z"])
+
 
         return xm
     def make_cell_grid(self, cell_length = 2):
         nridges = (self.boxlengths/cell_length).astype(int)
         actual_cell_length = self.boxlengths/nridges
-
+        
         #Shift monomers to start from 0 
         #print(self.bond_vectors)
-        xm = self.return_positive_midpoint_coords() #Modify this binning to use (int) xm / lx 
+        xm = self.return_positive_midpoint_coords().apply(np.float16) #Modify this binning to use (int) xm / lx 
         #gridx = np.linspace(0, np.abs(self.dimensions.loc["x", "min"]) +np.abs(self.dimensions.loc["x", "max"]), nridges.loc["x"]+1)
         #gridy = np.linspace(0,np.abs(self.dimensions.loc["y", "min"])+ np.abs(self.dimensions.loc["y", "max"]), nridges.loc["y"]+1)
         #gridz = np.linspace(0,np.abs(self.dimensions.loc["z", "min"])+ np.abs(self.dimensions.loc["z", "max"]), nridges.loc["z"]+1)
@@ -195,15 +215,22 @@ class atom_coords:
         # ny = pd.cut(self.wrapped_monomers["yu"], bins = gridy, right = False, labels = False)
         # nz = pd.cut(self.wrapped_monomers["zu"], bins = gridz, right = False, labels = False)
 
-        nx = (xm[["xu"]]/ actual_cell_length[["x"]].to_numpy()).apply(np.int16)
-        ny = (xm[["yu"]]/ actual_cell_length[["y"]].to_numpy()).apply(np.int16)
-        nz = (xm[["zu"]]/ actual_cell_length[["z"]].to_numpy()).apply(np.int16)
+        # nx = (xm[["xu"]]/ actual_cell_length[["x"]].to_numpy())
+        # ny = (xm[["yu"]]/ actual_cell_length[["y"]].to_numpy())
+        # nz = (xm[["zu"]]/ actual_cell_length[["z"]].to_numpy())
+        nx = (xm["xu"].astype(int) / actual_cell_length["x"]).astype(int)
+        ny = (xm["yu"].astype(int) / actual_cell_length["y"]).astype(int)
+        nz = (xm["zu"].astype(int) / actual_cell_length["z"]).astype(int)
 
         self.bond_vectors = self.bond_vectors.assign(
+            xm = xm[["xu"]],
+            ym = xm[["yu"]],
+            zm = xm[["zu"]],
             nx=nx,
             ny=ny,
             nz=nz,
         )
+        self.bond_vectors = self.bond_vectors[(self.bond_vectors["nx"] >= 0) & (self.bond_vectors["ny"] >= 0) & (self.bond_vectors["nz"] >= 0)]
         return self.bond_vectors, nridges
 
     def get_nematic_vector_5(self, save_string = None, cryst_cutoff = 0.8):

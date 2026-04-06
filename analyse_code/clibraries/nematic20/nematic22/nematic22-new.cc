@@ -274,6 +274,8 @@ xyzfile >> Nangletype >>  str1 >> str2 ;
       xyzfile >> xlo >> xhi >> str1 >> str2 ;
       xyzfile >> ylo >> yhi  >> str1 >> str2 ;
     xyzfile >> zlo >> zhi >> str1 >> str2 ;
+    cout << "xlo =" << ylo << " xhi = " << xhi << endl;
+    cout << "ylo =" << ylo << " yhi = " << yhi << endl;
    cout << "zlo="<< zlo<<  " zhi=" << zhi << endl;
 Lx=xhi-xlo;
 Ly=yhi-ylo;
@@ -314,11 +316,13 @@ std::getline(xyzfile, line);   // assumes we're positioned right before this lin
 
 // Now read Nmon atoms: id, molid, xu, yu, zu
 for (i = 1; i <= Nmon; i++) {
+//for (i = 1; i <= 10; i ++) {
     xyzfile >> id >> molid >> xu[id] >> yu[id] >> zu[id];
     // If you still want shifted coordinates starting at (0,0,0) from xlo,ylo,zlo:
     xp[id] = xu[id] - xlo;
     yp[id] = yu[id] - ylo;
     zp[id] = zu[id] - zlo;
+    //cout << xp[id] << xu[id] << xlo << endl;
 }
 // xyzfile >> str1;
 //cout <<  str1<< endl;
@@ -425,7 +429,7 @@ for (int n = 1; n <= Nchain; ++n) { // n <= number of chains
         xm[l] = (xp[atom1] + xp[atom2]) / 2.0;
         ym[l] = (yp[atom1] + yp[atom2]) / 2.0;
         zm[l] = (zp[atom1] + zp[atom2]) / 2.0;
-
+        //cout << xm[l] << xp[atom1] << xp[atom2]<< endl;
         double len = std::sqrt(bx*bx + by*by + bz*bz);
         // cout << "bond length = " << len << endl;
         bond[l][0] /= len;
@@ -457,9 +461,7 @@ char bondvec[200];
 strcpy(bondvec,filename);
 strcat(bondvec, "_bondvecs.txt");
 
-ofstream bondvecfile1;
-bondvecfile1.open(bondvec);
-bondvecfile1 << "atom1 atom2 bx by bz"  << endl;
+
 
 
 // for (int n = 1; n <= Nchain; ++n) { // n <= number of chains
@@ -494,6 +496,10 @@ double vol=lx*ly*lz;
 cout<< "lx=" << lx<< " ly= " << ly << " lz=  "<< lz << "   Ngrids=" << nx*ny*nz << endl;
 double u[1000][4];
 
+ofstream bondvecfile1;
+bondvecfile1.open(bondvec);
+bondvecfile1 << "atom1 bx by bz xm ym zm nx ny nz"  << endl;
+
 
 for(n1=0;n1<nx;n1++)
   for(n2=0;n2<ny;n2++)
@@ -501,11 +507,12 @@ for(n1=0;n1<nx;n1++)
       m=0;
 
 //cout << n1<< " " << n2 << " "<< n3 << endl;
-      for(l=1; l<=Nbond;l++){
+      for(l=1; l<=10;l++){
     //cout << "l=" << l << endl;
         m1=(int) xm[l]/lx;
         m2=(int) ym[l]/ly;
         m3=(int) zm[l]/lz;
+        cout << m1 << xm[l] << lx << endl;
 
         if( (m1==n1) && ( m2==n2) && (m3==n3) ){
 
@@ -515,10 +522,12 @@ for(n1=0;n1<nx;n1++)
           u[m][3]=bond[l][2];
 
           bondvecfile1 << atom1_of_bond[l] << " "
-                       << atom2_of_bond[l] << " "
                        << bond[l][0] << " "
                        << bond[l][1] << " "
                        << bond[l][2] << " "
+                       << xm[l] << " "
+                       << ym[l] << " "
+                       << zm[l] << " "
                        << n1 << " "
                        << n2 << " "
                        << n3 << std::endl;

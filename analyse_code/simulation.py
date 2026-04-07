@@ -48,7 +48,7 @@ class Simulation:
         """Gets i-th polymer"""
         if isinstance(count, int):
             #Also get corresponding crystallisation array 
-            current_polymer = polymer(self.list_lammps_files[count])
+            current_polymer = polymer(self.list_lammps_files[count], polymer_length= self.polymer_length)
             #print(self.time_temp_array[count, 0])
             current_polymer.read_cryst("%s/nematic_vectors/nem_vectors_time_%i.txt" %(self.path_to_home_folder, self.time_temp_array[count, 0]))
             current_polymer.timestep = self.time_temp_array[count, 0]
@@ -57,7 +57,7 @@ class Simulation:
         elif isinstance(count, np.ndarray):
             polymer_list = []
             for i in count:
-                current_polymer = polymer(self.list_lammps_files[count])
+                current_polymer = polymer(self.list_lammps_files[count], polymer_length= self.polymer_length)
                 current_polymer.read_cryst("%s/nematic_vectors/nem_vectors_time_%i.txt" %(self.path_to_home_folder, self.time_temp_array[count, 1]))
                 current_polymer.timestep = self.time_temp_array[count, 0]
                 polymer_list.append(current_polymer)
@@ -227,7 +227,7 @@ class Simulation:
             if not os.path.exists(current_file):
                 print(f"File not found, skipping: {current_file}")
                 continue
-            current_polymer = polymer(current_file)
+            current_polymer = polymer(current_file, polymer_length= self.polymer_length)
             frac_cryst = current_polymer.atom_coords.get_nematic_vector_5(
                 save_string = "%s_time_%i.txt" % (frac_cryst_save_loc, current_time),
                 cryst_cutoff = cryst_cutoff
@@ -253,7 +253,7 @@ class Simulation:
             if not os.path.exists(current_file):
                 print(f"File not found, skipping: {current_file}")
                 continue
-            current_polymer = polymer(current_file)
+            current_polymer = polymer(current_file, polymer_length= self.polymer_length)
             if load_polymer_cryst_files == None:
                 current_polymer.read_cryst("%s/nematic_vectors/nem_vectors_time_%i.txt" 
                     %(self.path_to_home_folder, current_time))
@@ -282,7 +282,7 @@ class Simulation:
         #for i in range(0, 5):
             current_time = local_time_temp_array[i, 0]
             current_file = local_list_lammps_files[i]
-            current_polymer = polymer(current_file)
+            current_polymer = polymer(current_file, polymer_length= self.polymer_length)
             avg_local_density[i, 1] = np.mean(current_polymer.get_density_dist())
         self.avg_local_density = avg_local_density
         return avg_local_density
@@ -294,7 +294,7 @@ class Simulation:
         volume_monomer_array = local_time_temp_array
         for i in tqdm(range(0, (local_time_temp_array.shape[0]))):
             current_time = local_time_temp_array[i, 0]
-            current_polymer = polymer(local_list_lammps_files[i])
+            current_polymer = polymer(local_list_lammps_files[i], polymer_length= self.polymer_length)
             volume, n_monomers = current_polymer.atom_coords.volume, current_polymer.atom_coords.n_atoms
             volume_monomer_array[i, 1] = volume/n_monomers
 

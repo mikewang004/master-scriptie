@@ -57,11 +57,11 @@ def quench_PVA(data_path, slurm_name, files_name, home_folder, poly_length):
     quench.calc_avg_domain_size()
 
 def main():
-    # icryst_PVA_300_T088 = pva_300_analysis()
-    #icryst_PVA_500_T088 = pva_500_analysis()
+    #icryst_PVA_300_T088 = pva_300_analysis()
+    icryst_PVA_500_T088 = pva_500_analysis()
     #icryst_PVA_50_T088 = pva_50_analysis()
     icryst_PVA_200_T088 = pva_200_analysis()
-    # icryst_PVA_1000_T088 = pva_1000_analysis()
+    icryst_PVA_1000_T088 = pva_1000_analysis()
 
 
     #icryst_PVA_100_T088 = pva_100_analysis()

@@ -220,12 +220,18 @@ class Simulation:
             Path(path_to_nem_vectors_dir).mkdir(parents = True, exist_ok = True) #Make home directory if not exists
             frac_cryst_save_loc = "%s/%s" %(path_to_nem_vectors_dir, "nem_vectors")
         local_time_temp_array, local_list_lammps_files = self.check_polymer_attributes_file_exists(cryst_array_string, calc_all = calc_all)
-        for i in tqdm(range(0, (local_time_temp_array.shape[0]))):
+        for i in tqdm(range(local_time_temp_array.shape[0])):
             current_time = local_time_temp_array[i, 0]
             current_file = local_list_lammps_files[i]
+
+            if not os.path.exists(current_file):
+                print(f"File not found, skipping: {current_file}")
+                continue
             current_polymer = polymer(current_file)
-            frac_cryst = current_polymer.atom_coords.get_nematic_vector_5(save_string = "%s_time_%i.txt" %(frac_cryst_save_loc, current_time), 
-                cryst_cutoff = cryst_cutoff)
+            frac_cryst = current_polymer.atom_coords.get_nematic_vector_5(
+                save_string = "%s_time_%i.txt" % (frac_cryst_save_loc, current_time),
+                cryst_cutoff = cryst_cutoff
+            )
             with open(cryst_array_string, "a") as file:
                 file.write(f"{current_time} {frac_cryst}\n")
 
@@ -244,6 +250,9 @@ class Simulation:
         for i in tqdm(range(0, (local_time_temp_array.shape[0]))):
             current_time = local_time_temp_array[i, 0]
             current_file = local_list_lammps_files[i]
+            if not os.path.exists(current_file):
+                print(f"File not found, skipping: {current_file}")
+                continue
             current_polymer = polymer(current_file)
             if load_polymer_cryst_files == None:
                 current_polymer.read_cryst("%s/nematic_vectors/nem_vectors_time_%i.txt" 

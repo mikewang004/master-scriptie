@@ -29,57 +29,6 @@ def gaussian(x, H, A, x0, sigma):
     return H + A * np.exp(-(x - x0)**2 / (2 * sigma**2))
 
 
-
-
-
-def filter_out_subset(data, combination):
-    subset = data[(data['xid'] == combination[0]) & (data['yid'] == combination[1]) & (data['zid'] == combination[2])]
-    return subset
-
-def find_box_id(nearest_values, data):
-    """
-    nearest_values: 1D numpy array of doubles
-    data: 1D numpy array of doubles
-    returns: 1D numpy array of integers
-    """
-    a_size = len(nearest_values)
-    n_size = len(data)
-    
-    # Convert numpy arrays to ctypes pointers
-    nearest_values_ptr = nearest_values.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-    data_ptr = data.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-    
-    # Call C function
-    result_ptr = box_algos_lib.find_nearest_value(nearest_values_ptr, a_size, data_ptr, n_size)
-    
-    # Convert result pointer to numpy array
-    # This creates a view without copying data
-    result_array = np.ctypeslib.as_array(result_ptr, shape=(n_size,))
-    
-    # If you need to take ownership and free later, make a copy:
-    result_copy = result_array.copy()
-    
-    # Free the C-allocated memory
-    #lib.free_results(result_ptr)
-    
-    return result_copy
-
-def calc_nematic_tensor(array):
-    """Calculation for the nematic tensor of a local box. NB this is not used yet in the analysis."""
-    array_length = array.shape[0]
-    array = array / np.linalg.norm(array, axis = 1, keepdims = True)
-    Q = np.zeros([3,3])
-    outer = (np.einsum('ni,nj->ij', array, array)) / array_length
-    #Q =  np.mean(outer  - (1/3) * np.eye(3), axis = 0) # According to Sommer/Luo Sep 2010
-
-    Q = 1.5 * outer - 0.5* np.eye(3) # Sara 2015
-    #order_param = np.sqrt(1.5 * np.trace(Q**2)) #Sommer/Luo 2010
-    labda, ev = np.linalg.eigh(Q)
-    max_labda = np.max(labda)
-    max_ev = ev[:, np.argmax(labda)]
-    order_param = max_labda #Sara 2015
-    return max_labda, max_ev, labda, ev
-
 def get_time_temp_from_slurm(file_to_path):
     n_columns = 2
     with open(file_to_path, "r") as file:
@@ -102,17 +51,20 @@ class atom_coords:
 
     """Read in files and do basic data preprocessing"""
 
-    def __init__(self, path_to_file, cell_length = 2):
+    def __init__(self, path_to_file, cell_length = 2, polymer_length = 100):
         #Read in data 
         self.path_to_file = path_to_file
         self.datapd = self.read_in_file(path_to_file)
+        self.n_atoms = len(self.datapd.index)
+        self.polymer_length = polymer_length
+        self.no_polymers = self.n_atoms/self.polymer_length
+        #self.polymer_length = int(self.n_atoms/self.no_polymers)
+        self.datapd = self.replace_mol_id_by_polymer_length()
         self.volume, self.boxlengths, self.dimensions = self.get_volume_box(path_to_file)
         self.current_timestep = self.get_timestep_from_file_name(path_to_file) 
         self.wrapped_monomers = self.wrap_coordinates_all_data()
         #Calculate box properties 
-        self.n_atoms = len(self.datapd.index)
-        self.no_polymers = self.datapd["mol_id"].max()
-        self.polymer_length = int(self.n_atoms/self.no_polymers)
+
         self.bond_vectors = self.calculate_bond_vectors()
         self.bond_vectors, self.nridges = self.make_cell_grid()
         #self.df_cryst = self.get_nematic_vector_5()
@@ -122,20 +74,29 @@ class atom_coords:
     def read_in_file(self, filename):
         datapd = pd.read_csv(filename, sep = " ", header = None, skiprows = 9)
         datapd.columns = ["atom_id", "mol_id", "xu", "yu", "zu"]
-        datapd = datapd.sort_values("atom_id")
         datapd = datapd.set_index("atom_id")
-        print(datapd)
+        
+        datapd = datapd.sort_values("atom_id")
+        datapd
+        #datapd.to_csv("pva-200-polyno0.txt", sep = " ")
+        #datapd = datapd.sort_values(["mol_id", "atom_id"])
+        #
 
         return datapd
+
+    def replace_mol_id_by_polymer_length(self):
+        #self.datapd['mol_id'] = (np.arange(len(self.datapd)) // self.polymer_length)
+        print(self.polymer_length, np.arange(len(self.datapd)))
+        self.datapd['mol_id']  = (np.arange(len(self.datapd)) // self.polymer_length)
+        return self.datapd
 
 
     def get_volume_box(self, path_to_file):
         """Calculates volume of the total (!) simulation box."""
         datapd_first_rows = (pd.read_csv(path_to_file, sep = " ", header = None, skiprows = 5, nrows = 3))
         datapd_first_rows = datapd_first_rows.rename({0: "min", 1: "max"}, axis = 1).rename({0: "x", 1: "y", 2:"z"}, axis = 0)
-        length = datapd_first_rows.iloc[:, 1] - datapd_first_rows.iloc[:, 0]
+        length = datapd_first_rows["max"] - datapd_first_rows["min"]
         volume = length.loc["x"]*length.loc["y"]*length.loc["z"]
-
         return volume, length, datapd_first_rows
 
     def get_timestep_from_file_name(self, path_to_file):
@@ -156,18 +117,21 @@ class atom_coords:
     def calculate_bond_vectors(self):
 
         shifted = self.datapd.groupby('mol_id')[['xu', 'yu', 'zu']].shift(-1)
+        shifted = shifted.copy()
         bond_vecs = shifted - self.datapd[['xu', 'yu', 'zu']]
 
         bond_vecs.columns = ['bx', 'by', 'bz']
         bond_vecs = bond_vecs.dropna()
         norms = np.linalg.norm(bond_vecs[['bx','by','bz']].to_numpy(), axis=1)
         bond_vecs[['bx','by','bz']] = bond_vecs[['bx','by','bz']].div(norms, axis=0)
-        bond_vecs = bond_vecs.apply(np.float16)
+        bond_vecs = bond_vecs.apply(np.float32)
         return bond_vecs
 
 
     def return_positive_midpoint_coords(self):
         pos_coords = self.wrapped_monomers[['mol_id', 'xu', 'yu', 'zu']]# - self.dimensions.iloc[:, 0]
+
+        #pos_coords.to_csv("test2.txt", sep = " ")
         # pos_coords = pos_coords.copy()
         # pos_coords["xu"] = pos_coords["xu"] - self.dimensions.loc["x", "min"]
         # pos_coords["yu"] = pos_coords["yu"] - self.dimensions.loc["y", "min"]
@@ -178,18 +142,18 @@ class atom_coords:
         # shifted = pos_coords.groupby('mol_id')[['xu', 'yu', 'zu']].shift(-1)
         # xm = (shifted + pos_coords[["xu", "yu", "zu"]])/2 #bond vector position
 
-        pos_coords = self.datapd[['mol_id', 'xu', 'yu', 'zu']]# - self.dimensions.iloc[:, 0]
+        #pos_coords = self.datapd[['mol_id', 'xu', 'yu', 'zu']]# - self.dimensions.iloc[:, 0]
         pos_coords = pos_coords.copy()
-        print(pos_coords)
-        print(self.dimensions)
         pos_coords["xu"] = pos_coords["xu"] - self.dimensions.loc["x", "min"]
         pos_coords["yu"] = pos_coords["yu"] - self.dimensions.loc["y", "min"]
         pos_coords["zu"] = pos_coords["zu"] - self.dimensions.loc["z", "min"]
+        #pos_coords.to_csv("test3.txt", sep = " ")
         # pos_coords.to_csv("pva-100-t088-poly20-pos_coords.txt", sep = " ")
         # #print(self.dimensions.iloc[:, :])
 
-
-        shifted = pos_coords.groupby('mol_id')[['xu', 'yu', 'zu']].shift(-1)
+        shifted = pos_coords.groupby('mol_id')[['xu', 'yu', 'zu']].shift(-1).copy() #check if this is valid
+        # print(pos_coords)
+        # print(shifted)
         xm = (shifted + pos_coords[["xu", "yu", "zu"]])/2.0 #bond vector position
         xm = xm.dropna()
         # xm["xu"] = wrap_coordinates(xm["xu"], self.dimensions.loc["x", "min"], self.boxlengths["x"])
@@ -204,7 +168,7 @@ class atom_coords:
         
         #Shift monomers to start from 0 
         #print(self.bond_vectors)
-        xm = self.return_positive_midpoint_coords().apply(np.float16) #Modify this binning to use (int) xm / lx 
+        xm = self.return_positive_midpoint_coords().apply(np.float32) #Modify this binning to use (int) xm / lx 
         #gridx = np.linspace(0, np.abs(self.dimensions.loc["x", "min"]) +np.abs(self.dimensions.loc["x", "max"]), nridges.loc["x"]+1)
         #gridy = np.linspace(0,np.abs(self.dimensions.loc["y", "min"])+ np.abs(self.dimensions.loc["y", "max"]), nridges.loc["y"]+1)
         #gridz = np.linspace(0,np.abs(self.dimensions.loc["z", "min"])+ np.abs(self.dimensions.loc["z", "max"]), nridges.loc["z"]+1)
@@ -218,10 +182,10 @@ class atom_coords:
         # nx = (xm[["xu"]]/ actual_cell_length[["x"]].to_numpy())
         # ny = (xm[["yu"]]/ actual_cell_length[["y"]].to_numpy())
         # nz = (xm[["zu"]]/ actual_cell_length[["z"]].to_numpy())
-        nx = (xm["xu"].astype(int) / actual_cell_length["x"]).astype(int)
-        ny = (xm["yu"].astype(int) / actual_cell_length["y"]).astype(int)
-        nz = (xm["zu"].astype(int) / actual_cell_length["z"]).astype(int)
-
+        nx = (xm["xu"] / actual_cell_length["x"]).astype(int)
+        ny = (xm["yu"] / actual_cell_length["y"]).astype(int)
+        nz = (xm["zu"] / actual_cell_length["z"]).astype(int)
+        #xm.to_csv("test.txt", sep = " ")
         self.bond_vectors = self.bond_vectors.assign(
             xm = xm[["xu"]],
             ym = xm[["yu"]],
@@ -230,7 +194,8 @@ class atom_coords:
             ny=ny,
             nz=nz,
         )
-        self.bond_vectors = self.bond_vectors[(self.bond_vectors["nx"] >= 0) & (self.bond_vectors["ny"] >= 0) & (self.bond_vectors["nz"] >= 0)]
+        print(self.bond_vectors)
+        #self.bond_vectors = self.bond_vectors[(self.bond_vectors["nx"] >= 0) & (self.bond_vectors["ny"] >= 0) & (self.bond_vectors["nz"] >= 0)]
         return self.bond_vectors, nridges
 
     def get_nematic_vector_5(self, save_string = None, cryst_cutoff = 0.8):
@@ -247,10 +212,48 @@ class atom_coords:
         return self.fraction_crystallinity
 
 
+    def get_closest_monomers(self, atom_id: int, n: int = 10):
+        """
+        Return:
+        mol_id of this atom,
+        and a DataFrame with atom_id, mol_id, xu, yu, zu, distance
+        for the n closest monomers in the same mol_id.
+        """
+
+        # 1. Get central atom row
+        datapd = self.datapd
+        try:
+            center = datapd.loc[atom_id]
+        except KeyError:
+            raise ValueError(f"atom_id {atom_id} not found in DataFrame index")
+
+        mol_id = center["mol_id"]
+        center_pos = center[["xu", "yu", "zu"]].to_numpy(dtype=float)
+
+        # 2. All atoms with same mol_id
+        same_mol = datapd[datapd["mol_id"] == mol_id].copy()
+
+        # 3. Compute distances
+        coords = same_mol[["xu", "yu", "zu"]].to_numpy(dtype=float)
+        diffs = coords - center_pos
+        dists = np.sqrt((diffs ** 2).sum(axis=1))
+        same_mol["distance"] = dists
+
+        # 4. Remove itself
+        same_mol = same_mol[same_mol.index != atom_id]
+
+        # 5. Take n closest
+        closest = same_mol.nsmallest(n, "distance")
+
+        # Optionally add atom_id as a column (from index)
+        closest = closest.reset_index().rename(columns={"index": "atom_id"})
+
+        return mol_id, closest
+
 
 class polymer():
-    def __init__(self, path_to_file):
-        self.atom_coords = atom_coords(path_to_file)
+    def __init__(self, path_to_file, polymer_length = 100):
+        self.atom_coords = atom_coords(path_to_file, polymer_length= polymer_length)
         self.results = results()
 
     def create_new_polymer_df(self, column_names):
@@ -407,95 +410,9 @@ class polymer():
         self.frac_cryst, _ = fraction_crystallinity(self.df_cryst.iloc[:, 3])
         return 0;
 
-    def merge_boxes(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8, save = False, print_results: bool = False):
-        max_labels = int(nridges**3)
-        #max_labels = int(200)
-        try:
-            self.df_cryst
-        except(AttributeError):
-            print(self.atom_coords.path_to_file)
-            self.read_cryst()
-        cryst_array = self.df_cryst.to_numpy()
-        rows, cols = cryst_array.shape[0], cryst_array.shape[1]
-        cryst_array_c = cryst_array.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-        label_matrix_np = np.zeros([nridges, nridges, nridges], dtype = int)
-        label_matrix = (ctypes.POINTER(ctypes.POINTER(ctypes.c_int)) * nridges)()
-        new_label_matrix = (ctypes.POINTER(ctypes.POINTER(ctypes.c_int)) * nridges)()
-        labels = np.zeros(max_labels, dtype = np.int32)
-        for i in range(nridges):
-            label_matrix[i] = (ctypes.POINTER(ctypes.c_int) * nridges)()
-            new_label_matrix[i] = (ctypes.POINTER(ctypes.c_int) * nridges)()
-            for j in range(nridges):
-                label_matrix[i][j] = (ctypes.c_int * nridges)()
-                new_label_matrix[i][j] = (ctypes.c_int * nridges)()
-                for k in range(nridges):
-                    label_matrix[i][j][k] = label_matrix_np[i, j, k]
-                    new_label_matrix[i][j][k] = label_matrix_np[i, j, k]
-        hk_lib.hoshen_kopelman_crystallisation(cryst_array_c, rows, cols, nridges, cryst_cutoff, ndot_cutoff, label_matrix, new_label_matrix, labels)
-
-        #Return label matrix to c 
-
-        for i in range(nridges):
-            for j in range(nridges):
-                for k in range(nridges):
-                    #label_matrix_np[i,j,k] = label_matrix[j][i][k]
-                    label_matrix_np[i,j,k] = label_matrix[i][j][k]
-
-
-
-        label_matrix = label_matrix_np
-        size = nridges
-        #print(labels[labels != 0])
-        #print(labels)
-        labels2 = labels[labels != 0]
-
-        unique_values, counts = np.unique(label_matrix, return_counts=True) #Labels and how much each label occurs
-        # print(unique_values, counts)
-        # print(np.mean(counts[1:]))
-        # for value, count in zip(unique_values, counts):
-        #     if count == 1:
-        #         #print(f"count 1 :   {value}: {count}")
-        #         pass
-        #     else:
-        #         print(f"{value}: {count}")
-
-        total_number_merged_clusters = counts[counts > 1]
-        self.results.total_number_clusters = total_number_merged_clusters.size
-        self.results.total_number_independent_clusters = unique_values.size-1
-        self.results.mean_cluster_size = np.mean(counts[1:])
-        self.results.total_number_crystalline_grid_elements = np.sum(counts[1:])
-        self.results.fraction_crystallinity, no_crystalline_elements = fraction_crystallinity(self.df_cryst.iloc[:,3])
-        if print_results == True:
-            print("total number clusters w/ >= 2 elements: %i" %(self.results.total_number_clusters))
-            print("total number independent crystalline domains: %i" %(self.results.total_number_independent_clusters))
-            print("average cluster size crystalline domains: %f" %(self.results.mean_cluster_size))
-            print("total number crystalline/all grid elements: %i/%i -> cryt_frac = %f" 
-                %(self.results.total_number_crystalline_grid_elements,self.atom_coords.nridges**3, 
-                    self.results.total_number_crystalline_grid_elements/self.atom_coords.nridges**3))
-        #print("current crystallinity w/o h-k algo: %i/%i -> %f" %(no_crystalline_elements, self.atom_coords.nridges**3, fraction_of_crystallinity))
-            print(" ")
-        #print(label_matrix)
-
-        if save is True:
-            I, J, K = label_matrix.shape
-
-            rows = []
-            for k in range(K):        # k: slowest
-                for i in range(I):    # i: middle
-                    for j in range(J):# j: fastest
-                        l = label_matrix[i, j, k]
-                        rows.append((i, j, k, l))
-
-
-            df = pd.DataFrame(rows, columns=["x", "y", "z", "label"])
-            df.to_csv("hk_label_matrix.txt", sep = " ", index = True)
-
-        #np.save("hk_label_matrix.npy", label_matrix)
-        return label_matrix;
-
-    def merge_boxes_2(self, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8, save = False, print_results: bool = False):
-        label_matrix = hk_in_python(self.df_cryst, self.frac_cryst, ndot_cutoff = ndot_cutoff, nridges = nridges, cryst_cutoff = cryst_cutoff)
-
+    def merge_boxes_2(self, ndot_cutoff = 0.97,cryst_cutoff = 0.8, save = False, print_results: bool = False):
+        label_matrix = hk_in_python(self.df_cryst, self.frac_cryst, ndot_cutoff = ndot_cutoff, nridges = self.atom_coords.nridges, cryst_cutoff = cryst_cutoff)
+        total_box_elements = (self.atom_coords.nridges["x"]*self.atom_coords.nridges["y"]*self.atom_coords.nridges["z"]).astype(int)
         unique_values, counts = np.unique(label_matrix, return_counts=True) #Labels and how much each label occurs
 
 
@@ -510,8 +427,8 @@ class polymer():
             print("total number independent crystalline domains: %i" %(self.results.total_number_independent_clusters))
             print("average cluster size crystalline domains: %f" %(self.results.mean_cluster_size))
             print("total number crystalline/all grid elements: %i/%i -> cryt_frac = %f" 
-                %(self.results.total_number_crystalline_grid_elements,self.atom_coords.nridges**3, 
-                    self.results.total_number_crystalline_grid_elements/self.atom_coords.nridges**3))
+                %(self.results.total_number_crystalline_grid_elements,total_box_elements, 
+                    self.results.total_number_crystalline_grid_elements/total_box_elements))
             print("earlier calculated frac_cryst = %f" %(self.frac_cryst))
         return label_matrix
 

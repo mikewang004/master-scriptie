@@ -58,12 +58,13 @@ class unionFind:
         return self.labels[0]
 
 
-def hk_in_python(df_cryst, frac_cryst, ndot_cutoff = 0.97, nridges = 33, cryst_cutoff = 0.8):
+def hk_in_python(df_cryst, frac_cryst, nridges, ndot_cutoff = 0.97, cryst_cutoff = 0.8):
     # Set (xid, yid, zid) as an index for fast lookup
     df_cryst = df_cryst.set_index(["xid", "yid", "zid"]).sort_index()
-    label_array = np.zeros((nridges, nridges, nridges), dtype = int)
-    max_labels = int(33**3)
-    new_labels = np.zeros(int(33**3), dtype = int)
+    nridgex = nridges[["x"]].item(); nridgey = nridges[["y"]].item(); nridgez = nridges[["z"]].item()
+    label_array = np.zeros((nridgex, nridgey, nridgez), dtype = int)
+    max_labels = int(33**5)
+    new_labels = np.zeros(int(nridgex * nridgey * nridgez), dtype = int)
     hk = unionFind(max_labels)
     print(ndot_cutoff)
     # Iterate over all rows
@@ -117,11 +118,11 @@ def hk_in_python(df_cryst, frac_cryst, ndot_cutoff = 0.97, nridges = 33, cryst_c
                     label_array[ix, iy, iz] = hk.union(label_array[xm, iy, iz], label_array[ix, ym, iz])
                     label_array[ix, iy, iz] = hk.union(label_array[xm, iy, iz], label_array[ix, iy, zm])
                     label_array[ix, iy, iz] = hk.union(label_array[ix, ym, iz], label_array[ix, iy, zm])
-    np.savetxt("hk_old_labels.txt", hk.labels)
+    #np.savetxt("hk_old_labels.txt", hk.labels)
 
-    for x in range(nridges):
-        for y in range(nridges):
-            for z in range(nridges):
+    for x in range(0, nridgex):
+        for y in range(0, nridgey):
+            for z in range(0, nridgez):
                 lab = (label_array[x, y, z])
                 if lab == 0:
                     continue  # ignore background/unlabeled
@@ -131,7 +132,7 @@ def hk_in_python(df_cryst, frac_cryst, ndot_cutoff = 0.97, nridges = 33, cryst_c
                     new_labels[0] += 1
                     new_labels[root] = new_labels[0]
                 label_array[x, y, z] = new_labels[root]
-    np.savetxt("hk_new_labels.txt", new_labels)
+    #np.savetxt("hk_new_labels.txt", new_labels)
 
     with open("labels_all_sheets.txt", "w") as f:
         nx, ny, nz = label_array.shape

@@ -59,7 +59,7 @@ def quench_PVA(data_path, slurm_name, files_name, home_folder, poly_length):
 def main():
     icryst_PVA_300_T088 = pva_300_analysis()
     icryst_PVA_100_T088 = pva_100_analysis()
-    #icryst_PVA_500_T088 = pva_500_analysis()
+    icryst_PVA_500_T088 = pva_500_analysis()
     icryst_PVA_50_T088 = pva_50_analysis()
     icryst_PVA_200_T088 = pva_200_analysis()
     icryst_PVA_1000_T088 = pva_1000_analysis()
@@ -73,12 +73,12 @@ def main():
     #poly.atom_coords.make_cell_grid()
     #poly.atom_coords.datapd.to_csv("PVA_1000_T088_poly0_coords.txt", sep = " ")
     #poly.atom_coords.wrapped_monomers.to_csv("PVA_1000_T088_poly0_wrappedcoords.txt", sep = " ")
-    poly.merge_boxes_2(print_results= True)
+    #poly.merge_boxes_2(print_results= True)
     #poly.atom_coords.bond_vectors.to_csv("PVA_1000_T088_poly0_bondvecs.txt", sep = " ")
     # #poly.merge_boxes_2(print_results = True)
 
-    #simulation_list = [icryst_PVA_100_T088, icryst_PVA_300_T088, icryst_PVA_50_T088]
-    #plot_crystallisation_different_polymer_lengths(simulation_list, plot_equal_length= False, save= False)
+    simulation_list = [icryst_PVA_50_T088, icryst_PVA_100_T088, icryst_PVA_200_T088, icryst_PVA_300_T088, icryst_PVA_500_T088, icryst_PVA_1000_T088]
+    plot_crystallisation_different_polymer_lengths(simulation_list, plot_equal_length= False, save= False)
     #plot_volume_per_monomer(simulation_list, save= True, savestring = "volume_monomer_T088_Tdot_e-3.pdf")
 
     # quench_PVA("../../data/PVA-300","slurm-PVA-300_quench_t_088_tdot_e-3_sim1.out", "PVA-300_quench_T088_tdot_e-3_sim1_time", 

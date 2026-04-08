@@ -27,22 +27,23 @@ class Simulation:
         """lammps_file_name_without_time should not contain a time"""
         self.temp = temperature
         self.cooling_rate = cooling_rate
-
+        self.polymer_length = polymer_length
+    
         self.template_lammps_file_name = lammps_file_name_without_time
         self.time_temp_array, self.list_lammps_files = self.merge_runs(path_slurm_file, lammps_file_name_without_time, no_runs)
         self.max_temp, self.min_temp = np.max(self.time_temp_array[:, 0]), np.min(self.time_temp_array[:, 0])
-        self.no_polymers = self.time_temp_array.shape[0]
-        self.polymer_length = polymer_length
         temp_str = "T" + str(self.temp).replace(".", "")
         if home_folder_override == True:
             self.path_to_home_folder = "%s/run_%i" %(home_folder, run_id)
         else:
             self.path_to_home_folder = "%s/e%i/%s/run_%i" %(home_folder, cooling_rate, temp_str, run_id)
-        self.cryst = self.get_crystallisation() #2D array containing time and crystallisation at time
-        self.mean_cluster_length = self.get_mean_cluster_length()
         Path(home_folder).mkdir(parents = True, exist_ok = True) #Make home directory if not exists
-
+        self.n_atoms = self.get_system_size() #Constant in the entire simulation
         self.cryst_cutoff, self.ndot_cutoff = cryst_cutoff, ndot_cutoff
+        self.no_polymers = int(self.n_atoms/self.polymer_length)
+        self.cryst = self.get_crystallisation() #2D array containing time and crystallisation at time
+        #self.mean_cluster_length = self.get_mean_cluster_length()
+        _ ,self.clusters_geq_2, self.no_clusters, self.mean_cryst_domain_size, self.no_cryst_grid_elements = self.get_mean_cluster_length()
 
     def get_polymer_by_count(self, count):
         """Gets i-th polymer"""
@@ -50,7 +51,10 @@ class Simulation:
             #Also get corresponding crystallisation array 
             current_polymer = polymer(self.list_lammps_files[count], polymer_length= self.polymer_length)
             #print(self.time_temp_array[count, 0])
-            current_polymer.read_cryst("%s/nematic_vectors/nem_vectors_time_%i.txt" %(self.path_to_home_folder, self.time_temp_array[count, 0]))
+            try:
+                current_polymer.read_cryst("%s/nematic_vectors/nem_vectors_time_%i.txt" %(self.path_to_home_folder, self.time_temp_array[count, 0]))
+            except FileNotFoundError:
+                pass
             current_polymer.timestep = self.time_temp_array[count, 0]
             #print(current_polymer.df_cryst)
             return current_polymer
@@ -64,6 +68,11 @@ class Simulation:
             return polymer_list
         else:
             raise Exception("count must be an int or a numpy.ndarray")
+
+    def get_system_size(self):
+        """Returns amount of atoms in a given systen"""
+        poly = self.get_polymer_by_count(0)
+        return poly.atom_coords.n_atoms
 
 
 
@@ -111,12 +120,30 @@ class Simulation:
             #path_to_file = "../data_online/PVA-%i/%s/%s/mean_cluster_length_%s_%s.txt" %(self.polymer_length, self.type_simulation, temp_str, temp_str, cooling_rate_str)
             #path_to_file = "%s/mean_cluster_length_%s_%s.txt" %(self.path_to_home_folder, temp_str, cooling_rate_str)
             path_to_file = "%s/domain_analysis.txt" %(self.path_to_home_folder)
-        try:
-            cryst = pd.read_csv(path_to_file, sep = " ", index_col = 0)
-            return cryst
-        except:
+        # try:
+        #     cryst = pd.read_csv(path_to_file, sep = " ", index_col = 0)
+        #     return cryst
+        # except:
+        #     print("No mean cluster length found!")
+        #     return 0;
+
+        if os.path.exists(path_to_file):
+            cryst = pd.read_csv(path_to_file, sep=" ")
+            
+            crystallinity = cryst["crystallinity"]
+            clusters_geq_2 = cryst["clusters w/ >= 2 members"]
+            no_clusters = cryst["   independent clusters"]  # keep exact spaces if present
+            mean_cryst_domain_size = cryst["mean size cryst domains"]
+            no_cryst_grid_elements = cryst["crystalline grid elements"]
+
+            return (crystallinity,
+                    clusters_geq_2,
+                    no_clusters,
+                    mean_cryst_domain_size,
+                    no_cryst_grid_elements)
+        else:
             print("No mean cluster length found!")
-            return 0;
+            return 0, 0, 0, 0, 0;
 
 
 
@@ -318,11 +345,12 @@ def plot_crystallisation_different_polymer_lengths(simulation_list, save: bool =
     for simulation in simulation_list:
         # ax1.plot(simulation.mean_cluster_length.iloc[:length, 0], simulation.mean_cluster_length.iloc[:length, 3], 
         #     label = r"independent clusters, PVA-%i" %(simulation.polymer_length))
-        label_cryst = r"crystallinity,  PVA-%i" %(simulation.polymer_length)
-        ax1.plot(simulation.cryst[:length, 0], simulation.cryst[:length, 1], 
+        label_cryst = r"$\phi$,  PVA-%i" %(simulation.polymer_length)
+        print(simulation.cryst)
+        ax1.plot(simulation.time_temp_array[:length, 0], simulation.cryst[:length, 1], 
             label = label_cryst)
-        ax2.scatter(simulation.mean_cluster_length.iloc[:length, 0], (simulation.mean_cluster_length.iloc[:length, 4])**(1/3) *2,
-            label =  r"mean domain size, PVA-%i" %(simulation.polymer_length))
+        ax2.scatter(simulation.time_temp_array[:length, 0], (simulation.mean_cryst_domain_size[:length])**(1/3) *2,
+            label =  r"$\langle \sigma \rangle$, PVA-%i" %(simulation.polymer_length))
         temp = simulation.temp
 
     ax1.set_xlabel("time")
@@ -333,9 +361,86 @@ def plot_crystallisation_different_polymer_lengths(simulation_list, save: bool =
     fig.legend(loc = "lower right", bbox_to_anchor=(0.895, 0.115))
     #fig.suptitle(r"Independent clusters and mean domain size, $\dot{T} = 10^{%i}$" %(simulation.cooling_rate))
     fig.suptitle(r"Isothermal crystallisation, T=%.2f"%(temp))
-    fig.savefig("plots/e%i_no_clusters_mean_domain_size.pdf"%(simulation.cooling_rate))
+    if savestring != None:
+        fig.savefig("plots/%s" %savestring)
+    #fig.savefig("plots/e%i_no_clusters_mean_domain_size.pdf"%(simulation.cooling_rate))
     plt.show()
 
+
+def plot_mean_domain_size_indep_clusters(simulation_list, save: bool = False, savestring = None, labels_list: list = None, plot_equal_length: bool = False):
+
+    length_list =[]
+
+    for simulation in simulation_list:
+        length_list.append(simulation.cryst.shape[0])
+        if plot_equal_length == True:
+            length = min(length_list)
+        else:
+            length = max(length_list)
+    fig, ax1 = plt.subplots()
+    ax2 = ax1.twinx()
+    # First plot mean cluster length 
+    for simulation in simulation_list:
+        print(simulation.polymer_length, simulation.n_atoms)
+        # ax1.plot(simulation.mean_cluster_length.iloc[:length, 0], simulation.mean_cluster_length.iloc[:length, 3], 
+        #     label = r"independent clusters, PVA-%i" %(simulation.polymer_length))
+        local_time_temp_array, local_list_lammps_files = simulation.time_temp_array, simulation.list_lammps_files
+        volume_monomer_array = local_time_temp_array
+        for i in tqdm(range(0, (local_time_temp_array.shape[0]))):
+            current_polymer = polymer(local_list_lammps_files[i], polymer_length= simulation.polymer_length)
+            volume_monomer_array[i, 1] = current_polymer.atom_coords.volume
+        label_cryst = r"number of clusters,  PVA-%i" %(simulation.polymer_length)
+        ax1.plot(simulation.time_temp_array[:length, 0], simulation.clusters_geq_2[:length]/volume_monomer_array[:length, 1], 
+            label = label_cryst)
+        ax2.scatter(simulation.time_temp_array[:length, 0], (simulation.mean_cryst_domain_size[:length])**(1/3) *2,
+            label =  r"$\langle \sigma \rangle$, PVA-%i" %(simulation.polymer_length))
+        temp = simulation.temp
+
+    ax1.set_xlabel("time")
+    #ax1.set_ylabel(r"amount of independent clusters")
+    ax1.set_ylabel(r"clusters/volume")
+    ax2.set_ylabel(r"length scale ($\sigma$)")
+    #fig.tight_layout()
+    fig.legend(loc = "lower right", bbox_to_anchor=(0.895, 0.115))
+    #fig.suptitle(r"Independent clusters and mean domain size, $\dot{T} = 10^{%i}$" %(simulation.cooling_rate))
+    fig.suptitle(r"Isothermal crystallisation, T=%.2f"%(temp))
+    if savestring != None:
+        fig.savefig("plots/%s" %savestring)
+    #fig.savefig("plots/e%i_no_clusters_mean_domain_size.pdf"%(simulation.cooling_rate))
+    plt.show()
+
+
+def plot_no_clusters(simulation_list, save: bool = False, savestring = None, labels_list: list = None, plot_equal_length: bool = False):
+
+    length_list =[]
+
+    for simulation in simulation_list:
+        length_list.append(simulation.cryst.shape[0])
+        if plot_equal_length == True:
+            length = min(length_list)
+        else:
+            length = max(length_list)
+
+    for simulation in simulation_list:
+
+        label_cryst = r"PVA-%i" %(simulation.polymer_length)
+        local_time_temp_array, local_list_lammps_files = simulation.time_temp_array, simulation.list_lammps_files
+        volume_monomer_array = local_time_temp_array
+        for i in tqdm(range(0, (local_time_temp_array.shape[0]))):
+            current_polymer = polymer(local_list_lammps_files[i], polymer_length= simulation.polymer_length)
+            volume_monomer_array[i, 1] = current_polymer.atom_coords.volume
+        label_cryst = r"number of clusters,  PVA-%i" %(simulation.polymer_length)
+        plt.plot(simulation.time_temp_array[:length, 0], simulation.clusters_geq_2[:length]/volume_monomer_array[:length, 1], 
+            label = label_cryst)
+    plt.xlabel("time")
+    #ax1.set_ylabel(r"amount of independent clusters")
+    plt.ylabel(r"number of clusters/ total volume")
+    plt.title("Cluster size, only polymer lengths")
+    plt.legend()
+    if savestring != None:
+        plt.savefig("plots/%s" %savestring)
+    #fig.savefig("plots/e%i_no_clusters_mean_domain_size.pdf"%(simulation.cooling_rate))
+    plt.show()
     
 def main():
     data_path = "../../data/pva-100/quick_quench/long_run"

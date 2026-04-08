@@ -13,6 +13,7 @@ from numba import jit
 from nematic_vector import calc_nematic_tensor_2, nematic_vector_loop, nematic_vector_loop_2, compute_Q, orderparameter
 from matplotlib.colors import ListedColormap, BoundaryNorm
 from hoshenKopelmanInPython import hk_in_python
+from matplotlib.patches import Rectangle
 
 def wrap_coordinates(column, minlength, total_length):
     return (column - minlength) % total_length + minlength
@@ -58,9 +59,10 @@ class atom_coords:
         self.n_atoms = len(self.datapd.index)
         self.polymer_length = polymer_length
         self.no_polymers = self.n_atoms/self.polymer_length
-        #self.polymer_length = int(self.n_atoms/self.no_polymers)
         self.datapd = self.replace_mol_id_by_polymer_length()
         self.volume, self.boxlengths, self.dimensions = self.get_volume_box(path_to_file)
+        self.cell_length = cell_length
+        self.nridges = self.calc_nridges()
         self.current_timestep = self.get_timestep_from_file_name(path_to_file) 
         self.wrapped_monomers = self.wrap_coordinates_all_data()
         #Calculate box properties 
@@ -86,7 +88,6 @@ class atom_coords:
 
     def replace_mol_id_by_polymer_length(self):
         #self.datapd['mol_id'] = (np.arange(len(self.datapd)) // self.polymer_length)
-        print(self.polymer_length, np.arange(len(self.datapd)))
         self.datapd['mol_id']  = (np.arange(len(self.datapd)) // self.polymer_length)
         return self.datapd
 
@@ -162,8 +163,12 @@ class atom_coords:
 
 
         return xm
+
+    def calc_nridges(self):
+        return (self.boxlengths/self.cell_length).astype(int)
+    
     def make_cell_grid(self, cell_length = 2):
-        nridges = (self.boxlengths/cell_length).astype(int)
+        nridges = self.calc_nridges()
         actual_cell_length = self.boxlengths/nridges
         
         #Shift monomers to start from 0 
@@ -194,7 +199,6 @@ class atom_coords:
             ny=ny,
             nz=nz,
         )
-        print(self.bond_vectors)
         #self.bond_vectors = self.bond_vectors[(self.bond_vectors["nx"] >= 0) & (self.bond_vectors["ny"] >= 0) & (self.bond_vectors["nz"] >= 0)]
         return self.bond_vectors, nridges
 
@@ -332,7 +336,6 @@ class polymer():
 
     def bond_distribution(self):
         #self.atom_coords.get_nematic_vector_5()
-        print(self.atom_coords.bond_vectors)
         counts = (
             self.atom_coords.bond_vectors
             .groupby(["xid", "yid", "zid"])
@@ -432,16 +435,243 @@ class polymer():
             print("earlier calculated frac_cryst = %f" %(self.frac_cryst))
         return label_matrix
 
-def bin_label_matrix(label_matrix, bins: np.array):
-    """Function to bin the cluster size into a histogram"""
+    def bin_label_matrix(self):#bins: np.array):
+        """Function to bin the cluster size into a histogram"""
+        label_matrix = self.merge_boxes_2()
+        result = cluster_pdfs_from_label_matrix(label_matrix, vol_per_site= self.atom_coords.volume/self.atom_coords.n_atoms)
+        unique_values, counts = np.unique(label_matrix, return_counts=True)
+        mask = unique_values > 0
+        cluster_sizes = counts[mask]
+        labelcount = len(cluster_sizes)   
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+
+        ax1.bar(result["bin_mid"], result["pdf1"]/labelcount,
+                width=result["bin_high"] - result["bin_low"],
+                align="center", edgecolor="k", alpha=0.7)
+        ax1.set_xscale("log"); ax1.set_yscale("log")
+        ax1.set_xlabel("Cluster size s"); ax1.set_ylabel("  [amount of clusters]")
+        ax1.set_title("Cluster size distribution")
+
+        ax2.bar(result["bin_mid"], result["pdf2"],
+                width=result["bin_high"] - result["bin_low"],
+                align="center", edgecolor="k", color="orange", alpha=0.7)
+        ax2.set_xscale("log"); ax2.set_yscale("log")
+        ax2.set_xlabel("Cluster size s"); ax2.set_ylabel("  [volume fraction]")
+        ax2.set_title("Volume-weighted distribution ")
+        plt.suptitle(r"Cluster distributuion, PVA-%i, $\phi = 0.442$" %(self.atom_coords.polymer_length))
+        plt.tight_layout()
+        plt.show()
+
+    #hist, bin_edges = np.histogram(counts[1:], bins)
+
+
+def make_ncluster_from_labels(unique_values, counts):
+    """
+    Build ncluster[size] = number of clusters of that size.
+    Assumes label 0 is background and is ignored.
+    """
+    mask = unique_values > 0
+    cluster_sizes = counts[mask]
+
+    imax1 = int(cluster_sizes.max())
+    jmax  = imax1 + 1000
+
+    ncluster = np.zeros(jmax + 1, dtype=int)
+    size_hist = np.bincount(cluster_sizes)
+    ncluster[:len(size_hist)] = size_hist
+
+    return ncluster, imax1, jmax
+
+
+def bin_ncluster(ncluster, imax1, jmax):
+    """
+    Apply the non-uniform binning from the C++ protocol.
+    Returns:
+      bin_low   : lower size (inclusive) of each non-empty bin
+      bin_high  : upper size (inclusive) of each non-empty bin
+      bin_count : total number of clusters in that bin
+    """
+    bin_low, bin_high, bin_count = [], [], []
+
+    def add_bin(low, high):
+        if low > imax1:
+            return
+        high_eff = min(high, imax1)
+        total = ncluster[low:high_eff + 1].sum()
+        if total == 0:
+            return                  # skip empty bins (mirrors C++ if bincluster[i]>0)
+        bin_low.append(low)
+        bin_high.append(high_eff)
+        bin_count.append(total)
+
+    # width-1 bins: sizes 1–5
+    for s in range(1, 6):
+        add_bin(s, s)
+
+    # width-2 bin: 6–7
+    add_bin(6, 7)
+
+    # width-3 bin: 8–10
+    add_bin(8, 10)
+
+    # width-10 bins: 11–20, 21–30, ..., 61–70
+    for high in range(20, 71, 10):
+        add_bin(high - 9, high)
+
+    # width-30 bin: 71–100
+    add_bin(71, 100)
+
+    # width-100 bins: 101–200, ..., 601–700
+    for high in range(200, 701, 100):
+        add_bin(high - 99, high)
+
+    # width-300 bin: 701–1000
+    add_bin(701, 1000)
+
+    # width-1000 bins: 1001–2000, 2001–3000, ...
+    for high in range(2000, jmax, 1000):
+        add_bin(high - 999, high)
+
+    return np.array(bin_low), np.array(bin_high), np.array(bin_count)
+
+
+def compute_pdfs(bin_low, bin_high, bin_count, nemcount, labelcount):
+    """
+    Compute pdf1 and pdf2 for each bin, mirroring the C++ code.
+
+    pdf1[i] = bin_count / bin_width
+            = number of clusters per unit cluster size
+            → the cluster NUMBER distribution (normalised for bin width)
+
+    pdf2[i] = bin_midpoint * pdf1[i] / nemcount
+            = (n1+n2)/2 * pdf1 / nemcount
+            → the VOLUME-WEIGHTED distribution per unit cluster size,
+              normalised by total number of particles in clusters
+
+    Parameters
+    ----------
+    bin_low, bin_high : arrays of bin edges (inclusive)
+    bin_count         : number of clusters in each bin
+    nemcount          : total number of particles/sites belonging to clusters
+                        (= sum over all cluster sizes s of s * ncluster[s])
+
+    Returns
+    -------
+    bin_mid  : bin midpoint (n1+n2)/2  — use as x-axis
+    pdf1     : number PDF per unit cluster size
+    pdf2     : volume-weighted PDF per unit cluster size, normalised by nemcount
+    """
+    bin_width = bin_high - bin_low + 1          # width of each bin in size units
+    bin_mid   = (bin_low + bin_high) / 2.0      # midpoint, same as (n1+n2)/2 in C++
+
+    # C++: pdf1[i] = bincluster[i] / (n2 - n1)
+    # Note: C++ uses n2-n1 where n1 is the PREVIOUS bin's upper edge,
+    # which equals bin_width here (since bins are contiguous).
+    pdf1 = bin_count / (bin_width.astype(float))
+
+    # C++: pdf2[i] = (n1+n2) * pdf1[i] * 0.5 / nemcount
+    pdf2 = bin_mid * pdf1 / nemcount
+
+    return bin_mid, pdf1, pdf2
+
+
+def averages_from_ncluster(ncluster, imax1, vol, nemcount, labelcount):
+    """
+    Compute average cluster size and average volume directly from ncluster,
+    mirroring the C++ averages loop.
+
+    C++:
+      avencluster += ncluster[i] * i        → mean cluster size
+      avevolume   += ncluster[i] * i * i    → second moment → mean volume
+
+    Parameters
+    ----------
+    vol        : volume per particle/site
+    nemcount   : total number of particles in clusters
+    labelcount : total number of clusters
+    """
+    sizes = np.arange(1, imax1 + 1)
+    nc    = ncluster[1:imax1 + 1]
+
+    avencluster = np.sum(nc * sizes) / labelcount
+    avevolume   = np.sum(nc * sizes * sizes) * vol / nemcount
+
+    return avencluster, avevolume
+
+
+# ── Full pipeline ──────────────────────────────────────────────────────────────
+
+def cluster_pdfs_from_label_matrix(label_matrix, vol_per_site=1.0):
+    """
+    Full pipeline from a 3D label_matrix to pdf1 and pdf2.
+
+    Parameters
+    ----------
+    label_matrix : 3D numpy array of integer cluster labels (0 = background)
+    vol_per_site : volume of a single lattice site (default 1)
+
+    Returns
+    -------
+    dict with keys:
+      bin_low, bin_high, bin_mid, bin_count
+      pdf1        : number PDF per unit cluster size
+      pdf2        : volume-weighted PDF per unit cluster size / nemcount
+      avencluster : mean cluster size
+      avevolume   : mean cluster volume
+    """
     unique_values, counts = np.unique(label_matrix, return_counts=True)
 
-    print(unique_values, counts)
-    hist, bin_edges = np.histogram(counts[1:], bins)
+    # Build ncluster histogram
+    ncluster, imax1, jmax = make_ncluster_from_labels(unique_values, counts)
 
+    # Derived counts
+    mask       = unique_values > 0
+    cluster_sizes = counts[mask]
+    labelcount = len(cluster_sizes)               # total number of clusters
+    nemcount   = int(cluster_sizes.sum())         # total particles in clusters
 
+    # Binning
+    bin_low, bin_high, bin_count = bin_ncluster(ncluster, imax1, jmax)
 
+    # PDFs
+    bin_mid, pdf1, pdf2 = compute_pdfs(bin_low, bin_high, bin_count, nemcount, labelcount)
+
+    # Averages
+    avencluster, avevolume = averages_from_ncluster(
+        ncluster, imax1, vol_per_site, nemcount, labelcount
+    )
+
+    print(f"Total clusters (labelcount) : {labelcount}")
+    print(f"Total particles in clusters : {nemcount}")
+    print(f"Largest cluster size        : {imax1}")
+    print(f"Average cluster size        : {avencluster:.4f}")
+    print(f"Average cluster volume      : {avevolume:.4f}")
+
+    return {
+        "bin_low"    : bin_low,
+        "bin_high"   : bin_high,
+        "bin_mid"    : bin_mid,
+        "bin_count"  : bin_count,
+        "pdf1"       : pdf1,
+        "pdf2"       : pdf2,
+        "avencluster": avencluster,
+        "avevolume"  : avevolume,
+    }
+    unique_values, counts = np.unique(label_matrix, return_counts=True)
     
+    ncluster, imax1, jmax = make_ncluster_from_labels(unique_values, counts)
+    bin_low, bin_high, bin_count = bin_ncluster(ncluster, imax1, jmax)
+    
+    return {
+        "bin_low": bin_low,      # lower size bound of each bin (inclusive)
+        "bin_high": bin_high,    # upper size bound of each bin (inclusive)
+        "bin_count": bin_count,  # number of clusters in that bin
+        "imax1": imax1,
+        "jmax": jmax,
+    }
+
+
+
 def check_labels(label_matrix, nridges, i,j,k):
     """Helper functuion to check if label_matrix is equal to one of its neighbours. If not, print current value of label_matrix and all neighbours"""
     if label_matrix[i,j,k] != label_matrix[(i -1)% nridges,j,k] or label_matrix[i,j,k] != label_matrix[(i+1)%nridges, j, k]:
@@ -683,7 +913,7 @@ def plot_hk_matrix_2d(polymer, ndot_cutoff=0.98, cryst_threshold=0.8):
         cbar = fig.colorbar(im, ax=ax, label='cluster label')
         cbar.set_ticks(np.arange(0, n_labels + 1))
         fig.tight_layout()
-        plt.savefig(f"hk_debug/test_PVA_100_polynumber_20_T088_zlayer_{k}.pdf")
+        plt.savefig(f"hk_debug/PVA_1000_polynumber_20_T088_zlayer_{k}.pdf")
         plt.close()
 
 

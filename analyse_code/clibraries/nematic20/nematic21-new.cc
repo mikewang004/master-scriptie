@@ -901,9 +901,12 @@ m=0;
 //cout << n1<< " " << n2 << " "<< n3 << endl;
 for(l=1; l<=Nbond;l++){
  //cout << "l=" << l << endl;
-m1=(int) xm[l]/lx;
-m2=(int) ym[l]/ly;
-m3=(int) zm[l]/lz;
+//m1=(int) xm[l]/lx;
+//m2=(int) ym[l]/ly;
+//m3=(int) zm[l]/lz;
+m1 = (int)(xm[l] / lx);
+m2 = (int)(ym[l] / ly);
+m3 = (int)(zm[l] / lz);
 
 //cout<< "m1=" << m1<< " m2= " << m2 << " m3=  "<< m3 << endl;
  if( (m1==n1) && ( m2==n2) && (m3==n3) ){

@@ -476,9 +476,11 @@ strcat(bondvec, "_bondvecs.txt");
 
 // Grid assignment 
 
+double*** SS=Allocate_3D_Double_Array(nx+1, ny+1, nz+1);
 double*** nn1=Allocate_3D_Double_Array(nx+1, ny+1, nz+1);
 double*** nn2=Allocate_3D_Double_Array(nx+1, ny+1, nz+1);
 double*** nn3=Allocate_3D_Double_Array(nx+1, ny+1, nz+1);
+int*** mm=Allocate_3D_Integer_Array(nx+1, ny+1, nz+1);
 
 double Lgrid;
 Lgrid=2.0;
@@ -496,44 +498,167 @@ double vol=lx*ly*lz;
 cout<< "lx=" << lx<< " ly= " << ly << " lz=  "<< lz << "   Ngrids=" << nx*ny*nz << endl;
 double u[1000][4];
 
+
+
 ofstream bondvecfile1;
 bondvecfile1.open(bondvec);
 bondvecfile1 << "atom1 bx by bz xm ym zm nx ny nz"  << endl;
 
 
+
+int ncolor[nx+1][ny+1][nz+1]; 
+int idcell[10000], *amorphLabel;
+
+amorphLabel=new int [Nmon+1];
+
+cout<< " up to here fine" << endl;
+double r1,r2,r3,rr,P2Q,cosQ, P2Q1,cosQ1 , P2Q2,cosQ2;
+
+
+
+char nemname[200];
+strcpy(nemname,filename);
+strcat(nemname, "_nematic.dat");
+
+nematicfile.open(nemname);
+
+nematicfile << "S_glob SS  lambda_1_glob  lambda_2_glob  lambda_3_glob director_1_glob  director_2_glob  director_3_glob  "  << endl;
+
+
+char clustername[60];
+strcpy(clustername,filename);
+strcat(clustername, "_cluster.dat");
+clusterfile.open(clustername);
+
+
+char clustername1[60];
+strcpy(clustername1,filename);
+strcat(clustername1, "_clust.dat");
+clusterfile1.open(clustername1);
+
+
+ max=1;
+ int gridcount=0;
+int cc=0, ndomains=0;
+
+ //**********  calculation of global nematic order parameter ***********************************//
+orderparameter1(Nbond, bond, lambda, eevp, eevm, eevo, &S, director);
+double globalNem=S;
+nematicfile << "The global nematic order parameter is: " << globalNem << endl;
+ double bintheta=0.025, binS=0.02;
+ int Namorph=0, tt,nS,Nss; //tt the numbr of bins for the cos angle of local nematic director.
+ tt= (int) (pi/2.0/bintheta)+1;  cout <<"tt=" << tt << endl;
+ 
+ double nem=0, thetaz=0, thetay=0, thetax=0;
+    
+   int Ns0= (int) 1.0/binS;
+    Nss= Ns0*3/2+1; //  -0.5=< S<= 1
+ int Nbamorph=0, sumamorph=0,countS[Nss+1], counttheta1[tt+1], counttheta2[tt+1], counttheta3[tt+1];
+cout << "Nss= " << Nss << "Ns0= " << Ns0 << endl;
+ for(i=0;i<=Nss;i++) countS[i]=0;
+ for(i=0;i<=tt;i++) {
+   counttheta1[i]=0;
+   counttheta2[i]=0;
+   counttheta3[i]=0;
+ }
+ 
+ 
+int *bondamorph=new int [Nbond+1];
+int *idbond=new int [1000];
+
+for(i=0;i< 1000;i++) idbond[i]=0;
+ for(i=0;i<=Nbond;i++)  bondamorph[i]=0;
+
+
 for(n1=0;n1<nx;n1++)
   for(n2=0;n2<ny;n2++)
     for(n3=0;n3<nz;n3++){
-      m=0;
+        m=0;
+        for(l=1; l<=Nbond;l++){
+        //cout << "l=" << l << endl;
+        //m1=(int) xm[l]/lx;
+        //m2=(int) ym[l]/ly;
+        //m3=(int) zm[l]/lz;
+            m1 = (int)(xm[l] / lx);
+            m2 = (int)(ym[l] / ly);
+            m3 = (int)(zm[l] / lz);
+
+            if( (m1==n1) && ( m2==n2) && (m3==n3) ){
+
+                ++m;
+                u[m][1]=bond[l][0];
+                u[m][2]=bond[l][1];
+                u[m][3]=bond[l][2];
+                idcell[m]=l/(Lchain-1)+l; //id of atom at the begining of bond vector.
+                idbond[m]=l;
+                /*xp1[m]=xm[l]-lbond[l]/2*bond[l][0];
+                xp2[m]=xm[l]+lbond[l]/2*bond[l][0];
+
+                yp1[m]=ym[l]-lbond[l]/2*bond[l][1];
+                yp2[m]=ym[l]+lbond[l]/2*bond[l][1];
+
+                zp1[m]=zm[l]-lbond[l]/2*bond[l][2];
+                zp2[m]=zm[l]+lbond[l]/2*bond[l][2];*/
+                } //end if
+
+                }// end for l
+                if(m>max) max=m;
+                ++count[m];
+                if(m > 1) {
+                //cout << "m=" << m << endl;
+                nematicfile  << "m=" << m << endl;
+                nematicfile << "n1 " << "n2 "<<" n3 "<< endl;
+                nematicfile << n1<< " " << n2 << " "<< n3 << endl;
+                orderparameter(m, u, lambda, eevp, eevm, eevo, &S,director);
+                mm[n1][n2][n3]=m;
+                SS[n1][n2][n3]=lambda[1];
+                nn1[n1][n2][n3]=eevp[1];
+                nn2[n1][n2][n3]=eevp[2];
+                nn3[n1][n2][n3]=eevp[3];
+                nem= S/binS;
+                nS= (int) nem;
+                    
+                    if( nS>0)   countS[nS]= countS[nS]+1;
+                    else {//cout << "nS=" << nS << endl;
+                        nS=abs(nS)+Ns0;
+                        countS[nS]= countS[nS]+1;
+                //cout << "nS_new=" << nS << "countS[nS]=" << countS[nS] << endl;
+                    }
+                }
+                if(SS[n1][n2][n3] > 0.8){ 
+                ncolor[n1][n2][n3]=1; // initial label of all the nematic grid elements
+                ++nematiccount[m];
+                ++gridcount;
+                }
 
 //cout << n1<< " " << n2 << " "<< n3 << endl;
-      for(l=1; l<=10;l++){
-    //cout << "l=" << l << endl;
-        m1=(int) xm[l]/lx;
-        m2=(int) ym[l]/ly;
-        m3=(int) zm[l]/lz;
-        cout << m1 << xm[l] << lx << endl;
+    //   for(l=1; l<=10;l++){
+    // //cout << "l=" << l << endl;
+    //     m1 = (int)(xm[l] / lx);
+    //     m2 = (int)(ym[l] / ly);
+    //     m3 = (int)(zm[l] / lz);
+    //     cout << m1 << xm[l] << lx << endl;
 
-        if( (m1==n1) && ( m2==n2) && (m3==n3) ){
+    //     if( (m1==n1) && ( m2==n2) && (m3==n3) ){
 
-          ++m;
-          u[m][1]=bond[l][0];
-          u[m][2]=bond[l][1];
-          u[m][3]=bond[l][2];
+    //       ++m;
+    //       u[m][1]=bond[l][0];
+    //       u[m][2]=bond[l][1];
+    //       u[m][3]=bond[l][2];
 
-          bondvecfile1 << atom1_of_bond[l] << " "
-                       << bond[l][0] << " "
-                       << bond[l][1] << " "
-                       << bond[l][2] << " "
-                       << xm[l] << " "
-                       << ym[l] << " "
-                       << zm[l] << " "
-                       << n1 << " "
-                       << n2 << " "
-                       << n3 << std::endl;
-        }
+    //       bondvecfile1 << atom1_of_bond[l] << " "
+    //                    << bond[l][0] << " "
+    //                    << bond[l][1] << " "
+    //                    << bond[l][2] << " "
+    //                    << xm[l] << " "
+    //                    << ym[l] << " "
+    //                    << zm[l] << " "
+    //                    << n1 << " "
+    //                    << n2 << " "
+    //                    << n3 << std::endl;
+    //     }
 
-      }
+    //   }
 }
 
 

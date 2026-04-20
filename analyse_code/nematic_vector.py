@@ -151,7 +151,7 @@ def orderparameter(block: pd.DataFrame) -> pd.Series:
     """
 
     um = block[['bx', 'by', 'bz']].to_numpy()
-    if len(um) == 0:
+    if len(um) < 2:
         return pd.Series({f"Q{a}{b}": 0.0 for a in range(3) for b in range(3)})
     um = np.asarray(um, dtype=float)
     npar = um.shape[0]

@@ -99,25 +99,58 @@ def hk_in_python(df_cryst, frac_cryst, nridges, ndot_cutoff = 0.97, cryst_cutoff
                     #print(ix, iy, iz)
                     label_array[ix, iy, iz] = hk.make_set()
                     #print(label_array[ix, iy, iz])
-                elif check_total == 1: #Merge with x/y/z neighbour
+                # elif check_total == 1: #Merge with x/y/z neighbour
+                #     if xmin_check == 1:
+                #         label_array[ix, iy, iz] = label_array[xm, iy, iz]
+                #     elif ymin_check == 1:
+                #         label_array[ix, iy, iz] = label_array[ix, ym, iz]
+                #     else: #zmin_check == 1
+                #         label_array[ix, iy, iz] = label_array[ix, iy, zm]
+                # elif check_total == 2: #Merge two clusters 
+                #     if xmin_check == 1:
+                #         if ymin_check == 1:
+                #             label_array[ix, iy, iz] = hk.union(label_array[xm, iy, iz], label_array[ix, ym, iz])
+                #         else: #zmin_check ==1 
+                #             label_array[ix, iy, iz] = hk.union(label_array[xm, iy, iz], label_array[ix, iy, zm])
+                #     else: #ymin_check == 1 and zmin_check == 1
+                #         label_array[ix, iy, iz] = hk.union(label_array[ix, ym, iz], label_array[ix, iy, zm])
+                # else: #check_total == 3
+                #     label_array[ix, iy, iz] = hk.union(label_array[xm, iy, iz], label_array[ix, ym, iz])
+                #     label_array[ix, iy, iz] = hk.union(label_array[xm, iy, iz], label_array[ix, iy, zm])
+                #     label_array[ix, iy, iz] = hk.union(label_array[ix, ym, iz], label_array[ix, iy, zm])
+
+                elif check_total == 1:
                     if xmin_check == 1:
-                        label_array[ix, iy, iz] = label_array[xm, iy, iz]
+                        label_array[ix, iy, iz] = hk.find(label_array[xm, iy, iz]) 
                     elif ymin_check == 1:
-                        label_array[ix, iy, iz] = label_array[ix, ym, iz]
-                    else: #zmin_check == 1
-                        label_array[ix, iy, iz] = label_array[ix, iy, zm]
-                elif check_total == 2: #Merge two clusters 
+                        label_array[ix, iy, iz] = hk.find(label_array[ix, ym, iz])  
+                    else:
+                        label_array[ix, iy, iz] = hk.find(label_array[ix, iy, zm])  
+
+                elif check_total == 2:
                     if xmin_check == 1:
                         if ymin_check == 1:
-                            label_array[ix, iy, iz] = hk.union(label_array[xm, iy, iz], label_array[ix, ym, iz])
-                        else: #zmin_check ==1 
-                            label_array[ix, iy, iz] = hk.union(label_array[xm, iy, iz], label_array[ix, iy, zm])
-                    else: #ymin_check == 1 and zmin_check == 1
-                        label_array[ix, iy, iz] = hk.union(label_array[ix, ym, iz], label_array[ix, iy, zm])
-                else: #check_total == 3
-                    label_array[ix, iy, iz] = hk.union(label_array[xm, iy, iz], label_array[ix, ym, iz])
-                    label_array[ix, iy, iz] = hk.union(label_array[xm, iy, iz], label_array[ix, iy, zm])
-                    label_array[ix, iy, iz] = hk.union(label_array[ix, ym, iz], label_array[ix, iy, zm])
+                            label_array[ix, iy, iz] = hk.union(
+                                hk.find(label_array[xm, iy, iz]),
+                                hk.find(label_array[ix, ym, iz])
+                            )
+                        else:
+                            label_array[ix, iy, iz] = hk.union(
+                                hk.find(label_array[xm, iy, iz]),
+                                hk.find(label_array[ix, iy, zm])
+                            )
+                    else:
+                        label_array[ix, iy, iz] = hk.union(
+                            hk.find(label_array[ix, ym, iz]),
+                            hk.find(label_array[ix, iy, zm])
+                        )
+                else:  # check_total == 3
+                    r1 = hk.find(label_array[xm, iy, iz])
+                    r2 = hk.find(label_array[ix, ym, iz])
+                    r3 = hk.find(label_array[ix, iy, zm])
+                    root = hk.union(r1, r2)
+                    root = hk.union(root, r3)
+                    label_array[ix, iy, iz] = root
     #np.savetxt("hk_old_labels.txt", hk.labels)
 
     for x in range(0, nridgex):
@@ -134,22 +167,30 @@ def hk_in_python(df_cryst, frac_cryst, nridges, ndot_cutoff = 0.97, cryst_cutoff
                 label_array[x, y, z] = new_labels[root]
     #np.savetxt("hk_new_labels.txt", new_labels)
 
-    with open("labels_all_sheets.txt", "w") as f:
-        nx, ny, nz = label_array.shape
-        for z in range(nz):
-            f.write(f"# z = {z}\n")
-            np.savetxt(f, label_array[:, :, z], fmt="%d")
-            f.write("\n")
+    # with open("labels_all_sheets.txt", "w") as f:
+    #     nx, ny, nz = label_array.shape
+    #     for z in range(nz):
+    #         f.write(f"# z = {z}\n")
+    #         np.savetxt(f, label_array[:, :, z], fmt="%d")
+    #         f.write("\n")
     return label_array
 
         
 
 
-def apply_pbc(x, pbc = False, nridges = 33):
-    if pbc == False: 
-        return int(x - 1)
-    return int((x - 1 + nridges) % nridges)
+# def apply_pbc(x, pbc = False, nridges = 33):
+#     if pbc == False: 
+#         return int(x - 1)
+#     return int((x - 1 + nridges) % nridges)
 
+def apply_pbc(x, pbc=False, nridges=33):
+    """
+    x is already 0-based (0..nridges-1).
+    Returns the backward neighbor index (0-based).
+    """
+    if not pbc:
+        return int(x) - 1              # plain backward: may be -1 for x=0 (→ None lookup)
+    return (int(x) - 1) % nridges      # PBC backward: wraps 0 → nridges-1
 
 def check_ndot(current_row, neighbour_row, cryst_cutoff = 0.8, ndot_cutoff = 0.97):
     """Returns 1 if 1.5 * (n_i dot n_j) - 0.5 >= ndot_cutoff, otherwise 0 """

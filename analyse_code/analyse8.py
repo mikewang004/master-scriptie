@@ -18,12 +18,11 @@ from matplotlib.patches import Rectangle
 def wrap_coordinates(column, minlength, total_length):
     return (column - minlength) % total_length + minlength
 
-def fraction_crystallinity(data, cutoff = 0.8):
+def fraction_crystallinity(data, n_ridges_3d, cutoff = 0.8):
     """Data 1d 1d list/array, defined as data > 0.8 -> crystallinity = 1;
     data <= 0.8 -> crystallinity = 0 as in Sommer/Luo Sep 2010"""
-
     mask = data > cutoff
-    fraction = len(data[mask]) / len(data)
+    fraction = len(data[mask]) / n_ridges_3d
     return fraction, len(data[mask])
 
 def gaussian(x, H, A, x0, sigma):
@@ -62,24 +61,24 @@ class atom_coords:
         self.datapd = self.replace_mol_id_by_polymer_length()
         self.volume, self.boxlengths, self.dimensions = self.get_volume_box(path_to_file)
         self.cell_length = cell_length
-        self.nridges = self.calc_nridges()
+        # self.nridges, self.no_nridges_3d = self.calc_nridges()
         self.current_timestep = self.get_timestep_from_file_name(path_to_file) 
         self.wrapped_monomers = self.wrap_coordinates_all_data()
         #Calculate box properties 
 
         self.bond_vectors = self.calculate_bond_vectors()
-        self.bond_vectors, self.nridges = self.make_cell_grid()
+        self.bond_vectors, self.nridges, self.no_nridges_3d  = self.make_cell_grid()
         #self.df_cryst = self.get_nematic_vector_5()
         self.results = results()
 
 
     def read_in_file(self, filename):
-        datapd = pd.read_csv(filename, sep = " ", header = None, skiprows = 9)
+        datapd = pd.read_csv(filename, sep = " ", header = None, skiprows = 9, dtype={1: "int32", 2: "float64", 3: "float64", 4: "float64"})
         datapd.columns = ["atom_id", "mol_id", "xu", "yu", "zu"]
         datapd = datapd.set_index("atom_id")
         
         datapd = datapd.sort_values("atom_id")
-        datapd
+        #print(datapd)
         #datapd.to_csv("pva-200-polyno0.txt", sep = " ")
         #datapd = datapd.sort_values(["mol_id", "atom_id"])
         #
@@ -131,6 +130,7 @@ class atom_coords:
 
     def return_positive_midpoint_coords(self):
         pos_coords = self.wrapped_monomers[['mol_id', 'xu', 'yu', 'zu']]# - self.dimensions.iloc[:, 0]
+        #pos_coords = self.datapd[['mol_id', 'xu', 'yu', 'zu']]
 
         #pos_coords.to_csv("test2.txt", sep = " ")
         # pos_coords = pos_coords.copy()
@@ -164,11 +164,36 @@ class atom_coords:
 
         return xm
 
+    def return_positive_midpoint_coords_c_like(self):
+        # xlo,ylo,zlo should match what C reads from the dump
+        xlo = self.dimensions.loc["x", "min"]
+        ylo = self.dimensions.loc["y", "min"]
+        zlo = self.dimensions.loc["z", "min"]
+
+        # use the same base coordinates as C: xu, yu, zu from the dump
+        pos_coords = self.datapd[['mol_id', 'xu', 'yu', 'zu']].copy()
+        print(pos_coords)
+        # shift so that box min is at 0 (like xp = xu - xlo in C)
+        pos_coords['xu'] = pos_coords['xu'] - xlo
+        pos_coords['yu'] = pos_coords['yu'] - ylo
+        pos_coords['zu'] = pos_coords['zu'] - zlo
+
+        # neighbor within each chain (same as C atom1/atom2)
+        shifted = pos_coords.groupby('mol_id')[['xu', 'yu', 'zu']].shift(-1)
+
+        # bond midpoints (like xm = (xp1 + xp2)/2)
+        xm = (shifted + pos_coords[['xu', 'yu', 'zu']]) / 2.0
+        xm = xm.dropna()
+        print(xm)
+        return xm
+
     def calc_nridges(self):
-        return (self.boxlengths/self.cell_length).astype(int)
+        nridges = (self.boxlengths/self.cell_length).astype(int)
+        nridges_total_3d = (nridges.iloc[0]*nridges.iloc[1]*nridges.iloc[2]).item()
+        return nridges, nridges_total_3d
     
     def make_cell_grid(self, cell_length = 2):
-        nridges = self.calc_nridges()
+        nridges, nridges_total_3d = self.calc_nridges()
         actual_cell_length = self.boxlengths/nridges
         
         #Shift monomers to start from 0 
@@ -192,15 +217,15 @@ class atom_coords:
         nz = (xm["zu"] / actual_cell_length["z"]).astype(int)
         #xm.to_csv("test.txt", sep = " ")
         self.bond_vectors = self.bond_vectors.assign(
-            xm = xm[["xu"]],
-            ym = xm[["yu"]],
-            zm = xm[["zu"]],
+            xm = xm["xu"],
+            ym = xm["yu"],
+            zm = xm["zu"],
             nx=nx,
             ny=ny,
             nz=nz,
         )
         #self.bond_vectors = self.bond_vectors[(self.bond_vectors["nx"] >= 0) & (self.bond_vectors["ny"] >= 0) & (self.bond_vectors["nz"] >= 0)]
-        return self.bond_vectors, nridges
+        return self.bond_vectors, nridges, nridges_total_3d
 
     def get_nematic_vector_5(self, save_string = None, cryst_cutoff = 0.8):
         #self.df_cryst = nematic_vector_loop(data, self.bond_vectors)
@@ -210,9 +235,10 @@ class atom_coords:
             .apply(orderparameter)
             .reset_index()
         )
-        self.fraction_crystallinity, _ = fraction_crystallinity(self.df_cryst.iloc[:,3], cutoff= cryst_cutoff)
+        self.fraction_crystallinity, _ = fraction_crystallinity(self.df_cryst.iloc[:,3], self.no_nridges_3d, cutoff= cryst_cutoff)
         if isinstance(save_string, str):
             self.df_cryst.to_csv("%s" %save_string, sep = " ", mode = "w")
+        print(self.fraction_crystallinity)
         return self.fraction_crystallinity
 
 
@@ -410,7 +436,7 @@ class polymer():
     def read_cryst(self, location):
         self.df_cryst = pd.read_csv(location, sep = " ", header = None, skiprows = 1, index_col = False).iloc[:, 1:]
         self.df_cryst.columns = ["xid", "yid", "zid", "cryst_bool", "x_ev", "y_ev", "z_ev"]
-        self.frac_cryst, _ = fraction_crystallinity(self.df_cryst.iloc[:, 3])
+        self.frac_cryst, _ = fraction_crystallinity(self.df_cryst.iloc[:, 3], self.atom_coords.no_nridges_3d)
         return 0;
 
     def merge_boxes_2(self, ndot_cutoff = 0.97,cryst_cutoff = 0.8, save = False, print_results: bool = False):
@@ -422,9 +448,10 @@ class polymer():
         total_number_merged_clusters = counts[counts > 1]
         self.results.total_number_clusters = total_number_merged_clusters.size
         self.results.total_number_independent_clusters = unique_values.size-1
-        self.results.mean_cluster_size = np.mean(counts[1:])
-        self.results.total_number_crystalline_grid_elements = np.sum(counts[1:])
-        self.results.fraction_crystallinity, no_crystalline_elements = fraction_crystallinity(self.df_cryst.iloc[:,3])
+        cluster_counts = counts[1:]
+        self.results.mean_cluster_size = np.mean(cluster_counts)
+        self.results.total_number_crystalline_grid_elements = np.sum(cluster_counts)
+        self.results.fraction_crystallinity, no_crystalline_elements = fraction_crystallinity(self.df_cryst.iloc[:,3], self.atom_coords.no_nridges_3d)
         if print_results == True:
             print("total number clusters w/ >= 2 elements: %i" %(self.results.total_number_clusters))
             print("total number independent crystalline domains: %i" %(self.results.total_number_independent_clusters))

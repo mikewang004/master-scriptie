@@ -38,6 +38,10 @@ ofstream nematicfile, clusterfile, clusterfile1;
 void orderparameter(int, double[][4], double[], double[], double[], double[], double*, double[]);
 void orderparameter1(int, double**, double[], double[], double[], double[], double*, double[]);
 
+inline double wrap_to_zero(double u, double lo, double L);
+inline double wrap_to_box(double u, double lo, double L);
+inline double min_image(double dx, double L);
+
 void find_clusters(
     int nx, int ny, int nz, int gridcount,
     int***    ncolor,
@@ -151,11 +155,15 @@ void release_2D_Integer_Array(int** arr, int x, int y)
     delete[] arr;
 }
 
+
+
 /*********************************************************************************************************************/
 // main
 /*********************************************************************************************************************/
 int main(int argc, const char* argv[])
 {
+
+    
     ifstream xyzfile, bondfile;
 
     double S;
@@ -227,16 +235,29 @@ int main(int argc, const char* argv[])
     double Lyhalf = Ly / 2.0;
     double Lzhalf = Lz / 2.0;
 
+
+
     xyzfile >> str1;
 
     std::string line;
     std::getline(xyzfile, line);   // discard header line
 
+    // for (i = 1; i <= Nmon; i++) {
+    //     xyzfile >> id >> molid >> xu[id] >> yu[id] >> zu[id];
+    //     xp[id] = xu[id] - xlo;
+    //     yp[id] = yu[id] - ylo;
+    //     zp[id] = zu[id] - zlo;
+    // }
+
+// After reading xlo,xhi,ylo,yhi,zlo,zhi and computing Lx,Ly,Lz:
+
     for (i = 1; i <= Nmon; i++) {
         xyzfile >> id >> molid >> xu[id] >> yu[id] >> zu[id];
-        xp[id] = xu[id] - xlo;
-        yp[id] = yu[id] - ylo;
-        zp[id] = zu[id] - zlo;
+
+        // wrap xu,yu,zu into [0,L) as C uses later
+        xp[id] = wrap_to_zero(xu[id], xlo, Lx);
+        yp[id] = wrap_to_zero(yu[id], ylo, Ly);
+        zp[id] = wrap_to_zero(zu[id], zlo, Lz);
     }
     xyzfile.close();
     cout << "reading of data file was made successfully" << endl;
@@ -292,6 +313,9 @@ int main(int argc, const char* argv[])
             xm[l] = (xp[atom1] + xp[atom2]) / 2.0;
             ym[l] = (yp[atom1] + yp[atom2]) / 2.0;
             zm[l] = (zp[atom1] + zp[atom2]) / 2.0;
+            bx = min_image(bx, Lx);
+            by = min_image(by, Ly);
+            bz = min_image(bz, Lz);
 
             double len = sqrt(bx*bx + by*by + bz*bz);
             bond[l][0] = bx / len;
@@ -421,6 +445,14 @@ int main(int argc, const char* argv[])
             orderparameter(m, u, lambda, eevp, eevm, eevo, &S, director);
             mm[n1][n2][n3]     = m;
             SS[n1][n2][n3]     = lambda[1];
+            // double S1 = fabs(lambda[1]);
+            // double S2 = fabs(lambda[2]);
+            // double S3 = fabs(lambda[3]);
+            // double S0 = S1;
+            // if (S2 > S0) S0 = S2;
+            // if (S3 > S0) S0 = S3;
+
+            // SS[n1][n2][n3] = S0;
             nn1arr[n1][n2][n3] = eevp[1];
             nn2arr[n1][n2][n3] = eevp[2];
             nn3arr[n1][n2][n3] = eevp[3];
@@ -1185,4 +1217,28 @@ void orderparameter(int npar, double um[][4], double lambda[], double eevp[4],
     nematicfile << lambda[1] << " " << lambda[2] << " " << lambda[3] << endl;
     nematicfile << "ss= " << ss << endl;
     *S = S_nem;
+}
+
+
+// Wrap scalar u into [0, L) (shifted box)
+inline double wrap_to_zero(double u, double lo, double L)
+{
+    // u is e.g. xu[id], lo is xlo, L is Lx
+    double x = u - lo;             // shift origin to 0
+    x -= floor(x / L) * L;         // wrap into [0, L)
+    return x;                      // in [0,L)
+}
+
+// If you want the wrapped coordinate back in [lo, hi):
+inline double wrap_to_box(double u, double lo, double L)
+{
+    double x = wrap_to_zero(u, lo, L);
+    return x + lo;                 // in [lo, lo+L)
+}
+
+inline double min_image(double dx, double L)
+{
+    if (dx >  0.5 * L) dx -= L;
+    if (dx < -0.5 * L) dx += L;
+    return dx;
 }

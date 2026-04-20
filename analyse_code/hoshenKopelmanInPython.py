@@ -58,7 +58,7 @@ class unionFind:
         return self.labels[0]
 
 
-def hk_in_python(df_cryst, frac_cryst, nridges, ndot_cutoff = 0.97, cryst_cutoff = 0.8):
+def hk_in_python(df_cryst, nridges, ndot_cutoff = 0.97, cryst_cutoff = 0.8):
     # Set (xid, yid, zid) as an index for fast lookup
     df_cryst = df_cryst.set_index(["xid", "yid", "zid"]).sort_index()
     nridgex = nridges[["x"]].item(); nridgey = nridges[["y"]].item(); nridgez = nridges[["z"]].item()
@@ -79,18 +79,18 @@ def hk_in_python(df_cryst, frac_cryst, nridges, ndot_cutoff = 0.97, cryst_cutoff
             # Only attempt if larger than cryst cutoff
             if current_row.loc["cryst_bool"] > cryst_cutoff:
 
-                xm = apply_pbc(xid, pbc = apply_pbc_bool)
-                ym = apply_pbc(yid, pbc = apply_pbc_bool)
-                zm = apply_pbc(zid, pbc = apply_pbc_bool)
+                xm = apply_pbc(xid, pbc = apply_pbc_bool, nridges = nridgex)
+                ym = apply_pbc(yid, pbc = apply_pbc_bool, nridges = nridgey)
+                zm = apply_pbc(zid, pbc = apply_pbc_bool, nridges = nridgez)
             # Define neighbor coordinates
                 x_minus = df_cryst.loc[(xm, yid, zid)] if (xm, yid, zid) in df_cryst.index else None
                 y_minus = df_cryst.loc[(xid, ym, zid)] if (xid, ym, zid) in df_cryst.index else None
                 z_minus = df_cryst.loc[(xid, yid, zm)] if (xid, yid, zm) in df_cryst.index else None
             
             # See if neighbouring coordinates can be merged
-                xmin_check = check_ndot(current_row, x_minus, ndot_cutoff= ndot_cutoff)
-                ymin_check = check_ndot(current_row, y_minus, ndot_cutoff= ndot_cutoff)
-                zmin_check = check_ndot(current_row, z_minus, ndot_cutoff= ndot_cutoff)
+                xmin_check = check_ndot(current_row, x_minus, ndot_cutoff= ndot_cutoff, cryst_cutoff= cryst_cutoff)
+                ymin_check = check_ndot(current_row, y_minus, ndot_cutoff= ndot_cutoff, cryst_cutoff= cryst_cutoff)
+                zmin_check = check_ndot(current_row, z_minus, ndot_cutoff= ndot_cutoff, cryst_cutoff= cryst_cutoff)
 
                 check_total = xmin_check + ymin_check + zmin_check
                 ix, iy, iz = int(xid), int(yid), int(zid)   # ensure ints

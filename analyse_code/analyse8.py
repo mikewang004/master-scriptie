@@ -440,7 +440,7 @@ class polymer():
         return 0;
 
     def merge_boxes_2(self, ndot_cutoff = 0.97,cryst_cutoff = 0.8, save = False, print_results: bool = False):
-        label_matrix = hk_in_python(self.df_cryst, self.frac_cryst, ndot_cutoff = ndot_cutoff, nridges = self.atom_coords.nridges, cryst_cutoff = cryst_cutoff)
+        label_matrix = hk_in_python(self.df_cryst, ndot_cutoff = ndot_cutoff, nridges = self.atom_coords.nridges, cryst_cutoff = cryst_cutoff)
         total_box_elements = (self.atom_coords.nridges["x"]*self.atom_coords.nridges["y"]*self.atom_coords.nridges["z"]).astype(int)
         unique_values, counts = np.unique(label_matrix, return_counts=True) #Labels and how much each label occurs
 

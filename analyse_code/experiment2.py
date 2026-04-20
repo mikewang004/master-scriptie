@@ -7,6 +7,8 @@ import os
 from simulation import *
 from experiment import * 
 
+#TODO run PVA-50,100,200 again
+
 def pva_50_analysis(data_path =  "../../data/PVA-50"):
     icryst_PVA_50_T088 = Simulation(0.88, -3, "%s/slurm-PVA-50_equil_t_088_tdot_e-3.out" %(data_path), "%s/PVA-50_equil_t_088_tdot_e-3_time" %(data_path), no_runs=2,
         home_folder="../data_online/PVA-50/icryst_T088_Tdot_e-3/sim1", polymer_length=50, home_folder_override= True)
@@ -59,18 +61,18 @@ def quench_PVA(data_path, slurm_name, files_name, home_folder, poly_length):
 
 def main():
     #icryst_PVA_300_T088 = pva_300_analysis()
-    icryst_PVA_100_T088 = pva_100_analysis()
-    #icryst_PVA_500_T088 = pva_500_analysis()
+    #icryst_PVA_100_T088 = pva_100_analysis()
+    icryst_PVA_500_T088 = pva_500_analysis()
     #icryst_PVA_50_T088 = pva_50_analysis()s
     #icryst_PVA_200_T088 = pva_200_analysis()
-    #icryst_PVA_1000_T088 = pva_1000_analysis()
+    icryst_PVA_1000_T088 = pva_1000_analysis()
 
 
     #icryst_PVA_300_T088 = pva_300_analysis()
-    poly = icryst_PVA_100_T088.get_polymer_by_count(39)
+    #poly = icryst_PVA_500_T088.get_polymer_by_count(21)
     #plot_hk_matrix_2d(poly, ndot_cutoff = 0.97)
     #poly.atom_coords.make_cell_grid()
-    print(poly.atom_coords.bond_vectors)
+    #print(poly.atom_coords.bond_vectors)
     poly.merge_boxes_2(print_results = True)
     #poly.bin_label_matrix()
     #print(poly.atom_coords.nridges)

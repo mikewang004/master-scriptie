@@ -1,5 +1,5 @@
 // g++ -I ./ -O2 -Wno-deprecated nematic23.cc -o nematic23
-// ../nematic23 equil_t_088_tdot_e-3_time_24000000.txt
+// ./nematic23 equil_t_088_tdot_e-3_time_24000000.txt
 
 
 #include <stdio.h>
@@ -29,7 +29,7 @@ using namespace std;
 #define  nmo2       4500
 #define  nvect      1
 
-int const Lchain = 100;
+int const Lchain = 1000;
 ofstream nematicfile, clusterfile, clusterfile1;
 
 /*********************************************************************************************************************/

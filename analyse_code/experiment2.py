@@ -59,21 +59,73 @@ def quench_PVA(data_path, slurm_name, files_name, home_folder, poly_length):
     quench.calc_crystallisation()
     quench.calc_avg_domain_size()
 
+
+def calc_order_parameter(poly):
+    """Taken from 'A Kinetic View on Statistical Physics, Krapivsky et al, CUP 2010. 
+        m(x,t) = l^{-d} \sum \sigma"""
+    label_matrix= poly.merge_boxes_2(print_results = True)
+
+    #print(label_matrix)
+    #print(poly.df_cryst)
+    unique_labels, counts = np.unique(label_matrix, return_counts=True) #Labels and how much each label occurs
+    #print(unique_labels)
+
+    cryst_lookup = (
+        poly.df_cryst
+        .set_index(["xid", "yid", "zid"])["cryst_bool"]
+    )
+
+    counts_labels = counts[1:]
+    unique_labels_2 = unique_labels[1:]
+    print(len(counts_labels[counts_labels > 1]))
+    rows = []
+
+    for label in unique_labels_2[counts_labels > 1]: 
+        i, j, k = np.where(label_matrix == label)
+        coords = np.stack([i, j, k], axis=1)  # shape (k, 3)
+        coords_tuples = list(map(tuple, coords))
+        cryst_vals = cryst_lookup.loc[coords_tuples].to_numpy()
+        center = coords.mean(axis=0)  
+        xc, yc, zc = center
+        #print(coords)
+        #print(cryst_vals)
+        l = coords.shape[0]**(1/3)*2
+
+        m = l**(-3) * np.sum(cryst_vals)
+        rows.append([xc, yc, zc, l, m])
+
+    df_centers = pd.DataFrame(rows, columns=["xc", "yc", "zc", "l", "m"])
+    print(df_centers.mean())
+    print(df_centers.std())
+    return df_centers.mean()["m"]
+
+
+def calc_order_parameter_loop(length_loop: int, icryst):
+    m_array = np.zeros(length_loop)
+    for i in range(1, length_loop):
+        m = calc_order_parameter(icryst.get_polymer_by_count(i))
+        m_array[i] = m 
+    print(m_array)
+    plt.plot(m_array)
+    plt.show()
 def main():
-    icryst_PVA_300_T088 = pva_300_analysis()
+
+    # icryst_PVA_300_T088 = pva_300_analysis()
     icryst_PVA_100_T088 = pva_100_analysis()
-    icryst_PVA_500_T088 = pva_500_analysis()
-    icryst_PVA_50_T088 = pva_50_analysis()
-    icryst_PVA_200_T088 = pva_200_analysis()
-    icryst_PVA_1000_T088 = pva_1000_analysis()
+    # icryst_PVA_500_T088 = pva_500_analysis()
+    # icryst_PVA_50_T088 = pva_50_analysis()
+    # icryst_PVA_200_T088 = pva_200_analysis()
+    # icryst_PVA_1000_T088 = pva_1000_analysis()
 
 
     #icryst_PVA_300_T088 = pva_300_analysis()
-    #poly = icryst_PVA_500_T088.get_polymer_by_count(21)
+    #poly = icryst_PVA_100_T088.get_polymer_by_count(45)
+    calc_order_parameter_loop(45, icryst_PVA_100_T088)
+    #calc_order_parameter(poly)
     #plot_hk_matrix_2d(poly, ndot_cutoff = 0.97)
     #poly.atom_coords.make_cell_grid()
     #print(poly.atom_coords.bond_vectors)
-    #poly.merge_boxes_2(print_results = True)
+    #label_boxes= poly.merge_boxes_2(print_results = True)
     #poly.bin_label_matrix()
     #print(poly.atom_coords.nridges)
     #print(mol_id, closest)
@@ -84,14 +136,14 @@ def main():
     #poly.atom_coords.bond_vectors.to_csv("PVA_1000_T088_poly0_bondvecs.txt", sep = " ")
     # #poly.merge_boxes_2(print_results = True)
 
-    simulation_list = [icryst_PVA_50_T088, icryst_PVA_100_T088, icryst_PVA_200_T088, icryst_PVA_300_T088, icryst_PVA_500_T088, icryst_PVA_1000_T088]
+    #simulation_list = [icryst_PVA_50_T088, icryst_PVA_100_T088, icryst_PVA_200_T088, icryst_PVA_300_T088, icryst_PVA_500_T088, icryst_PVA_1000_T088]
     # for simulation in simulation_list: 
     #     poly = simulation.get_polymer_by_count(0)
     #     print(simulation.polymer_length)
     #     #print(poly.atom_coords.dimensions)
     #     #print(poly.atom_coords.nridges)
     #     print(poly.atom_coords.n_atoms)
-    plot_crystallisation_different_polymer_lengths(simulation_list, plot_equal_length= False, save= True, savestring = "T088_icryst_cryst-mean_domain_length.pdf")
+    #plot_crystallisation_different_polymer_lengths(simulation_list, plot_equal_length= False, save= True, savestring = "T088_icryst_cryst-mean_domain_length.pdf")
     #plot_mean_domain_size_indep_clusters(simulation_list, plot_equal_length= False, savestring = "T088_icryst_no_clusters_mean_domain_length.pdf")
     #plot_no_clusters(simulation_list, plot_equal_length= False, savestring= "T088_icryst_only_clusters.pdf")
     #plot_volume_per_monomer(simulation_list, save= True, savestring = "volume_monomer_T088_Tdot_e-3.pdf")

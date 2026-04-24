@@ -267,8 +267,8 @@ class Simulation:
             boxes_eigv_file = "%s/domain_analysis.txt" %(self.path_to_home_folder)
         local_time_temp_array, local_list_lammps_files = self.check_polymer_attributes_file_exists(boxes_eigv_file, calc_all = calc_all)
         if local_time_temp_array.shape[0] != 0:
-            cryst_domain_array = pd.DataFrame(np.zeros([local_time_temp_array.shape[0], 6]), columns = ["time", "crystallinity", "clusters w/ >= 2 members", 
-            "   independent clusters", "mean size cryst domains", "crystalline grid elements"])
+            cryst_domain_array = pd.DataFrame(np.zeros([local_time_temp_array.shape[0], 7]), columns = ["time", "crystallinity", "clusters w/ >= 2 members", 
+            "   independent clusters", "mean size cryst domains", "crystalline grid elements", "total volume"])
             if local_time_temp_array.shape[0] < self.time_temp_array.shape[0]:
                 old_cryst_array = pd.read_csv("%s" %(boxes_eigv_file), sep = " ", index_col = 0)
         else:
@@ -286,13 +286,14 @@ class Simulation:
                     %(self.path_to_home_folder, current_time))
             else:
                 current_polymer.read_cryst(load_polymer_cryst_files)
-            current_polymer.merge_boxes_2(print_results = print_results, ndot_cutoff = ndot_cutoff)
-
+            label_matrix = current_polymer.merge_boxes_2(print_results = print_results, ndot_cutoff = ndot_cutoff)
+            np.save("%s/nematic_vectors/label_map_time_%i.npy" %(self.path_to_home_folder, current_time), label_matrix)
             # with open(boxes_eigv_file, "a") as file:
             #     file.write(f"{current_time} {current_polymer.results.mean_cluster_size}\n")
             test = np.array([current_time, current_polymer.results.fraction_crystallinity,
                 current_polymer.results.total_number_clusters, current_polymer.results.total_number_independent_clusters, 
-                current_polymer.results.mean_cluster_size, current_polymer.results.total_number_crystalline_grid_elements])
+                current_polymer.results.mean_cluster_size, current_polymer.results.total_number_crystalline_grid_elements,
+                current_polymer.atom_coords.volume])
             cryst_domain_array.iloc[i, :] = test
         if local_time_temp_array.shape[0] != 0:
             if local_time_temp_array.shape[0] < self.time_temp_array.shape[0]:

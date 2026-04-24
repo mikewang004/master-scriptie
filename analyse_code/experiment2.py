@@ -19,7 +19,7 @@ def pva_50_analysis(data_path =  "../../data/PVA-50"):
 
 def pva_100_analysis(data_path = "../../data/pva-100/quick_quench/long_run"):
     icryst_PVA_100_T088 = Simulation(0.88, -3, "%s%s" %(data_path, "/slurm-e3-T088.out"), "%s/equil_t_088_tdot_e-3_time"%(data_path), no_runs = 1, 
-        home_folder= "../data_online/PVA-100/quick_quench")
+        home_folder= "../data_online/PVA-100/icryst_T088_Tdot_e-3/sim1", polymer_length = 100, home_folder_override= True)
     icryst_PVA_100_T088.calc_crystallisation()
     icryst_PVA_100_T088.calc_avg_domain_size()
     return icryst_PVA_100_T088
@@ -110,12 +110,12 @@ def calc_order_parameter_loop(length_loop: int, icryst):
     plt.show()
 def main():
 
-    # icryst_PVA_300_T088 = pva_300_analysis()
+    #icryst_PVA_300_T088 = pva_300_analysis()
     icryst_PVA_100_T088 = pva_100_analysis()
-    # icryst_PVA_500_T088 = pva_500_analysis()
-    # icryst_PVA_50_T088 = pva_50_analysis()
-    # icryst_PVA_200_T088 = pva_200_analysis()
-    # icryst_PVA_1000_T088 = pva_1000_analysis()
+    icryst_PVA_500_T088 = pva_500_analysis()
+    icryst_PVA_50_T088 = pva_50_analysis()
+    icryst_PVA_200_T088 = pva_200_analysis()
+    icryst_PVA_1000_T088 = pva_1000_analysis()
 
 
     #icryst_PVA_300_T088 = pva_300_analysis()

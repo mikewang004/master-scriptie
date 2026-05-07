@@ -112,15 +112,16 @@ def main():
 
     #icryst_PVA_300_T088 = pva_300_analysis()
     icryst_PVA_100_T088 = pva_100_analysis()
-    icryst_PVA_500_T088 = pva_500_analysis()
-    icryst_PVA_50_T088 = pva_50_analysis()
-    icryst_PVA_200_T088 = pva_200_analysis()
-    icryst_PVA_1000_T088 = pva_1000_analysis()
+    #icryst_PVA_500_T088 = pva_500_analysis()
+    #icryst_PVA_50_T088 = pva_50_analysis()
+    #icryst_PVA_200_T088 = pva_200_analysis()
+    #cryst_PVA_1000_T088 = pva_1000_analysis()
 
 
     #icryst_PVA_300_T088 = pva_300_analysis()
-    #poly = icryst_PVA_100_T088.get_polymer_by_count(45)
-    calc_order_parameter_loop(45, icryst_PVA_100_T088)
+    poly = icryst_PVA_100_T088.get_polymer_by_count(45)
+    poly.get_entanglement_length()
+    #calc_order_parameter_loop(45, icryst_PVA_100_T088)
     #calc_order_parameter(poly)
     #plot_hk_matrix_2d(poly, ndot_cutoff = 0.97)
     #poly.atom_coords.make_cell_grid()

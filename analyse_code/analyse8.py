@@ -65,7 +65,7 @@ class atom_coords:
         self.datapd = self.read_in_file(path_to_file)
         self.n_atoms = len(self.datapd.index)
         self.polymer_length = polymer_length
-        self.no_polymers = self.n_atoms/self.polymer_length
+        self.no_polymers = int(self.n_atoms/self.polymer_length)
         self.datapd = self.replace_mol_id_by_polymer_length()
         self.volume, self.boxlengths, self.dimensions = self.get_volume_box(path_to_file)
         self.cell_length = cell_length
@@ -452,40 +452,53 @@ class polymer():
         ppa_index = 1
         ppa_length = 0
         #for mol_id, block in poly:
+        mean_ppa_list = np.zeros(self.atom_coords.no_polymers); j = 0;
         for mol_id, block in tqdm(poly, total=poly.ngroups, desc="Processing mol_id groups"):
-            atom_ids = block.index.tolist()
-            #print(atom_ids)
-            #print(f"mol_id {mol_id} -> atom_ids: {atom_ids}")
+            atom_ids = block.index.to_list()
+
+            # bonds between consecutive atoms in this monomer
             block_bv = self.atom_coords.bond_vectors.loc[atom_ids[:-1]]
-            block_ppa = self.atom_coords.ppa.loc[atom_ids[1:-1]]
-            #print(block_bv)
+            # PPA info for *internal* atoms (where angles are defined)
+            block_ppa = self.atom_coords.ppa.loc[atom_ids[1:-1]].copy()
+
+            # number of angles = number of internal atoms
+            n_angles = len(block_ppa)          # == len(block_bv) - 1
+
             ppa_start_loc = 0
-            for i in range(self.atom_coords.polymer_length - 2):
-                #print(block_bv.iloc[i, :3])
+            ppa_length = 0
+            # assume these exist as columns in block_ppa
+            col_angle = block_ppa.columns.get_loc("bond_angle")
+            col_index = block_ppa.columns.get_loc("ppa_index")
+            col_length = block_ppa.columns.get_loc("ppa_length")
+
+            for i in range(n_angles):          # i = 0 .. n_angles-1
                 r1 = -1 * block_bv.iloc[i, :3].to_numpy()
-                r2 = block_bv.iloc[i+1, :3].to_numpy()
+                r2 =      block_bv.iloc[i+1, :3].to_numpy()
                 bond_angle = calc_bond_angle(r1, r2)
-                #print(i, bond_angle)
-                block_ppa.iloc[i, 1] = bond_angle
-                block_ppa.iloc[i, 2] = ppa_index
-                ppa_length = ppa_length + 1
+
+                block_ppa.iat[i, col_angle] = bond_angle
+                block_ppa.iat[i, col_index] = ppa_index
+                ppa_length += 1
 
                 if bond_angle > bond_cutoff:
-                    # fill PPA length for the current stretch up to *and including* i
-                    block_ppa.iloc[ppa_start_loc:(i+1), 3] = ppa_length
+                    # close current PPA stretch up to and including i
+                    block_ppa.iloc[ppa_start_loc:(i+1), col_length] = ppa_length
                     ppa_start_loc = i + 1
                     ppa_length = 0
                     ppa_index += 1
 
-                # last angle in this block: close the final PPA stretch
-                elif (i == self.atom_coords.polymer_length - 3):
-                    block_ppa.iloc[ppa_start_loc:(i+1), 3] = ppa_length
+                # last angle in this block: close final stretch
+                elif i == n_angles - 1:
+                    block_ppa.iloc[ppa_start_loc:(i+1), col_length] = ppa_length
                     ppa_start_loc = i + 1
                     ppa_length = 0
                     ppa_index += 1
 
-
-        print(self.atom_coords.ppa)
+            #print(block_ppa)
+            #print(block_ppa["ppa_length"].mean())
+            mean_ppa_list[j] = block_ppa["ppa_length"].mean()
+            j = j + 1
+        return mean_ppa_list
 
 
     def read_cryst(self, location):

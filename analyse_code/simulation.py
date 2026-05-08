@@ -266,6 +266,7 @@ class Simulation:
         if boxes_eigv_file == None:
             boxes_eigv_file = "%s/domain_analysis.txt" %(self.path_to_home_folder)
         local_time_temp_array, local_list_lammps_files = self.check_polymer_attributes_file_exists(boxes_eigv_file, calc_all = calc_all)
+        print(local_time_temp_array)
         if local_time_temp_array.shape[0] != 0:
             cryst_domain_array = pd.DataFrame(np.zeros([local_time_temp_array.shape[0], 7]), columns = ["time", "crystallinity", "clusters w/ >= 2 members", 
             "   independent clusters", "mean size cryst domains", "crystalline grid elements", "total volume"])
@@ -298,7 +299,7 @@ class Simulation:
         if local_time_temp_array.shape[0] != 0:
             if local_time_temp_array.shape[0] < self.time_temp_array.shape[0]:
                 cryst_domain_array = pd.concat([old_cryst_array, cryst_domain_array], ignore_index= True)
-            cryst_domain_array.to_csv("%s" %(boxes_eigv_file), sep = " ", mode = "a")
+            cryst_domain_array.to_csv("%s" %(boxes_eigv_file), sep = " ", mode = "a", header = False)
 
 
 

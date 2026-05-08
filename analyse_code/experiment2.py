@@ -10,7 +10,7 @@ from experiment import *
 #TODO run PVA-50,100,200 again
 
 def pva_50_analysis(data_path =  "../../data/PVA-50"):
-    icryst_PVA_50_T088 = Simulation(0.88, -3, "%s/slurm-PVA-50_equil_t_088_tdot_e-3.out" %(data_path), "%s/PVA-50_equil_t_088_tdot_e-3_time" %(data_path), no_runs=2,
+    icryst_PVA_50_T088 = Simulation(0.88, -3, "%s/slurm-PVA-50_equil_t_088_tdot_e-3.out" %(data_path), "%s/PVA-50_equil_t_088_tdot_e-3_time" %(data_path), no_runs=1,
         home_folder="../data_online/PVA-50/icryst_T088_Tdot_e-3/sim1", polymer_length=50, home_folder_override= True)
     icryst_PVA_50_T088.calc_crystallisation()
     icryst_PVA_50_T088.calc_avg_domain_size()
@@ -110,17 +110,40 @@ def calc_order_parameter_loop(length_loop: int, icryst):
     plt.show()
 def main():
 
-    #icryst_PVA_300_T088 = pva_300_analysis()
+
+
+    icryst_PVA_50_T088 = pva_50_analysis()
     icryst_PVA_100_T088 = pva_100_analysis()
-    #icryst_PVA_500_T088 = pva_500_analysis()
-    #icryst_PVA_50_T088 = pva_50_analysis()
-    #icryst_PVA_200_T088 = pva_200_analysis()
-    #cryst_PVA_1000_T088 = pva_1000_analysis()
+    # icryst_PVA_200_T088 = pva_200_analysis()
+    # icryst_PVA_300_T088 = pva_300_analysis()
+    # icryst_PVA_500_T088 = pva_500_analysis()
+    # icryst_PVA_1000_T088 = pva_1000_analysis()
 
 
     #icryst_PVA_300_T088 = pva_300_analysis()
-    poly = icryst_PVA_100_T088.get_polymer_by_count(45)
-    poly.get_entanglement_length()
+    poly = icryst_PVA_100_T088.get_polymer_by_count(18)
+
+    poly50 =  icryst_PVA_50_T088.get_polymer_by_count(18)
+    #poly200 =  icryst_PVA_200_T088.get_polymer_by_count(18)
+    #poly300 =  icryst_PVA_300_T088.get_polymer_by_count(18)
+    #poly500 =  icryst_PVA_500_T088.get_polymer_by_count(18)
+    #poly1000 = icryst_PVA_1000_T088.get_polymer_by_count(18)
+    ppa_50 = poly50.get_entanglement_length()
+    np.savetxt("ppa_length_pva_50.txt", ppa_50)
+    ppa_100 = poly.get_entanglement_length()
+    np.savetxt("ppa_length_pva_100.txt", ppa_100)
+    # ppa_200 = poly200.get_entanglement_length()
+    # np.savetxt("ppa_length_pva_200.txt", ppa_200)
+    # ppa_300 = poly300.get_entanglement_length()
+    # np.savetxt("ppa_length_pva_300.txt", ppa_300)
+    # ppa_500 = poly500.get_entanglement_length()
+    # np.savetxt("ppa_length_pva_500.txt", ppa_500)
+    # array2 = poly1000.get_entanglement_length()
+    
+    # np.savetxt("ppa_length_pva_1000.txt", array2)
+
+
+    print(np.mean(ppa_50), np.mean(ppa_200), np.mean(ppa_300), np.mean(ppa_500))
     #calc_order_parameter_loop(45, icryst_PVA_100_T088)
     #calc_order_parameter(poly)
     #plot_hk_matrix_2d(poly, ndot_cutoff = 0.97)

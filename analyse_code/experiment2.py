@@ -25,7 +25,7 @@ def pva_100_analysis(data_path = "../../data/pva-100/quick_quench/long_run"):
     return icryst_PVA_100_T088
 
 def pva_200_analysis(data_path =  "../../data/PVA-200"):
-    icryst_PVA_200_T088 = Simulation(0.88, -3, "%s/slurm-PVA-200_equil_t_088_tdot_e-3.out" %(data_path), "%s/PVA-200_equil_t_088_tdot_e-3_time" %(data_path), no_runs=2,
+    icryst_PVA_200_T088 = Simulation(0.88, -3, "%s/slurm-PVA-200_equil_t_088_tdot_e-3.out" %(data_path), "%s/PVA-200_equil_t_088_tdot_e-3_time" %(data_path), no_runs=1,
         home_folder="../data_online/PVA-200/icryst_T088_Tdot_e-3/sim1", polymer_length=200, home_folder_override= True)
     icryst_PVA_200_T088.calc_crystallisation()
     icryst_PVA_200_T088.calc_avg_domain_size()
@@ -34,21 +34,21 @@ def pva_200_analysis(data_path =  "../../data/PVA-200"):
 
 
 def pva_300_analysis(data_path =  "../../data/PVA-300"):
-    icryst_PVA_300_T088 = Simulation(0.88, -3, "%s/slurm-PVA-300_equil_t_088_tdot_e-3_sim1.out" %(data_path), "%s/PVA-300_equil_t_088_tdot_e-3_sim1_time" %(data_path), no_runs=2,
+    icryst_PVA_300_T088 = Simulation(0.88, -3, "%s/slurm-PVA-300_equil_t_088_tdot_e-3_sim1.out" %(data_path), "%s/PVA-300_equil_t_088_tdot_e-3_sim1_time" %(data_path), no_runs=1,
         home_folder="../data_online/PVA-300/icryst_T088_Tdot_e-3/sim1", polymer_length=300, home_folder_override= True)
     icryst_PVA_300_T088.calc_crystallisation()
     icryst_PVA_300_T088.calc_avg_domain_size()
     return icryst_PVA_300_T088
 
 def pva_500_analysis(data_path = "../../data/PVA-500"):
-    icryst_PVA_500_T088 = Simulation(0.88, -3, "%s/slurm-PVA-500_equil_t_088_tdot_e-3_sim1.out" %(data_path), "%s/PVA-500_equil_t_088_tdot_e-3_sim1_time" %(data_path), no_runs=3,
+    icryst_PVA_500_T088 = Simulation(0.88, -3, "%s/slurm-PVA-500_equil_t_088_tdot_e-3_sim1.out" %(data_path), "%s/PVA-500_equil_t_088_tdot_e-3_sim1_time" %(data_path), no_runs=2,
         home_folder="../data_online/PVA-500/icryst_T088_Tdot_e-3/sim1", polymer_length=500, home_folder_override= True)
     icryst_PVA_500_T088.calc_crystallisation()
     icryst_PVA_500_T088.calc_avg_domain_size()
     return icryst_PVA_500_T088
 
 def pva_1000_analysis(data_path = "../../data/PVA-1000"):
-    icryst_PVA_1000_T088 = Simulation(0.88, -3, "%s/slurm-PVA-1000_equil_t_088_tdot_e-3_sim1.out" %(data_path), "%s/PVA-1000_equil_t_088_tdot_e-3_sim1_time" %(data_path), no_runs=2,
+    icryst_PVA_1000_T088 = Simulation(0.88, -3, "%s/slurm-PVA-1000_equil_t_088_tdot_e-3_sim1.out" %(data_path), "%s/PVA-1000_equil_t_088_tdot_e-3_sim1_time" %(data_path), no_runs=1,
         home_folder="../data_online/PVA-1000/icryst_T088_Tdot_e-3/sim1", polymer_length=1000, home_folder_override= True)
     icryst_PVA_1000_T088.calc_crystallisation()
     icryst_PVA_1000_T088.calc_avg_domain_size()
@@ -58,6 +58,27 @@ def quench_PVA(data_path, slurm_name, files_name, home_folder, poly_length):
     quench = Simulation(0.88, -3, "%s/%s" %(data_path, slurm_name), "%s/%s" %(data_path, files_name), home_folder = home_folder, polymer_length= poly_length, home_folder_override= True)
     quench.calc_crystallisation()
     quench.calc_avg_domain_size()
+
+def calc_normalised_entanglement_length(ppa, poly_length):
+    #ppa_mean = np.mean(ppa)
+    denom = poly_length/ppa
+    print(np.std(ppa))
+    #ne = np.mean(poly_length / (denom-1))
+    ne = np.mean(poly_length/ppa)
+    err = (poly_length**2/((poly_length - np.mean(ppa))**2) * np.std(ppa))
+    print(err)
+    return ne, err
+
+def calculate_ppa(icryst, poly_start_num, poly_stop_num):
+    #TODO modify this to calculate all pva from all steps
+    home_folder = icryst.path_to_home_folder
+    ppa_folder = "%s/ppa" %home_folder
+    Path(ppa_folder).mkdir(parents = True, exist_ok = True) #Make home directory if not exists
+    #polymer_length = icryst.polymer_length
+    for i in range(poly_start_num, poly_stop_num):
+        poly = icryst.get_polymer_by_count(i)
+        ppa = poly.get_entanglement_length()
+        np.savetxt("%s/ppa_t_%i.txt" %(ppa_folder, poly.timestep), ppa)
 
 
 def calc_order_parameter(poly):
@@ -114,33 +135,17 @@ def main():
 
     icryst_PVA_50_T088 = pva_50_analysis()
     icryst_PVA_100_T088 = pva_100_analysis()
-    # icryst_PVA_200_T088 = pva_200_analysis()
-    # icryst_PVA_300_T088 = pva_300_analysis()
-    # icryst_PVA_500_T088 = pva_500_analysis()
-    # icryst_PVA_1000_T088 = pva_1000_analysis()
+    icryst_PVA_200_T088 = pva_200_analysis()
+    icryst_PVA_300_T088 = pva_300_analysis()
+    icryst_PVA_500_T088 = pva_500_analysis()
+    icryst_PVA_1000_T088 = pva_1000_analysis()
 
-
-    #icryst_PVA_300_T088 = pva_300_analysis()
-    poly = icryst_PVA_100_T088.get_polymer_by_count(18)
-
-    poly50 =  icryst_PVA_50_T088.get_polymer_by_count(18)
-    #poly200 =  icryst_PVA_200_T088.get_polymer_by_count(18)
-    #poly300 =  icryst_PVA_300_T088.get_polymer_by_count(18)
-    #poly500 =  icryst_PVA_500_T088.get_polymer_by_count(18)
-    #poly1000 = icryst_PVA_1000_T088.get_polymer_by_count(18)
-    ppa_50 = poly50.get_entanglement_length()
-    np.savetxt("ppa_length_pva_50.txt", ppa_50)
-    ppa_100 = poly.get_entanglement_length()
-    np.savetxt("ppa_length_pva_100.txt", ppa_100)
-    # ppa_200 = poly200.get_entanglement_length()
-    # np.savetxt("ppa_length_pva_200.txt", ppa_200)
-    # ppa_300 = poly300.get_entanglement_length()
-    # np.savetxt("ppa_length_pva_300.txt", ppa_300)
-    # ppa_500 = poly500.get_entanglement_length()
-    # np.savetxt("ppa_length_pva_500.txt", ppa_500)
-    # array2 = poly1000.get_entanglement_length()
-    
-    # np.savetxt("ppa_length_pva_1000.txt", array2)
+    calculate_ppa(icryst_PVA_50_T088, 0, 15)
+    calculate_ppa(icryst_PVA_100_T088, 0, 15)
+    calculate_ppa(icryst_PVA_200_T088, 0, 15)
+    calculate_ppa(icryst_PVA_300_T088, 0, 15)
+    calculate_ppa(icryst_PVA_500_T088, 0, 15)
+    calculate_ppa(icryst_PVA_1000_T088, 0, 15)
 
 
     print(np.mean(ppa_50), np.mean(ppa_200), np.mean(ppa_300), np.mean(ppa_500))

@@ -69,6 +69,8 @@ class Simulation:
         else:
             raise Exception("count must be an int or a numpy.ndarray")
 
+
+
     def get_system_size(self):
         """Returns amount of atoms in a given systen"""
         poly = self.get_polymer_by_count(0)

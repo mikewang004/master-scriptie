@@ -54,10 +54,12 @@ def pva_1000_analysis(data_path = "../../data/PVA-1000"):
     icryst_PVA_1000_T088.calc_avg_domain_size()
     return icryst_PVA_1000_T088
 
-def quench_PVA(data_path, slurm_name, files_name, home_folder, poly_length):
-    quench = Simulation(0.88, -3, "%s/%s" %(data_path, slurm_name), "%s/%s" %(data_path, files_name), home_folder = home_folder, polymer_length= poly_length, home_folder_override= True)
+def quench_PVA(data_path, slurm_name, files_name, home_folder, poly_length, no_runs = 1):
+    quench = Simulation(0.88, -3, "%s/%s" %(data_path, slurm_name), "%s/%s" %(data_path, files_name), home_folder = home_folder, polymer_length= poly_length, home_folder_override= True, 
+        no_runs = no_runs)
     quench.calc_crystallisation()
     quench.calc_avg_domain_size()
+    return quench
 
 def calc_normalised_entanglement_length(ppa, poly_length):
     #ppa_mean = np.mean(ppa)

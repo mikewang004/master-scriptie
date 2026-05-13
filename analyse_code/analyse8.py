@@ -439,6 +439,11 @@ class polymer():
         return no_points_per_box/self.atom_coords.local_volume
 
 
+    def get_kuhn_length(self):
+        """See eq. 20 and 21 in Saras paper 2018"""
+        pass
+
+
     def get_entanglement_length(self, bond_cutoff: int = 175):
         #print(self.atom_coords.datapd)
         #print(self.atom_coords.datapd.columns)

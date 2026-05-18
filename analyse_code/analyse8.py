@@ -305,11 +305,15 @@ class polymer():
         # Calculates end-to-end distance of each polymer 
         #print(self.datapd)
         df_end_end_length = self.create_new_polymer_df(["end_end_length"])
-        for i in range(0, self.atom_coords.no_polymers):
+        for i in tqdm(range(0, self.atom_coords.no_polymers)):
             # First calculate end to end distance 
             # defined as r_n - r_i for each position 
-            subset = self.atom_coords.bond_vectors[(self.atom_coords.bond_vectors["mol_id"] == i+1)]
-            dist = np.sum(subset.iloc[:, 1:4])
+            #print(i, (i*self.atom_coords.polymer_length-1), (i+1)*(self.atom_coords.polymer_length-1))
+            #subset = self.atom_coords.datapd.iloc[(i*(self.atom_coords.polymer_length-1)):((i+1)*(self.atom_coords.polymer_length-1)), 1:4]
+            first_in_chain = self.atom_coords.datapd.iloc[(i*self.atom_coords.polymer_length), 1:4]
+            last_in_chain = self.atom_coords.datapd.iloc[(i+1)*(self.atom_coords.polymer_length)-1, 1:4]
+            #print(subset)
+            dist = last_in_chain - first_in_chain
             df_end_end_length.iloc[i] = (dist.iloc[0]* dist.iloc[0] + dist.iloc[1] * dist.iloc[1] + dist.iloc[2] * dist.iloc[2])
         end_to_end_length = (np.sum(df_end_end_length.to_numpy())/self.atom_coords.no_polymers)
         end_end_distance_normalised = np.sqrt(df_end_end_length.iloc[:])
@@ -317,6 +321,7 @@ class polymer():
         self.results.end_to_end_length = end_to_end_length
         self.results.mean_squared_end_to_end = np.sqrt(end_to_end_length)
         print("mean end-to-end is %f" %self.results.mean_squared_end_to_end)
+        return end_to_end_length
 
     def gyration_radius(self, nridges = 33, show_plot = False):
         """Should confirm to Saras 2018 paper eq. 3"""
@@ -437,6 +442,31 @@ class polymer():
         data_grouped = boxes.groupby(level=["xid", "yid", "zid"])
         no_points_per_box = data_grouped.size()
         return no_points_per_box/self.atom_coords.local_volume
+
+
+    def get_kuhn_length(self):
+        """See eq. 20 and 21 in Saras paper 2018"""
+        pp_avg_bond_length = np.zeros(self.atom_coords.no_polymers)
+        N_minus_1 = self.atom_coords.polymer_length - 1
+        for i in tqdm(range(0, self.atom_coords.no_polymers)):
+        #for i in range(0, 5):
+            # Calculate |r_{i+1}-r_i|
+            subset = self.atom_coords.datapd.iloc[(i*(self.atom_coords.polymer_length)):((i+1)*(self.atom_coords.polymer_length)), 1:4]
+            #print(i*(self.atom_coords.polymer_length), (i+1)*(self.atom_coords.polymer_length)-1)
+            #print(subset)
+            point_to_point_dist = np.diff(subset, axis = 0)
+            #print(point_to_point_dist)
+            abs_point_to_point_dist = np.sqrt(point_to_point_dist[:, 0]**2 + point_to_point_dist[:, 1]**2 + point_to_point_dist[:, 2]**2)
+            #print(abs_point_to_point_dist)
+            #print(abs_point_to_point_dist)
+            #pp_avg_bond_length[i] = 1/(N_minus_1) * ((np.sum(abs_point_to_point_dist)))
+            pp_avg_bond_length[i] = abs_point_to_point_dist.mean()
+            #print(pp_avg_bond_length[i])
+            #print(point_to_point_dist)
+        R_e2 = self.end_to_end_distance()
+        N_e = R_e2/(N_minus_1*np.mean(pp_avg_bond_length))
+        print(np.mean(N_e))
+        return N_e
 
 
     def get_entanglement_length(self, bond_cutoff: int = 175):

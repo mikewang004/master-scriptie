@@ -82,6 +82,13 @@ def calculate_ppa(icryst, poly_start_num, poly_stop_num):
         ppa = poly.get_entanglement_length()
         np.savetxt("%s/ppa_t_%i.txt" %(ppa_folder, poly.timestep), ppa)
 
+def calculate_ppa_from_file(path_to_file, save_name = None):
+        poly = polymer(path_to_file)
+        ppa =  poly.get_entanglement_length()
+        if save_name != None:
+            np.savetxt("%s" %save_name, ppa)
+        return ppa
+
 
 def calc_order_parameter(poly):
     """Taken from 'A Kinetic View on Statistical Physics, Krapivsky et al, CUP 2010. 
@@ -179,13 +186,13 @@ def main():
     #plot_no_clusters(simulation_list, plot_equal_length= False, savestring= "T088_icryst_only_clusters.pdf")
     #plot_volume_per_monomer(simulation_list, save= True, savestring = "volume_monomer_T088_Tdot_e-3.pdf")
 
-    # quench_PVA("../../data/PVA-300","slurm-PVA-300_quench_t_088_tdot_e-3_sim1.out", "PVA-300_quench_T088_tdot_e-3_sim1_time", 
-    #     "../data_online/PVA-300/quench_T088_Tdot_e-3/sim1", 300)
-    # quench_PVA("../../data/PVA-200","slurm-PVA-200_quench_t_088_tdot_e-3_sim1.out", "PVA-200_quench_T088_tdot_e-3_time", 
+    # quench_200 = quench_PVA("../../data/PVA-200","slurm-PVA-200_quench_t_088_tdot_e-3_sim1.out", "PVA-200_quench_T088_tdot_e-3_time", 
     #     "../data_online/PVA-200/quench_T088_Tdot_e-3/sim1", 200)
-    # quench_PVA("../../data/PVA-500","slurm-PVA-500_quench_t_088_tdot_e-3_sim1.out", "PVA-500_quench_T088_tdot_e-3_sim1_time", 
+    # quench_300 = quench_PVA("../../data/PVA-300","slurm-PVA-300_quench_t_088_tdot_e-3_sim1.out", "PVA-300_quench_T088_tdot_e-3_sim1_time", 
+    #     "../data_online/PVA-300/quench_T088_Tdot_e-3/sim1", 300)
+    # quench_500 = quench_PVA("../../data/PVA-500","slurm-PVA-500_quench_t_088_tdot_e-3_sim1.out", "PVA-500_quench_T088_tdot_e-3_sim1_time", 
     #     "../data_online/PVA-500/quench_T088_Tdot_e-3/sim1", 500)
-    # quench_PVA("../../data/PVA-1000","slurm-PVA-1000_quench_t_088_tdot_e-3_sim1.out", "PVA-1000_quench_T088_tdot_e-3_time", 
+    # quench_1000 = quench_PVA("../../data/PVA-1000","slurm-PVA-1000_quench_t_088_tdot_e-3_sim1.out", "PVA-1000_quench_T088_tdot_e-3_time", 
     #     "../data_online/PVA-1000/quench_T088_Tdot_e-3/sim1", 1000)
 
 

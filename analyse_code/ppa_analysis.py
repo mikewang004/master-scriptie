@@ -2,6 +2,7 @@ import numpy as np
 import scipy as sp 
 import matplotlib.pyplot as plt 
 from experiment2 import quench_PVA, calculate_ppa_from_file
+from analyse8 import polymer
 
 def calc_normalised_entanglement_length(ppa, poly_length):
     #ppa_mean = np.mean(ppa)
@@ -42,11 +43,18 @@ def entanglement_length_vs_crystallisation(icryst_list, start_num, stop_num):
 
 
 
-icryst_PVA_50_T088 = quench_PVA("../../data/PVA-50", "slurm-PVA-50_equil_t_088_tdot_e-3.out", "PVA-50_equil_t_088_tdot_e-3_time", "../data_online/PVA-50/icryst_T088_Tdot_e-3/sim1", 50)
-icryst_PVA_100_T088 = quench_PVA("../../data/pva-100/quick_quench/long_run", "/slurm-e3-T088.out","equil_t_088_tdot_e-3_time", "../data_online/PVA-100/icryst_T088_Tdot_e-3/sim1", 100)
-icryst_PVA_200_T088 = quench_PVA("../../data/PVA-200", "slurm-PVA-200_equil_t_088_tdot_e-3.out", "PVA-200_equil_t_088_tdot_e-3_time", "../data_online/PVA-200/icryst_T088_Tdot_e-3/sim1", 200)
-icryst_PVA_300_T088 = quench_PVA("../../data/PVA-300", "slurm-PVA-300_equil_t_088_tdot_e-3_sim1.out", "PVA-300_equil_t_088_tdot_e-3_sim1_time", "../data_online/PVA-300/icryst_T088_Tdot_e-3/sim1", 300)
-icryst_PVA_500_T088 = quench_PVA("../../data/PVA-500", "slurm-PVA-500_equil_t_088_tdot_e-3_sim1.out", "PVA-500_equil_t_088_tdot_e-3_sim1_time", "../data_online/PVA-500/icryst_T088_Tdot_e-3/sim1", 500)
+# icryst_PVA_50_T088 = quench_PVA("../../data/PVA-50", "slurm-PVA-50_equil_t_088_tdot_e-3.out", "PVA-50_equil_t_088_tdot_e-3_time", "../data_online/PVA-50/icryst_T088_Tdot_e-3/sim1", 50)
+#icryst_PVA_100_T088 = quench_PVA("../../data/pva-100/quick_quench/long_run", "/slurm-e3-T088.out","equil_t_088_tdot_e-3_time", "../data_online/PVA-100/icryst_T088_Tdot_e-3/sim1", 100,no_runs = 1)
+#icryst_PVA_200_T088 = quench_PVA("../../data/PVA-200", "slurm-PVA-200_equil_t_088_tdot_e-3.out", "PVA-200_equil_t_088_tdot_e-3_time", "../data_online/PVA-200/icryst_T088_Tdot_e-3/sim1", 200)
+# icryst_PVA_300_T088 = quench_PVA("../../data/PVA-300", "slurm-PVA-300_equil_t_088_tdot_e-3_sim1.out", "PVA-300_equil_t_088_tdot_e-3_sim1_time", "../data_online/PVA-300/icryst_T088_Tdot_e-3/sim1", 300)
+icryst_PVA_500_T088 = quench_PVA("../../data/PVA-500", "slurm-PVA-500_equil_t_088_tdot_e-3_sim1.out", "PVA-500_equil_t_088_tdot_e-3_sim1_time", "../data_online/PVA-500/icryst_T088_Tdot_e-3/sim1", 500, no_runs =2)
+
+
+#poly  = icryst_PVA_500_T088.get_polymer_by_count(0)
+poly = polymer("../../data/PVA-500/PVA-500_quench_T088_tdot_e-3_sim1_time_0.txt", polymer_length= 500)
+#poly  = polymer("../../data/pva-100/quick_quench/quench_tmin_088_tdot_e-3_time_0.txt", polymer_length= 100)
+poly.end_to_end_distance()
+#poly.get_kuhn_length()
 
 
 
@@ -67,27 +75,27 @@ icryst_PVA_500_T088 = quench_PVA("../../data/PVA-500", "slurm-PVA-500_equil_t_08
 # icryst_PVA_100_T088 = Simulation(0.88, -3, "%s%s" %(data_path, "/slurm-e3-T088.out"), "%s/equil_t_088_tdot_e-3_time"%(data_path), no_runs = 1, 
 #         home_folder= "../data_online/PVA-100/icryst_T088_Tdot_e-3/sim1", polymer_length = 100, home_folder_override= True)
 
-ppa_50 = np.loadtxt("pva_before_quench/PVA_50_ne.txt")
-ppa_100 = np.loadtxt("pva_before_quench/PVA_100_ne.txt")
-ppa_200 = np.loadtxt("pva_before_quench/PVA_200_ne.txt")
-ppa_300 = np.loadtxt("pva_before_quench/PVA_300_ne.txt")
-ppa_500 = np.loadtxt("pva_before_quench/PVA_500_ne.txt")
-ppa_1000 = np.loadtxt("pva_before_quench/PVA_1000_ne.txt")
+# ppa_50 = np.loadtxt("pva_before_quench/PVA_50_ne.txt")
+# ppa_100 = np.loadtxt("pva_before_quench/PVA_100_ne.txt")
+# ppa_200 = np.loadtxt("pva_before_quench/PVA_200_ne.txt")
+# ppa_300 = np.loadtxt("pva_before_quench/PVA_300_ne.txt")
+# ppa_500 = np.loadtxt("pva_before_quench/PVA_500_ne.txt")
+# ppa_1000 = np.loadtxt("pva_before_quench/PVA_1000_ne.txt")
 
-ne_50, ne_err_50 = calc_normalised_entanglement_length(ppa_50, 50)
-ne_100, ne_err_100 = calc_normalised_entanglement_length(ppa_100, 100)
-ne_200, ne_err_200 = calc_normalised_entanglement_length(ppa_200, 200)
-ne_300, ne_err_300 = calc_normalised_entanglement_length(ppa_300, 300)
-ne_500, ne_err_500 = calc_normalised_entanglement_length(ppa_500, 500)
-ne_1000, ne_err_1000 = calc_normalised_entanglement_length(ppa_1000, 1000)
+# ne_50, ne_err_50 = calc_normalised_entanglement_length(ppa_50, 50)
+# ne_100, ne_err_100 = calc_normalised_entanglement_length(ppa_100, 100)
+# ne_200, ne_err_200 = calc_normalised_entanglement_length(ppa_200, 200)
+# ne_300, ne_err_300 = calc_normalised_entanglement_length(ppa_300, 300)
+# ne_500, ne_err_500 = calc_normalised_entanglement_length(ppa_500, 500)
+# ne_1000, ne_err_1000 = calc_normalised_entanglement_length(ppa_1000, 1000)
 
 
-polymer_lengths = np.array([50, 100, 200, 300, 500, 1000])
+# polymer_lengths = np.array([50, 100, 200, 300, 500, 1000])
 
-#plt.scatter(polymer_lengths, np.array([np.mean(ppa_50), np.mean(ppa_100),np.mean(ppa_200), np.mean(ppa_300),np.mean(ppa_500), np.mean(ppa_1000)]))
-plt.scatter(polymer_lengths, np.array([ne_50, ne_100, ne_200, ne_300, ne_500, ne_1000])),# yerr = np.array([ne_err_50,ne_err_100,ne_err_200,ne_err_300,ne_err_500,ne_err_1000]), fmt = ".")
-plt.title("Entanglement lengths, T = 1.0")
-plt.ylabel("N_e*")
-plt.xlabel("polymer length")
-plt.savefig("PPA_before_quench_different_polymers.pdf")
-plt.show()
+# #plt.scatter(polymer_lengths, np.array([np.mean(ppa_50), np.mean(ppa_100),np.mean(ppa_200), np.mean(ppa_300),np.mean(ppa_500), np.mean(ppa_1000)]))
+# plt.scatter(polymer_lengths, np.array([ne_50, ne_100, ne_200, ne_300, ne_500, ne_1000])),# yerr = np.array([ne_err_50,ne_err_100,ne_err_200,ne_err_300,ne_err_500,ne_err_1000]), fmt = ".")
+# plt.title("Entanglement lengths, T = 1.0")
+# plt.ylabel("N_e*")
+# plt.xlabel("polymer length")
+# plt.savefig("PPA_before_quench_different_polymers.pdf")
+# plt.show()

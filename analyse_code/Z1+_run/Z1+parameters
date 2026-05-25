@@ -1,0 +1,10 @@
+&parameters
+stats = .False.
+logfile = .False.
+lmax_factor = 1.0
+thickness = 0.002
+self_entanglement = .False.
+basic_SP = .True.
+calc_PPA = .False.
+calc_CPPA = .True.
+/

@@ -149,15 +149,15 @@ def main():
     icryst_PVA_500_T088 = pva_500_analysis()
     icryst_PVA_1000_T088 = pva_1000_analysis()
 
-    calculate_ppa(icryst_PVA_50_T088, 0, 15)
-    calculate_ppa(icryst_PVA_100_T088, 0, 15)
-    calculate_ppa(icryst_PVA_200_T088, 0, 15)
-    calculate_ppa(icryst_PVA_300_T088, 0, 15)
-    calculate_ppa(icryst_PVA_500_T088, 0, 15)
-    calculate_ppa(icryst_PVA_1000_T088, 0, 15)
+    # calculate_ppa(icryst_PVA_50_T088, 0, 15)
+    # calculate_ppa(icryst_PVA_100_T088, 0, 15)
+    # calculate_ppa(icryst_PVA_200_T088, 0, 15)
+    # calculate_ppa(icryst_PVA_300_T088, 0, 15)
+    # calculate_ppa(icryst_PVA_500_T088, 0, 15)
+    # calculate_ppa(icryst_PVA_1000_T088, 0, 15)
 
 
-    print(np.mean(ppa_50), np.mean(ppa_200), np.mean(ppa_300), np.mean(ppa_500))
+    #print(np.mean(ppa_50), np.mean(ppa_200), np.mean(ppa_300), np.mean(ppa_500))
     #calc_order_parameter_loop(45, icryst_PVA_100_T088)
     #calc_order_parameter(poly)
     #plot_hk_matrix_2d(poly, ndot_cutoff = 0.97)
@@ -174,13 +174,14 @@ def main():
     #poly.atom_coords.bond_vectors.to_csv("PVA_1000_T088_poly0_bondvecs.txt", sep = " ")
     # #poly.merge_boxes_2(print_results = True)
 
-    #simulation_list = [icryst_PVA_50_T088, icryst_PVA_100_T088, icryst_PVA_200_T088, icryst_PVA_300_T088, icryst_PVA_500_T088, icryst_PVA_1000_T088]
+    simulation_list = [icryst_PVA_50_T088, icryst_PVA_100_T088, icryst_PVA_200_T088, icryst_PVA_300_T088, icryst_PVA_500_T088, icryst_PVA_1000_T088]
     # for simulation in simulation_list: 
     #     poly = simulation.get_polymer_by_count(0)
     #     print(simulation.polymer_length)
     #     #print(poly.atom_coords.dimensions)
     #     #print(poly.atom_coords.nridges)
     #     print(poly.atom_coords.n_atoms)
+    plot_crystallisation(simulation_list, save = True, savestring = "crystallisation_PVA-100-through-1000.pdf", fit_avrami= False)
     #plot_crystallisation_different_polymer_lengths(simulation_list, plot_equal_length= False, save= True, savestring = "T088_icryst_cryst-mean_domain_length.pdf")
     #plot_mean_domain_size_indep_clusters(simulation_list, plot_equal_length= False, savestring = "T088_icryst_no_clusters_mean_domain_length.pdf")
     #plot_no_clusters(simulation_list, plot_equal_length= False, savestring= "T088_icryst_only_clusters.pdf")

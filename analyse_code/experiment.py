@@ -103,9 +103,9 @@ def plot_crystallisation(simulation_list: list, save: bool = False, savestring =
             plt.plot(used_simulation_cryst[:, 0], avrami_eq(used_simulation_cryst[:, 1], *popt))
     else:
         for simulation in simulation_list:
-            label = r"T=%.2f, $\dot{T}=10^{%i}$" %(simulation.temp, simulation.cooling_rate)
-            data = np.log(1-simulation.cryst[:, 1])
-            plt.loglog(simulation.cryst[:, 0], data, label = label)
+            label = r"PVA-%i" %(simulation.polymer_length)
+            #data = np.log(1-simulation.cryst[:, 1])
+            #plt.loglog(simulation.cryst[:, 0], data, label = label)
             plt.scatter(simulation.cryst[:, 0], simulation.cryst[:, 1], label = label)
     plt.legend()
     if save is True:

@@ -7,7 +7,7 @@ import os
 from simulation import *
 from experiment import * 
 
-#TODO run PVA-50,100,200 again
+#TODO run PVA-1000 again
 
 def pva_50_analysis(data_path =  "../../data/PVA-50"):
     icryst_PVA_50_T088 = Simulation(0.88, -3, "%s/slurm-PVA-50_equil_t_088_tdot_e-3.out" %(data_path), "%s/PVA-50_equil_t_088_tdot_e-3_time" %(data_path), no_runs=3,
@@ -48,7 +48,7 @@ def pva_500_analysis(data_path = "../../data/PVA-500"):
     return icryst_PVA_500_T088
 
 def pva_1000_analysis(data_path = "../../data/PVA-1000"):
-    icryst_PVA_1000_T088 = Simulation(0.88, -3, "%s/slurm-PVA-1000_equil_t_088_tdot_e-3_sim1.out" %(data_path), "%s/PVA-1000_equil_t_088_tdot_e-3_sim1_time" %(data_path), no_runs=3,
+    icryst_PVA_1000_T088 = Simulation(0.88, -3, "%s/slurm-PVA-1000_equil_t_088_tdot_e-3_sim1.out" %(data_path), "%s/PVA-1000_equil_t_088_tdot_e-3_sim1_time" %(data_path), no_runs=2,
         home_folder="../data_online/PVA-1000/icryst_T088_Tdot_e-3/sim1", polymer_length=1000, home_folder_override= True)
     icryst_PVA_1000_T088.calc_crystallisation()
     icryst_PVA_1000_T088.calc_avg_domain_size()
@@ -142,10 +142,10 @@ def main():
 
 
 
-    #icryst_PVA_50_T088 = pva_50_analysis()
-    #icryst_PVA_100_T088 = pva_100_analysis()
-    #icryst_PVA_200_T088 = pva_200_analysis()
-    #icryst_PVA_300_T088 = pva_300_analysis()
+    icryst_PVA_50_T088 = pva_50_analysis()
+    icryst_PVA_100_T088 = pva_100_analysis()
+    icryst_PVA_200_T088 = pva_200_analysis()
+    icryst_PVA_300_T088 = pva_300_analysis()
     icryst_PVA_500_T088 = pva_500_analysis()
     icryst_PVA_1000_T088 = pva_1000_analysis()
 
@@ -181,8 +181,8 @@ def main():
     #     #print(poly.atom_coords.dimensions)
     #     #print(poly.atom_coords.nridges)
     #     print(poly.atom_coords.n_atoms)
-    plot_crystallisation(simulation_list, save = True, savestring = "crystallisation_PVA-100-through-1000.pdf", fit_avrami= False)
-    #plot_crystallisation_different_polymer_lengths(simulation_list, plot_equal_length= False, save= True, savestring = "T088_icryst_cryst-mean_domain_length.pdf")
+    #plot_crystallisation(simulation_list, save = True, savestring = "crystallisation_PVA-100-through-1000.pdf", fit_avrami= False)
+    plot_crystallisation_different_polymer_lengths(simulation_list, plot_equal_length= False, save= True, savestring = "T088_icryst_cryst-mean_domain_length.pdf")
     #plot_mean_domain_size_indep_clusters(simulation_list, plot_equal_length= False, savestring = "T088_icryst_no_clusters_mean_domain_length.pdf")
     #plot_no_clusters(simulation_list, plot_equal_length= False, savestring= "T088_icryst_only_clusters.pdf")
     #plot_volume_per_monomer(simulation_list, save= True, savestring = "volume_monomer_T088_Tdot_e-3.pdf")

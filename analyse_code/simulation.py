@@ -301,7 +301,7 @@ class Simulation:
         if local_time_temp_array.shape[0] != 0:
             if local_time_temp_array.shape[0] < self.time_temp_array.shape[0]:
                 cryst_domain_array = pd.concat([old_cryst_array, cryst_domain_array], ignore_index= True)
-            cryst_domain_array.to_csv("%s" %(boxes_eigv_file), sep = " ", mode = "a", header = True)
+            cryst_domain_array.to_csv("%s" %(boxes_eigv_file), sep = " ", mode = "w+", header = True)
 
 
 

@@ -237,12 +237,14 @@ class atom_coords:
 
     def get_nematic_vector_5(self, save_string = None, cryst_cutoff = 0.8):
         #self.df_cryst = nematic_vector_loop(data, self.bond_vectors)
+
         self.df_cryst = (
             self.bond_vectors.groupby(['nx', 'ny', 'nz'])
             #.apply(compute_Q)
             .apply(orderparameter)
             .reset_index()
         )
+        print(self.df_cryst)
         self.fraction_crystallinity, _ = fraction_crystallinity(self.df_cryst.iloc[:,3], self.no_nridges_3d, cutoff= cryst_cutoff)
         if isinstance(save_string, str):
             self.df_cryst.to_csv("%s" %save_string, sep = " ", mode = "w")

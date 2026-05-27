@@ -29,7 +29,7 @@ using namespace std;
 #define  nmo2       4500
 #define  nvect      1
 
-int const Lchain = 1000;
+// int const Lchain = 1000;
 ofstream nematicfile, clusterfile, clusterfile1;
 
 /*********************************************************************************************************************/
@@ -164,6 +164,13 @@ int main(int argc, const char* argv[])
 {
 
     
+
+    if (argc < 3) {
+        fprintf(stderr, "Usage: %s <input_file> <Lchain>\n", argv[0]);
+        return 1;
+    }
+
+    int Lchain = atoi(argv[2]);
     ifstream xyzfile, bondfile;
 
     double S;

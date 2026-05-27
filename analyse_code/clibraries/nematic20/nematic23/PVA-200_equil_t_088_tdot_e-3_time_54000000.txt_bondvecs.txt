@@ -1,1 +1,0 @@
-atom1 bx by bz xm ym zm nx ny nz

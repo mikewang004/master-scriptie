@@ -29,7 +29,7 @@ using namespace std;
 #define  nmo2       4500
 #define  nvect      1
 
-int const Lchain = 1000;
+int const Lchain = 100;
 ofstream nematicfile, clusterfile, clusterfile1;
 
 /*********************************************************************************************************************/

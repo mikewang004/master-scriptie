@@ -43,17 +43,17 @@ def entanglement_length_vs_crystallisation(icryst_list, start_num, stop_num):
 
 
 
-# icryst_PVA_50_T088 = quench_PVA("../../data/PVA-50", "slurm-PVA-50_equil_t_088_tdot_e-3.out", "PVA-50_equil_t_088_tdot_e-3_time", "../data_online/PVA-50/icryst_T088_Tdot_e-3/sim1", 50)
-#icryst_PVA_100_T088 = quench_PVA("../../data/pva-100/quick_quench/long_run", "/slurm-e3-T088.out","equil_t_088_tdot_e-3_time", "../data_online/PVA-100/icryst_T088_Tdot_e-3/sim1", 100,no_runs = 1)
-#icryst_PVA_200_T088 = quench_PVA("../../data/PVA-200", "slurm-PVA-200_equil_t_088_tdot_e-3.out", "PVA-200_equil_t_088_tdot_e-3_time", "../data_online/PVA-200/icryst_T088_Tdot_e-3/sim1", 200)
-# icryst_PVA_300_T088 = quench_PVA("../../data/PVA-300", "slurm-PVA-300_equil_t_088_tdot_e-3_sim1.out", "PVA-300_equil_t_088_tdot_e-3_sim1_time", "../data_online/PVA-300/icryst_T088_Tdot_e-3/sim1", 300)
+icryst_PVA_50_T088 = quench_PVA("../../data/PVA-50", "slurm-PVA-50_equil_t_088_tdot_e-3.out", "PVA-50_equil_t_088_tdot_e-3_time", "../data_online/PVA-50/icryst_T088_Tdot_e-3/sim1", 50)
+icryst_PVA_100_T088 = quench_PVA("../../data/pva-100/quick_quench/long_run", "/slurm-e3-T088.out","equil_t_088_tdot_e-3_time", "../data_online/PVA-100/icryst_T088_Tdot_e-3/sim1", 100,no_runs = 1)
+icryst_PVA_200_T088 = quench_PVA("../../data/PVA-200", "slurm-PVA-200_equil_t_088_tdot_e-3.out", "PVA-200_equil_t_088_tdot_e-3_time", "../data_online/PVA-200/icryst_T088_Tdot_e-3/sim1", 200)
+icryst_PVA_300_T088 = quench_PVA("../../data/PVA-300", "slurm-PVA-300_equil_t_088_tdot_e-3_sim1.out", "PVA-300_equil_t_088_tdot_e-3_sim1_time", "../data_online/PVA-300/icryst_T088_Tdot_e-3/sim1", 300)
 icryst_PVA_500_T088 = quench_PVA("../../data/PVA-500", "slurm-PVA-500_equil_t_088_tdot_e-3_sim1.out", "PVA-500_equil_t_088_tdot_e-3_sim1_time", "../data_online/PVA-500/icryst_T088_Tdot_e-3/sim1", 500, no_runs =2)
 
 
 #poly  = icryst_PVA_500_T088.get_polymer_by_count(0)
-poly = polymer("../../data/PVA-500/PVA-500_quench_T088_tdot_e-3_sim1_time_0.txt", polymer_length= 500)
+#poly = polymer("../../data/PVA-500/PVA-500_quench_T088_tdot_e-3_sim1_time_0.txt", polymer_length= 500)
 #poly  = polymer("../../data/pva-100/quick_quench/quench_tmin_088_tdot_e-3_time_0.txt", polymer_length= 100)
-poly.end_to_end_distance()
+#poly.end_to_end_distance()
 #poly.get_kuhn_length()
 
 

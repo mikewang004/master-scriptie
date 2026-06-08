@@ -10,6 +10,8 @@ import pathlib
 import re
 from typing import List, Tuple, Optional
 
+#TODO: modify file so that polymer properties can be accessed easily from Simulation()
+
 
 class SlurmFiles():
     """Class to handle Slurm files and merge them to a new data file containing step/temp/E_pair/E_mol/TotEng/Press/Vol
@@ -76,21 +78,35 @@ class SlurmFiles():
         })
         return slurm_data
 
+    def read_slurm_summary_file(self):
+        try:
+            dataframe_slurm = pd.read_csv("%s/%s_sim_data.txt" %(self.path_to_home_folder, self.slurm_prefix), sep = " ", index_col = "num_in_run")
+        except FileNotFoundError:
+            dataframe_slurm is None
+
+        #print(dataframe_slurm)
+        return dataframe_slurm
 
     def merge_slurm_files(self):
         """Reads all slurm files, makes a new slurm file containing the step/temp/E_pair/E_mol/TotEng/Press/Vol of all slurm files run"""
         print(self.list_slurm_files)
 
+        dataframe_slurm_existing = self.read_slurm_summary_file()
 
         dataframe_slurm = self.read_slurm_file("%s/%s" %(self.path_to_data_folder, self.list_slurm_files[0]))
-        dataframe_slurm.insert(0, "Run_num", 0)
+
+
+        dataframe_slurm.insert(0, "Run", 0)
+        dataframe_slurm.insert(1, "NumInRun", dataframe_slurm.index)
         step_pos = dataframe_slurm.columns.get_loc("Step")
         dataframe_slurm.insert(step_pos + 1, "StepSequence", dataframe_slurm["Step"].copy())
         #print(dataframe_slurm)
         last_time = dataframe_slurm.iloc[-1, 1]
         for i in range(1, len(self.list_slurm_files)):
             slurm_data = self.read_slurm_file("%s/%s" %(self.path_to_data_folder, self.list_slurm_files[i]))
-            slurm_data.insert(0, "Run_num", i)
+            slurm_data.insert(0, "Run", i)
+            slurm_data.insert(1, "NumInRun", slurm_data.index)
+            #slurm_data.index()
             step_pos = slurm_data.columns.get_loc("Step")
             slurm_data.insert(step_pos + 1, "StepSequence", slurm_data["Step"].copy())
            # print(slurm_data)
@@ -100,9 +116,14 @@ class SlurmFiles():
 
             dataframe_slurm = pd.concat([dataframe_slurm, slurm_data])
             last_time = slurm_data.iloc[-1, 2]
-        
-        dataframe_slurm.to_csv("%s/%s_sim_data.txt" %(self.path_to_home_folder, self.slurm_prefix), sep = " ")
-        return 0
+
+
+        dataframe_slurm.reset_index(drop = True, inplace = True, names="Index")
+        no_files_current_df_slurm = dataframe_slurm.shape[0]
+        no_files_saved_df_slurm = dataframe_slurm_existing.shape[0]
+        if no_files_current_df_slurm != no_files_saved_df_slurm:
+            dataframe_slurm.to_csv("%s/%s_sim_data.txt" %(self.path_to_home_folder, self.slurm_prefix), sep = " ", index_label = "num_in_run")
+        return 0;
 
 
 
@@ -119,6 +140,8 @@ class Simulation:
         self.path_to_home_folder = path_to_home_folder
         self.df_slurm_sim_data = pd.read_csv("%s/%s_sim_data.txt" %(self.path_to_home_folder, self.slurm_files.slurm_prefix))
         self.list_run_files = self.get_list_run_files()
+
+
 
 
 
@@ -158,7 +181,7 @@ class Simulation:
 
 
 def main():
-    PVA_200 = Simulation(100, "../../data/PVA-200/equil", "../data_online/PVA-200/icryst_T088_Tdot_e-3")
+    #PVA_200 = Simulation(100, "../../data/PVA-200/equil", "../data_online/PVA-200/icryst_T088_Tdot_e-3")
     PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
 
 if __name__== "__main__":

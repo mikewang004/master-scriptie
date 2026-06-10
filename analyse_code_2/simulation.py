@@ -9,10 +9,11 @@ import pandas as pd
 import pathlib
 import re
 from typing import List, Tuple, Optional
+import bisect
 
 #TODO: modify file so that polymer properties can be accessed easily from Simulation()
 
-def make_folder(self, path_to_folder: str):
+def make_folder(path_to_folder: str):
     """Check if folder exists, if not make folder"""
     if not os.path.exists(path_to_folder):
         os.makedirs(path_to_folder)
@@ -88,7 +89,8 @@ class SlurmFiles():
         try:
             dataframe_slurm = pd.read_csv("%s/%s_sim_data.txt" %(self.path_to_home_folder, self.slurm_prefix), sep = " ")#, index_col = "num_in_run")
         except FileNotFoundError:
-            dataframe_slurm is None
+            dataframe_slurm = np.array([0,0])
+            return dataframe_slurm
 
         #print(dataframe_slurm)
         return dataframe_slurm
@@ -107,7 +109,7 @@ class SlurmFiles():
         step_pos = dataframe_slurm.columns.get_loc("Step")
         dataframe_slurm.insert(step_pos + 1, "StepSequence", dataframe_slurm["Step"].copy())
         #print(dataframe_slurm)
-        last_time = dataframe_slurm.iloc[-1, 1]
+        last_time = dataframe_slurm.iloc[-1, 2]
         for i in range(1, len(self.list_slurm_files)):
             slurm_data = self.read_slurm_file("%s/%s" %(self.path_to_data_folder, self.list_slurm_files[i]))
             slurm_data.insert(0, "Run", i)
@@ -123,12 +125,12 @@ class SlurmFiles():
             dataframe_slurm = pd.concat([dataframe_slurm, slurm_data])
             last_time = slurm_data.iloc[-1, 2]
 
-
+        dataframe_slurm["Run"] = dataframe_slurm["Run"] + 1
         dataframe_slurm.reset_index(drop = True, inplace = True, names="Index")
         no_files_current_df_slurm = dataframe_slurm.shape[0]
         no_files_saved_df_slurm = dataframe_slurm_existing.shape[0]
         if no_files_current_df_slurm != no_files_saved_df_slurm:
-            dataframe_slurm.to_csv("%s/%s_sim_data.txt" %(self.path_to_home_folder, self.slurm_prefix), sep = " ", index_label = "num_in_run")
+            dataframe_slurm.to_csv("%s/%s_sim_data.txt" %(self.path_to_home_folder, self.slurm_prefix), sep = " ", index_label = "index")
         return 0;
 
 
@@ -143,44 +145,81 @@ class domain_analysis:
         self.df_slurm_sim_data = slurm_file
         self.lammps_dump_prefix = lammps_dump_prefix
         self.cryst_cutoff = cryst_cutoff; self.ndot_cutoff = ndot_cutoff
+        self.path_to_crystallisation_folder = "%s/crystallisation" %(self.path_to_home_folder)
+        self.path_to_nematic_vectors_folder = "%s/nematic_vectors" %(self.path_to_home_folder)
+
+        #print(self.df_slurm_sim_data, self.list_run_files)
 
 
 
 
-    def calc_crystallisation(self, cryst_array_string = None):
-        path_to_crystallisation_folder = "%s/crystallisation" %(self.path_to_home_folder)
-        make_folder(path_to_crystallisation_folder)
-        if cryst_array_string == None: 
-            cryst_array_string = "%s/%s" %(self.path_to_home_folder, "frac_cryst.txt")
+    def insert_cryst_line_sorted(self, file_path, current_time, frac_cryst):
+        """
+        Insert 'current_time frac_cryst' in the file so that lines stay sorted
+        by current_time (ascending). New line is placed after the closest
+        smaller or equal current_time.
+        """
+        new_time = float(current_time)  # or int(current_time) if always integer
+        new_line = f"{current_time} {frac_cryst}\n"
+
+        lines = []
+        if os.path.exists(file_path):
+            with open(file_path, "r") as f:
+                lines = [ln for ln in f if ln.strip()]
+
+        # Extract existing times from first column
+        times = [float(ln.split()[0]) for ln in lines]
+
+        # Find insertion position: after closest smaller/equal value
+        idx = bisect.bisect_right(times, new_time)
+
+        # Insert new line
+        lines.insert(idx, new_line)
+
+        # Rewrite the whole file
+        with open(file_path, "w") as f:
+            f.writelines(lines)
+
+
+    def calc_crystallisation(self, path_to_cryst_array = None, file_override = False):
+        #path_to_crystallisation_folder = "%s/crystallisation" %(self.path_to_home_folder)
+        make_folder(self.path_to_crystallisation_folder)
+        if path_to_cryst_array == None: 
+            path_to_cryst_array = "%s/%s" %(self.path_to_home_folder, "frac_cryst.txt")
         for i in tqdm(range(0, len(self.list_run_files))):
-            #Read file 
-            current_polymer = polymer("%s/%s" %(self.path_to_data_folder, self.list_run_files[i]))
             current_time = self.df_slurm_sim_data["StepSequence"].iloc[i]
-            frac_cryst = current_polymer.atom_coords.get_nematic_vector_5(
-                save_string = "%s/%s_cryst_time_%s.txt" %(path_to_crystallisation_folder, self.lammps_dump_prefix, current_time),
-                cryst_cutoff = self.cryst_cutoff
-            )
+            #Read file 
+            if not Path("%s/%s_cryst_time_%s.txt" %(self.path_to_crystallisation_folder, self.lammps_dump_prefix, current_time)).is_file():
+                current_polymer = polymer("%s/%s" %(self.path_to_data_folder, self.list_run_files[i]))
+                frac_cryst = current_polymer.atom_coords.get_nematic_vector_5(
+                    save_string = "%s/%s_cryst_time_%s.txt" %(self.path_to_crystallisation_folder, self.lammps_dump_prefix, current_time),
+                    cryst_cutoff = self.cryst_cutoff
+                )
 
-            with open(cryst_array_string, "a") as file:
-                file.write(f"{current_time} {frac_cryst}\n")
+                # with open(cryst_array_string, "a") as file:
+                #     file.write(f"{current_time} {frac_cryst}\n")
+                self.insert_cryst_line_sorted(path_to_cryst_array, current_time, frac_cryst)
         return 0;
 
     def calc_avg_domain_size(self):
         # Read in crystallisation files
-        path_to_nematic_vectors_folder = "%s/nematic_vectors" %(self.path_to_home_folder)
+        #path_to_nematic_vectors_folder = "%s/nematic_vectors" %(self.path_to_home_folder)
+
         cryst_domain_array = pd.DataFrame(np.zeros([self.df_slurm_sim_data.shape[0], 7]), columns = ["time", "crystallinity", "clusters w/ >= 2 members", 
         "   independent clusters", "mean size cryst domains", "crystalline grid elements", "total volume"])
+        make_folder(self.path_to_nematic_vectors_folder)
         for i in tqdm(range(0, len(self.list_run_files))):
             #Read file 
             current_polymer = polymer("%s/%s" %(self.path_to_data_folder, self.list_run_files[i]))
             current_time = self.df_slurm_sim_data["StepSequence"].iloc[i]
             try:
-                current_cryst_file = pd.read_csv("%s/%s_cryst_time_%s.txt" %(path_to_crystallisation_folder, self.lammps_dump_prefix, current_time), sep = " ")
+                current_cryst_file = pd.read_csv("%s/%s_cryst_time_%s.txt" %(self.path_to_crystallisation_folder, self.lammps_dump_prefix, current_time), sep = " ")
             except FileNotFoundError:
                 print(f"File not found, skipping: {current_time}")
                 continue
-            label_matrix = current_polymer.merge_boxes_2(print_results = print_results, ndot_cutoff = ndot_cutoff)
-            np.save("%s/nematic_vectors/label_map_time_%i.npy" %(self.path_to_home_folder, current_time), label_matrix)
+            current_polymer.read_cryst("%s/%s_cryst_time_%s.txt" %(self.path_to_crystallisation_folder, self.lammps_dump_prefix, current_time))
+            label_matrix = current_polymer.merge_boxes_2(print_results = True, ndot_cutoff = self.ndot_cutoff)
+            np.save("%s/label_map_time_%i.npy" %(self.path_to_nematic_vectors_folder, current_time), label_matrix)
         test = np.array([current_time, current_polymer.results.fraction_crystallinity,
             current_polymer.results.total_number_clusters, current_polymer.results.total_number_independent_clusters, 
             current_polymer.results.mean_cluster_size, current_polymer.results.total_number_crystalline_grid_elements,
@@ -204,11 +243,19 @@ class Simulation:
         self.list_run_files = self.get_list_run_files()
         #print(self.list_run_files)
         self.lammps_dump_prefix = self.get_file_prefix()
-        self.domain_calc = domain_analysis(path_to_data_folder, path_to_home_folder, self.list_run_files, self.df_slurm_sim_data, self.lammps_dump_prefix,
+        self.domain_analysis = domain_analysis(path_to_data_folder, path_to_home_folder, self.list_run_files, self.df_slurm_sim_data, self.lammps_dump_prefix,
             cryst_cutoff = self.cryst_cutoff, ndot_cutoff = self.ndot_cutoff)
 
 
 
+    def get_polymer_by_time(self, time):
+        try:
+            current_row = self.df_slurm_sim_data[self.df_slurm_sim_data["Step"] == time].iloc[0]
+        except IndexError:
+            raise ValueError("Time not in dataset, choose a different time.")
+        print(current_row, self.lammps_dump_prefix)
+        print(current_row["Run"])
+        return polymer("%s/%s_run%i_time_%i.txt"%(self.path_to_data_folder, self.lammps_dump_prefix, current_row["Run"], current_row["StepSequence"]), polymer_length= self.polymer_length)
 
         
 
@@ -257,7 +304,8 @@ class Simulation:
 def main():
     PVA_200 = Simulation(100, "../../data/PVA-200/equil", "../data_online/PVA-200/icryst_T088_Tdot_e-3")
     #PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
-    PVA_200.domain_calc.calc_crystallisation()
-
+    #PVA_200.domain_analysis.calc_crystallisation()
+    #PVA_200.domain_analysis.calc_avg_domain_size()
+    PVA_200.get_polymer_by_time(1200000*100)
 if __name__== "__main__":
     main()

@@ -253,8 +253,6 @@ class Simulation:
             current_row = self.df_slurm_sim_data[self.df_slurm_sim_data["Step"] == time].iloc[0]
         except IndexError:
             raise ValueError("Time not in dataset, choose a different time.")
-        print(current_row, self.lammps_dump_prefix)
-        print(current_row["Run"])
         return polymer("%s/%s_run%i_time_%i.txt"%(self.path_to_data_folder, self.lammps_dump_prefix, current_row["Run"], current_row["StepSequence"]), polymer_length= self.polymer_length)
 
         

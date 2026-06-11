@@ -130,6 +130,7 @@ class SlurmFiles():
         no_files_current_df_slurm = dataframe_slurm.shape[0]
         no_files_saved_df_slurm = dataframe_slurm_existing.shape[0]
         if no_files_current_df_slurm != no_files_saved_df_slurm:
+            make_folder(self.path_to_home_folder)
             dataframe_slurm.to_csv("%s/%s_sim_data.txt" %(self.path_to_home_folder, self.slurm_prefix), sep = " ", index_label = "index")
         return 0;
 
@@ -137,18 +138,21 @@ class SlurmFiles():
 class domain_analysis:
     """Class to calculate and save crystallisation files"""
 
-    def __init__(self, path_to_data_folder: str, path_to_home_folder: str, list_run_files: list, slurm_file, lammps_dump_prefix: str,
-        cryst_cutoff: float = 0.8, ndot_cutoff: float = 0.97):
-        self.path_to_data_folder = path_to_data_folder
-        self.path_to_home_folder = path_to_home_folder
-        self.list_run_files = list_run_files
-        self.df_slurm_sim_data = slurm_file
-        self.lammps_dump_prefix = lammps_dump_prefix
-        self.cryst_cutoff = cryst_cutoff; self.ndot_cutoff = ndot_cutoff
-        self.path_to_crystallisation_folder = "%s/crystallisation" %(self.path_to_home_folder)
-        self.path_to_nematic_vectors_folder = "%s/nematic_vectors" %(self.path_to_home_folder)
+    # def __init__(self, path_to_data_folder: str, path_to_home_folder: str, list_run_files: list, slurm_file, lammps_dump_prefix: str,
+    #     cryst_cutoff: float = 0.8, ndot_cutoff: float = 0.97):
+    #     self.path_to_data_folder = path_to_data_folder
+    #     self.path_to_home_folder = path_to_home_folder
+    #     self.list_run_files = list_run_files
+    #     self.df_slurm_sim_data = slurm_file
+    #     self.lammps_dump_prefix = lammps_dump_prefix
+    #     self.cryst_cutoff = cryst_cutoff; self.ndot_cutoff = ndot_cutoff
+    #     self.path_to_crystallisation_folder = "%s/crystallisation" %(self.path_to_home_folder)
+    #     self.path_to_nematic_vectors_folder = "%s/nematic_vectors" %(self.path_to_home_folder)
 
         #print(self.df_slurm_sim_data, self.list_run_files)
+
+    def __init__(self, sim):
+        self.sim = sim
 
 
 
@@ -183,49 +187,49 @@ class domain_analysis:
 
     def calc_crystallisation(self, path_to_cryst_array = None, file_override = False):
         #path_to_crystallisation_folder = "%s/crystallisation" %(self.path_to_home_folder)
-        make_folder(self.path_to_crystallisation_folder)
+        make_folder(self.sim.path_to_crystallisation_folder)
         if path_to_cryst_array == None: 
-            path_to_cryst_array = "%s/%s" %(self.path_to_home_folder, "frac_cryst.txt")
-        for i in tqdm(range(0, len(self.list_run_files))):
-            current_time = self.df_slurm_sim_data["StepSequence"].iloc[i]
+            path_to_cryst_array = "%s/%s" %(self.sim.path_to_home_folder, "frac_cryst.txt")
+        for i in tqdm(range(0, len(self.sim.list_run_files))):
+            current_time = self.sim.df_slurm_sim_data["StepSequence"].iloc[i]
             #Read file 
-            if not Path("%s/%s_cryst_time_%s.txt" %(self.path_to_crystallisation_folder, self.lammps_dump_prefix, current_time)).is_file():
-                current_polymer = polymer("%s/%s" %(self.path_to_data_folder, self.list_run_files[i]))
+            if not Path("%s/%s_cryst_time_%s.txt" %(self.sim.path_to_crystallisation_folder, self.sim.lammps_dump_prefix, current_time)).is_file():
+                current_polymer = polymer("%s/%s" %(self.sim.path_to_data_folder, self.sim.list_run_files[i]))
                 frac_cryst = current_polymer.atom_coords.get_nematic_vector_5(
-                    save_string = "%s/%s_cryst_time_%s.txt" %(self.path_to_crystallisation_folder, self.lammps_dump_prefix, current_time),
-                    cryst_cutoff = self.cryst_cutoff
+                    save_string = "%s/%s_cryst_time_%s.txt" %(self.sim.path_to_crystallisation_folder, self.sim.lammps_dump_prefix, current_time),
+                    cryst_cutoff = self.sim.cryst_cutoff
                 )
 
                 # with open(cryst_array_string, "a") as file:
                 #     file.write(f"{current_time} {frac_cryst}\n")
-                self.insert_cryst_line_sorted(path_to_cryst_array, current_time, frac_cryst)
+                self.sim.insert_cryst_line_sorted(path_to_cryst_array, current_time, frac_cryst)
         return 0;
 
     def calc_avg_domain_size(self):
         # Read in crystallisation files
-        #path_to_nematic_vectors_folder = "%s/nematic_vectors" %(self.path_to_home_folder)
+        #path_to_nematic_vectors_folder = "%s/nematic_vectors" %(self.sim.path_to_home_folder)
 
-        cryst_domain_array = pd.DataFrame(np.zeros([self.df_slurm_sim_data.shape[0], 7]), columns = ["time", "crystallinity", "clusters w/ >= 2 members", 
+        cryst_domain_array = pd.DataFrame(np.zeros([self.sim.df_slurm_sim_data.shape[0], 7]), columns = ["time", "crystallinity", "clusters w/ >= 2 members", 
         "   independent clusters", "mean size cryst domains", "crystalline grid elements", "total volume"])
-        make_folder(self.path_to_nematic_vectors_folder)
-        for i in tqdm(range(0, len(self.list_run_files))):
+        make_folder(self.sim.path_to_nematic_vectors_folder)
+        for i in tqdm(range(0, len(self.sim.list_run_files))):
             #Read file 
-            current_polymer = polymer("%s/%s" %(self.path_to_data_folder, self.list_run_files[i]))
-            current_time = self.df_slurm_sim_data["StepSequence"].iloc[i]
+            current_polymer = polymer("%s/%s" %(self.sim.path_to_data_folder, self.sim.list_run_files[i]))
+            current_time = self.sim.df_slurm_sim_data["StepSequence"].iloc[i]
             try:
-                current_cryst_file = pd.read_csv("%s/%s_cryst_time_%s.txt" %(self.path_to_crystallisation_folder, self.lammps_dump_prefix, current_time), sep = " ")
+                current_cryst_file = pd.read_csv("%s/%s_cryst_time_%s.txt" %(self.sim.path_to_crystallisation_folder, self.sim.lammps_dump_prefix, current_time), sep = " ")
             except FileNotFoundError:
                 print(f"File not found, skipping: {current_time}")
                 continue
-            current_polymer.read_cryst("%s/%s_cryst_time_%s.txt" %(self.path_to_crystallisation_folder, self.lammps_dump_prefix, current_time))
-            label_matrix = current_polymer.merge_boxes_2(print_results = True, ndot_cutoff = self.ndot_cutoff)
-            np.save("%s/label_map_time_%i.npy" %(self.path_to_nematic_vectors_folder, current_time), label_matrix)
+            current_polymer.read_cryst("%s/%s_cryst_time_%s.txt" %(self.sim.path_to_crystallisation_folder, self.sim.lammps_dump_prefix, current_time))
+            label_matrix = current_polymer.merge_boxes_2(print_results = True, ndot_cutoff = self.sim.ndot_cutoff)
+            np.save("%s/label_map_time_%i.npy" %(self.sim.path_to_nematic_vectors_folder, current_time), label_matrix)
         test = np.array([current_time, current_polymer.results.fraction_crystallinity,
             current_polymer.results.total_number_clusters, current_polymer.results.total_number_independent_clusters, 
             current_polymer.results.mean_cluster_size, current_polymer.results.total_number_crystalline_grid_elements,
             current_polymer.atom_coords.volume])
         cryst_domain_array.iloc[i, :] = test
-        cryst_domain_array.to_csv("%s/domain_analysis.txt" %(self.path_to_home_folder), sep = " ", header = True)
+        cryst_domain_array.to_csv("%s/domain_analysis.txt" %(self.sim.path_to_home_folder), sep = " ", header = True)
 
 
 class Simulation: 
@@ -241,10 +245,14 @@ class Simulation:
         self.path_to_home_folder = path_to_home_folder
         self.df_slurm_sim_data = pd.read_csv("%s/%s_sim_data.txt" %(self.path_to_home_folder, self.slurm_files.slurm_prefix), sep = " ")
         self.list_run_files = self.get_list_run_files()
+
+        self.path_to_crystallisation_folder = "%s/crystallisation" %(path_to_home_folder)
+        self.path_to_nematic_vectors_folder = "%s/nematic_vectors" %(path_to_home_folder)
         #print(self.list_run_files)
         self.lammps_dump_prefix = self.get_file_prefix()
-        self.domain_analysis = domain_analysis(path_to_data_folder, path_to_home_folder, self.list_run_files, self.df_slurm_sim_data, self.lammps_dump_prefix,
-            cryst_cutoff = self.cryst_cutoff, ndot_cutoff = self.ndot_cutoff)
+        #self.domain_analysis = domain_analysis(path_to_data_folder, path_to_home_folder, self.list_run_files, self.df_slurm_sim_data, self.lammps_dump_prefix,
+        #    cryst_cutoff = self.cryst_cutoff, ndot_cutoff = self.ndot_cutoff)
+        self.domain_analysis = domain_analysis(self)
 
 
 

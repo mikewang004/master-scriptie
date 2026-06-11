@@ -231,6 +231,23 @@ class domain_analysis:
         cryst_domain_array.iloc[i, :] = test
         cryst_domain_array.to_csv("%s/domain_analysis.txt" %(self.sim.path_to_home_folder), sep = " ", header = True)
 
+    def read_crystallisation(self, path: str = None):
+        if path is None:
+            path = "%s/%s" %(self.sim.path_to_home_folder, "frac_cryst.txt")
+        if Path(path).is_file():
+            cryst_file = np.load(path)
+            return cryst_file
+
+
+    def read_avg_domain_size(self, path: str = None):
+        if path is None:
+            path = "%s/domain_analysis.txt" %(self.sim.path_to_home_folder)
+        if Path(path).is_file():
+            mean_domain_file = pd.read_csv(path, sep = " ", header = True)
+        else:
+            print("File not found")
+            return 0;
+
 
 class Simulation: 
     """Class to read in and manipulate sequences of lammps .txt dump files and corresponding slurm files """
@@ -253,6 +270,7 @@ class Simulation:
         #self.domain_analysis = domain_analysis(path_to_data_folder, path_to_home_folder, self.list_run_files, self.df_slurm_sim_data, self.lammps_dump_prefix,
         #    cryst_cutoff = self.cryst_cutoff, ndot_cutoff = self.ndot_cutoff)
         self.domain_analysis = domain_analysis(self)
+        #self.cryst = self.domain_analysis.read_crystallisation()
 
 
 
@@ -312,6 +330,7 @@ def main():
     #PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
     #PVA_200.domain_analysis.calc_crystallisation()
     #PVA_200.domain_analysis.calc_avg_domain_size()
-    PVA_200.get_polymer_by_time(1200000*100)
+    #PVA_200.get_polymer_by_time(1200000*100)
+    PVA_200.domain_analysis.read_avg_domain_size()
 if __name__== "__main__":
     main()

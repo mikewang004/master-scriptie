@@ -1,4 +1,4 @@
-from analyse8 import polymer, atom_coords
+from analyse9 import polymer, atom_coords
 import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
@@ -243,7 +243,8 @@ class domain_analysis:
         if path is None:
             path = "%s/domain_analysis.txt" %(self.sim.path_to_home_folder)
         if Path(path).is_file():
-            mean_domain_file = pd.read_csv(path, sep = " ", header = True)
+            mean_domain_file = pd.read_csv(path, sep = " ").iloc[:, 1:]
+            return mean_domain_file
         else:
             print("File not found")
             return 0;
@@ -281,7 +282,12 @@ class Simulation:
             raise ValueError("Time not in dataset, choose a different time.")
         return polymer("%s/%s_run%i_time_%i.txt"%(self.path_to_data_folder, self.lammps_dump_prefix, current_row["Run"], current_row["StepSequence"]), polymer_length= self.polymer_length)
 
-        
+    def get_mutiple_polymers_by_time(self, times: list):
+        polymer_list = []
+        for time in times: 
+            current_polymer = self.get_polymer_by_time(time)
+            polymer_list.append(current_polymer)
+        return polymer_list
 
     def get_list_run_files(self):
         """Reads all slurm files, makes a new slurm file containing the step/temp/E_pair/E_mol/TotEng/Press/Vol of all slurm files run"""

@@ -191,7 +191,7 @@ class domain_analysis:
         if path_to_cryst_array == None: 
             path_to_cryst_array = "%s/%s" %(self.sim.path_to_home_folder, "frac_cryst.txt")
         for i in tqdm(range(0, len(self.sim.list_run_files))):
-            current_time = self.sim.df_slurm_sim_data["StepSequence"].iloc[i]
+            current_time = self.sim.df_slurm_sim_data["Step"].iloc[i]
             #Read file 
             if not Path("%s/%s_cryst_time_%s.txt" %(self.sim.path_to_crystallisation_folder, self.sim.lammps_dump_prefix, current_time)).is_file():
                 current_polymer = polymer("%s/%s" %(self.sim.path_to_data_folder, self.sim.list_run_files[i]))
@@ -202,7 +202,7 @@ class domain_analysis:
 
                 # with open(cryst_array_string, "a") as file:
                 #     file.write(f"{current_time} {frac_cryst}\n")
-                self.sim.insert_cryst_line_sorted(path_to_cryst_array, current_time, frac_cryst)
+                self.sim.domain_analysis.insert_cryst_line_sorted(path_to_cryst_array, current_time, frac_cryst)
         return 0;
 
     def calc_avg_domain_size(self):
@@ -215,7 +215,7 @@ class domain_analysis:
         for i in tqdm(range(0, len(self.sim.list_run_files))):
             #Read file 
             current_polymer = polymer("%s/%s" %(self.sim.path_to_data_folder, self.sim.list_run_files[i]))
-            current_time = self.sim.df_slurm_sim_data["StepSequence"].iloc[i]
+            current_time = self.sim.df_slurm_sim_data["Step"].iloc[i]
             try:
                 current_cryst_file = pd.read_csv("%s/%s_cryst_time_%s.txt" %(self.sim.path_to_crystallisation_folder, self.sim.lammps_dump_prefix, current_time), sep = " ")
             except FileNotFoundError:
@@ -280,13 +280,24 @@ class Simulation:
             current_row = self.df_slurm_sim_data[self.df_slurm_sim_data["Step"] == time].iloc[0]
         except IndexError:
             raise ValueError("Time not in dataset, choose a different time.")
-        return polymer("%s/%s_run%i_time_%i.txt"%(self.path_to_data_folder, self.lammps_dump_prefix, current_row["Run"], current_row["StepSequence"]), polymer_length= self.polymer_length)
+        current_polymer = polymer("%s/%s_run%i_time_%i.txt"%(self.path_to_data_folder, self.lammps_dump_prefix, current_row["Run"], current_row["StepSequence"]), polymer_length= self.polymer_length)
+        try:
+            current_cryst_file = pd.read_csv("%s/%s_cryst_time_%s.txt" %(self.path_to_crystallisation_folder, self.lammps_dump_prefix, time), sep = " ")
+            current_polymer.read_cryst("%s/%s_cryst_time_%s.txt" %(self.path_to_crystallisation_folder, self.lammps_dump_prefix, time))
+        except FileNotFoundError:
+            print(f"File not found, skipping: {current_time}")
+        return current_polymer
 
     def get_mutiple_polymers_by_time(self, times: list):
         polymer_list = []
         for time in times: 
             current_polymer = self.get_polymer_by_time(time)
             polymer_list.append(current_polymer)
+            try:
+                current_cryst_file = pd.read_csv("%s/%s_cryst_time_%s.txt" %(self.path_to_crystallisation_folder, self.lammps_dump_prefix, time), sep = " ")
+                current_polymer.read_cryst("%s/%s_cryst_time_%s.txt" %(self.path_to_crystallisation_folder, self.lammps_dump_prefix, time))
+            except FileNotFoundError:
+                print(f"File not found, skipping: {current_time}")
         return polymer_list
 
     def get_list_run_files(self):
@@ -330,13 +341,26 @@ class Simulation:
         return polymer(path_to_file, polymer_length=self.polymer_length)
 
 
+def calc_crystallisation_and_avg_domain_size(polymer):
+    polymer.domain_analysis.calc_crystallisation()
+    polymer.domain_analysis.calc_avg_domain_size()
+
+    return 0;
 
 def main():
-    PVA_200 = Simulation(100, "../../data/PVA-200/equil", "../data_online/PVA-200/icryst_T088_Tdot_e-3")
+    #PVA_200 = Simulation(200, "../../data/PVA-200/equil", "../data_online/PVA-200/icryst_T088_Tdot_e-3")
+    PVA_500 = Simulation(500, "../../data/PVA-500/equil", "../data_online/PVA-500/icryst_T088_Tdot_e-3")
     #PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
     #PVA_200.domain_analysis.calc_crystallisation()
     #PVA_200.domain_analysis.calc_avg_domain_size()
     #PVA_200.get_polymer_by_time(1200000*100)
-    PVA_200.domain_analysis.read_avg_domain_size()
+    #PVA_200.domain_analysis.read_avg_domain_size()
+
+
+    calc_crystallisation_and_avg_domain_size(PVA_500)
+
+    #current_poly = PVA_500.get_polymer_by_time(time = 20*1200000)
+    #print(current_poly.atom_coords.nridges)
+    #current_poly.merge_boxes_2(print_results= True)
 if __name__== "__main__":
     main()

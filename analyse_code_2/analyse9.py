@@ -10,9 +10,18 @@ from hoshenKopelmanInPython import hk_in_python
 def wrap_coordinates(column, minlength, total_length):
     return (column - minlength) % total_length + minlength
 
+def fraction_crystallinity(data, n_ridges_3d, cutoff = 0.8):
+    """Data 1d 1d list/array, defined as data > 0.8 -> crystallinity = 1;
+    data <= 0.8 -> crystallinity = 0 as in Sommer/Luo Sep 2010"""
+    mask = data > cutoff
+    fraction = len(data[mask]) / n_ridges_3d
+    return fraction, len(data[mask])
+
 class results(object):
     def __init__(self):
         return
+
+
 
 class atom_coords:
 
@@ -246,6 +255,7 @@ class polymer():
         self.results.total_number_crystalline_grid_elements = np.sum(cluster_counts)
         self.results.fraction_crystallinity, no_crystalline_elements = fraction_crystallinity(self.df_cryst.iloc[:,3], self.atom_coords.no_nridges_3d)
         if print_results == True:
+            #print("For time %i"%(self.atom_coords.current_timestep))
             print("total number clusters w/ >= 2 elements: %i" %(self.results.total_number_clusters))
             print("total number independent crystalline domains: %i" %(self.results.total_number_independent_clusters))
             print("average cluster size crystalline domains: %f" %(self.results.mean_cluster_size))

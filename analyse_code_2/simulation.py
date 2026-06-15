@@ -285,7 +285,7 @@ class Simulation:
             current_cryst_file = pd.read_csv("%s/%s_cryst_time_%s.txt" %(self.path_to_crystallisation_folder, self.lammps_dump_prefix, time), sep = " ")
             current_polymer.read_cryst("%s/%s_cryst_time_%s.txt" %(self.path_to_crystallisation_folder, self.lammps_dump_prefix, time))
         except FileNotFoundError:
-            print(f"File not found, skipping: {current_time}")
+            print(f"Crystallisation data not found, skipping time: {time}")
         return current_polymer
 
     def get_mutiple_polymers_by_time(self, times: list):

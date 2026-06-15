@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import re 
 from numba import jit
+from tqdm import tqdm
+
 from nematic_vector import calc_nematic_tensor_2, nematic_vector_loop, nematic_vector_loop_2, compute_Q, orderparameter
 from hoshenKopelmanInPython import hk_in_python
 

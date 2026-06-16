@@ -235,8 +235,10 @@ class domain_analysis:
         if path is None:
             path = "%s/%s" %(self.sim.path_to_home_folder, "frac_cryst.txt")
         if Path(path).is_file():
-            cryst_file = np.load(path)
+            cryst_file = np.loadtxt(path)
             return cryst_file
+        else:
+            return None
 
 
     def read_avg_domain_size(self, path: str = None):
@@ -271,7 +273,7 @@ class Simulation:
         #self.domain_analysis = domain_analysis(path_to_data_folder, path_to_home_folder, self.list_run_files, self.df_slurm_sim_data, self.lammps_dump_prefix,
         #    cryst_cutoff = self.cryst_cutoff, ndot_cutoff = self.ndot_cutoff)
         self.domain_analysis = domain_analysis(self)
-        #self.cryst = self.domain_analysis.read_crystallisation()
+        self.df_cryst = self.domain_analysis.read_crystallisation()
 
 
 

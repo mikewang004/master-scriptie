@@ -6,7 +6,16 @@ import os
 from tqdm import tqdm
 import pandas as pd
 from simulation import Simulation
+import scienceplots
 
+plt.style.use('science')
+
+def plot_crystallisation(simulations: list):
+    for simulation in simulations:
+        #simulation.read_cryst()
+        #print(simulation.df_cryst)
+        plt.scatter(simulation.df_cryst[:, 0], simulation.df_cryst[:, 1], label = "T = %i" %(simulation.target_temp))
+    plt.show()
 
 
 def main():
@@ -17,10 +26,11 @@ def main():
     PVA_100_T088 = Simulation(100, "../../data/pva-100/quick_quench/equil", "../data_online/PVA-100/icryst_T088_Tdot_e-3", cooling_rate= -3, target_temp= 0.88)
     simulations = [PVA_100_T07, PVA_100_T085, PVA_100_T088]
 
-    PVA_100_T07.domain_analysis.calc_crystallisation()
-    PVA_100_T085.domain_analysis.calc_crystallisation()
+    #PVA_100_T07.domain_analysis.calc_crystallisation()
+    #PVA_100_T085.domain_analysis.calc_crystallisation()
 
 
     #print(PVA_100_T07.domain_analysis.read_avg_domain_size())
+    plot_crystallisation(simulations)
 if __name__== "__main__":
     main()

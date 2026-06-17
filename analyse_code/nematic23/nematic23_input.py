@@ -73,9 +73,9 @@ def convert(input_file, Lchain, output_file):
 
 
 def main():
-    Lchain = 100
-    file_name = "equil_t_088_tdot_e-3_time_0.txt"
-    path_to_file = "../../../data/pva-100/quick_quench/%s" %(file_name)
+    Lchain = 500
+    file_name = "PVA-500_equil_t_088_tdot_e-3_run1_time_12000000.txt"
+    path_to_file = "input/%s" %(file_name)
     convert(path_to_file, Lchain, "input/%s" %(file_name))
 
 

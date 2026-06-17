@@ -254,8 +254,8 @@ class atom_coords:
 
 
 class polymer():
-    def __init__(self, path_to_file, polymer_length = 100):
-        self.atom_coords = atom_coords(path_to_file, polymer_length= polymer_length)
+    def __init__(self, path_to_file, polymer_length = 100, cell_length = 2.0):
+        self.atom_coords = atom_coords(path_to_file, polymer_length= polymer_length, cell_length= cell_length)
         self.results = results()
 
     def read_cryst(self, location):

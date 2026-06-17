@@ -279,12 +279,12 @@ class Simulation:
 
 
 
-    def get_polymer_by_time(self, time):
+    def get_polymer_by_time(self, time, cell_length = 2.0):
         try:
             current_row = self.df_slurm_sim_data[self.df_slurm_sim_data["Step"] == time].iloc[0]
         except IndexError:
             raise ValueError("Time not in dataset, choose a different time.")
-        current_polymer = polymer("%s/%s_run%i_time_%i.txt"%(self.path_to_data_folder, self.lammps_dump_prefix, current_row["Run"], current_row["StepSequence"]), polymer_length= self.polymer_length)
+        current_polymer = polymer("%s/%s_run%i_time_%i.txt"%(self.path_to_data_folder, self.lammps_dump_prefix, current_row["Run"], current_row["StepSequence"]), polymer_length= self.polymer_length, cell_length= cell_length)
         try:
             current_cryst_file = pd.read_csv("%s/%s_cryst_time_%s.txt" %(self.path_to_crystallisation_folder, self.lammps_dump_prefix, time), sep = " ")
             current_polymer.read_cryst("%s/%s_cryst_time_%s.txt" %(self.path_to_crystallisation_folder, self.lammps_dump_prefix, time))
@@ -351,14 +351,29 @@ def calc_crystallisation_and_avg_domain_size(polymer):
 
     return 0;
 
+def debug_merge_boxes(polymer):
+    print(polymer.atom_coords.bond_vectors["nx"].max())
+    print(polymer.atom_coords.bond_vectors["nz"].max())
+    #print(33*33*33)
+    print("For PVA-%i:" %polymer.atom_coords.polymer_length)
+    polymer.merge_boxes_2(print_results= True)
+
 def main():
     #PVA_200 = Simulation(200, "../../data/PVA-200/equil", "../data_online/PVA-200/icryst_T088_Tdot_e-3")
-    PVA_50 = Simulation(50, "../../data/PVA-50/equil", "../data_online/PVA-50/icryst_T088_Tdot_e-3")
-    PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/equil", "../data_online/PVA-100/icryst_T088_Tdot_e-3")
+    #PVA_50 = Simulation(50, "../../data/PVA-50/equil", "../data_online/PVA-50/icryst_T088_Tdot_e-3")
+    #PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/equil", "../data_online/PVA-100/icryst_T088_Tdot_e-3")
+    PVA_200 = Simulation(200, "../../data/PVA-200/equil", "../data_online/PVA-200/icryst_T088_Tdot_e-3")
     PVA_300 = Simulation(300, "../../data/PVA-300/equil", "../data_online/PVA-300/icryst_T088_Tdot_e-3")
     PVA_500 = Simulation(500, "../../data/PVA-500/equil", "../data_online/PVA-500/icryst_T088_Tdot_e-3")
     PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
 
+
+    current_poly = PVA_1000.get_polymer_by_time(12000000, cell_length= 1.95)
+    debug_merge_boxes(current_poly)
+    #PVA_200.get_polymer_by_time(10*120000).merge_boxes_2(print_results = True)
+    # PVA_300.get_polymer_by_time(10*120000).merge_boxes_2(print_results = True)
+    # PVA_500.get_polymer_by_time(10*120000).merge_boxes_2(print_results = True)
+    # PVA_1000.get_polymer_by_time(10*120000).merge_boxes_2(print_results = True)
     #calc_crystallisation_and_avg_domain_size(PVA_50)
     #calc_crystallisation_and_avg_domain_size(PVA_100)
     #calc_crystallisation_and_avg_domain_size(PVA_300)

@@ -274,6 +274,8 @@ class Simulation:
         #    cryst_cutoff = self.cryst_cutoff, ndot_cutoff = self.ndot_cutoff)
         self.domain_analysis = domain_analysis(self)
         self.df_cryst = self.domain_analysis.read_crystallisation()
+        self.timestep = 0.005
+
 
 
 

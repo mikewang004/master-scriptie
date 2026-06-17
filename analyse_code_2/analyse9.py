@@ -5,6 +5,7 @@ import pandas as pd
 import re 
 from numba import jit
 from tqdm import tqdm
+from clib.boxAlgorithmsInC import box_algos_lib
 
 from nematic_vector import calc_nematic_tensor_2, nematic_vector_loop, nematic_vector_loop_2, compute_Q, orderparameter
 from hoshenKopelmanInPython import hk_in_python
@@ -175,6 +176,26 @@ class atom_coords:
         #self.bond_vectors = self.bond_vectors[(self.bond_vectors["nx"] >= 0) & (self.bond_vectors["ny"] >= 0) & (self.bond_vectors["nz"] >= 0)]
         return self.bond_vectors, nridges, nridges_total_3d
 
+    def assign_monomers_to_box(self, cell_length = 2):
+        nridges, nridges_total_3d = self.calc_nridges()
+        actual_cell_length = self.boxlengths/nridges
+
+        monomers_in_cell = self.wrapped_monomers[['mol_id', 'xu', 'yu', 'zu']].copy()# - self.dimensions.iloc[:, 0]
+        #monomers_in_cell = monomers_in_cell.copy()
+        xc = monomers_in_cell["xu"] - self.dimensions.loc["x", "min"]
+        yc= monomers_in_cell["yu"] - self.dimensions.loc["y", "min"]
+        zc = monomers_in_cell["zu"] - self.dimensions.loc["z", "min"]
+
+
+        nx = (xc / actual_cell_length["x"]).astype(int)
+        ny = (yc / actual_cell_length["y"]).astype(int)
+        nz = (zc / actual_cell_length["z"]).astype(int)
+
+        monomers_in_cell = monomers_in_cell.assign(xp = xc, yp = yc, zp = zc, nx = nx, ny = ny, nz = nz)
+        return monomers_in_cell
+
+
+
     def get_nematic_vector_5(self, save_string = None, cryst_cutoff = 0.8):
         #self.df_cryst = nematic_vector_loop(data, self.bond_vectors)
 
@@ -316,3 +337,35 @@ class polymer():
         self.results.gyration_radius = df_gyration_radius
         self.results.mean_gyration_radius = np.mean(df_gyration_radius["gyration_radius"]) #Ensemble average
         print("mean gyration is %f" %np.sqrt(self.results.mean_gyration_radius))
+
+
+    def bond_bond_correlation(self, show_plot = False):
+        #df_mean_bond_bond_per_polymer = self.create_new_polymer_df(["cos_theta"])
+        df_bond_per_position = pd.DataFrame(np.zeros([int(self.atom_coords.n_atoms/self.atom_coords.no_polymers)-2, self.atom_coords.no_polymers]))
+        df_bond_per_position.index.name = "bead_position"
+        df_bond_per_position.index = df_bond_per_position.index + 1
+        bond_bond_correlation_array = np.zeros([self.atom_coords.no_polymers, self.atom_coords.polymer_length-1, self.atom_coords.polymer_length-1])
+        for i in range(self.atom_coords.no_polymers):
+            # global indices for this polymer, skipping the last atom in the block
+            start = i * self.atom_coords.polymer_length + 1              # 1, L+1, 2L+1, ...
+            end   = (i + 1) * self.atom_coords.polymer_length         # L-1, 2L-1, 3L-1, ...
+
+            subset_df = self.atom_coords.bond_vectors.loc[start:end]
+            subset = subset_df.to_numpy()[:, 1:4]
+            subset = subset / np.linalg.norm(subset, axis=1, keepdims=True)
+
+            bond_bond_corr_array_polymer = np.zeros([self.atom_coords.polymer_length - 1, self.atom_coords.polymer_length - 1])
+            subset = subset / np.linalg.norm(subset, axis=1, keepdims=True)
+            bond_bond_correlation_array[i, :, :] = subset @ subset.T
+            #print(df_bond_per_position.iloc[:, i])
+        bond_correlation_average = np.mean(bond_bond_correlation_array, axis = 0)
+        diag_means = np.zeros(self.atom_coords.polymer_length-1)
+        for i in range(0, self.atom_coords.polymer_length -1):
+            diag_means[i] = np.mean(np.diagonal(bond_correlation_average, offset = i))
+        positions = np.arange(1, self.atom_coords.polymer_length)
+        #print(positions.shape, diag_means.shape)
+        return positions, diag_means
+
+
+    # def local_monomer_density(self):
+    #     print(df)

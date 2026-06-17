@@ -14,8 +14,13 @@ def plot_crystallisation(simulations: list):
     for simulation in simulations:
         #simulation.read_cryst()
         #print(simulation.df_cryst)
-        plt.scatter(simulation.df_cryst[:, 0], simulation.df_cryst[:, 1], label = "T = %i" %(simulation.target_temp))
-    plt.show()
+        plt.scatter(simulation.df_cryst[:98, 0] * simulation.timestep, simulation.df_cryst[:98, 1], label = "T = %.2f" %(simulation.target_temp), marker = ".")
+    plt.legend()    
+    plt.title("Crystallisation as function of time, PVA-100")
+    plt.ylabel(r"$\phi$")
+    plt.xlabel(r"$\tau$")
+    plt.savefig("plots/cryst_vs_time_T07_T085_T088.pdf")
+    #plt.show()
 
 
 def main():

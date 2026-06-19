@@ -271,6 +271,8 @@ class polymer():
 
 
         total_number_merged_clusters = counts[counts > 1]
+        #print(unique_values, counts)
+        #print(total_number_merged_clusters)
         self.results.total_number_clusters = total_number_merged_clusters.size
         self.results.total_number_independent_clusters = unique_values.size-1
         cluster_counts = counts[1:]
@@ -283,7 +285,7 @@ class polymer():
             print("total number independent crystalline domains: %i" %(self.results.total_number_independent_clusters))
             print("average cluster size crystalline domains: %f" %(self.results.mean_cluster_size))
             print("total number crystalline/all grid elements: %i/%i -> cryt_frac = %f" 
-                %(self.results.total_number_crystalline_grid_elements,total_box_elements, 
+                %(np.sum(total_number_merged_clusters[1:]),total_box_elements, 
                     self.results.total_number_crystalline_grid_elements/total_box_elements))
             print("earlier calculated frac_cryst = %f" %(self.frac_cryst))
         return label_matrix

@@ -199,7 +199,7 @@ def check_ndot(current_row, neighbour_row, cryst_cutoff = 0.8, ndot_cutoff = 0.9
     elif neighbour_row.loc["cryst_bool"] < cryst_cutoff:
         return 0;
 
-    inner_product = (current_row.loc["x_ev"] * neighbour_row.loc["x_ev"] + current_row.loc["y_ev"] * neighbour_row.loc["y_ev"] + \
+    inner_product = (current_row.loc["x_ev"] * neighbour_row.loc["x_ev"] + current_row.loc["y_ev"] * neighbour_row.loc["y_ev"] + 
         current_row.loc["z_ev"] * neighbour_row.loc["z_ev"]) 
     ndot_check = 1.5 * inner_product* inner_product - 0.5
     # print(current_row)

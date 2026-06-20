@@ -7,7 +7,7 @@ from tqdm import tqdm
 from simulation import Simulation
 import scienceplots
 
-plt.style.use('science')
+#plt.style.use('science')
 
 
 
@@ -118,6 +118,51 @@ def plot_2x2_monomer_density(simulation, times, save_string = None, bins = 18):
         plt.show()
         #axes[i].set_title(col, fontsize=10)
 
+def plot_monomer_density(current_polymer):
+
+    monomer_density = current_polymer.atom_coords.assign_monomers_to_box()
+
+    triplet_counts = (
+        monomer_density.groupby(['nx', 'ny', 'nz'])
+        .size()
+        .reset_index(name='count')
+    )
+
+    local_density = triplet_counts["count"]/current_polymer.atom_coords.local_volume
+    #print(triplet_counts.min(), triplet_counts.max(), triplet_counts.mean())
+    mu, sigma = sp.stats.norm.fit(local_density)
+    values, bins, __ = plt.hist(local_density, bins = int(triplet_counts["count"].max()-triplet_counts["count"].min()+1), color="steelblue", density = True)
+    x_kde = np.linspace(local_density.min(), local_density.max(), 100)
+    pdf = sp.stats.norm.pdf(x_kde, mu, sigma)
+    plt.plot(x_kde, pdf)
+    plt.title("Local density, PVA-%i" %(current_polymer.atom_coords.polymer_length))
+    plt.show()
+
+def plot_multiple_monomer_densities(simulation_list, times: list):
+    for i in range(0, len(simulation_list)):
+        simulation = simulation_list[i]
+        for j in range(0, len(times)):
+            current_time = times[j]
+            current_poly = simulation.get_polymer_by_time(current_time)
+            monomer_count = current_poly.atom_coords.assign_monomers_to_box()
+
+            triplet_counts = (
+                monomer_count.groupby(['nx', 'ny', 'nz'])
+                .size()
+                .reset_index(name='count')
+            )
+            local_density = triplet_counts["count"]/current_poly.atom_coords.local_volume
+            mu, sigma = sp.stats.norm.fit(local_density)
+            x_kde = np.linspace(local_density.min(),local_density.max(), 100)
+            pdf = sp.stats.norm.pdf(x_kde, mu, sigma)
+            plt.plot(x_kde, pdf, label = r"PVA-%i, time %i $\tau$" %(current_poly.atom_coords.polymer_length, current_time/simulation.timestep))
+    plt.legend()
+    plt.title("Local density")
+    plt.show()
+
+        
+
+
 
 def plot_volume_vs_density(simulations: list):
     for simulation in simulations:
@@ -178,7 +223,7 @@ def main():
     PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
 
     # #print(PVA_100.df_slurm_sim_data)
-    # simulations = [PVA_100, PVA_1000]
+    simulations = [PVA_100, PVA_1000]
     times = np.array([0, 5, 10, 30])*1200000
 
     # plot_bond_bond_correlation_different_times(simulations, times)
@@ -187,12 +232,14 @@ def main():
     # plot_2x2_end_end_radius(PVA_100, times, save_string="plots/PVA_100_Re.pdf")
     # plot_2x2_end_end_radius(PVA_1000, times, save_string="plots/PVA_1000_Re.pdf")
 
-    #current_poly = PVA_100.get_polymer_by_time(times[2])
-    plot_2x2_monomer_density(PVA_100, times, save_string="plots/PVA_100_local_density.pdf")
-    plot_2x2_monomer_density(PVA_1000, times, save_string="plots/PVA_1000_local_density.pdf", bins = 18)
+    #current_poly = PVA_100.get_polymer_by_time(times[3])
+    #plot_2x2_monomer_density(PVA_100, times, save_string="plots/PVA_100_local_density.pdf")
+    #plot_2x2_monomer_density(PVA_1000, times, save_string="plots/PVA_1000_local_density.pdf", bins = 18)
     #current_poly.gyration_radius()
     #plot_gyration_radius(current_poly)
         
+
+    plot_multiple_monomer_densities(simulations, times)
 
         
 

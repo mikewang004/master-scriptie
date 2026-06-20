@@ -373,10 +373,11 @@ def main():
 
 
 
-    #calc_crystallisation_and_avg_domain_size(PVA_500)
+    calc_crystallisation_and_avg_domain_size(PVA_1000)
 
-    current_poly = PVA_200.get_polymer_by_time(time = 20*1200000)
+    #current_poly = PVA_200.get_polymer_by_time(time = 21*1200000)
+    #current_poly.atom_coords.get_nematic_vector_5()
     #print(current_poly.atom_coords.nridges)
-    current_poly.merge_boxes_2(print_results= True)
+    #current_poly.merge_boxes_2(print_results= True)
 if __name__== "__main__":
     main()

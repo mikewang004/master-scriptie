@@ -47,6 +47,7 @@ class atom_coords:
 
         self.bond_vectors = self.calculate_bond_vectors()
         self.bond_vectors, self.nridges, self.no_nridges_3d  = self.make_cell_grid()
+        self.local_volume = self.calc_local_volume()
         #self.df_cryst = self.get_nematic_vector_5()
         self.results = results()
 
@@ -198,11 +199,10 @@ class atom_coords:
 
     def get_nematic_vector_5(self, save_string = None, cryst_cutoff = 0.8):
         #self.df_cryst = nematic_vector_loop(data, self.bond_vectors)
-
         self.df_cryst = (
             self.bond_vectors.groupby(['nx', 'ny', 'nz'])
-            #.apply(compute_Q)
-            .apply(orderparameter)
+            .apply(compute_Q)
+            #.apply(orderparameter)
             .reset_index()
         )
         print(self.df_cryst)
@@ -250,6 +250,11 @@ class atom_coords:
         closest = closest.reset_index().rename(columns={"index": "atom_id"})
 
         return mol_id, closest
+
+
+    def calc_local_volume(self):
+        actual_cell_length = self.boxlengths/self.nridges
+        return float(actual_cell_length["x"]*actual_cell_length["y"]*actual_cell_length["z"])
 
 
 

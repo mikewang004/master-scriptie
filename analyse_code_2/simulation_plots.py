@@ -6,8 +6,10 @@ import os
 from tqdm import tqdm
 from simulation import Simulation
 import scienceplots
+from matplotlib.lines import Line2D
 
-#plt.style.use('science')
+
+plt.style.use('science')
 
 
 
@@ -139,6 +141,8 @@ def plot_monomer_density(current_polymer):
     plt.show()
 
 def plot_multiple_monomer_densities(simulation_list, times: list):
+    marker_styles = ['o', 's', '^', 'D', 'v', 'P', 'X', '*']
+    colors = plt.cm.tab10(np.linspace(0, 1, len(times)))  # or any other colormap
     for i in range(0, len(simulation_list)):
         simulation = simulation_list[i]
         for j in range(0, len(times)):
@@ -155,9 +159,12 @@ def plot_multiple_monomer_densities(simulation_list, times: list):
             mu, sigma = sp.stats.norm.fit(local_density)
             x_kde = np.linspace(local_density.min(),local_density.max(), 100)
             pdf = sp.stats.norm.pdf(x_kde, mu, sigma)
-            plt.plot(x_kde, pdf, label = r"PVA-%i, time %i $\tau$" %(current_poly.atom_coords.polymer_length, current_time/simulation.timestep))
-    plt.legend()
-    plt.title("Local density")
+            plt.plot(x_kde, pdf, 
+                color = colors[j], linestyle = "-", marker=marker_styles[i % len(marker_styles)], markersize = 3,
+                label = r"PVA-%i, time %i $\tau$" %(current_poly.atom_coords.polymer_length, current_time*simulation.timestep))
+    plt.legend(prop={'size': 6})
+    plt.title("Local density, normalised probability")
+    plt.savefig("plots/local_density_pva-100_1000.pdf")
     plt.show()
 
         

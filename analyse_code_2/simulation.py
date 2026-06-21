@@ -372,8 +372,12 @@ def main():
     #PVA_200.domain_analysis.read_avg_domain_size()
 
 
-
-    calc_crystallisation_and_avg_domain_size(PVA_1000)
+    #calc_crystallisation_and_avg_domain_size(PVA_50)
+    #calc_crystallisation_and_avg_domain_size(PVA_100)
+    calc_crystallisation_and_avg_domain_size(PVA_200)
+    #calc_crystallisation_and_avg_domain_size(PVA_300)
+    #calc_crystallisation_and_avg_domain_size(PVA_500)
+    #calc_crystallisation_and_avg_domain_size(PVA_1000)
 
     #current_poly = PVA_200.get_polymer_by_time(time = 21*1200000)
     #current_poly.atom_coords.get_nematic_vector_5()

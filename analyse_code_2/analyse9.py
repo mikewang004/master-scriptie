@@ -47,6 +47,7 @@ class atom_coords:
 
         self.bond_vectors = self.calculate_bond_vectors()
         self.bond_vectors, self.nridges, self.no_nridges_3d  = self.make_cell_grid()
+        self.local_volume = self.calc_local_volume()
         #self.df_cryst = self.get_nematic_vector_5()
         self.results = results()
 
@@ -198,11 +199,10 @@ class atom_coords:
 
     def get_nematic_vector_5(self, save_string = None, cryst_cutoff = 0.8):
         #self.df_cryst = nematic_vector_loop(data, self.bond_vectors)
-
         self.df_cryst = (
             self.bond_vectors.groupby(['nx', 'ny', 'nz'])
-            #.apply(compute_Q)
-            .apply(orderparameter)
+            .apply(compute_Q)
+            #.apply(orderparameter)
             .reset_index()
         )
         print(self.df_cryst)
@@ -252,6 +252,11 @@ class atom_coords:
         return mol_id, closest
 
 
+    def calc_local_volume(self):
+        actual_cell_length = self.boxlengths/self.nridges
+        return float(actual_cell_length["x"]*actual_cell_length["y"]*actual_cell_length["z"])
+
+
 
 class polymer():
     def __init__(self, path_to_file, polymer_length = 100, cell_length = 2.0):
@@ -271,6 +276,8 @@ class polymer():
 
 
         total_number_merged_clusters = counts[counts > 1]
+        #print(unique_values, counts)
+        #print(total_number_merged_clusters)
         self.results.total_number_clusters = total_number_merged_clusters.size
         self.results.total_number_independent_clusters = unique_values.size-1
         cluster_counts = counts[1:]
@@ -283,7 +290,7 @@ class polymer():
             print("total number independent crystalline domains: %i" %(self.results.total_number_independent_clusters))
             print("average cluster size crystalline domains: %f" %(self.results.mean_cluster_size))
             print("total number crystalline/all grid elements: %i/%i -> cryt_frac = %f" 
-                %(self.results.total_number_crystalline_grid_elements,total_box_elements, 
+                %(np.sum(total_number_merged_clusters[1:]),total_box_elements, 
                     self.results.total_number_crystalline_grid_elements/total_box_elements))
             print("earlier calculated frac_cryst = %f" %(self.frac_cryst))
         return label_matrix

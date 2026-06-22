@@ -121,7 +121,6 @@ def compute_Q(block: pd.DataFrame) -> pd.Series:
 
 def orderparameter(block: pd.DataFrame) -> pd.Series:
     """
-    Python translation of your C code:
     - Build second moment matrix A = <u u^T>
     - Build nematic tensor Q = (3/2) A - (1/2) I
     - Diagonalize Q

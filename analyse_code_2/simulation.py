@@ -360,8 +360,8 @@ def debug_merge_boxes(polymer):
 
 def main():
     #PVA_200 = Simulation(200, "../../data/PVA-200/equil", "../data_online/PVA-200/icryst_T088_Tdot_e-3")
-    #PVA_50 = Simulation(50, "../../data/PVA-50/equil", "../data_online/PVA-50/icryst_T088_Tdot_e-3")
-    #PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/equil", "../data_online/PVA-100/icryst_T088_Tdot_e-3")
+    PVA_50 = Simulation(50, "../../data/PVA-50/equil", "../data_online/PVA-50/icryst_T088_Tdot_e-3")
+    PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/equil", "../data_online/PVA-100/icryst_T088_Tdot_e-3")
     PVA_200 = Simulation(200, "../../data/PVA-200/equil", "../data_online/PVA-200/icryst_T088_Tdot_e-3")
     PVA_300 = Simulation(300, "../../data/PVA-300/equil", "../data_online/PVA-300/icryst_T088_Tdot_e-3")
     PVA_500 = Simulation(500, "../../data/PVA-500/equil", "../data_online/PVA-500/icryst_T088_Tdot_e-3")
@@ -386,9 +386,15 @@ def main():
     #PVA_200.domain_analysis.read_avg_domain_size()
 
 
+    #calc_crystallisation_and_avg_domain_size(PVA_50)
+    #calc_crystallisation_and_avg_domain_size(PVA_100)
+    calc_crystallisation_and_avg_domain_size(PVA_200)
+    #calc_crystallisation_and_avg_domain_size(PVA_300)
     #calc_crystallisation_and_avg_domain_size(PVA_500)
+    #calc_crystallisation_and_avg_domain_size(PVA_1000)
 
-    #current_poly = PVA_500.get_polymer_by_time(time = 20*1200000)
+    #current_poly = PVA_200.get_polymer_by_time(time = 21*1200000)
+    #current_poly.atom_coords.get_nematic_vector_5()
     #print(current_poly.atom_coords.nridges)
     #current_poly.merge_boxes_2(print_results= True)
 if __name__== "__main__":

@@ -132,23 +132,23 @@ def plot_volume_vs_density(simulations: list):
     plt.savefig("plots/volume_monomer_time_different_chains.pdf")
 
 
-def plot_bond_bond_correlation_different_times(simulations: list, times: list):
+def plot_bond_bond_correlation_different_times(simulations: list, times: list, savestring: str = None):
     fig, axes = plt.subplots(1, 2, figsize=(12, 12), sharex= True, sharey= True)
     axes = axes.ravel()
 
-    for i in range(0,2):
+    for i in range(0,len(simulations)):
         simulation = simulations[i]
         for time in times:
             current_poly = simulation.get_polymer_by_time(time)
-            positions, diag_means = current_poly.bond_bond_correlation()
+            positions, diag_means = current_poly.bond_bond_correlation_2()
             axes[i].scatter(positions, diag_means, label = "t = %i" %(time * simulation.timestep))
         axes[i].set_xlabel("n")
-        axes[i].set_ylabel(r"cos\theta(n)")
+        axes[i].set_ylabel(r"$cos\theta(n)$")
         axes[i].set_title("PVA-%i" %(simulation.polymer_length))
     fig.suptitle("Bond-bond correlation")
     plt.savefig("plots/bond_bond_correlation_PVA_100_1000.pdf")
 
-        
+                             
 
 
     fig.suptitle(r"$R_g$, PVA-%i" %(simulation.polymer_length))
@@ -167,7 +167,7 @@ def main():
     # PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/equil", "../data_online/PVA-100/icryst_T088_Tdot_e-3")
     # PVA_200 = Simulation(200, "../../data/PVA-200/equil", "../data_online/PVA-200/icryst_T088_Tdot_e-3")
     # PVA_300 = Simulation(300, "../../data/PVA-300/equil", "../data_online/PVA-300/icryst_T088_Tdot_e-3")
-    # PVA_500 = Simulation(500, "../../data/PVA-500/equil", "../data_online/PVA-500/icryst_T088_Tdot_e-3")
+    PVA_500 = Simulation(500, "../../data/PVA-500/equil", "../data_online/PVA-500/icryst_T088_Tdot_e-3")
     # PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
 
     # simulations = [PVA_50, PVA_100, PVA_300, PVA_500, PVA_1000]
@@ -178,18 +178,18 @@ def main():
     PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
 
     # #print(PVA_100.df_slurm_sim_data)
-    # simulations = [PVA_100, PVA_1000]
+    simulations = [PVA_1000]
     times = np.array([0, 5, 10, 30])*1200000
 
-    # plot_bond_bond_correlation_different_times(simulations, times)
+    plot_bond_bond_correlation_different_times(simulations, times, savestring = "plots/bond_bond_corr_pva-100_1000.pdf")
 
     #plot_2x2_gyration_radius(PVA_100, times, save_string="plots/PVA_100_Rg.pdf")
     # plot_2x2_end_end_radius(PVA_100, times, save_string="plots/PVA_100_Re.pdf")
     # plot_2x2_end_end_radius(PVA_1000, times, save_string="plots/PVA_1000_Re.pdf")
 
     #current_poly = PVA_100.get_polymer_by_time(times[2])
-    plot_2x2_monomer_density(PVA_100, times, save_string="plots/PVA_100_local_density.pdf")
-    plot_2x2_monomer_density(PVA_1000, times, save_string="plots/PVA_1000_local_density.pdf", bins = 18)
+    #plot_2x2_monomer_density(PVA_100, times, save_string="plots/PVA_100_local_density.pdf")
+    #plot_2x2_monomer_density(PVA_1000, times, save_string="plots/PVA_1000_local_density.pdf", bins = 18)
     #current_poly.gyration_radius()
     #plot_gyration_radius(current_poly)
         

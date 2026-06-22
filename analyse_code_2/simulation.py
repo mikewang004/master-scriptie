@@ -368,7 +368,7 @@ def main():
     PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
 
 
-    current_poly = PVA_1000.get_polymer_by_time(12000000, cell_length= 1.95)
+    current_poly = PVA_1000.get_polymer_by_time(12000000, cell_length= 2.0)
     debug_merge_boxes(current_poly)
     #PVA_200.get_polymer_by_time(10*120000).merge_boxes_2(print_results = True)
     # PVA_300.get_polymer_by_time(10*120000).merge_boxes_2(print_results = True)

@@ -314,34 +314,34 @@ def plot_bond_bond_correlation(simulation):
 def main():
     data_path = "../../data/pva-100/quick_quench/long_run"
     home_folder_path = "../data_online"
-    cooling_e3_T085 = Simulation(0.85, -3, "%s%s" %(data_path, "/slurm-e3-T085.out"), "%s/equil_t_085_tdot_e-3_time"%(data_path), no_runs = 3, 
-        home_folder= "../data_online/PVA-100/quick_quench")
-    cooling_e3_T085.calc_crystallisation()
-    cooling_e3_T085.calc_avg_domain_size()
-
-
-    cooling_e3_T088 = Simulation(0.88, -3, "%s%s" %(data_path, "/slurm-e3-T088.out"), "%s/equil_t_088_tdot_e-3_time"%(data_path), no_runs = 1, 
-        home_folder= "../data_online/PVA-100/quick_quench")
-    cooling_e3_T088.calc_crystallisation()
-    cooling_e3_T088.calc_avg_domain_size()
-
-    cooling_e4_T085 = Simulation(0.85, -4, "%s%s" %(data_path, "/slurm-e4-T085.out"), "%s/equil_t_085_tdot_e-4_time"%(data_path), no_runs = 2, 
-        home_folder= "../data_online/PVA-100/quick_quench")
-    cooling_e4_T085.calc_crystallisation()
-    cooling_e4_T085.calc_avg_domain_size()
-
-    # cooling_e3_T070 = Simulation(0.7, -4, "%s%s" %(data_path, "/slurm-e3-T07.out"), "%s/equil_t_07_tdot_e-3_time"%(data_path), no_runs = 3, 
+    # cooling_e3_T085 = Simulation(0.85, -3, "%s%s" %(data_path, "/slurm-e3-T085.out"), "%s/equil_t_085_tdot_e-3_time"%(data_path), no_runs = 3, 
     #     home_folder= "../data_online/PVA-100/quick_quench")
-    # cooling_e3_T070.calc_crystallisation()
-    # cooling_e3_T070.calc_avg_domain_size()
-
-    cooling_e3_T07to085 = Simulation(0.85, -3, "%s%s" %(data_path, "/slurm-e3-T07to085.out"), "%s/equil_t_07to085_tdot_e-3_time"%(data_path), no_runs = 1, 
-        home_folder= "../data_online/PVA-100/quick_quench/e-3/T07to085/run_1", home_folder_override= True)
-    cooling_e3_T07to085.calc_crystallisation()
-    cooling_e3_T07to085.calc_avg_domain_size()
+    # cooling_e3_T085.calc_crystallisation()
+    # cooling_e3_T085.calc_avg_domain_size()
 
 
-    simulation_list = [cooling_e3_T085, cooling_e3_T088]
+    # cooling_e3_T088 = Simulation(0.88, -3, "%s%s" %(data_path, "/slurm-e3-T088.out"), "%s/equil_t_088_tdot_e-3_time"%(data_path), no_runs = 1, 
+    #     home_folder= "../data_online/PVA-100/quick_quench")
+    # cooling_e3_T088.calc_crystallisation()
+    # cooling_e3_T088.calc_avg_domain_size()
+
+    # cooling_e4_T085 = Simulation(0.85, -4, "%s%s" %(data_path, "/slurm-e4-T085.out"), "%s/equil_t_085_tdot_e-4_time"%(data_path), no_runs = 2, 
+    #     home_folder= "../data_online/PVA-100/quick_quench")
+    # cooling_e4_T085.calc_crystallisation()
+    # cooling_e4_T085.calc_avg_domain_size()
+
+    # # cooling_e3_T070 = Simulation(0.7, -4, "%s%s" %(data_path, "/slurm-e3-T07.out"), "%s/equil_t_07_tdot_e-3_time"%(data_path), no_runs = 3, 
+    # #     home_folder= "../data_online/PVA-100/quick_quench")
+    # # cooling_e3_T070.calc_crystallisation()
+    # # cooling_e3_T070.calc_avg_domain_size()
+
+    # cooling_e3_T07to085 = Simulation(0.85, -3, "%s%s" %(data_path, "/slurm-e3-T07to085.out"), "%s/equil_t_07to085_tdot_e-3_time"%(data_path), no_runs = 1, 
+    #     home_folder= "../data_online/PVA-100/quick_quench/e-3/T07to085/run_1", home_folder_override= True)
+    # cooling_e3_T07to085.calc_crystallisation()
+    # cooling_e3_T07to085.calc_avg_domain_size()
+
+
+    # simulation_list = [cooling_e3_T085, cooling_e3_T088]
     #plot_mean_cluster_vs_crystallisation_single_cooling_rate(simulation_list, plot_equal_length= True)
     #plot_mean_cluster_vs_no_clusters_single_cooling_rate(simulation_list, plot_equal_length= True)
 
@@ -351,6 +351,10 @@ def main():
     #plot_bond_bond_correlation(cooling_e3_T085)
     # #plot_bond_bond_correlation(cooling_e3_T088)
     # plot_bond_bond_correlation(cooling_e4_T085)
+
+    cooling_e3_T088 = Simulation(0.88, -3, "%s%s" %(data_path, "/slurm-e3-T088.out"), "%s/equil_t_088_tdot_e-3_time"%(data_path), no_runs = 1, 
+        home_folder= "../data_online/PVA-100/quick_quench")
+    plot_bond_bond_correlation(cooling_e3_T088)
 
 
     # simulation_list_same_temperature = [cooling_e3_T088]

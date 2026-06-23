@@ -187,11 +187,13 @@ def plot_volume_vs_density(simulations: list):
 
 
 def plot_bond_bond_correlation_different_times(simulation, times: list, savestring: str = None):
-
+    plt.figure(figsize=(12, 4))
     for time in times:
         current_poly = simulation.get_polymer_by_time(time)
-        positions, diag_means = current_poly.bond_bond_correlation()
-        plt.scatter(positions, diag_means, label = "t = %i" %(time * simulation.timestep))
+        bond_bond_corr = current_poly.bond_bond_correlation_2()
+        n = np.arange(1, len(bond_bond_corr)+1)
+        plt.scatter(n, bond_bond_corr, label = "t = %i" %(time * simulation.timestep), marker = ".")
+        print("time %i done !" %time)
     plt.xlabel("n")
     plt.ylabel(r"$cos\theta(n)$")
     plt.title("Bond-bond correlation, PVA-%i" %(simulation.polymer_length))
@@ -209,7 +211,7 @@ def plot_bond_bond_correlation_different_times_multiple_simulations(simulations:
         simulation = simulations[i]
         for time in times:
             current_poly = simulation.get_polymer_by_time(time)
-            positions, diag_means = current_poly.bond_bond_correlation_2()
+            positions, diag_means = current_poly.bond_bond_correlation()
             axes[i].scatter(positions, diag_means, label = "t = %i" %(time * simulation.timestep))
         axes[i].set_xlabel("n")
         axes[i].set_ylabel(r"$cos\theta(n)$")
@@ -247,8 +249,9 @@ def main():
     # #print(PVA_100.df_slurm_sim_data)
     simulations = [PVA_100, PVA_1000]
     times = np.array([0, 5, 10, 30])*1200000
+    #times = np.array([0])
 
-    plot_bond_bond_correlation_different_times(PVA_100, times, savestring= "plots/bond_bond_correlation_PVA_100.pdf")
+    plot_bond_bond_correlation_different_times(PVA_1000, times, savestring= "plots/bond_bond_correlation_PVA_1000.pdf")
 
     #plot_2x2_gyration_radius(PVA_100, times, save_string="plots/PVA_100_Rg.pdf")
     # plot_2x2_end_end_radius(PVA_100, times, save_string="plots/PVA_100_Re.pdf")

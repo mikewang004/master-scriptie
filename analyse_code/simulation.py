@@ -60,10 +60,11 @@ class Simulation:
             return current_polymer
         elif isinstance(count, np.ndarray):
             polymer_list = []
-            for i in count:
-                current_polymer = polymer(self.list_lammps_files[count], polymer_length= self.polymer_length)
-                current_polymer.read_cryst("%s/nematic_vectors/nem_vectors_time_%i.txt" %(self.path_to_home_folder, self.time_temp_array[count, 1]))
-                current_polymer.timestep = self.time_temp_array[count, 0]
+            for i in range(0, len(count)):
+                print(i, count)
+                current_polymer = polymer(self.list_lammps_files[count[i]], polymer_length= self.polymer_length)
+                current_polymer.read_cryst("%s/nematic_vectors/nem_vectors_time_%i.txt" %(self.path_to_home_folder, self.time_temp_array[count[i], 1]))
+                current_polymer.timestep = self.time_temp_array[count[i], 0]
                 polymer_list.append(current_polymer)
             return polymer_list
         else:

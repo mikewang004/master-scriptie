@@ -351,9 +351,16 @@ class polymer():
         bond_bond_correlation_array = np.zeros([self.atom_coords.no_polymers, self.atom_coords.polymer_length-1, self.atom_coords.polymer_length-1])
         for i in range(0, self.atom_coords.no_polymers):
         #for i in range(0,1):
-            subset = self.atom_coords.bond_vectors[(self.atom_coords.bond_vectors["mol_id"] == i + 1)].to_numpy()[:, 1:4]
-            #Normalise bond vectors 
-            subset = subset/np.linalg.norm(subset, axis = 1, keepdims = True)
+            # subset = self.atom_coords.bond_vectors[(self.atom_coords.bond_vectors["mol_id"] == i + 1)].to_numpy()[:, 1:4]
+            # #Normalise bond vectors 
+            # subset = subset/np.linalg.norm(subset, axis = 1, keepdims = True)
+
+            start = i * self.atom_coords.polymer_length + 1              # 1, L+1, 2L+1, ...
+            end   = (i + 1) * self.atom_coords.polymer_length         # L-1, 2L-1, 3L-1, ...
+
+            subset_df = self.atom_coords.bond_vectors.loc[start:end]
+            subset = subset_df.to_numpy()[:, 1:4]
+            subset = subset / np.linalg.norm(subset, axis=1, keepdims=True)
             #print(subset)
             bond_bond_corr_array_polymer = np.zeros([self.atom_coords.polymer_length-1, self.atom_coords.polymer_length-1])
             box_algos_lib.bond_bond_correlation(subset, bond_bond_corr_array_polymer, subset.shape[0], subset.shape[1])

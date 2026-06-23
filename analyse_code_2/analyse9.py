@@ -20,6 +20,9 @@ def fraction_crystallinity(data, n_ridges_3d, cutoff = 0.8):
     fraction = len(data[mask]) / n_ridges_3d
     return fraction, len(data[mask])
 
+def calc_increasing_sum(n):
+    return int(0.5 * n* (n + 1))
+
 class results(object):
     def __init__(self):
         return
@@ -100,11 +103,20 @@ class atom_coords:
         shifted = shifted.copy()
         bond_vecs = shifted - self.datapd[['xu', 'yu', 'zu']]
 
+
+
         bond_vecs.columns = ['bx', 'by', 'bz']
         bond_vecs = bond_vecs.dropna()
+        bond_vecs.insert(
+        0,  # position
+        'mol_id',
+        self.datapd.loc[bond_vecs.index, 'mol_id'].values
+        )
+
         norms = np.linalg.norm(bond_vecs[['bx','by','bz']].to_numpy(), axis=1)
         bond_vecs[['bx','by','bz']] = bond_vecs[['bx','by','bz']].div(norms, axis=0)
         bond_vecs = bond_vecs.apply(np.float32)
+        bond_vecs["mol_id"] = bond_vecs["mol_id"].astype(np.int32) + 1
         return bond_vecs
 
 
@@ -349,72 +361,64 @@ class polymer():
     def bond_bond_correlation(self, show_plot = False):
         #df_mean_bond_bond_per_polymer = self.create_new_polymer_df(["cos_theta"])
         #Average bond per position
-        df_bond_per_position = pd.DataFrame(np.zeros([int(self.atom_coords.n_atoms/self.atom_coords.no_polymers)-2, self.atom_coords.no_polymers]))
-        print(df_bond_per_position.shape)
+        df_bond_per_position = pd.DataFrame(np.zeros([int(self.atom_coords.n_atoms/self.atom_coords.no_polymers)-1, self.atom_coords.no_polymers]))
         df_bond_per_position.index.name = "bead_position"
         df_bond_per_position.index = df_bond_per_position.index + 1
         bond_bond_correlation_array = np.zeros([self.atom_coords.no_polymers, self.atom_coords.polymer_length-1, self.atom_coords.polymer_length-1])
         for i in range(self.atom_coords.no_polymers):
             # global indices for this polymer, skipping the last atom in the block
-            start = i * self.atom_coords.polymer_length + 1              # 1, L+1, 2L+1, ...
+            start = i * self.atom_coords.polymer_length              # 1, L+1, 2L+1, ...
             end   = (i + 1) * self.atom_coords.polymer_length         # L-1, 2L-1, 3L-1, ...
 
             subset_df = self.atom_coords.bond_vectors.loc[start:end]
+            print(subset_df)
             subset = subset_df.to_numpy()[:, 1:4]
             subset = subset / np.linalg.norm(subset, axis=1, keepdims=True)
-
             bond_bond_corr_array_polymer = np.zeros([self.atom_coords.polymer_length - 1, self.atom_coords.polymer_length - 1])
             #print(bond_bond_corr_array_polymer.shape)
-            subset = subset / np.linalg.norm(subset, axis=1, keepdims=True)
+            #subset = subset / np.linalg.norm(subset, axis=1, keepdims=True)
             bond_bond_correlation_array[i, :, :] = subset @ subset.T
-            print(bond_bond_corr_array_polymer.shape)
             #print(df_bond_per_position.iloc[:, i])
         bond_correlation_average = np.mean(bond_bond_correlation_array, axis = 0)
+        print(bond_correlation_average)
         diag_means = np.zeros(self.atom_coords.polymer_length-1)
         for i in range(0, self.atom_coords.polymer_length -1):
+            print(np.diagonal(bond_correlation_average, offset = i))
             diag_means[i] = np.mean(np.diagonal(bond_correlation_average, offset = i))
         positions = np.arange(1, self.atom_coords.polymer_length)
         #print(positions.shape, diag_means.shape)
         return positions, diag_means
 
-    def bond_bond_correlation_2(self, items_per_block = 50):
-        """More memory efficient version of the above"""
-        #df_mean_bond_bond_per_polymer = self.create_new_polymer_df(["cos_theta"])
-        #Average bond per position
-        df_bond_per_position = pd.DataFrame(np.zeros([int(self.atom_coords.n_atoms/self.atom_coords.no_polymers)-2, self.atom_coords.no_polymers]))
-        #print(df_bond_per_position.shape)
-        df_bond_per_position.index.name = "bead_position"
-        df_bond_per_position.index = df_bond_per_position.index + 1
-        no_blocks = int(self.atom_coords.no_polymers/items_per_block)
-        #print(no_blocks)
-        bond_bond_per_block = np.zeros([no_blocks, self.atom_coords.polymer_length-1, self.atom_coords.polymer_length-1])
-        for j in range(no_blocks):
-            bond_bond_correlation_array = np.zeros([items_per_block, self.atom_coords.polymer_length-1, self.atom_coords.polymer_length-1])
-            for i in range(items_per_block):
-                # global indices for this polymer, skipping the last atom in the block
-                start = i * self.atom_coords.polymer_length + 1              # 1, L+1, 2L+1, ...
-                end   = (i + 1) * self.atom_coords.polymer_length         # L-1, 2L-1, 3L-1, ...
 
-                subset_df = self.atom_coords.bond_vectors.loc[start:end]
-                subset = subset_df.to_numpy()[:, 1:4]
-                subset = subset / np.linalg.norm(subset, axis=1, keepdims=True)
+    def bond_bond_corr_for_n(self, bv, n):
+        df = bv.sort_values(['mol_id', 'pos_in_chain']).copy()
 
-                bond_bond_corr_array_polymer = np.zeros([self.atom_coords.polymer_length - 1, self.atom_coords.polymer_length - 1])
-                #print(bond_bond_corr_array_polymer.shape)
-                subset = subset / np.linalg.norm(subset, axis=1, keepdims=True)
-                bond_bond_correlation_array[i, :, :] = subset @ subset.T
-                #print(bond_bond_corr_array_polymer.shape)
-                #print(df_bond_per_position.iloc[:, i])
-            bond_correlation_average = np.mean(bond_bond_correlation_array, axis = 0)
-            bond_bond_per_block[j, :, :] = bond_correlation_average
-        diag_means = np.zeros(self.atom_coords.polymer_length-1)
-        bond_corr_average = np.mean(bond_bond_per_block, axis = 0)
-        for i in range(0, self.atom_coords.polymer_length -1):
-            diag_means[i] = np.mean(np.diagonal(bond_correlation_average, offset = i))
-        positions = np.arange(1, self.atom_coords.polymer_length)
-        #print(positions.shape, diag_means.shape)
-        return positions, diag_means
+        # bond at j+n within the same chain
+        shifted = df.groupby('mol_id')[['bx', 'by', 'bz']].shift(-n)
 
+        # dot product b(i,j) · b(i,j+n)
+        dot = (
+            df[['bx', 'by', 'bz']].to_numpy() *
+            shifted[['bx', 'by', 'bz']].to_numpy()
+        ).sum(axis=1)
+
+        # drop positions where j+n exceeds chain length (become NaN)
+        mask = ~np.isnan(dot)
+        if not np.any(mask):
+            return np.nan  # no valid pairs for this n
+
+        return dot[mask].mean()
+
+
+
+    def bond_bond_correlation_2(self):
+        bv = self.atom_coords.bond_vectors.copy()[["mol_id", "bx", "by", "bz"]]
+        bv['pos_in_chain'] = bv.groupby('mol_id').cumcount()
+        corr = []
+        for n in range(self.atom_coords.polymer_length -1):
+            corr.append(self.bond_bond_corr_for_n(bv, n))
+        #print(np.array(corr))
+        return np.array(corr)
 
 
     # def local_monomer_density(self):

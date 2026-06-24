@@ -252,6 +252,16 @@ class domain_analysis:
             return 0;
 
 
+    def read_domain_at_time(self, time, path: str = None):
+        if path is None:
+            path = "%s/label_map_time_%i.npy" %(self.sim.path_to_nematic_vectors_folder, time)
+        if Path(path).is_file():
+            domain = np.load(path)
+            return domain
+        else:
+            print("File not found")
+            return 0;
+
 class Simulation: 
     """Class to read in and manipulate sequences of lammps .txt dump files and corresponding slurm files """
 

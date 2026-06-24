@@ -249,6 +249,61 @@ def plot_avg_domain_size(simulations: list, savestring = None):
     plt.show()
 
 
+def plot_distribution_crystalline_domains(simulations: list, times: list, savestring = None):
+    plt.figure(figsize=(8, 5))
+    marker_styles = ['o', 's', '^', 'D', 'v', 'P', 'X', '*']
+    colors = plt.cm.tab10(np.linspace(0, 1, len(times)))  # or any other colormap
+    for i in range(0, len(simulations)):
+        simulation = simulations[i]
+        for j in range(0, len(times)):
+            time = times[j]
+            current_domain = simulation.domain_analysis.read_domain_at_time(time)
+            current_poly = simulation.get_polymer_by_time(time)
+            #print(current_domain)
+
+            values, counts = np.unique(current_domain, return_counts=True)
+
+            # for v, c in zip(values, counts):
+            #     print(f"value {v} occurs {c} times")
+
+            counts = counts[counts > 1] 
+            counts = (counts * current_poly.atom_coords.local_volume)**(1/3)
+            mu, sigma = sp.stats.norm.fit(counts)
+
+            min_c = counts.min()
+            max_c = counts.max()
+
+            nbins = 50  # choose number of bins
+            bins = np.logspace(np.log10(min_c), np.log10(max_c), nbins + 1)
+            #values, bins, __ = plt.hist(local_density, bins = int(triplet_counts["count"].max()-triplet_counts["count"].min()+1), color="steelblue", density = True)
+            # x_kde = np.linspace(counts.min(), counts.max(), 1000)
+            # pdf = sp.stats.norm.pdf(x_kde, mu, sigma)
+            # plt.plot(x_kde, pdf, label = r"PVA-%i, %i $\tau$" %(simulation.polymer_length, time * simulation.timestep))
+            # plt.legend()
+
+            loc, scale = sp.stats.expon.fit(counts, floc=0)
+            lambda_hat = 1.0 / scale
+            x_exp = np.linspace((min_c), (max_c), 1000)
+            pdf_exp = sp.stats.expon.pdf(x_exp, loc=loc, scale=scale)
+            plt.plot(x_exp, pdf_exp, color = colors[j], linestyle = "-", marker=marker_styles[i % len(marker_styles)], markersize = 3,
+               label = r"PVA-%i, %i $\tau$" %(simulation.polymer_length, time * simulation.timestep))
+            #plt.xlim(-1000, 2000)
+    #plt.legend()
+            #values,_, _ = plt.hist(counts, bins=bins, label = r"PVA-%i, %i $\tau$" %(simulation.polymer_length, time * simulation.timestep))   # or choose e.g. bins=20
+    #print(values, bins)
+    plt.xscale("log")
+    plt.xlabel(r"Domain size $\sigma$")
+    plt.ylabel("Frequency")
+    #plt.ylim(0, 60)
+    plt.legend()
+    plt.title("Domain size distribution")
+    if savestring is not None:
+        plt.savefig(savestring)
+    plt.show()
+
+
+
+
 def main():
 
     PVA_50 = Simulation(50, "../../data/PVA-50/equil", "../data_online/PVA-50/icryst_T088_Tdot_e-3")
@@ -267,7 +322,8 @@ def main():
 
     # #print(PVA_100.df_slurm_sim_data)
     simulations = [PVA_100, PVA_1000]
-    times = np.array([0, 8, 30])*1200000
+    #times = np.array([0, 8, 30])*1200000
+    times = np.array([0, 5, 10, 30])*1200000
     #times = np.array([0])
     #plot_avg_domain_size([PVA_100, PVA_200, PVA_300, PVA_500, PVA_1000], savestring="plots/mean_domain_size.pdf")
     #plot_bond_bond_correlation_different_times(PVA_1000, times, savestring= "plots/bond_bond_correlation_PVA_1000.pdf")
@@ -282,8 +338,8 @@ def main():
     #current_poly.gyration_radius()
     #plot_gyration_radius(current_poly)
         
-
-    plot_multiple_monomer_densities(simulations, times)
+    plot_distribution_crystalline_domains([PVA_500], times)#,savestring="plots/cryst_size_dist_pva_500.pdf")
+    #plot_multiple_monomer_densities(simulations, times)
 
         
 

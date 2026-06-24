@@ -229,6 +229,12 @@ def plot_bond_bond_correlation_different_times_multiple_simulations(simulations:
         #axes[i].set_title(col, fontsize=10)
 
 
+def plot_avg_domain_size(simulations: list):
+    for i in range(0, len(simulations)):
+        simulation = simulations[i]
+        current_domain_file = simulation.domain_analysis.read_avg_domain_size()
+        print(current_domain_file)
+
 
 def main():
 
@@ -248,10 +254,10 @@ def main():
 
     # #print(PVA_100.df_slurm_sim_data)
     simulations = [PVA_100, PVA_1000]
-    times = np.array([0, 5, 10, 30])*1200000
+    #times = np.array([0, 5, 10, 30])*1200000
     #times = np.array([0])
-
-    plot_bond_bond_correlation_different_times(PVA_1000, times, savestring= "plots/bond_bond_correlation_PVA_1000.pdf")
+    plot_avg_domain_size(simulations)
+    #plot_bond_bond_correlation_different_times(PVA_1000, times, savestring= "plots/bond_bond_correlation_PVA_1000.pdf")
 
     #plot_2x2_gyration_radius(PVA_100, times, save_string="plots/PVA_100_Rg.pdf")
     # plot_2x2_end_end_radius(PVA_100, times, save_string="plots/PVA_100_Re.pdf")

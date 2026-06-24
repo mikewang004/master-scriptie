@@ -141,6 +141,7 @@ def plot_monomer_density(current_polymer):
     plt.show()
 
 def plot_multiple_monomer_densities(simulation_list, times: list):
+    plt.figure(figsize=(8, 5))
     marker_styles = ['o', 's', '^', 'D', 'v', 'P', 'X', '*']
     colors = plt.cm.tab10(np.linspace(0, 1, len(times)))  # or any other colormap
     for i in range(0, len(simulation_list)):
@@ -162,7 +163,9 @@ def plot_multiple_monomer_densities(simulation_list, times: list):
             plt.plot(x_kde, pdf, 
                 color = colors[j], linestyle = "-", marker=marker_styles[i % len(marker_styles)], markersize = 3,
                 label = r"PVA-%i, time %i $\tau$" %(current_poly.atom_coords.polymer_length, current_time*simulation.timestep))
-    plt.legend(prop={'size': 6})
+    #plt.legend(prop={'size': 6})
+    plt.legend()
+    plt.xlabel(r"monomer count/$V_\text{local}$")
     plt.title("Local density, normalised probability")
     plt.savefig("plots/local_density_pva-100_1000.pdf")
     plt.show()
@@ -229,34 +232,44 @@ def plot_bond_bond_correlation_different_times_multiple_simulations(simulations:
         #axes[i].set_title(col, fontsize=10)
 
 
-def plot_avg_domain_size(simulations: list):
+def plot_avg_domain_size(simulations: list, savestring = None):
+    plt.figure(figsize=(8, 5))
     for i in range(0, len(simulations)):
         simulation = simulations[i]
         current_domain_file = simulation.domain_analysis.read_avg_domain_size()
         print(current_domain_file)
 
+        plt.scatter(current_domain_file["time"]*simulation.timestep, current_domain_file["mean size cryst domains"]**(1/3), label = "PVA-%i" %(simulation.polymer_length))
+    plt.legend()
+    plt.xlabel(r"$\tau$")
+    plt.ylabel(r"$\sigma$")
+    plt.title("Mean domain size, various chains")
+    if savestring is not None:
+        plt.savefig(savestring)
+    plt.show()
+
 
 def main():
 
-    # PVA_50 = Simulation(50, "../../data/PVA-50/equil", "../data_online/PVA-50/icryst_T088_Tdot_e-3")
-    # PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/equil", "../data_online/PVA-100/icryst_T088_Tdot_e-3")
-    # PVA_200 = Simulation(200, "../../data/PVA-200/equil", "../data_online/PVA-200/icryst_T088_Tdot_e-3")
-    # PVA_300 = Simulation(300, "../../data/PVA-300/equil", "../data_online/PVA-300/icryst_T088_Tdot_e-3")
-    # PVA_500 = Simulation(500, "../../data/PVA-500/equil", "../data_online/PVA-500/icryst_T088_Tdot_e-3")
-    # PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
+    PVA_50 = Simulation(50, "../../data/PVA-50/equil", "../data_online/PVA-50/icryst_T088_Tdot_e-3")
+    PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/equil", "../data_online/PVA-100/icryst_T088_Tdot_e-3")
+    PVA_200 = Simulation(200, "../../data/PVA-200/equil", "../data_online/PVA-200/icryst_T088_Tdot_e-3")
+    PVA_300 = Simulation(300, "../../data/PVA-300/equil", "../data_online/PVA-300/icryst_T088_Tdot_e-3")
+    PVA_500 = Simulation(500, "../../data/PVA-500/equil", "../data_online/PVA-500/icryst_T088_Tdot_e-3")
+    PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
 
     # simulations = [PVA_50, PVA_100, PVA_300, PVA_500, PVA_1000]
 
     #plot_volume_vs_density(simulations)
 
-    PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/equil", "../data_online/PVA-100/icryst_T088_Tdot_e-3")
-    PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
+    #PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/equil", "../data_online/PVA-100/icryst_T088_Tdot_e-3")
+    #PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
 
     # #print(PVA_100.df_slurm_sim_data)
     simulations = [PVA_100, PVA_1000]
-    #times = np.array([0, 5, 10, 30])*1200000
+    times = np.array([0, 8, 30])*1200000
     #times = np.array([0])
-    plot_avg_domain_size(simulations)
+    #plot_avg_domain_size([PVA_100, PVA_200, PVA_300, PVA_500, PVA_1000], savestring="plots/mean_domain_size.pdf")
     #plot_bond_bond_correlation_different_times(PVA_1000, times, savestring= "plots/bond_bond_correlation_PVA_1000.pdf")
 
     #plot_2x2_gyration_radius(PVA_100, times, save_string="plots/PVA_100_Rg.pdf")
@@ -270,7 +283,7 @@ def main():
     #plot_gyration_radius(current_poly)
         
 
-    #plot_multiple_monomer_densities(simulations, times)
+    plot_multiple_monomer_densities(simulations, times)
 
         
 

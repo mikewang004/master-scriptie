@@ -7,6 +7,7 @@ from tqdm import tqdm
 from simulation import Simulation
 import scienceplots
 from matplotlib.lines import Line2D
+import pandas as pd
 
 
 plt.style.use('science')
@@ -302,8 +303,41 @@ def plot_distribution_crystalline_domains(simulations: list, times: list, savest
     plt.show()
 
 
+def plot_mean_rg(simulations: list, savestring = None):
+    plt.figure(figsize=(8, 5))
+    for i in range(0, len(simulations)):
+        simulation = simulations[i]
+        gyration_radii = []
+        #for j in tqdm(range(0, 2)):
+        for j in tqdm(range(0, len(simulation.list_run_files))):
+            current_time = simulation.df_slurm_sim_data["Step"].iloc[j]
+            current_poly = simulation.get_polymer_by_time(current_time)
+            current_poly.gyration_radius()
+            print(np.sqrt(current_poly.results.mean_gyration_radius))
+            gyration_radii.append(np.sqrt(current_poly.results.mean_gyration_radius))
+        plt.scatter(simulation.df_slurm_sim_data["Step"]*simulation.timestep, gyration_radii, label = r"PVA-%i" %(simulation.polymer_length))
+    plt.xlabel(r"$\tau$")
+    plt.ylabel(r"$R_g$")
+    plt.title("Mean gyration radius")
+    plt.legend()
+    if savestring is not None:
+        plt.savefig(savestring)
+    plt.show()
 
 
+def plot_distribution_nematic_eigenvalues(simulations: list, times: list, savestring: str = None):
+    plt.figure(figsize=(8, 5))
+    for i in range(0, len(simulations)):
+        simulation = simulations[i]
+        for j in range(0, len(times)):
+            time = times[j]
+            current_poly = simulation.get_polymer_by_time(time)
+            cryst_array = pd.read_csv("%s/%s_cryst_time_%s.txt" %(simulation.path_to_crystallisation_folder, simulation.lammps_dump_prefix, time), sep = " ", 
+                index_col = "Unnamed: 0")
+            print(cryst_array)
+            values, bins, _ = plt.hist(cryst_array["cryst_bool"], label = r"PVA-%i, time = %i $\tau$" %(simulation.polymer_length, time*simulation.timestep))
+    plt.legend()
+    plt.show()
 def main():
 
     PVA_50 = Simulation(50, "../../data/PVA-50/equil", "../data_online/PVA-50/icryst_T088_Tdot_e-3")
@@ -323,10 +357,11 @@ def main():
     # #print(PVA_100.df_slurm_sim_data)
     simulations = [PVA_100, PVA_1000]
     #times = np.array([0, 8, 30])*1200000
-    times = np.array([0, 5, 10, 30])*1200000
+    #times = np.array([0, 5, 10, 30])*1200000
+    times = np.array([0, 10, 91])*1200000
     #times = np.array([0])
     #plot_avg_domain_size([PVA_100, PVA_200, PVA_300, PVA_500, PVA_1000], savestring="plots/mean_domain_size.pdf")
-    #plot_bond_bond_correlation_different_times(PVA_1000, times, savestring= "plots/bond_bond_correlation_PVA_1000.pdf")
+    plot_bond_bond_correlation_different_times(PVA_1000, times, savestring= "plots/bond_bond_correlation_2_PVA_1000.pdf")
 
     #plot_2x2_gyration_radius(PVA_100, times, save_string="plots/PVA_100_Rg.pdf")
     # plot_2x2_end_end_radius(PVA_100, times, save_string="plots/PVA_100_Re.pdf")
@@ -338,10 +373,13 @@ def main():
     #current_poly.gyration_radius()
     #plot_gyration_radius(current_poly)
         
-    plot_distribution_crystalline_domains([PVA_500], times)#,savestring="plots/cryst_size_dist_pva_500.pdf")
+    #plot_distribution_crystalline_domains([PVA_500], times)#,savestring="plots/cryst_size_dist_pva_500.pdf")
+    #plot_mean_rg([PVA_100, PVA_200, PVA_300], savestring = "plots/Rg_vs_time_PVA_100_200_300.pdf")
     #plot_multiple_monomer_densities(simulations, times)
 
         
+
+    #plot_distribution_nematic_eigenvalues([PVA_100], np.array([0, 5])*1200000)
 
 if __name__== "__main__":
     main()

@@ -355,10 +355,12 @@ def plot_crossover_values(simulations: list):
         crossovers.append(monomer_density[crossover_index])
         polymer_lengths.append(simulation.polymer_length)
 
-    #plt.scatter(polymer_lengths, crossovers)
-    plt.scatter(polymer_lengths, times)
+    plt.scatter(polymer_lengths, crossovers)
+    #plt.xscale("log")
+    #plt.scatter(polymer_lengths, times)
     plt.xlabel("Chain lengths")
-    #plt.ylabel("")
+    plt.ylabel(r"$n_\text{atoms}/\sigma^3$")
+    plt.savefig("crossover_density_different_chains.pdf")
     plt.show()
 
 

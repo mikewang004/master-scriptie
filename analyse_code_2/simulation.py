@@ -329,19 +329,19 @@ class domain_analysis:
 
         dist_to_bisector = np.abs(abis * time - monomer_density + bbis) / np.sqrt(abis**2 + 1)
         idx_closest = np.argmin(dist_to_bisector)
-        plt.scatter(time, monomer_density, label = "monomer density")
-        plt.plot(np.linspace(0, time[12], 1000), fit_functions.lin_func(np.linspace(0, time[12], 1000), *popt1), label = "fast regime")
-        plt.plot(np.linspace(time[5], time.max(), 1000), fit_functions.lin_func(np.linspace(time[5], time.max(), 1000), *popt2), label = "slow regime")
+        # plt.scatter(time, monomer_density, label = "monomer density")
+        # plt.plot(np.linspace(0, time[12], 1000), fit_functions.lin_func(np.linspace(0, time[12], 1000), *popt1), label = "fast regime")
+        # plt.plot(np.linspace(time[5], time.max(), 1000), fit_functions.lin_func(np.linspace(time[5], time.max(), 1000), *popt2), label = "slow regime")
 
-        plt.plot(time[:50], ybis, label = "bisection line")
-        plt.scatter(xk, yk, marker = "x", color = "black")
-        plt.scatter(time[idx_closest], monomer_density[idx_closest], marker = "x", color = "red")
-        plt.xlabel(r"t/$\tau$")
-        plt.ylabel(r"$n_\text{atoms}/\sigma^3$")
-        plt.legend()
-        plt.savefig("plots/pva_100_crossover_point_definition.pdf")
+        # plt.plot(time[:50], ybis, label = "bisection line")
+        # plt.scatter(xk, yk, marker = "x", color = "black")
+        # plt.scatter(time[idx_closest], monomer_density[idx_closest], marker = "x", color = "red")
+        # plt.xlabel(r"t/$\tau$")
+        # plt.ylabel(r"$n_\text{atoms}/\sigma^3$")
+        # plt.legend()
+        # plt.savefig("plots/pva_100_crossover_point_definition.pdf")
 
-        plt.show()
+        # plt.show()
         return idx_closest
 
     def maximum_perpendicular_distance(self):

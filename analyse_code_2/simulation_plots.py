@@ -338,6 +338,32 @@ def plot_distribution_nematic_eigenvalues(simulations: list, times: list, savest
             values, bins, _ = plt.hist(cryst_array["cryst_bool"], label = r"PVA-%i, time = %i $\tau$" %(simulation.polymer_length, time*simulation.timestep))
     plt.legend()
     plt.show()
+
+def plot_crossover_values(simulations: list):
+    plt.figure(figsize=(8, 5))
+    times = []
+    crossovers = []
+    polymer_lengths = []
+    for i in range(0, len(simulations)):
+
+        simulation = simulations[i]
+        poly = simulation.get_polymer_by_time(0)
+        time = simulation.df_slurm_sim_data["Step"] * simulation.timestep
+        monomer_density = (poly.atom_coords.n_atoms/simulation.df_slurm_sim_data["Volume"])
+        crossover_index = simulation.domain_analysis.get_crossover_point()
+        times.append(time[crossover_index])
+        crossovers.append(monomer_density[crossover_index])
+        polymer_lengths.append(simulation.polymer_length)
+
+    #plt.scatter(polymer_lengths, crossovers)
+    plt.scatter(polymer_lengths, times)
+    plt.xlabel("Chain lengths")
+    #plt.ylabel("")
+    plt.show()
+
+
+
+
 def main():
 
     PVA_50 = Simulation(50, "../../data/PVA-50/equil", "../data_online/PVA-50/icryst_T088_Tdot_e-3")
@@ -347,7 +373,9 @@ def main():
     PVA_500 = Simulation(500, "../../data/PVA-500/equil", "../data_online/PVA-500/icryst_T088_Tdot_e-3")
     PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
 
-    # simulations = [PVA_50, PVA_100, PVA_300, PVA_500, PVA_1000]
+    simulations = [PVA_50, PVA_100, PVA_300, PVA_500, PVA_1000]
+
+    plot_crossover_values(simulations)
 
     #plot_volume_vs_density(simulations)
 
@@ -355,13 +383,13 @@ def main():
     #PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
 
     # #print(PVA_100.df_slurm_sim_data)
-    simulations = [PVA_100, PVA_1000]
+    #simulations = [PVA_100, PVA_1000]
     #times = np.array([0, 8, 30])*1200000
     #times = np.array([0, 5, 10, 30])*1200000
-    times = np.array([0, 10, 91])*1200000
+    #times = np.array([0, 10, 91])*1200000
     #times = np.array([0])
     #plot_avg_domain_size([PVA_100, PVA_200, PVA_300, PVA_500, PVA_1000], savestring="plots/mean_domain_size.pdf")
-    plot_bond_bond_correlation_different_times(PVA_1000, times, savestring= "plots/bond_bond_correlation_2_PVA_1000.pdf")
+    #plot_bond_bond_correlation_different_times(PVA_1000, times, savestring= "plots/bond_bond_correlation_2_PVA_1000.pdf")
 
     #plot_2x2_gyration_radius(PVA_100, times, save_string="plots/PVA_100_Rg.pdf")
     # plot_2x2_end_end_radius(PVA_100, times, save_string="plots/PVA_100_Re.pdf")

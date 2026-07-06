@@ -10,6 +10,7 @@ import pathlib
 import re
 from typing import List, Tuple, Optional
 import bisect
+from kneed import KneeLocator
 
 #TODO: modify file so that polymer properties can be accessed easily from Simulation()
 
@@ -292,7 +293,7 @@ class domain_analysis:
             return 0;
 
 
-    def get_crossover_point(self, idx_cutoff_1 = 8, idx_cutoff_2 = 50):
+    def get_crossover_point(self, idx_cutoff_1 = 8, idx_cutoff_2 = 50, savefig_name = None, show_plot = False):
         """Fits a curve to both the fast and slow regimes, then gets the bisector of both curves.
         Returns the index of the data point closest to the calculated bisector"""
         current_poly = self.sim.get_polymer_by_time(0)
@@ -329,20 +330,60 @@ class domain_analysis:
 
         dist_to_bisector = np.abs(abis * time - monomer_density + bbis) / np.sqrt(abis**2 + 1)
         idx_closest = np.argmin(dist_to_bisector)
-        # plt.scatter(time, monomer_density, label = "monomer density")
-        # plt.plot(np.linspace(0, time[12], 1000), fit_functions.lin_func(np.linspace(0, time[12], 1000), *popt1), label = "fast regime")
-        # plt.plot(np.linspace(time[5], time.max(), 1000), fit_functions.lin_func(np.linspace(time[5], time.max(), 1000), *popt2), label = "slow regime")
+        plt.scatter(time, monomer_density, label = "monomer density")
+        plt.plot(np.linspace(0, time[12], 1000), fit_functions.lin_func(np.linspace(0, time[12], 1000), *popt1), label = "fast regime")
+        plt.plot(np.linspace(time[5], time.max(), 1000), fit_functions.lin_func(np.linspace(time[5], time.max(), 1000), *popt2), label = "slow regime")
 
-        # plt.plot(time[:50], ybis, label = "bisection line")
-        # plt.scatter(xk, yk, marker = "x", color = "black")
-        # plt.scatter(time[idx_closest], monomer_density[idx_closest], marker = "x", color = "red")
-        # plt.xlabel(r"t/$\tau$")
-        # plt.ylabel(r"$n_\text{atoms}/\sigma^3$")
-        # plt.legend()
-        # plt.savefig("plots/pva_100_crossover_point_definition.pdf")
+        plt.plot(time[:50], ybis, label = "bisection line")
+        plt.scatter(xk, yk, marker = "x", color = "black")
+        plt.scatter(time[idx_closest], monomer_density[idx_closest], marker = "x", color = "red")
+        plt.xlabel(r"t/$\tau$")
+        plt.ylabel(r"$n_\text{atoms}/\sigma^3$")
+        plt.legend()
+        if savefig_name != None:
+            plt.savefig("%s" %savefig_name)
 
-        # plt.show()
+        if show_plot == True:
+            plt.show()
         return idx_closest
+
+    def get_crossover_point_kneed(self, savefig_name = None, show_plot = False):
+        current_poly = self.sim.get_polymer_by_time(0)
+        n_atoms = current_poly.atom_coords.n_atoms
+        time = self.sim.df_slurm_sim_data["Step"] * self.sim.timestep
+        monomer_density = (n_atoms/self.sim.df_slurm_sim_data["Volume"])
+        x_index = np.arange(len(time))
+        kn = KneeLocator(x_index, monomer_density, curve = "concave", direction = "increasing", interp_method= "polynomial")
+        # xkn = kn.knee; ykn = kn.knee_y; 
+        # print(xkn, ykn)
+        idx_knee = kn.knee
+        xkn = time[idx_knee];ykn = kn.knee_y
+        if show_plot == True:
+            plt.scatter(time, monomer_density, label = "monomer density")
+            plt.scatter(xkn, ykn, marker = "x", color = "black", label = "kneepoint")
+
+
+        if savefig_name != None:
+            plt.savefig("%s" %savefig_name)
+
+        if show_plot == True:
+            plt.show()
+
+        return idx_knee, xkn, ykn
+
+
+    def get_crossover_point_cutoff(self, cutoff = 0.99):
+        current_poly = self.sim.get_polymer_by_time(0)
+        n_atoms = current_poly.atom_coords.n_atoms
+        time = self.sim.df_slurm_sim_data["Step"] * self.sim.timestep
+        monomer_density = (n_atoms/self.sim.df_slurm_sim_data["Volume"])
+        monomer_density = monomer_density/monomer_density.iloc[-1]
+        idx_closest = (cutoff- monomer_density).abs().idxmin()
+        time_closest = time.iloc[idx_closest]
+        monomer_density_closest = monomer_density.iloc[idx_closest]
+
+        return idx_closest, time_closest, monomer_density_closest
+
 
     def maximum_perpendicular_distance(self):
         current_poly = self.sim.get_polymer_by_time(0)
@@ -382,9 +423,30 @@ class Simulation:
         self.domain_analysis = domain_analysis(self)
         self.df_cryst = self.domain_analysis.read_crystallisation()
         self.timestep = 0.005
+        self.tc_idex, self.tc_time, self.tc_density = self.read_crossover_time()
 
 
 
+
+    def read_crossover_time(self, filename = None):
+        if filename == None: 
+            filename = "../data_online/crossover_times.txt"
+        try:
+            tc = pd.read_csv("../data_online/crossover_times.txt", sep = " ", index_col = "polymer_lengths")
+        except FileNotFoundError:
+            print("File for crossover time not found")
+            return 0;
+        print(tc)
+        try: 
+            row = tc.loc[self.polymer_length]
+        except KeyError:
+            print("Crossover time not found for PVA-%i" %self.polymer_length)
+            return 0;
+
+        tc_idx = row["index"]
+        tc_time = row["time"]
+        tc_density = row["monomer density"]
+        return tc_idx, tc_time, tc_density
 
     def get_polymer_by_time(self, time, cell_length = 2.0):
         try:
@@ -480,10 +542,11 @@ def main():
     # PVA_200 = Simulation(200, "../../data/PVA-200/equil", "../data_online/PVA-200/icryst_T088_Tdot_e-3")
     # PVA_300 = Simulation(300, "../../data/PVA-300/equil", "../data_online/PVA-300/icryst_T088_Tdot_e-3")
     #PVA_500 = Simulation(500, "../../data/PVA-500/equil", "../data_online/PVA-500/icryst_T088_Tdot_e-3")
-    #PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
+    PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
     #hyperbolic_functions_plot()
 
-    PVA_100.domain_analysis.get_crossover_point()
+    #PVA_1000.domain_analysis.get_crossover_point(7, 80, savefig_name= "plots/pva_1000_crossover_point_definition.pdf")
+    #PVA_100.domain_analysis.get_crossover_point_kneed(savefig_name= "plots/pva_100_crossover_point_definition.pdf")
     # current_poly = PVA_1000.get_polymer_by_time(12000000, cell_length= 2.0)
     # debug_merge_boxes(current_poly)
     #PVA_200.get_polymer_by_time(10*120000).merge_boxes_2(print_results = True)

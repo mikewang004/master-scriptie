@@ -11,8 +11,10 @@ import pandas as pd
 
 
 plt.style.use('science')
-
-
+plt_cm_to_in = 1/2.54
+plt_max_x = 15.5
+plt_max_y = 22
+plt_caption_font = 9 #pt
 
 def plot_crystallisation_vs_volume():
     pass
@@ -340,29 +342,133 @@ def plot_distribution_nematic_eigenvalues(simulations: list, times: list, savest
     plt.show()
 
 def plot_crossover_values(simulations: list):
-    plt.figure(figsize=(8, 5))
+    #plt.figure(figsize=(8, 5))
+    plt.figure(figsize = (plt_max_x/3 * plt_cm_to_in,plt_max_y/6 * plt_cm_to_in))
     times = []
     crossovers = []
     polymer_lengths = []
+    idx_list = []
     for i in range(0, len(simulations)):
 
         simulation = simulations[i]
         poly = simulation.get_polymer_by_time(0)
         time = simulation.df_slurm_sim_data["Step"] * simulation.timestep
         monomer_density = (poly.atom_coords.n_atoms/simulation.df_slurm_sim_data["Volume"])
-        crossover_index = simulation.domain_analysis.get_crossover_point()
-        times.append(time[crossover_index])
-        crossovers.append(monomer_density[crossover_index])
+        idx, xkn, ykn = simulation.domain_analysis.get_crossover_point_cutoff()
+        # times.append(time[crossover_index])
+        # crossovers.append(monomer_density[crossover_index])
+        idx_list.append(idx)
+        times.append(xkn); crossovers.append(ykn);
         polymer_lengths.append(simulation.polymer_length)
+        monomer_density = monomer_density/monomer_density.iloc[-1]
+        # plt.scatter(time, monomer_density, label = "PVA-%i" %simulation.polymer_length)
+        # plt.scatter(xkn, ykn, marker = "x", color = "black")
 
-    plt.scatter(polymer_lengths, crossovers)
+    tc = pd.DataFrame(
+        {
+            "index": idx_list,
+            "time": times,
+            "monomer density": crossovers,
+        },
+        index=polymer_lengths,
+    )
+
+    tc.index.name = "polymer_lengths"
+
+    print(tc.head())
+    tc.to_csv("../data_online/crossover_times.txt", sep = " ")
+    plt.scatter(polymer_lengths, times)
     #plt.xscale("log")
+    #plt.yscale("log")
     #plt.scatter(polymer_lengths, times)
     plt.xlabel("Chain lengths")
-    plt.ylabel(r"$n_\text{atoms}/\sigma^3$")
-    plt.savefig("crossover_density_different_chains.pdf")
+    #plt.xlabel(r"$t/\tau$")
+    #plt.ylabel(r"$n_\text{monomers}/\sigma^3$")
+    plt.ylabel(r"$t_\text{crossover } [t/\tau]$")
+    plt.legend(fontsize=plt_caption_font)
+    plt.savefig("plots/crossover_density_vs_time_different_chains.pdf")
     plt.show()
 
+
+def plot_monomer_density_and_crossover_values(simulations: list):
+    width = plt_max_x/1.5 * plt_cm_to_in
+    height = plt_max_y/3 * plt_cm_to_in
+
+    # Two vertical subplots; total figure height = 2 * height
+    fig, (ax1, ax2) = plt.subplots(
+        2, 1,
+        figsize=(width, 2 * height),
+        sharex=True
+    )
+
+    times = []
+    crossovers = []
+    polymer_lengths = []
+    idx_list = []
+
+    for simulation in simulations:
+        poly = simulation.get_polymer_by_time(0)
+        time = simulation.df_slurm_sim_data["Step"] * simulation.timestep
+        monomer_density = (poly.atom_coords.n_atoms/simulation.df_slurm_sim_data["Volume"])
+        idx, xkn, ykn = simulation.domain_analysis.get_crossover_point_cutoff()
+
+        idx_list.append(idx)
+        times.append(xkn)
+        crossovers.append(ykn)
+        polymer_lengths.append(simulation.polymer_length)
+
+
+
+        # Top subplot
+        ax1.scatter(time, monomer_density, label=f"PVA-{simulation.polymer_length}")
+
+        monomer_density = monomer_density/monomer_density.iloc[-1]
+
+        # Bottom subplot (same plot for now)
+        ax2.scatter(time, monomer_density, label=f"PVA-{simulation.polymer_length}")
+        ax2.scatter(xkn, ykn, marker="x", color="black")
+
+    tc = pd.DataFrame(
+        {
+            "index": idx_list,
+            "time": times,
+            "monomer density": crossovers,
+        },
+        index=polymer_lengths,
+    )
+    tc.index.name = "polymer_lengths"
+
+    print(tc.head())
+    tc.to_csv("../data_online/crossover_times.txt", sep=" ")
+
+    # Horizontal lines in both subplots
+    ax2.hlines(0.99, time.iloc[0], time.iloc[-1], color="black")
+
+    # Labels & legend
+    ax2.set_xlabel(r"$t/\tau$")
+    ax1.set_ylabel(r"$n_\text{monomers}/\sigma^3$")
+    ax2.set_ylabel(r"$\frac{n_\text{monomers}}{\sigma^3}/(\frac{n_\text{monomers}}{\sigma^3})_\text{max}$")
+
+    ax1.legend(fontsize=plt_caption_font)
+    ax2.legend(fontsize=plt_caption_font)
+
+    ax1.text(
+        0.02, 0.95, "(a)",
+        transform=ax1.transAxes,
+        fontsize=plt_caption_font,
+        va="top", ha="left"
+    )
+    ax2.text(
+        0.02, 0.95, "(b)",
+        transform=ax2.transAxes,
+        fontsize=plt_caption_font,
+        va="top", ha="left"
+    )
+
+
+    fig.tight_layout()
+    fig.savefig("crossover_density_vs_time_different_chains_subplots.pdf")
+    plt.show()
 
 
 
@@ -375,9 +481,11 @@ def main():
     PVA_500 = Simulation(500, "../../data/PVA-500/equil", "../data_online/PVA-500/icryst_T088_Tdot_e-3")
     PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
 
-    simulations = [PVA_50, PVA_100, PVA_300, PVA_500, PVA_1000]
+    simulations = [PVA_50, PVA_100, PVA_200, PVA_300, PVA_500, PVA_1000]
 
+    print(PVA_100.tc_time)
     plot_crossover_values(simulations)
+    #plot_monomer_density_and_crossover_values(simulations)
 
     #plot_volume_vs_density(simulations)
 

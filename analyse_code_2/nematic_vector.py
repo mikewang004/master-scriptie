@@ -108,16 +108,19 @@ def compute_Q(block: pd.DataFrame) -> pd.Series:
     vals, vecs_ev = np.linalg.eigh(Q)               # vals ascending
 
     # largest eigenvalue & eigenvector
-    idx = np.argmax(vals)
-    #idx = np.argmax(np.abs(vals))
-    S = vals[idx]                                   # order parameter
+    idx = np.argmax(np.abs(vals))
+    lambda_val = vals[idx]     
+    lambda_sign = 1 if lambda_val >= 0 else -1
+    #idx = np.argmax(vals))
+    S = np.abs(lambda_val)                                   # order parameter
     director = vecs_ev[:, idx]                      # eigenvector
 
     # enforce a consistent sign (optional; e.g. nz >= 0)
     if director[2] < 0:
         director = -director
 
-    return pd.Series({'cryst_bool': S, 'x_ev': director[0], 'y_ev': director[1], 'z_ev': director[2]})
+    return pd.Series({'cryst_bool': S, 'lambda_sign': lambda_sign,'x_ev': director[0], 'y_ev': director[1], 'z_ev': director[2]})
+
 
 def orderparameter(block: pd.DataFrame) -> pd.Series:
     """
@@ -182,6 +185,7 @@ def orderparameter(block: pd.DataFrame) -> pd.Series:
 
     # --- 4) Pick nematic order parameter S and director ---
     idx = np.argmax(np.abs(lambdas))   # largest |lambda|
+    lambda_sign = int(np.sign(lambdas[idx]))
     S = np.abs(lambdas[idx])
     director = evecs[:, idx].copy()
 
@@ -192,4 +196,4 @@ def orderparameter(block: pd.DataFrame) -> pd.Series:
     # --- 5) ss = sqrt(2/3 * sum(lambda_i^2)) ---
     #ss = np.sqrt(2.0 / 3.0 * np.sum(lambdas**2))
 
-    return pd.Series({'cryst_bool': S, 'x_ev': director[0], 'y_ev': director[1], 'z_ev': director[2]})
+    return pd.Series({'cryst_bool': S, 'lambda_sign': lambda_sign, 'x_ev': director[0], 'y_ev': director[1], 'z_ev': director[2]})

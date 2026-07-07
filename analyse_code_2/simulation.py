@@ -397,7 +397,8 @@ class domain_analysis:
         time = self.sim.df_slurm_sim_data["Step"] * self.sim.timestep
         monomer_density = (n_atoms/self.sim.df_slurm_sim_data["Volume"])
         monomer_density = monomer_density/monomer_density.iloc[-1]
-        idx_closest = (cutoff- monomer_density).abs().idxmin()
+        #idx_closest = (cutoff- monomer_density).abs().idxmin()
+        idx_closest = monomer_density[monomer_density > cutoff].index[0]
         time_closest = time.iloc[idx_closest]
         monomer_density_closest = monomer_density.iloc[idx_closest]
 
@@ -442,9 +443,14 @@ class Simulation:
         self.domain_analysis = domain_analysis(self)
         self.df_cryst = self.domain_analysis.read_crystallisation()
         self.timestep = 0.005
-        self.tc_idex, self.tc_time, self.tc_density = self.read_crossover_time()
+        self.tc_idex, self.tc, self.tc_density = self.read_crossover_time()
 
 
+    def get_simulation_time(self, normalised_by_tc = True):
+        if normalised_by_tc == True:
+            return self.df_slurm_sim_data["Step"] * self.timestep / self.tc
+        else:
+            return self.df_slurm_sim_data["Step"] * self.timestep
 
 
     def read_crossover_time(self, filename = None):
@@ -563,6 +569,10 @@ def main():
     PVA_300 = Simulation(300, "../../data/PVA-300/equil", "../data_online/PVA-300/icryst_T088_Tdot_e-3")
     PVA_500 = Simulation(500, "../../data/PVA-500/equil", "../data_online/PVA-500/icryst_T088_Tdot_e-3")
     PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
+
+
+    PVA_100.domain_analysis.calc_crystallisation()
+    PVA_1000.domain_analysis.calc_crystallisation()
     #hyperbolic_functions_plot()
     #PVA_1000.domain_analysis.get_crossover_point(7, 80, savefig_name= "plots/pva_1000_crossover_point_definition.pdf")
     #PVA_100.domain_analysis.get_crossover_point_kneed(savefig_name= "plots/pva_100_crossover_point_definition.pdf")
@@ -577,20 +587,12 @@ def main():
     #calc_crystallisation_and_avg_domain_size(PVA_200)
     #calc_crystallisation_and_avg_domain_size(PVA_300)
     #calc_crystallisation_and_avg_domain_size(PVA_500)
-    calc_crystallisation_and_avg_domain_size(PVA_1000)
+    #calc_crystallisation_and_avg_domain_size(PVA_1000)
 
-    #PVA_200.domain_analysis.calc_crystallisation()
-    #PVA_200.domain_analysis.calc_avg_domain_size()
     #PVA_200.get_polymer_by_time(1200000*100)
     #PVA_200.domain_analysis.read_avg_domain_size()
 
 
-    #calc_crystallisation_and_avg_domain_size(PVA_50)
-    #calc_crystallisation_and_avg_domain_size(PVA_100)
-    #calc_crystallisation_and_avg_domain_size(PVA_200)
-    #calc_crystallisation_and_avg_domain_size(PVA_300)
-    #calc_crystallisation_and_avg_domain_size(PVA_500)
-    #calc_crystallisation_and_avg_domain_size(PVA_1000)
 
     #current_poly = PVA_200.get_polymer_by_time(time = 21*1200000)
     #current_poly.atom_coords.get_nematic_vector_5()

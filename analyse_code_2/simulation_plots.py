@@ -16,6 +16,9 @@ plt_max_x = 15.5
 plt_max_y = 22
 plt_caption_font = 9 #pt
 
+plt_colours_chain_length = "viridis"
+plt_colours_time = "magma"
+
 
 
 def plot_crystallisation_vs_volume():
@@ -345,7 +348,7 @@ def plot_distribution_nematic_eigenvalues(simulations: list, times: list, savest
 
 def plot_crossover_values(simulations: list):
     #plt.figure(figsize=(8, 5))
-    plt.figure(figsize = (plt_max_x/6 * plt_cm_to_in,plt_max_y/9 * plt_cm_to_in))
+    plt.figure(figsize = (plt_max_x/1.5 * plt_cm_to_in,plt_max_y/3 * plt_cm_to_in))
     times = []
     crossovers = []
     polymer_lengths = []
@@ -393,8 +396,8 @@ def plot_crossover_values(simulations: list):
 
 
 def plot_monomer_density_and_crossover_values(simulations: list):
-    width = plt_max_x/3 * plt_cm_to_in
-    height = plt_max_y/6 * plt_cm_to_in
+    width = plt_max_x/1.5 * plt_cm_to_in
+    height = plt_max_y/3 * plt_cm_to_in
 
     # Two vertical subplots; total figure height = 2 * height
     fig, (ax1, ax2) = plt.subplots(
@@ -486,9 +489,9 @@ def main():
     simulations = [PVA_50, PVA_100, PVA_200, PVA_300, PVA_500, PVA_1000]
 
     print(PVA_100.tc_time)
-    plot_crossover_values(simulations)
-    plot_monomer_density_and_crossover_values(simulations)
 
+    plot_monomer_density_and_crossover_values(simulations)
+    plot_crossover_values(simulations)
     #plot_volume_vs_density(simulations)
 
     #PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/equil", "../data_online/PVA-100/icryst_T088_Tdot_e-3")

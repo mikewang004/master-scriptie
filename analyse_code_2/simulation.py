@@ -10,7 +10,6 @@ import pathlib
 import re
 from typing import List, Tuple, Optional
 import bisect
-from kneed import KneeLocator
 
 #TODO: modify file so that polymer properties can be accessed easily from Simulation()
 
@@ -125,7 +124,7 @@ class SlurmFiles():
         #print(dataframe_slurm)
         return dataframe_slurm
 
-    def merge_slurm_files(self):
+    def merge_slurm_files(self, force_save = False):
         """Reads all slurm files, makes a new slurm file containing the step/temp/E_pair/E_mol/TotEng/Press/Vol of all slurm files run"""
         print(self.list_slurm_files)
 
@@ -161,6 +160,8 @@ class SlurmFiles():
         no_files_saved_df_slurm = dataframe_slurm_existing.shape[0]
         if no_files_current_df_slurm != no_files_saved_df_slurm:
             make_folder(self.path_to_home_folder)
+            dataframe_slurm.to_csv("%s/%s_sim_data.txt" %(self.path_to_home_folder, self.slurm_prefix), sep = " ", index_label = "index")
+        if force_save == True:
             dataframe_slurm.to_csv("%s/%s_sim_data.txt" %(self.path_to_home_folder, self.slurm_prefix), sep = " ", index_label = "index")
         return 0;
 
@@ -235,14 +236,25 @@ class domain_analysis:
                 self.sim.domain_analysis.insert_cryst_line_sorted(path_to_cryst_array, current_time, frac_cryst)
         return 0;
 
+
     def calc_avg_domain_size(self):
         # Read in crystallisation files
         #path_to_nematic_vectors_folder = "%s/nematic_vectors" %(self.sim.path_to_home_folder)
 
-        cryst_domain_array = pd.DataFrame(np.zeros([self.sim.df_slurm_sim_data.shape[0], 7]), columns = ["time", "crystallinity", "clusters w/ >= 2 members", 
-        "   independent clusters", "mean size cryst domains", "crystalline grid elements", "total volume"])
+
         make_folder(self.sim.path_to_nematic_vectors_folder)
+        old_avg_domain_file = self.read_avg_domain_size()
+
+        if isinstance(old_avg_domain_file, pd.DataFrame):
+            j = old_avg_domain_file.shape[0] #Last index 
+        else:
+            j = 0
+        cryst_domain_array = pd.DataFrame(np.zeros([self.sim.df_slurm_sim_data.shape[0]-j, 7]), columns = ["time", "crystallinity", "clusters w/ >= 2 members", 
+        "   independent clusters", "mean size cryst domains", "crystalline grid elements", "total volume"])
+        cryst_domain_array.index = cryst_domain_array.index + j
         for i in tqdm(range(0, len(self.sim.list_run_files))):
+            if i < j:
+                continue
             #Read file 
             current_polymer = polymer("%s/%s" %(self.sim.path_to_data_folder, self.sim.list_run_files[i]))
             current_time = self.sim.df_slurm_sim_data["Step"].iloc[i]
@@ -252,14 +264,21 @@ class domain_analysis:
                 print(f"File not found, skipping: {current_time}")
                 continue
             current_polymer.read_cryst("%s/%s_cryst_time_%s.txt" %(self.sim.path_to_crystallisation_folder, self.sim.lammps_dump_prefix, current_time))
-            label_matrix = current_polymer.merge_boxes_2(print_results = True, ndot_cutoff = self.sim.ndot_cutoff)
+            try:
+                label_matrix_already_saved = np.load("%s/label_map_time_%i.npy" %(self.sim.path_to_nematic_vectors_folder, current_time))
+                label_matrix = current_polymer.merge_boxes_2(print_results = True, ndot_cutoff = self.sim.ndot_cutoff, label_matrix= label_matrix_already_saved)
+            except FileNotFoundError:
+                label_matrix = current_polymer.merge_boxes_2(print_results = True, ndot_cutoff = self.sim.ndot_cutoff)
             np.save("%s/label_map_time_%i.npy" %(self.sim.path_to_nematic_vectors_folder, current_time), label_matrix)
-        test = np.array([current_time, current_polymer.results.fraction_crystallinity,
-            current_polymer.results.total_number_clusters, current_polymer.results.total_number_independent_clusters, 
-            current_polymer.results.mean_cluster_size, current_polymer.results.total_number_crystalline_grid_elements,
-            current_polymer.atom_coords.volume])
-        cryst_domain_array.iloc[i, :] = test
-        cryst_domain_array.to_csv("%s/domain_analysis.txt" %(self.sim.path_to_home_folder), sep = " ", header = True)
+            test = np.array([current_time, current_polymer.results.fraction_crystallinity,
+                current_polymer.results.total_number_clusters, current_polymer.results.total_number_independent_clusters, 
+                current_polymer.results.mean_cluster_size, current_polymer.results.total_number_crystalline_grid_elements,
+                current_polymer.atom_coords.volume])
+            cryst_domain_array.iloc[i-j, :] = test
+        if isinstance(old_avg_domain_file, pd.DataFrame):
+            cryst_domain_array.to_csv("%s/domain_analysis.txt" %(self.sim.path_to_home_folder), sep = " ", mode="a", header = False)
+        else:
+            cryst_domain_array.to_csv("%s/domain_analysis.txt" %(self.sim.path_to_home_folder), sep = " ", header = True)
 
     def read_crystallisation(self, path: str = None):
         if path is None:
@@ -436,7 +455,6 @@ class Simulation:
         except FileNotFoundError:
             print("File for crossover time not found")
             return 0;
-        print(tc)
         try: 
             row = tc.loc[self.polymer_length]
         except KeyError:
@@ -515,6 +533,8 @@ class Simulation:
 
 
 def calc_crystallisation_and_avg_domain_size(polymer):
+    print(polymer.df_slurm_sim_data)
+    polymer.slurm_files.merge_slurm_files(force_save= True)
     polymer.domain_analysis.calc_crystallisation()
     polymer.domain_analysis.calc_avg_domain_size()
 
@@ -537,14 +557,13 @@ def hyperbolic_functions_plot():
 
 def main():
     #PVA_200 = Simulation(200, "../../data/PVA-200/equil", "../data_online/PVA-200/icryst_T088_Tdot_e-3")
-    #PVA_50 = Simulation(50, "../../data/PVA-50/equil", "../data_online/PVA-50/icryst_T088_Tdot_e-3")
+    PVA_50 = Simulation(50, "../../data/PVA-50/equil", "../data_online/PVA-50/icryst_T088_Tdot_e-3")
     PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/equil", "../data_online/PVA-100/icryst_T088_Tdot_e-3")
-    # PVA_200 = Simulation(200, "../../data/PVA-200/equil", "../data_online/PVA-200/icryst_T088_Tdot_e-3")
-    # PVA_300 = Simulation(300, "../../data/PVA-300/equil", "../data_online/PVA-300/icryst_T088_Tdot_e-3")
-    #PVA_500 = Simulation(500, "../../data/PVA-500/equil", "../data_online/PVA-500/icryst_T088_Tdot_e-3")
+    PVA_200 = Simulation(200, "../../data/PVA-200/equil", "../data_online/PVA-200/icryst_T088_Tdot_e-3")
+    PVA_300 = Simulation(300, "../../data/PVA-300/equil", "../data_online/PVA-300/icryst_T088_Tdot_e-3")
+    PVA_500 = Simulation(500, "../../data/PVA-500/equil", "../data_online/PVA-500/icryst_T088_Tdot_e-3")
     PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
     #hyperbolic_functions_plot()
-
     #PVA_1000.domain_analysis.get_crossover_point(7, 80, savefig_name= "plots/pva_1000_crossover_point_definition.pdf")
     #PVA_100.domain_analysis.get_crossover_point_kneed(savefig_name= "plots/pva_100_crossover_point_definition.pdf")
     # current_poly = PVA_1000.get_polymer_by_time(12000000, cell_length= 2.0)
@@ -555,9 +574,10 @@ def main():
     # PVA_1000.get_polymer_by_time(10*120000).merge_boxes_2(print_results = True)
     #calc_crystallisation_and_avg_domain_size(PVA_50)
     #calc_crystallisation_and_avg_domain_size(PVA_100)
+    #calc_crystallisation_and_avg_domain_size(PVA_200)
     #calc_crystallisation_and_avg_domain_size(PVA_300)
     #calc_crystallisation_and_avg_domain_size(PVA_500)
-    #calc_crystallisation_and_avg_domain_size(PVA_1000)
+    calc_crystallisation_and_avg_domain_size(PVA_1000)
 
     #PVA_200.domain_analysis.calc_crystallisation()
     #PVA_200.domain_analysis.calc_avg_domain_size()

@@ -196,7 +196,7 @@ class simulation_plots():
 
         PVA_100 = self.simulations[1]; PVA_1000 = self.simulations[-1]
 
-        index_t_start = 0; index_t_end = 117
+        index_t_start = 0; index_t_end = 110
         times_PVA_100 = [index_t_start, PVA_100.tc_idex, index_t_end]
         times_PVA_1000 = [index_t_start, PVA_1000.tc_idex, index_t_end]
         letter_subplot_list = ["(a)", "(b)", "(c)"]
@@ -225,12 +225,25 @@ class simulation_plots():
                     (current_poly_1000.results.mean_squared_end_to_end), bins=100, color=self.simulation_colours[PVA_1000], density = True, histtype = "step", label = "PVA-%i" %PVA_1000.polymer_length)
                 axes[i].set_xlabel(r"$R_e/ \langle R_e \rangle$", fontsize = self.caption_font)
                 savestring = "plots/re_pva_100_1000.pdf"
+            elif mode == "nematic":
+                current_poly_100.nematic_distributuion()
+                current_poly_1000.nematic_distributuion()
+                values, bins, __ = axes[i].hist(current_poly_100.results.nematic_value_dist, 
+                    bins=100, color=self.simulation_colours[PVA_100], density = True, histtype = "step", label = "PVA-%i" %PVA_100.polymer_length)
+                values, bins, __ = axes[i].hist(current_poly_1000.results.nematic_value_dist, 
+                    bins=100, color=self.simulation_colours[PVA_1000], density = True, histtype = "step", label = "PVA-%i" %PVA_1000.polymer_length)
+                axes[i].set_xlabel(r"$\lambda$", fontsize = self.caption_font)
+                if i > 0:
+                    axes[i].vlines(PVA_100.cryst_cutoff, 0, np.max(values), color = "red",linestyles = "dotted", label = r"crystallisation cutoff")
+                savestring = "plots/nem_value_pva_100_1000.pdf"
             axes[i].tick_params(labelbottom=True, labelleft=True)
             axes[i].text(0.02, 0.95, letter_subplot_list[i],
                 transform=axes[i].transAxes,
                 fontsize=plt_caption_font,
                 va="top", ha="left")
             axes[i].legend(fontsize = self.caption_font)
+
+
 
         axes[0].set_title(r"$t = 0$")
         axes[1].set_title(r"$t = t_c$")
@@ -259,7 +272,7 @@ def main():
     sp = simulation_plots(simulations)
 
     #sp.plot_monomer_density_and_crossover_values(show_plot=False)
-    sp.plot_rg_two_polymers_three_times(mode = "re")
+    sp.plot_rg_two_polymers_three_times(mode = "nematic")
     #sp.plot_avg_domain_size()
     #sp.plot_crossover_values_vs_chain_length()
 

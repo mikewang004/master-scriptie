@@ -277,7 +277,10 @@ class polymer():
 
     def read_cryst(self, location):
         self.df_cryst = pd.read_csv(location, sep = " ", header = None, skiprows = 1, index_col = False).iloc[:, 1:]
-        self.df_cryst.columns = ["xid", "yid", "zid", "cryst_bool", "x_ev", "y_ev", "z_ev"]
+        try:
+            self.df_cryst.columns = ["xid", "yid", "zid", "cryst_bool", "x_ev", "y_ev", "z_ev"]
+        except ValueError:
+            self.df_cryst.columns = ["xid", "yid", "zid", "cryst_bool", "lambda_sign", "x_ev", "y_ev", "z_ev"]
         self.frac_cryst, _ = fraction_crystallinity(self.df_cryst.iloc[:, 3], self.atom_coords.no_nridges_3d)
         return 0;
 
@@ -424,3 +427,14 @@ class polymer():
 
     # def local_monomer_density(self):
     #     print(df)
+
+
+    def nematic_distributuion(self):
+
+        if not isinstance(self.df_cryst, pd.DataFrame):
+            return 0;
+
+        self.results.nematic_value_dist = self.df_cryst["cryst_bool"] * self.df_cryst["lambda_sign"]
+
+        self.results.mean_nematic_value = np.mean(self.results.nematic_value_dist)
+        return  self.results.nematic_value_dist, self.results.mean_nematic_value

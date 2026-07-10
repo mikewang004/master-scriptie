@@ -405,10 +405,35 @@ class domain_analysis:
         current_poly = self.sim.get_polymer_by_time(0)
         n_atoms = current_poly.atom_coords.n_atoms
         time = self.sim.df_slurm_sim_data["Step"] * self.sim.timestep
-        monomer_density = (n_atoms/self.sim.df_slurm_sim_data["Volume"])
 
-        for i in range(0, len(time) - 2):
-            theta_1 = 
+        monomer_density = (n_atoms/self.sim.df_slurm_sim_data["Volume"])
+        dx = time[1] - time[0]
+        scaling_factor = 10000
+        dx = dx/scaling_factor
+        #time = time/dx
+        angles_array = np.zeros([len(time) - 2, 2])
+        for i in range(1, len(time) - 1):
+            x0, y0 = time[i-1], monomer_density[i-1]
+            x1,y1 = time[i], monomer_density[i]
+            x2,y2 = time[i+1], monomer_density[i+1]
+
+            y2d = (y2 - y1)*scaling_factor
+            dist_2 = np.sqrt(dx**2 + y2d**2)
+            theta_2 = np.arccos(dx/dist_2)
+
+            y1d = (y1 - y0)*scaling_factor 
+            dist_1 = np.sqrt(dx**2 + y1d**2)
+            theta_1 = np.arcsin(dx/dist_1)# + np.pi/2
+            angles_array[i-1, :] = np.array([theta_1, theta_2])
+
+        print(angles_array)
+
+        angles_avg_per_index = np.mean(angles_array, axis = 1)
+        print(angles_avg_per_index)
+        print(np.max(angles_avg_per_index), np.argmax(angles_avg_per_index))
+
+
+            
 
 
 
@@ -597,7 +622,8 @@ def main():
     PVA_1000.domain_analysis.calc_crystallisation()
     #hyperbolic_functions_plot()
     #PVA_1000.domain_analysis.get_crossover_point(8, 40, savefig_name= "plots/pva_1000_crossover_point_definition.pdf", show_plot= True)
-    PVA_100.domain_analysis.get_crossover_point_kneed(savefig_name= "plots/pva_100_crossover_point_definition.pdf", show_plot= True)
+    #PVA_100.domain_analysis.get_crossover_point_kneed(savefig_name= "plots/pva_100_crossover_point_definition.pdf", show_plot= True)
+    PVA_100.domain_analysis.get_crossover_point_angle()
     # current_poly = PVA_1000.get_polymer_by_time(12000000, cell_length= 2.0)
     # debug_merge_boxes(current_poly)
     #PVA_200.get_polymer_by_time(10*120000).merge_boxes_2(print_results = True)

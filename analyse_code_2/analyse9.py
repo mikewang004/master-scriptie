@@ -375,7 +375,7 @@ class polymer():
             end   = (i + 1) * self.atom_coords.polymer_length         # L-1, 2L-1, 3L-1, ...
 
             subset_df = self.atom_coords.bond_vectors.loc[start:end]
-            print(subset_df)
+            #print(subset_df)
             subset = subset_df.to_numpy()[:, 1:4]
             subset = subset / np.linalg.norm(subset, axis=1, keepdims=True)
             bond_bond_corr_array_polymer = np.zeros([self.atom_coords.polymer_length - 1, self.atom_coords.polymer_length - 1])
@@ -384,14 +384,24 @@ class polymer():
             bond_bond_correlation_array[i, :, :] = subset @ subset.T
             #print(df_bond_per_position.iloc[:, i])
         bond_correlation_average = np.mean(bond_bond_correlation_array, axis = 0)
-        print(bond_correlation_average)
+        #print(bond_correlation_average)
         diag_means = np.zeros(self.atom_coords.polymer_length-1)
         for i in range(0, self.atom_coords.polymer_length -1):
-            print(np.diagonal(bond_correlation_average, offset = i))
+            #print(np.diagonal(bond_correlation_average, offset = i))
             diag_means[i] = np.mean(np.diagonal(bond_correlation_average, offset = i))
         positions = np.arange(1, self.atom_coords.polymer_length)
         #print(positions.shape, diag_means.shape)
         return positions, diag_means
+
+    def bond_bond_corr_min_value(self):
+        #positions, diag_means = self.bond_bond_correlation_2()
+        positions = np.arange(1, self.atom_coords.polymer_length)
+        diag_means = self.bond_bond_correlation_2()
+        #Get minimum position:
+        min_value = np.min(diag_means)
+        min_index = np.argmin(diag_means)
+        min_position = positions[min_index]
+        return min_position, min_value
 
 
     def bond_bond_corr_for_n(self, bv, n):

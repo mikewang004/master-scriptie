@@ -20,17 +20,40 @@ plt_colours_chain_length = "viridis"
 plt_colours_time = "magma"
 
 
+def avrami_fit(t, a, n, b):
+    #return a * t**n + b
+    return np.log(a) + n*np.log(t) 
+
+class avrami():
+    def __init__(self, time, crystallisation):
+
+        self.time = time
+        self.phi = crystallisation
+
+        self.log_time = np.log(time)
+        self.log_log_phi = np.log(np.log(1/(1-crystallisation))) #returns log(log(1/(1-phi)))
+        #self.log_log_phi = np.log(1/(1-crystallisation))
+
+
+
+
 class simulation_plots():
 
-    def __init__(self, simulations):
+    def __init__(self, simulations, caption_font = 11, legend_font = 9, title_font = 18):
         self.cm_to_in = 1/2.54
         self.max_x = 15.5
         self.max_y = 22
-        self.caption_font = 9
+        self.caption_font = caption_font
+        self.legend_font = legend_font
+        self.title_font = title_font
         self.save_folder = "plots"
 
         self.simulations = simulations
         #self.times = times 
+
+        plt.rcParams["font.size"] = self.caption_font
+        plt.rcParams["legend.fontsize"] = self.legend_font
+        plt.rcParams["axes.titlesize"] = self.title_font
 
 
 
@@ -54,7 +77,7 @@ class simulation_plots():
         return values_colors_dict
 
 
-    def plot_crossover_values_vs_chain_length(self, show_plot = True, save_string = "plots/dc_vs_chain_length.pdf"):
+    def plot_crossover_values_vs_chain_length(self, show_plot = True, save_string = "plots/tc_vs_chain_length.pdf"):
         plt.figure(figsize = (self.std_width, self.std_height))
 
         times = []
@@ -67,17 +90,20 @@ class simulation_plots():
             poly = simulation.get_polymer_by_time(0)
             time = simulation.df_slurm_sim_data["Step"] * simulation.timestep
             monomer_density = (poly.atom_coords.n_atoms/simulation.df_slurm_sim_data["Volume"])
-            idx, xkn, ykn = simulation.domain_analysis.get_crossover_point_cutoff()
+            #idx, xkn, ykn = simulation.domain_analysis.get_crossover_point_cutoff(cutoff=0.985)
+            idx, xkn, ykn = simulation.domain_analysis.get_crossover_point_kneed()
             # times.append(time[crossover_index])
             # crossovers.append(monomer_density[crossover_index])
-            idx_list.append(idx)
-            times.append(xkn); crossovers.append(ykn);
-            monomer_density = monomer_density/monomer_density.iloc[-1]
-            plt.scatter(simulation.polymer_length, ykn, c = self.simulation_colours[simulation], label=f"PVA-{simulation.polymer_length}")
+            # idx_list.append(idx)
+            # times.append(xkn); crossovers.append(ykn);
+            mean_cryst = np.mean(simulation.df_cryst[:, 1])
+            #monomer_density = monomer_density/monomer_density.iloc[-1]
+            #plt.scatter(time[idx], mean_cryst, c = self.simulation_colours[simulation], label=f"PVA-{simulation.polymer_length}")
+            plt.scatter(simulation.polymer_length, time[idx], c = self.simulation_colours[simulation], label=f"PVA-{simulation.polymer_length}")
         plt.xlabel("Chain lengths")
         #plt.ylabel(r"$t_\text{crossover } [t/\tau]$")
         plt.ylabel(r"$n_\text{monomers}/\sigma^3$")
-        plt.legend(fontsize=self.caption_font)
+        plt.legend()
         plt.savefig(save_string)
         if show_plot == True:
             plt.show()
@@ -97,6 +123,9 @@ class simulation_plots():
         crossovers = []
         polymer_lengths = []
         idx_list = []
+        # Calc max density (is at PVA-50)
+        pva_50 = self.simulations[0]
+        max_density = pva_50.get_polymer_by_time(0).atom_coords.n_atoms/pva_50.df_slurm_sim_data["Volume"].iloc[-1]
 
         for simulation in self.simulations:
             poly = simulation.get_polymer_by_time(0)
@@ -110,18 +139,18 @@ class simulation_plots():
             ax1.scatter(time, monomer_density, label=f"PVA-{simulation.polymer_length}", color = self.simulation_colours[simulation])
 
             monomer_density = monomer_density/monomer_density.iloc[-1]
+            #monomer_density = monomer_density/max_density
 
-            # Bottom subplot (same plot for now)
             ax2.scatter(time, monomer_density, label=f"PVA-{simulation.polymer_length}", color = self.simulation_colours[simulation])
 
         for simulation in self.simulations:
-            idx, xkn, ykn = simulation.domain_analysis.get_crossover_point_cutoff()
+            idx, xkn, ykn = simulation.domain_analysis.get_crossover_point_kneed()
             idx_list.append(idx)
             times.append(xkn)
             crossovers.append(ykn)
             polymer_lengths.append(simulation.polymer_length)
 
-            ax2.scatter(xkn, ykn, marker="x", color="black")
+            ax1.scatter(xkn, ykn, marker="x", color="black")
         tc = pd.DataFrame(
             {
                 "index": idx_list,
@@ -160,10 +189,63 @@ class simulation_plots():
             va="top", ha="left"
         )
 
-        ax1.set_xscale("log")
-        ax2.set_xscale("log")
+        #ax1.set_xscale("log")
+        #ax2.set_xscale("log")
         fig.tight_layout()
-        fig.savefig("%s/crossover_density_vs_time_different_chains_subplots_log.pdf" %self.save_folder)
+        fig.savefig("%s/crossover_density_vs_time_different_chains_subplots.pdf" %self.save_folder)
+        if show_plot == True:
+            plt.show()
+
+
+    def plot_crystallinity(self, savestring = "plots/crystallinity_vs_time.pdf", show_plot = True):
+        plt.figure(figsize = (self.std_width*1.25, self.std_height*1.5))
+        for i in range(0, len(self.simulations)):
+            simulation = self.simulations[i]
+            current_domain_file = simulation.domain_analysis.read_avg_domain_size()
+            time = simulation.get_simulation_time()
+            
+
+            
+            plt.scatter(time[:len(current_domain_file["crystallinity"])], current_domain_file["crystallinity"].iloc[:len(time)], 
+                label = "PVA-%i" %(simulation.polymer_length), c= self.simulation_colours[simulation], marker = ".")
+
+
+        plt.legend(fontsize=self.caption_font)
+        plt.xlabel(r"$t/\tau_c$", fontsize = self.caption_font)
+        plt.ylabel(r"$\phi$", fontsize = self.caption_font)
+        #plt.xscale("log")
+        #plt.title("Mean domain size, various chains")
+        if savestring is not None:
+            plt.savefig("%s" %( savestring))
+        if show_plot == True:
+            plt.show()
+
+    def plot_crystallinity_avrami(self, savestring = "plots/avrami_crystallinity_vs_time.pdf", show_plot = True):
+        plt.figure(figsize = (self.std_width*1.25, self.std_height*1.5))
+        for i in range(0, len(self.simulations)):
+            simulation = self.simulations[i]
+            current_domain_file = simulation.domain_analysis.read_avg_domain_size()
+            time = simulation.get_simulation_time()
+            av = avrami(time[:len(current_domain_file["crystallinity"])], current_domain_file["crystallinity"].iloc[:len(time)])
+            avrami_late_regime_start_index = 20
+            av_start_regmine_stop_index = 10
+            plt.scatter(av.log_time, av.log_log_phi, 
+                label = "PVA-%i" %(simulation.polymer_length), c= self.simulation_colours[simulation], marker = ".")
+            popt, pcov = sp.optimize.curve_fit(avrami_fit, av.log_time[avrami_late_regime_start_index:], av.log_log_phi[avrami_late_regime_start_index:], maxfev = 50000)
+            #popt, pcov = sp.optimize.curve_fit(avrami_fit, av.log_time[:av_start_regmine_stop_index], av.log_log_phi[:av_start_regmine_stop_index], maxfev = 5000000)
+            plt.plot(av.log_time[avrami_late_regime_start_index:], avrami_fit(av.log_time[avrami_late_regime_start_index:], *popt), color = self.simulation_colours[simulation], 
+                label = "PVA-%i, a = %.2f, n = %.2f" %(simulation.polymer_length, popt[0], popt[1]))
+            # plt.plot(av.log_time[:av_start_regmine_stop_index], avrami_fit(av.log_time[:av_start_regmine_stop_index], *popt), color = self.simulation_colours[simulation], 
+            #     label = "PVA-%i, a = %.2f, n = %.2f" %(simulation.polymer_length, popt[0], popt[1]))
+            print(simulation.polymer_length)
+            print(popt)
+        plt.legend(fontsize=self.caption_font)
+        plt.xlabel(r"$\log(t/\tau_c)$", fontsize = self.caption_font)
+        plt.ylabel(r"$\log(\log(1/(1-\phi$)))", fontsize = self.caption_font)
+        #plt.xscale("log")
+        #plt.title("Mean domain size, various chains")
+        if savestring is not None:
+            plt.savefig("%s" %( savestring))
         if show_plot == True:
             plt.show()
 
@@ -174,16 +256,21 @@ class simulation_plots():
             simulation = self.simulations[i]
             current_domain_file = simulation.domain_analysis.read_avg_domain_size()
             time = simulation.get_simulation_time()
-            plt.scatter(time, current_domain_file["mean size cryst domains"]**(1/3), 
+            plt.scatter(time[:len(current_domain_file["mean size cryst domains"])], current_domain_file["mean size cryst domains"].iloc[:len(time)]**(1/3), 
                 label = "PVA-%i" %(simulation.polymer_length), c= self.simulation_colours[simulation], marker = ".")
+
+
         plt.legend(fontsize=self.caption_font)
         plt.xlabel(r"$t/\tau_c$", fontsize = self.caption_font)
         plt.ylabel(r"$l/\sigma$", fontsize = self.caption_font)
+        plt.xscale("log")
         #plt.title("Mean domain size, various chains")
         if savestring is not None:
             plt.savefig("%s/%s" %(self.save_folder, savestring))
         if show_plot == True:
             plt.show()
+
+    
 
 
     def plot_rg_two_polymers_three_times(self, mode = "rg", savestring_default = True, show_plot = True):
@@ -213,7 +300,7 @@ class simulation_plots():
                     np.sqrt(current_poly_100.results.mean_gyration_radius), bins=100, color=self.simulation_colours[PVA_100], density = True, histtype = "step", label = "PVA-%i" %PVA_100.polymer_length)
                 values, bins, __ = axes[i].hist(current_poly_1000.results.gyration_radius_distribution/
                     np.sqrt(current_poly_1000.results.mean_gyration_radius), bins=100, color=self.simulation_colours[PVA_1000], density = True, histtype = "step", label = "PVA-%i" %PVA_1000.polymer_length)
-                axes[i].set_xlabel(r"$R_g/ \langle R_g \rangle$", fontsize = self.caption_font)
+                axes[i].set_xlabel(r"$R_g/ \sqrt{\langle R_g^2 \rangle}$", fontsize = self.caption_font)
                 savestring = "plots/rg_pva_100_1000.pdf"
 
             elif mode == "re":
@@ -223,7 +310,7 @@ class simulation_plots():
                     (current_poly_100.results.mean_squared_end_to_end), bins=100, color=self.simulation_colours[PVA_100], density = True, histtype = "step", label = "PVA-%i" %PVA_100.polymer_length)
                 values, bins, __ = axes[i].hist(current_poly_1000.results.end_to_end_distribution/
                     (current_poly_1000.results.mean_squared_end_to_end), bins=100, color=self.simulation_colours[PVA_1000], density = True, histtype = "step", label = "PVA-%i" %PVA_1000.polymer_length)
-                axes[i].set_xlabel(r"$R_e/ \langle R_e \rangle$", fontsize = self.caption_font)
+                axes[i].set_xlabel(r"$R_e/ \sqrt{\langle R_e^2 \rangle}$", fontsize = self.caption_font)
                 savestring = "plots/re_pva_100_1000.pdf"
             elif mode == "nematic":
                 current_poly_100.nematic_distributuion()
@@ -256,6 +343,32 @@ class simulation_plots():
         if show_plot == True:
             plt.show()
 
+    def plot_stem_length(self, savestring = "plots/stem_length_pva_1000.pdf", show_plot = True):
+        plt.figure(figsize = (self.std_width*1.25, self.std_height*1.5))
+
+        simulation = self.simulations[-1]
+        print(simulation.df_slurm_sim_data)
+        positions = []
+        min_stem_lengths = []
+        max_time_index = 50
+        for i in range(0, max_time_index):
+            current_poly = simulation.get_polymer_by_time(simulation.df_slurm_sim_data["Step"].iloc[i])
+            position, min_stem_length = current_poly.bond_bond_corr_min_value()
+
+            positions.append(position)
+            min_stem_lengths.append(min_stem_length)
+
+        time = simulation.get_simulation_time()
+        plt.scatter(time[1:max_time_index], positions[1:], color=self.simulation_colours[simulation], label = "PVA-%i" %simulation.polymer_length)
+        plt.ylim((0, 50))
+        plt.legend()
+        plt.ylabel("Stem length")
+        plt.xlabel("$t/t_c$")
+        plt.savefig(savestring)
+        plt.show()
+
+
+
 
 def main():
 
@@ -269,12 +382,15 @@ def main():
 
     simulations = [PVA_50, PVA_100, PVA_200, PVA_300, PVA_500, PVA_1000]
 
-    sp = simulation_plots(simulations)
+    simp = simulation_plots(simulations)
 
-    #sp.plot_monomer_density_and_crossover_values(show_plot=False)
-    sp.plot_rg_two_polymers_three_times(mode = "nematic")
-    #sp.plot_avg_domain_size()
-    #sp.plot_crossover_values_vs_chain_length()
+    #simp.plot_monomer_density_and_crossover_values(show_plot=True)
+    #simp.plot_rg_two_polymers_three_times(mode = "nematic")
+    #simp.plot_crystallinity_avrami(savestring= None)
+    #simp.plot_avg_domain_size()
+    simp.plot_crossover_values_vs_chain_length()
+
+    #simp.plot_stem_length()
 
 
 if __name__== "__main__":

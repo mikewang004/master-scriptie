@@ -91,7 +91,7 @@ class simulation_plots():
             time = simulation.df_slurm_sim_data["Step"] * simulation.timestep
             monomer_density = (poly.atom_coords.n_atoms/simulation.df_slurm_sim_data["Volume"])
             #idx, xkn, ykn = simulation.domain_analysis.get_crossover_point_cutoff(cutoff=0.985)
-            idx, xkn, ykn = simulation.domain_analysis.get_crossover_point_kneed()
+            idx, xkn, ykn = simulation.domain_analysis.get_crossover_point_angle()
             # times.append(time[crossover_index])
             # crossovers.append(monomer_density[crossover_index])
             # idx_list.append(idx)
@@ -144,7 +144,7 @@ class simulation_plots():
             ax2.scatter(time, monomer_density, label=f"PVA-{simulation.polymer_length}", color = self.simulation_colours[simulation])
 
         for simulation in self.simulations:
-            idx, xkn, ykn = simulation.domain_analysis.get_crossover_point_kneed()
+            idx, xkn, ykn = simulation.domain_analysis.get_crossover_point_angle()
             idx_list.append(idx)
             times.append(xkn)
             crossovers.append(ykn)
@@ -384,7 +384,7 @@ def main():
 
     simp = simulation_plots(simulations)
 
-    #simp.plot_monomer_density_and_crossover_values(show_plot=True)
+    simp.plot_monomer_density_and_crossover_values(show_plot=True)
     #simp.plot_rg_two_polymers_three_times(mode = "nematic")
     #simp.plot_crystallinity_avrami(savestring= None)
     #simp.plot_avg_domain_size()

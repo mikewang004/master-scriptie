@@ -20,6 +20,18 @@ def make_folder(path_to_folder: str):
         os.makedirs(path_to_folder)
     return 0;
 
+
+def local_minima_indices_np(arr):
+    """
+    Return indices of local minima for a 1D numpy array.
+    """
+    x = np.asarray(arr)
+    # Compare each point to its neighbors
+    left  = x[1:-1] < x[:-2]
+    right = x[1:-1] < x[2:]
+    return np.where(left & right)[0] + 1  # shift by 1 because we skipped the first element
+
+
 class fit_functions():
     def __init__(self):
         pass
@@ -411,26 +423,43 @@ class domain_analysis:
         scaling_factor = 10000
         dx = dx/scaling_factor
         #time = time/dx
-        angles_array = np.zeros([len(time) - 2, 2])
+        diff_array = np.zeros(len(time - 2))
         for i in range(1, len(time) - 1):
             x0, y0 = time[i-1], monomer_density[i-1]
             x1,y1 = time[i], monomer_density[i]
             x2,y2 = time[i+1], monomer_density[i+1]
 
-            y2d = (y2 - y1)*scaling_factor
-            dist_2 = np.sqrt(dx**2 + y2d**2)
-            theta_2 = np.arccos(dx/dist_2)
+            diff_array[i-1] = y2 + y0 - 2 * y1
+        
+        idx_diff_array = local_minima_indices_np(diff_array)
+        print(diff_array[idx_diff_array])
+        #Sort array 
+        idx_desc = np.argsort(diff_array[idx_diff_array])[::-1]
+        diff_sorted = diff_array[idx_diff_array][idx_desc]
+        print(idx_desc, diff_sorted)
+        angles_array = np.zeros(len(idx_desc))
+        i = 0
+        for idx in idx_desc:
+            x0, y0 = time[idx-1], monomer_density[idx-1]
+            x1,y1 = time[idx], monomer_density[idx]
+            x2,y2 = time[idx+1], monomer_density[idx+1]
 
-            y1d = (y1 - y0)*scaling_factor 
-            dist_1 = np.sqrt(dx**2 + y1d**2)
-            theta_1 = np.arcsin(dx/dist_1)# + np.pi/2
-            angles_array[i-1, :] = np.array([theta_1, theta_2])
+            angle = np.arctan(dx/(y1-y0)) + np.arctan(dx/(y2-y1))
+            angles_array[i] = angle
 
-        print(angles_array)
+            if i > 0:
+                if angles_array[i] > angles_array[i-1]:
+                    print(angles_array[i])
+            i = i + 1 
+        # print(angles_array)
 
-        angles_avg_per_index = np.mean(angles_array, axis = 1)
-        print(angles_avg_per_index)
-        print(np.max(angles_avg_per_index), np.argmax(angles_avg_per_index))
+        # angles_avg_per_index = np.sum(angles_array, axis = 1)
+        # print(angles_avg_per_index)
+        # print(np.max(angles_avg_per_index), np.argmax(angles_avg_per_index))
+
+        plt.scatter(time, monomer_density)
+        # plt.scatter(time[np.argmax(angles_avg_per_index)], monomer_density[np.argmax(angles_avg_per_index)])
+        plt.show()
 
 
             

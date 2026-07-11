@@ -438,18 +438,20 @@ class domain_analysis:
         diff_sorted = diff_array[idx_diff_array][idx_desc]
         print(idx_desc, diff_sorted)
         angles_array = np.zeros(len(idx_desc))
-        i = 0
-        for idx in idx_desc:
+        i = 0; local_maximum_found = False
+        while local_maximum_found == False:
+            idx = idx_desc[i]
             x0, y0 = time[idx-1], monomer_density[idx-1]
             x1,y1 = time[idx], monomer_density[idx]
             x2,y2 = time[idx+1], monomer_density[idx+1]
 
-            angle = np.arctan(dx/(y1-y0)) + np.arctan(dx/(y2-y1))
+            angle = np.arctan(1/np.abs(y1 - y0)) + np.arctan(1/np.abs(y2-y1))
             angles_array[i] = angle
 
             if i > 0:
                 if angles_array[i] > angles_array[i-1]:
-                    print(angles_array[i])
+                    print(idx, angles_array[i])
+                    local_maximum_found = True
             i = i + 1 
         # print(angles_array)
 
@@ -458,7 +460,7 @@ class domain_analysis:
         # print(np.max(angles_avg_per_index), np.argmax(angles_avg_per_index))
 
         plt.scatter(time, monomer_density)
-        # plt.scatter(time[np.argmax(angles_avg_per_index)], monomer_density[np.argmax(angles_avg_per_index)])
+        plt.scatter(time[idx], monomer_density[idx])
         plt.show()
 
 

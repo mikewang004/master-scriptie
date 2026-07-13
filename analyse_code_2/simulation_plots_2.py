@@ -91,7 +91,7 @@ class simulation_plots():
             time = simulation.df_slurm_sim_data["Step"] * simulation.timestep
             monomer_density = (poly.atom_coords.n_atoms/simulation.df_slurm_sim_data["Volume"])
             #idx, xkn, ykn = simulation.domain_analysis.get_crossover_point_cutoff(cutoff=0.985)
-            idx, xkn, ykn = simulation.domain_analysis.get_crossover_point_angle()
+            xkn, ykn = simulation.domain_analysis.find_knee()
             # times.append(time[crossover_index])
             # crossovers.append(monomer_density[crossover_index])
             # idx_list.append(idx)
@@ -99,10 +99,10 @@ class simulation_plots():
             mean_cryst = np.mean(simulation.df_cryst[:, 1])
             #monomer_density = monomer_density/monomer_density.iloc[-1]
             #plt.scatter(time[idx], mean_cryst, c = self.simulation_colours[simulation], label=f"PVA-{simulation.polymer_length}")
-            plt.scatter(simulation.polymer_length, time[idx], c = self.simulation_colours[simulation], label=f"PVA-{simulation.polymer_length}")
+            plt.scatter(simulation.polymer_length, xkn, c = self.simulation_colours[simulation], label=f"PVA-{simulation.polymer_length}")
         plt.xlabel("Chain lengths")
-        #plt.ylabel(r"$t_\text{crossover } [t/\tau]$")
-        plt.ylabel(r"$n_\text{monomers}/\sigma^3$")
+        plt.ylabel(r"$t_\text{crossover } [t/\tau]$")
+        #plt.ylabel(r"$n_\text{monomers}/\sigma^3$")
         plt.legend()
         plt.savefig(save_string)
         if show_plot == True:
@@ -384,7 +384,7 @@ def main():
 
     simp = simulation_plots(simulations)
 
-    simp.plot_monomer_density_and_crossover_values(show_plot=True)
+    #simp.plot_monomer_density_and_crossover_values(show_plot=True)
     #simp.plot_rg_two_polymers_three_times(mode = "nematic")
     #simp.plot_crystallinity_avrami(savestring= None)
     #simp.plot_avg_domain_size()

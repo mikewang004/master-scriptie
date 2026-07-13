@@ -33,7 +33,7 @@ def local_minima_indices_np(arr):
 
 def curvature(ddy, dy):
     denom = (1 + dy**2)**(3/2)
-    return ddy/denom
+    return np.abs(ddy)/denom
 
 
 class fit_functions():
@@ -63,6 +63,30 @@ class fit_functions():
 
     def double_exp_ddy(x,a,b,c1,c2,d):
         return ((-b/c1**2) * np.exp(-x/c1) - (d/c2**2)*np.exp(-x/c2))
+
+
+def curvature_normalised(x, popt, x_min, x_max, y_min, y_max):
+    sx = x_max - x_min
+    sy = y_max - y_min
+
+    fp = fit_functions.double_exp_dy(x, *popt) * (sx/sy)
+    fpp = fit_functions.double_exp_ddy(x, *popt)*(sx**2 / sy)
+
+    return np.abs(fpp)/(1+fp**2)**1.5
+
+
+
+def double_exp(x, a, b, c1, c2, d):
+    return a - b * np.exp(-x / c1) - d * np.exp(-x / c2)
+
+def double_exp_d1(x, a, b, c1, c2, d):
+    """First derivative of double_exp."""
+    return (b / c1) * np.exp(-x / c1) + (d / c2) * np.exp(-x / c2)
+
+def double_exp_d2(x, a, b, c1, c2, d):
+    """Second derivative of double_exp."""
+    return -(b / c1**2) * np.exp(-x / c1) - (d / c2**2) * np.exp(-x / c2)
+
 
 
 
@@ -475,31 +499,56 @@ class domain_analysis:
 
 
             
-    def get_crossover_point_fit(self):
+    def find_knee(self, p0=None, n_points=500_000):
+        """
+        Fit double_exp to (x, y) data and return the point of maximum curvature
+        on normalised axes (the 'knee').
+
+        Parameters
+        ----------
+        x, y     : array-like  — input data
+        p0       : list        — initial guess [a, b, c1, c2, d]
+        n_points : int         — resolution of the fine grid for curvature search
+
+        Returns
+        -------
+        dict with keys: x_knee, y_knee, kappa_max, popt
+        """
+
 
         current_poly = self.sim.get_polymer_by_time(0)
         n_atoms = current_poly.atom_coords.n_atoms
         time = self.sim.df_slurm_sim_data["Step"] * self.sim.timestep
-        scaling_factor = 10000
         monomer_density = (n_atoms/self.sim.df_slurm_sim_data["Volume"])
-        time = time /scaling_factor
-        time_cont = np.linspace(0, time.max(), 10000)
+        x, y = np.asarray(time), np.asarray(monomer_density)
 
-        popt, pcov = sp.optimize.curve_fit(fit_functions.double_exp, time, monomer_density, 
-            p0 = [monomer_density.iloc[-1], self.sim.polymer_length *0.02, self.sim.polymer_length * 414, 0.13, 30], method = "trf", 
-            xtol = 1e-16, gtol = 1e-16)
-        print(popt, np.sqrt(np.diag(pcov)))
-        # plt.scatter(time, monomer_density)
-        # plt.plot(time, fit_functions.double_exp(time, *popt))
+        if p0 is None:
+            # Rough automatic guess
+            a0  = y.max() * 1.01
+            b0  = (y.max() - y.min()) * 0.6
+            d0  = (y.max() - y.min()) * 0.4
+            c10 = x.max() * 0.1
+            c20 = x.max() * 0.5
+            p0  = [a0, b0, c10, c20, d0]
 
+        popt, _ = sp.optimize.curve_fit(double_exp, x, y, p0=p0, maxfev=20_000)
+
+        x_min, x_max = x.min(), x.max()
+        y_min = double_exp(x_min, *popt)
+        y_max = double_exp(x_max, *popt)
+
+        x_fine = np.linspace(x_min, x_max, n_points)
+        kappa  = curvature_normalised(x_fine, popt, x_min, x_max, y_min, y_max)
+
+        idx     = np.argmax(kappa)
+        x_knee  = x_fine[idx]
+        y_knee  = double_exp(x_knee, *popt)
+        k_max   = kappa[idx]
+        print(idx, x_knee, y_knee)
+        # plt.plot(x, y)
+        # plt.scatter(x_knee, y_knee)
         # plt.show()
-        y = fit_functions.double_exp(time_cont, *popt)
-        dy = fit_functions.double_exp_dy(time_cont, *popt)
-        ddy = fit_functions.double_exp_ddy(time_cont, *popt)
-        print(curvature(ddy, dy)[0:20])
-
-        result = sp.optimize.minimize_scalar(lambda x: -curvature(ddy, dy), bounds=(0, 1), method='bounded')
-        print(result)
+        return x_knee, y_knee
 
 
     def get_crossover_point_cutoff(self, cutoff = 0.99):
@@ -507,7 +556,7 @@ class domain_analysis:
         n_atoms = current_poly.atom_coords.n_atoms
         time = self.sim.df_slurm_sim_data["Step"] * self.sim.timestep
         monomer_density = (n_atoms/self.sim.df_slurm_sim_data["Volume"])
-        monomer_density = monomer_density/monomer_density.iloc[-1]
+        monomer_density = monomermonomer_density_density/monomer_density.iloc[-1]
         idx_closest = (cutoff- monomer_density).abs().idxmin()
         #idx_closest = monomer_density[monomer_density > cutoff].index[0]
         time_closest = time.iloc[idx_closest]
@@ -687,7 +736,7 @@ def main():
     #hyperbolic_functions_plot()
     #PVA_1000.domain_analysis.get_crossover_point(8, 40, savefig_name= "plots/pva_1000_crossover_point_definition.pdf", show_plot= True)
     #PVA_100.domain_analysis.get_crossover_point_kneed(savefig_name= "plots/pva_100_crossover_point_definition.pdf", show_plot= True)
-    PVA_500.domain_analysis.get_crossover_point_fit()
+    PVA_500.domain_analysis.find_knee()
     # current_poly = PVA_1000.get_polymer_by_time(12000000, cell_length= 2.0)
     # debug_merge_boxes(current_poly)
     #PVA_200.get_polymer_by_time(10*120000).merge_boxes_2(print_results = True)

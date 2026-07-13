@@ -77,15 +77,15 @@ def curvature_normalised(x, popt, x_min, x_max, y_min, y_max):
 
 
 def double_exp(x, a, b, c1, c2, d):
-    return a - b * np.exp(-x / c1) - d * np.exp(-x / c2)
+    return a - b * np.exp(-x/c1) - d * np.exp(-x/c2)
 
 def double_exp_d1(x, a, b, c1, c2, d):
     """First derivative of double_exp."""
-    return (b / c1) * np.exp(-x / c1) + (d / c2) * np.exp(-x / c2)
+    return (b/c1) * np.exp(-x/c1) + (d/c2) * np.exp(-x/c2)
 
 def double_exp_d2(x, a, b, c1, c2, d):
     """Second derivative of double_exp."""
-    return -(b / c1**2) * np.exp(-x / c1) - (d / c2**2) * np.exp(-x / c2)
+    return ((-b/c1**2) * np.exp(-x/c1) - (d/c2**2)*np.exp(-x/c2))
 
 
 

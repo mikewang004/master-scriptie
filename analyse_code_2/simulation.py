@@ -531,24 +531,30 @@ class domain_analysis:
             c20 = x.max() * 0.5
             p0  = [a0, b0, c10, c20, d0]
 
-        popt, _ = sp.optimize.curve_fit(double_exp, x, y, p0=p0, maxfev=20_000)
+        popt, _ = sp.optimize.curve_fit(fit_functions.double_exp, x, y, p0=p0, maxfev=20_000)
 
         x_min, x_max = x.min(), x.max()
-        y_min = double_exp(x_min, *popt)
-        y_max = double_exp(x_max, *popt)
+        y_min = fit_functions.double_exp(x_min, *popt)
+        y_max = fit_functions.double_exp(x_max, *popt)
 
         x_fine = np.linspace(x_min, x_max, n_points)
         kappa  = curvature_normalised(x_fine, popt, x_min, x_max, y_min, y_max)
 
         idx     = np.argmax(kappa)
         x_knee  = x_fine[idx]
-        y_knee  = double_exp(x_knee, *popt)
+        y_knee  = fit_functions.double_exp(x_knee, *popt)
         k_max   = kappa[idx]
+        #Find closest idx value in data 
+
+
+        idx_time = int(np.argmin(np.abs(time - x_knee)))
+        closest_time = time[idx_time]
+        closest_density = monomer_density[idx_time]
         print(idx, x_knee, y_knee)
         # plt.plot(x, y)
         # plt.scatter(x_knee, y_knee)
         # plt.show()
-        return x_knee, y_knee
+        return idx_time, closest_time, closest_density, popt
 
 
     def get_crossover_point_cutoff(self, cutoff = 0.99):
@@ -603,7 +609,7 @@ class Simulation:
         self.domain_analysis = domain_analysis(self)
         self.df_cryst = self.domain_analysis.read_crystallisation()
         self.timestep = 0.005
-        self.tc_idex, self.tc, self.tc_density = self.read_crossover_time()
+        self.tc_idx, self.tc, self.tc_density = self.read_crossover_time()
 
 
     def get_simulation_time(self, normalised_by_tc = True):
@@ -626,7 +632,6 @@ class Simulation:
         except KeyError:
             print("Crossover time not found for PVA-%i" %self.polymer_length)
             return 0;
-
         tc_idx = row["index"]
         tc_time = row["time"]
         tc_density = row["monomer density"]

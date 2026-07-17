@@ -4,7 +4,7 @@ import scipy as sp
 import matplotlib.pyplot as plt
 import os
 from tqdm import tqdm
-from simulation import Simulation
+from simulation import Simulation, fit_functions
 import scienceplots
 from matplotlib.lines import Line2D
 import pandas as pd
@@ -61,9 +61,10 @@ class simulation_plots():
         #self.times_colours = self.fix_colour_schemes(times, "magma")
         self.std_width = self.max_x/1.5 * plt_cm_to_in
         self.std_height = self.max_y/3 * plt_cm_to_in
-
-        self.times_colour_list = ["0", "1", "tc", "3", "end"]
-        self.times_colours = self.fix_colour_schemes(["0", "1", "tc", "3", "end"], "magma")
+        plt.rcParams["figure.figsize"] = [self.std_width, self.std_height]
+        self.times_colour_list = ["0", "1", "2", "3", "4"]
+        self.times_colours = self.fix_colour_schemes(["0", "1", "2", "3", "4"], "magma")
+        self.path_to_latex_plots_folder = "../../master-thesis-latex/content/plots"
 
 
 
@@ -77,7 +78,7 @@ class simulation_plots():
         return values_colors_dict
 
 
-    def plot_crossover_values_vs_chain_length(self, show_plot = True, save_string = "plots/tc_vs_chain_length.pdf"):
+    def plot_crossover_values_vs_chain_length(self, show_plot = True, save_string = None):
         plt.figure(figsize = (self.std_width, self.std_height))
 
         times = []
@@ -91,7 +92,7 @@ class simulation_plots():
             time = simulation.df_slurm_sim_data["Step"] * simulation.timestep
             monomer_density = (poly.atom_coords.n_atoms/simulation.df_slurm_sim_data["Volume"])
             #idx, xkn, ykn = simulation.domain_analysis.get_crossover_point_cutoff(cutoff=0.985)
-            xkn, ykn = simulation.domain_analysis.find_knee()
+            idx, xkn, ykn, popt = simulation.domain_analysis.find_knee()
             # times.append(time[crossover_index])
             # crossovers.append(monomer_density[crossover_index])
             # idx_list.append(idx)
@@ -104,9 +105,12 @@ class simulation_plots():
         plt.ylabel(r"$t_\text{crossover } [t/\tau]$")
         #plt.ylabel(r"$n_\text{monomers}/\sigma^3$")
         plt.legend()
+        if save_string == None:
+            save_string = "%s/crossover_point/tc_vs_chain_length.pdf" %(self.path_to_latex_plots_folder)
         plt.savefig(save_string)
         if show_plot == True:
             plt.show()
+
 
     def plot_monomer_density_and_crossover_values(self, show_plot= True):
         width = self.max_x/1.5 * plt_cm_to_in
@@ -131,29 +135,19 @@ class simulation_plots():
             poly = simulation.get_polymer_by_time(0)
             time = simulation.df_slurm_sim_data["Step"] * simulation.timestep
             monomer_density = (poly.atom_coords.n_atoms/simulation.df_slurm_sim_data["Volume"])
-
-
-
-
             # Top subplot
             ax1.scatter(time, monomer_density, label=f"PVA-{simulation.polymer_length}", color = self.simulation_colours[simulation])
 
-            monomer_density = monomer_density/monomer_density.iloc[-1]
-            #monomer_density = monomer_density/max_density
-
-            ax2.scatter(time, monomer_density, label=f"PVA-{simulation.polymer_length}", color = self.simulation_colours[simulation])
-
-        for simulation in self.simulations:
-            xkn, ykn = simulation.domain_analysis.find_knee()
-            #idx_list.append(idx)
-            times.append(xkn)
-            crossovers.append(ykn)
+            idx, xkn, ykn, popt = simulation.domain_analysis.find_knee()
             polymer_lengths.append(simulation.polymer_length)
+            times.append(xkn); crossovers.append(ykn); idx_list.append(idx)
+            time_con = np.linspace(0, time.max(), 50000)
+            ax2.scatter(time, monomer_density, label=f"PVA-{simulation.polymer_length}", color = self.simulation_colours[simulation], marker = ".")
+            ax2.plot(time_con, fit_functions.double_exp(time_con, *popt), color = self.simulation_colours[simulation], linewidth = 3.0)
 
-            ax1.scatter(xkn, ykn, marker="x", color="black")
         tc = pd.DataFrame(
             {
-                #"index": idx_list,
+                "index": idx_list,
                 "time": times,
                 "monomer density": crossovers,
             },
@@ -161,17 +155,20 @@ class simulation_plots():
         )
         tc.index.name = "polymer_lengths"
 
+        for i in range(0,len(times)):
+            xkn = times[i]; ykn = crossovers[i]
+            ax2.scatter(xkn, ykn, marker="x", color="black", zorder = 3)
+
         print(tc.head())
         tc.to_csv("../data_online/crossover_times.txt", sep=" ")
 
 
         # Horizontal lines in both subplots
-        ax2.hlines(0.99, time.iloc[0], time.iloc[-1], color="black")
 
         # Labels & legend
         ax2.set_xlabel(r"$t/\tau$", fontsize = self.caption_font)
         ax1.set_ylabel(r"$n_\text{monomers}/\sigma^3$", fontsize = self.caption_font)
-        ax2.set_ylabel(r"$n_\text{monomers}/\sigma^3$ (normalised)", fontsize = self.caption_font)
+        ax2.set_ylabel(r"$n_\text{monomers}/\sigma^3$", fontsize = self.caption_font)
 
         ax1.legend(fontsize=plt_caption_font)
         ax2.legend(fontsize=plt_caption_font)
@@ -192,7 +189,7 @@ class simulation_plots():
         #ax1.set_xscale("log")
         #ax2.set_xscale("log")
         fig.tight_layout()
-        fig.savefig("%s/crossover_density_vs_time_different_chains_subplots.pdf" %self.save_folder)
+        fig.savefig("%s/crossover_point/crossover_density_vs_time_different_chains_subplots.pdf" %self.path_to_latex_plots_folder)
         if show_plot == True:
             plt.show()
 
@@ -274,55 +271,59 @@ class simulation_plots():
 
 
     def plot_rg_two_polymers_three_times(self, mode = "rg", savestring_default = True, show_plot = True):
-        """Mode can either be 'rg' or "re". """
+        """Mode can either be 'rg' or "re". 
+        Note: PVA-100 has 174 items, PVA-1000 119."""
         fig, axes = plt.subplots(
-            3, 1,
+            2, 1,
             figsize=(self.std_width, 3 * self.std_height),
             sharex=True
         )
 
         PVA_100 = self.simulations[1]; PVA_1000 = self.simulations[-1]
 
-        index_t_start = 0; index_t_end = 110
-        times_PVA_100 = [index_t_start, PVA_100.tc_idex, index_t_end]
-        times_PVA_1000 = [index_t_start, PVA_1000.tc_idex, index_t_end]
+        index_t_start = 0; index_t_end = 119
+        times_PVA_100 = [index_t_start, PVA_100.tc_idx, index_t_end]
+        times_PVA_1000 = [index_t_start, PVA_1000.tc_idx, index_t_end]
+        times_different_PVA = [times_PVA_100, times_PVA_1000]
+        polymer_list = [PVA_100, PVA_1000]
         letter_subplot_list = ["(a)", "(b)", "(c)"]
+        #print(times_PVA_100[i])
+        #current_poly_100 = PVA_100.get_polymer_by_time(int(times_PVA_100[i]*1200000))
+        #current_poly_1000 = PVA_1000.get_polymer_by_time(int(times_PVA_1000[i]*1200000))
 
-        for i in range(0, len(axes)):
-            print(times_PVA_100[i])
-            current_poly_100 = PVA_100.get_polymer_by_time(int(times_PVA_100[i]*1200000))
-            current_poly_1000 = PVA_1000.get_polymer_by_time(int(times_PVA_1000[i]*1200000))
+        if mode == "rg":
+            for i in range(0, len(times_different_PVA)):
+                polymer = times_different_PVA[i]
+                for j in range(0, len(polymer)): 
+                    current_poly = polymer_list[i].get_polymer_by_time(int(polymer[j])*1200000)
+                    current_poly.gyration_radius()
+                    values, bins, __ = axes[i].hist(current_poly.results.gyration_radius_distribution/
+                        np.sqrt(current_poly.results.mean_gyration_radius), bins=100, 
+                        color=self.times_colours["%i" %(2*j)], density = True, histtype = "step", 
+                        label = r"$%i t/t_c$" %current_poly.atom_coords.current_timestep/polymer.tc_time)
+                    axes[i].set_xlabel(r"$R_g/ \sqrt{\langle R_g^2 \rangle}$", fontsize = self.caption_font)
+            savestring = "%s/polymer_conformation/rg_pva_100_1000.pdf" %self.path_to_latex_plots_folder
 
-            if mode == "rg":
-                current_poly_100.gyration_radius()
-                current_poly_1000.gyration_radius()
-                values, bins, __ = axes[i].hist(current_poly_100.results.gyration_radius_distribution/
-                    np.sqrt(current_poly_100.results.mean_gyration_radius), bins=100, color=self.simulation_colours[PVA_100], density = True, histtype = "step", label = "PVA-%i" %PVA_100.polymer_length)
-                values, bins, __ = axes[i].hist(current_poly_1000.results.gyration_radius_distribution/
-                    np.sqrt(current_poly_1000.results.mean_gyration_radius), bins=100, color=self.simulation_colours[PVA_1000], density = True, histtype = "step", label = "PVA-%i" %PVA_1000.polymer_length)
-                axes[i].set_xlabel(r"$R_g/ \sqrt{\langle R_g^2 \rangle}$", fontsize = self.caption_font)
-                savestring = "plots/rg_pva_100_1000.pdf"
-
-            elif mode == "re":
-                current_poly_100.end_to_end_distance()
-                current_poly_1000.end_to_end_distance()
-                values, bins, __ = axes[i].hist(current_poly_100.results.end_to_end_distribution/
-                    (current_poly_100.results.mean_squared_end_to_end), bins=100, color=self.simulation_colours[PVA_100], density = True, histtype = "step", label = "PVA-%i" %PVA_100.polymer_length)
-                values, bins, __ = axes[i].hist(current_poly_1000.results.end_to_end_distribution/
-                    (current_poly_1000.results.mean_squared_end_to_end), bins=100, color=self.simulation_colours[PVA_1000], density = True, histtype = "step", label = "PVA-%i" %PVA_1000.polymer_length)
-                axes[i].set_xlabel(r"$R_e/ \sqrt{\langle R_e^2 \rangle}$", fontsize = self.caption_font)
-                savestring = "plots/re_pva_100_1000.pdf"
-            elif mode == "nematic":
-                current_poly_100.nematic_distributuion()
-                current_poly_1000.nematic_distributuion()
-                values, bins, __ = axes[i].hist(current_poly_100.results.nematic_value_dist, 
-                    bins=100, color=self.simulation_colours[PVA_100], density = True, histtype = "step", label = "PVA-%i" %PVA_100.polymer_length)
-                values, bins, __ = axes[i].hist(current_poly_1000.results.nematic_value_dist, 
-                    bins=100, color=self.simulation_colours[PVA_1000], density = True, histtype = "step", label = "PVA-%i" %PVA_1000.polymer_length)
-                axes[i].set_xlabel(r"$\lambda$", fontsize = self.caption_font)
-                if i > 0:
-                    axes[i].vlines(PVA_100.cryst_cutoff, 0, np.max(values), color = "red",linestyles = "dotted", label = r"crystallisation cutoff")
-                savestring = "plots/nem_value_pva_100_1000.pdf"
+        elif mode == "re":
+            current_poly_100.end_to_end_distance()
+            current_poly_1000.end_to_end_distance()
+            values, bins, __ = axes[i].hist(current_poly_100.results.end_to_end_distribution/
+                (current_poly_100.results.mean_squared_end_to_end), bins=100, color=self.simulation_colours[PVA_100], density = True, histtype = "step", label = "PVA-%i" %PVA_100.polymer_length)
+            values, bins, __ = axes[i].hist(current_poly_1000.results.end_to_end_distribution/
+                (current_poly_1000.results.mean_squared_end_to_end), bins=100, color=self.simulation_colours[PVA_1000], density = True, histtype = "step", label = "PVA-%i" %PVA_1000.polymer_length)
+            axes[i].set_xlabel(r"$R_e/ \sqrt{\langle R_e^2 \rangle}$", fontsize = self.caption_font)
+            savestring = "plots/re_pva_100_1000.pdf"
+        elif mode == "nematic":
+            current_poly_100.nematic_distributuion()
+            current_poly_1000.nematic_distributuion()
+            values, bins, __ = axes[i].hist(current_poly_100.results.nematic_value_dist, 
+                bins=100, color=self.simulation_colours[PVA_100], density = True, histtype = "step", label = "PVA-%i" %PVA_100.polymer_length)
+            values, bins, __ = axes[i].hist(current_poly_1000.results.nematic_value_dist, 
+                bins=100, color=self.simulation_colours[PVA_1000], density = True, histtype = "step", label = "PVA-%i" %PVA_1000.polymer_length)
+            axes[i].set_xlabel(r"$\lambda$", fontsize = self.caption_font)
+            if i > 0:
+                axes[i].vlines(PVA_100.cryst_cutoff, 0, np.max(values), color = "red",linestyles = "dotted", label = r"crystallisation cutoff")
+            savestring = "plots/nem_value_pva_100_1000.pdf"
             axes[i].tick_params(labelbottom=True, labelleft=True)
             axes[i].text(0.02, 0.95, letter_subplot_list[i],
                 transform=axes[i].transAxes,
@@ -332,11 +333,10 @@ class simulation_plots():
 
 
 
-        axes[0].set_title(r"$t = 0$")
-        axes[1].set_title(r"$t = t_c$")
-        axes[2].set_title(r"$t = t_{end}$")
+        axes[0].set_title("PVA-100")
+        axes[1].set_title("PVA-1000")
 
-        #plt.legend(fontsize=self.caption_font)
+        plt.legend(fontsize=self.caption_font)
         plt.tight_layout()
         if savestring_default == True:
             plt.savefig(savestring)
@@ -384,11 +384,11 @@ def main():
 
     simp = simulation_plots(simulations)
 
-    simp.plot_monomer_density_and_crossover_values(show_plot=True)
-    #simp.plot_rg_two_polymers_three_times(mode = "nematic")
+    #simp.plot_monomer_density_and_crossover_values(show_plot=True)
+    simp.plot_rg_two_polymers_three_times(mode = "rg")
     #simp.plot_crystallinity_avrami(savestring= None)
     #simp.plot_avg_domain_size()
-    simp.plot_crossover_values_vs_chain_length()
+    #simp.plot_crossover_values_vs_chain_length()
 
     #simp.plot_stem_length()
 

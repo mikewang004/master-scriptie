@@ -33,7 +33,7 @@ class atom_coords:
 
     """Read in files and do basic data preprocessing"""
 
-    def __init__(self, path_to_file, cell_length = 2, polymer_length = 100):
+    def __init__(self, path_to_file, cell_length = 2, polymer_length = 100, current_timestep = None):
         #Read in data 
         self.path_to_file = path_to_file
         self.datapd = self.read_in_file(path_to_file)
@@ -44,7 +44,10 @@ class atom_coords:
         self.volume, self.boxlengths, self.dimensions = self.get_volume_box(path_to_file)
         self.cell_length = cell_length
         # self.nridges, self.no_nridges_3d = self.calc_nridges()
-        self.current_timestep = self.get_timestep_from_file_name(path_to_file) 
+        if current_timestep == None:
+            self.current_timestep = self.get_timestep_from_file_name(path_to_file) 
+        else:
+            self.current_timestep = current_timestep
         self.wrapped_monomers = self.wrap_coordinates_all_data()
         #Calculate box properties 
 
@@ -271,8 +274,8 @@ class atom_coords:
 
 
 class polymer():
-    def __init__(self, path_to_file, polymer_length = 100, cell_length = 2.0):
-        self.atom_coords = atom_coords(path_to_file, polymer_length= polymer_length, cell_length= cell_length)
+    def __init__(self, path_to_file, polymer_length = 100, cell_length = 2.0, current_timestep = None):
+        self.atom_coords = atom_coords(path_to_file, polymer_length= polymer_length, cell_length= cell_length, current_timestep= current_timestep)
         self.results = results()
 
     def read_cryst(self, location):
@@ -346,10 +349,9 @@ class polymer():
         df_gyration_radius = self.create_new_polymer_df(["comx", "comy", "comz", "gyration_radius"])
         counter = 0
         for i in range(0, self.atom_coords.no_polymers):
-            subset = self.atom_coords.datapd[(self.atom_coords.datapd["mol_id"] == i+1)].iloc[:, 1:4]
+            subset = self.atom_coords.datapd[(self.atom_coords.datapd["mol_id"] == i)].iloc[:, 1:4]
 
             com = np.mean(subset, axis = 0)
-
             df_gyration_radius.iloc[i, :3] = com
             # Shift system to have new center of mass as center 
             subset_com = subset - com

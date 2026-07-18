@@ -609,7 +609,7 @@ class Simulation:
         self.domain_analysis = domain_analysis(self)
         self.df_cryst = self.domain_analysis.read_crystallisation()
         self.timestep = 0.005
-        self.tc_idx, self.tc, self.tc_density = self.read_crossover_time()
+        self.tc_idx, self.tc_time, self.tc_density = self.read_crossover_time()
 
 
     def get_simulation_time(self, normalised_by_tc = True):
@@ -635,14 +635,15 @@ class Simulation:
         tc_idx = row["index"]
         tc_time = row["time"]
         tc_density = row["monomer density"]
-        return tc_idx, tc_time, tc_density
+        return int(tc_idx), int(tc_time), tc_density
 
     def get_polymer_by_time(self, time, cell_length = 2.0):
         try:
             current_row = self.df_slurm_sim_data[self.df_slurm_sim_data["Step"] == time].iloc[0]
         except IndexError:
             raise ValueError("Time not in dataset, choose a different time.")
-        current_polymer = polymer("%s/%s_run%i_time_%i.txt"%(self.path_to_data_folder, self.lammps_dump_prefix, current_row["Run"], current_row["StepSequence"]), polymer_length= self.polymer_length, cell_length= cell_length)
+        current_polymer = polymer("%s/%s_run%i_time_%i.txt"%(self.path_to_data_folder, self.lammps_dump_prefix, current_row["Run"], current_row["StepSequence"]), 
+            polymer_length= self.polymer_length, cell_length= cell_length, current_timestep = time)
         try:
             current_cryst_file = pd.read_csv("%s/%s_cryst_time_%s.txt" %(self.path_to_crystallisation_folder, self.lammps_dump_prefix, time), sep = " ")
             current_polymer.read_cryst("%s/%s_cryst_time_%s.txt" %(self.path_to_crystallisation_folder, self.lammps_dump_prefix, time))

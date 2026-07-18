@@ -17,7 +17,7 @@ plt_max_y = 22
 plt_caption_font = 9 #pt
 
 plt_colours_chain_length = "viridis"
-plt_colours_time = "magma"
+plt_colours_time = "cividis"
 
 
 def avrami_fit(t, a, n, b):
@@ -63,15 +63,15 @@ class simulation_plots():
         self.std_height = self.max_y/3 * plt_cm_to_in
         plt.rcParams["figure.figsize"] = [self.std_width, self.std_height]
         self.times_colour_list = ["0", "1", "2", "3", "4"]
-        self.times_colours = self.fix_colour_schemes(["0", "1", "2", "3", "4"], "magma")
+        self.times_colours = self.fix_colour_schemes(["0", "1", "2", "3", "4"], "inferno", cmap_max= 0.8)
         self.path_to_latex_plots_folder = "../../master-thesis-latex/content/plots"
 
 
 
 
-    def fix_colour_schemes(self, values_list, cmap_name):
+    def fix_colour_schemes(self, values_list, cmap_name, cmap_max = 1):
         cmap = plt.get_cmap(cmap_name)
-        colors = cmap(np.linspace(0, 1, len(values_list)))
+        colors = cmap(np.linspace(0, cmap_max, len(values_list)))
 
         values_colors_dict = {item: col for item, col in zip(values_list, colors)}
 
@@ -275,60 +275,72 @@ class simulation_plots():
         Note: PVA-100 has 174 items, PVA-1000 119."""
         fig, axes = plt.subplots(
             2, 1,
-            figsize=(self.std_width, 3 * self.std_height),
+            figsize=(1.5 * self.std_width, 2 * self.std_height),
             sharex=True
         )
 
         PVA_100 = self.simulations[1]; PVA_1000 = self.simulations[-1]
 
-        index_t_start = 0; index_t_end = 119
-        times_PVA_100 = [index_t_start, PVA_100.tc_idx, index_t_end]
-        times_PVA_1000 = [index_t_start, PVA_1000.tc_idx, index_t_end]
+        index_t_start = 0; index_t_end_1000 = 119; index_t_end_100 = 140
+        times_PVA_100 = [index_t_start, PVA_100.tc_idx, index_t_end_100]
+        times_PVA_1000 = [index_t_start, PVA_1000.tc_idx, index_t_end_1000]
         times_different_PVA = [times_PVA_100, times_PVA_1000]
         polymer_list = [PVA_100, PVA_1000]
         letter_subplot_list = ["(a)", "(b)", "(c)"]
         #print(times_PVA_100[i])
         #current_poly_100 = PVA_100.get_polymer_by_time(int(times_PVA_100[i]*1200000))
         #current_poly_1000 = PVA_1000.get_polymer_by_time(int(times_PVA_1000[i]*1200000))
-
-        if mode == "rg":
-            for i in range(0, len(times_different_PVA)):
-                polymer = times_different_PVA[i]
-                for j in range(0, len(polymer)): 
-                    current_poly = polymer_list[i].get_polymer_by_time(int(polymer[j])*1200000)
+        for i in range(0, len(times_different_PVA)):
+            polymer_times = times_different_PVA[i]
+            for j in range(0, len(polymer_times)): 
+                current_poly = polymer_list[i].get_polymer_by_time(int(polymer_times[j])*1200000)
+                if mode == "rg":
                     current_poly.gyration_radius()
-                    values, bins, __ = axes[i].hist(current_poly.results.gyration_radius_distribution/
-                        np.sqrt(current_poly.results.mean_gyration_radius), bins=100, 
-                        color=self.times_colours["%i" %(2*j)], density = True, histtype = "step", 
-                        label = r"$%i t/t_c$" %current_poly.atom_coords.current_timestep/polymer.tc_time)
-                    axes[i].set_xlabel(r"$R_g/ \sqrt{\langle R_g^2 \rangle}$", fontsize = self.caption_font)
-            savestring = "%s/polymer_conformation/rg_pva_100_1000.pdf" %self.path_to_latex_plots_folder
+                    # values, bins, __ = axes[i].hist(current_poly.results.gyration_radius_distribution/
+                    #     np.sqrt(current_poly.results.mean_gyration_radius), bins=50, 
+                    #     color=self.times_colours["%i" %(2*j)], density = True, histtype = "step", 
+                    #     label = r"$%i t/t_c$" %(int(current_poly.atom_coords.current_timestep/polymer_list[i].tc_time)))
+                    counts, bin_edges = np.histogram(current_poly.results.gyration_radius_distribution/
+                         np.sqrt(current_poly.results.mean_gyration_radius), bins = 80, density = True)
 
-        elif mode == "re":
-            current_poly_100.end_to_end_distance()
-            current_poly_1000.end_to_end_distance()
-            values, bins, __ = axes[i].hist(current_poly_100.results.end_to_end_distribution/
-                (current_poly_100.results.mean_squared_end_to_end), bins=100, color=self.simulation_colours[PVA_100], density = True, histtype = "step", label = "PVA-%i" %PVA_100.polymer_length)
-            values, bins, __ = axes[i].hist(current_poly_1000.results.end_to_end_distribution/
-                (current_poly_1000.results.mean_squared_end_to_end), bins=100, color=self.simulation_colours[PVA_1000], density = True, histtype = "step", label = "PVA-%i" %PVA_1000.polymer_length)
-            axes[i].set_xlabel(r"$R_e/ \sqrt{\langle R_e^2 \rangle}$", fontsize = self.caption_font)
-            savestring = "plots/re_pva_100_1000.pdf"
-        elif mode == "nematic":
-            current_poly_100.nematic_distributuion()
-            current_poly_1000.nematic_distributuion()
-            values, bins, __ = axes[i].hist(current_poly_100.results.nematic_value_dist, 
-                bins=100, color=self.simulation_colours[PVA_100], density = True, histtype = "step", label = "PVA-%i" %PVA_100.polymer_length)
-            values, bins, __ = axes[i].hist(current_poly_1000.results.nematic_value_dist, 
-                bins=100, color=self.simulation_colours[PVA_1000], density = True, histtype = "step", label = "PVA-%i" %PVA_1000.polymer_length)
-            axes[i].set_xlabel(r"$\lambda$", fontsize = self.caption_font)
-            if i > 0:
-                axes[i].vlines(PVA_100.cryst_cutoff, 0, np.max(values), color = "red",linestyles = "dotted", label = r"crystallisation cutoff")
-            savestring = "plots/nem_value_pva_100_1000.pdf"
+                    bin_centers = (bin_edges[:-1] + bin_edges[1:]) /2
+
+                    smooth_counts = sp.ndimage.gaussian_filter1d(counts, sigma = 2.0)
+                    axes[i].plot(bin_centers, smooth_counts, color=self.times_colours["%i" %(2*j)], linestyle = "-", marker = ".",
+                    label = r"$%i t/t_c$" %(int(current_poly.atom_coords.current_timestep/polymer_list[i].tc_time)))
+                    axes[i].set_xlabel(r"$R_g/ \sqrt{\langle R_g^2 \rangle}$", fontsize = self.caption_font)
+                    savestring = "%s/polymer_conformation/rg_pva_100_1000.pdf" %self.path_to_latex_plots_folder
+
+                elif mode == "re":
+                    current_poly.end_to_end_distance()
+                    counts, bin_edges = np.histogram(current_poly.results.end_to_end_distribution/current_poly.results.mean_squared_end_to_end, bins = 100, density= True)
+                    bin_centers = (bin_edges[:-1] + bin_edges[1:]) /2
+                    smooth_counts = sp.ndimage.gaussian_filter1d(counts, sigma = 2.0)
+                    axes[i].plot(bin_centers, smooth_counts, color=self.times_colours["%i" %(2*j)], linestyle = "-", marker = ".",
+                    label = r"$%i t/t_c$" %(int(current_poly.atom_coords.current_timestep/polymer_list[i].tc_time)))
+                #values, bins, __ = axes[i].hist(current_poly_1000.results.end_to_end_distribution/
+                #    (current_poly_1000.results.mean_squared_end_to_end), bins=50, color=self.simulation_colours[PVA_1000], density = True, histtype = "step", label = "PVA-%i" %PVA_1000.polymer_length)
+                    axes[i].set_xlabel(r"$R_e/ \sqrt{\langle R_e^2 \rangle}$", fontsize = self.caption_font)
+                    savestring = "%s/polymer_conformation/re_pva_100_1000.pdf" %self.path_to_latex_plots_folder
+                elif mode == "nematic":
+                    current_poly.nematic_distributuion()
+                    counts, bin_edges = np.histogram(current_poly.results.nematic_value_dist, bins = 100, density = True)
+                    bin_centers = (bin_edges[:-1] + bin_edges[1:]) /2
+                    smooth_counts = sp.ndimage.gaussian_filter1d(counts, sigma = 1.0)
+                    axes[i].plot(bin_centers, smooth_counts, color=self.times_colours["%i" %(2*j)], linestyle = "-", marker = "o",
+                    label = r"$%i t/t_c$" %(int(current_poly.atom_coords.current_timestep/polymer_list[i].tc_time)))
+                # values, bins, __ = axes[i].hist(current_poly_1000.results.nematic_value_dist, 
+                #     bins=100, color=self.simulation_colours[PVA_1000], density = True, histtype = "step", label = "PVA-%i" %PVA_1000.polymer_length)
+                    axes[i].set_xlabel(r"$\lambda$", fontsize = self.caption_font)
+                    
+                    savestring = "%s/polymer_conformation/nem_value_pva_100_1000.pdf" %self.path_to_latex_plots_folder
             axes[i].tick_params(labelbottom=True, labelleft=True)
             axes[i].text(0.02, 0.95, letter_subplot_list[i],
                 transform=axes[i].transAxes,
                 fontsize=plt_caption_font,
                 va="top", ha="left")
+            if mode == "nematic":
+                axes[i].vlines(PVA_100.cryst_cutoff, 0, np.max(counts), color = "red",linestyles = "dotted", label = r"crystallisation cutoff")
             axes[i].legend(fontsize = self.caption_font)
 
 
@@ -336,7 +348,8 @@ class simulation_plots():
         axes[0].set_title("PVA-100")
         axes[1].set_title("PVA-1000")
 
-        plt.legend(fontsize=self.caption_font)
+        axes[0].legend(fontsize=self.caption_font)
+        axes[1].legend(fontsize=self.caption_font)
         plt.tight_layout()
         if savestring_default == True:
             plt.savefig(savestring)

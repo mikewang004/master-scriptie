@@ -9,6 +9,7 @@ from clib.boxAlgorithmsInC import box_algos_lib
 
 from nematic_vector import calc_nematic_tensor_2, nematic_vector_loop, nematic_vector_loop_2, compute_Q, orderparameter
 from hoshenKopelmanInPython import hk_in_python
+from coarse_grained_hist import coarse_grained_hist
 
 def wrap_coordinates(column, minlength, total_length):
     return (column - minlength) % total_length + minlength
@@ -292,8 +293,6 @@ class polymer():
             label_matrix = hk_in_python(self.df_cryst, ndot_cutoff = ndot_cutoff, nridges = self.atom_coords.nridges, cryst_cutoff = cryst_cutoff)
         total_box_elements = (self.atom_coords.nridges["x"]*self.atom_coords.nridges["y"]*self.atom_coords.nridges["z"]).astype(int)
         unique_values, counts = np.unique(label_matrix, return_counts=True) #Labels and how much each label occurs
-
-
         total_number_merged_clusters = counts[counts > 1]
         #print(unique_values, counts)
         #print(total_number_merged_clusters)
@@ -314,6 +313,12 @@ class polymer():
             print("earlier calculated frac_cryst = %f" %(self.frac_cryst))
         return label_matrix
 
+
+    def merge_boxes_binning(self, label_matrix, current_cryst, save_string = None):
+        unique_values, counts = np.unique(label_matrix, return_counts = True)
+        cg_hist = coarse_grained_hist(label_matrix, self.atom_coords.volume, self.atom_coords.local_volume, nemcount = self.atom_coords.n_atoms)
+        cg_hist_df = cg_hist.build_hist(current_cryst, save_string= save_string)
+        return cg_hist_df
 
     def create_new_polymer_df(self, column_names):
         """Creates an empty dataframe per mol_id with len(column_names) columns. column_names must be a list"""
@@ -447,3 +452,16 @@ class polymer():
 
         self.results.mean_nematic_value = np.mean(self.results.nematic_value_dist)
         return  self.results.nematic_value_dist, self.results.mean_nematic_value
+
+
+
+def main():
+    label_matrix = np.load("../data_online/PVA-100/icryst_T088_Tdot_e-3/nematic_vectors/label_map_time_24000000.npy")
+    path_to_polymer = "../../data/pva-100/quick_quench/equil/equil_t_088_tdot_e-3_run1_time_24000000.txt"
+    pva_100_step_20 = polymer(path_to_polymer, current_timestep= 24000000)
+
+    pva_100_step_20.merge_boxes_binning(label_matrix)
+
+
+if __name__== "__main__":
+    main()

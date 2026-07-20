@@ -317,7 +317,7 @@ class domain_analysis:
                 label_matrix = current_polymer.merge_boxes_2(print_results = True, ndot_cutoff = self.sim.ndot_cutoff, label_matrix= label_matrix_already_saved)
             except FileNotFoundError:
                 label_matrix = current_polymer.merge_boxes_2(print_results = True, ndot_cutoff = self.sim.ndot_cutoff)
-            np.save("%s/label_map_time_%i.npy" %(self.sim.path_to_nematic_vectors_folder, current_time), label_matrix)
+                np.save("%s/label_map_time_%i.npy" %(self.sim.path_to_nematic_vectors_folder, current_time), label_matrix)
             test = np.array([current_time, current_polymer.results.fraction_crystallinity,
                 current_polymer.results.total_number_clusters, current_polymer.results.total_number_independent_clusters, 
                 current_polymer.results.mean_cluster_size, current_polymer.results.total_number_crystalline_grid_elements,
@@ -327,6 +327,25 @@ class domain_analysis:
             cryst_domain_array.to_csv("%s/domain_analysis.txt" %(self.sim.path_to_home_folder), sep = " ", mode="a", header = False)
         else:
             cryst_domain_array.to_csv("%s/domain_analysis.txt" %(self.sim.path_to_home_folder), sep = " ", header = True)
+
+    def calc_domain_dist(self):
+        path_to_domain_dist = "%s/%s" %(self.sim.path_to_home_folder, "domain_distribution")
+        make_folder(path_to_domain_dist)
+
+        for i in tqdm(range(0, len(self.sim.list_run_files))):
+            current_polymer = polymer("%s/%s" %(self.sim.path_to_data_folder, self.sim.list_run_files[i]))
+            current_time = self.sim.df_slurm_sim_data["Step"].iloc[i]
+            current_polymer.read_cryst("%s/%s_cryst_time_%s.txt" %(self.sim.path_to_crystallisation_folder, self.sim.lammps_dump_prefix, current_time))
+            try:
+                label_matrix_already_saved = np.load("%s/label_map_time_%i.npy" %(self.sim.path_to_nematic_vectors_folder, current_time))
+                label_matrix = current_polymer.merge_boxes_2(print_results = True, ndot_cutoff = self.sim.ndot_cutoff, label_matrix= label_matrix_already_saved)
+            except FileNotFoundError:
+                label_matrix = current_polymer.merge_boxes_2(print_results = True, ndot_cutoff = self.sim.ndot_cutoff)
+                np.save("%s/label_map_time_%i.npy" %(self.sim.path_to_nematic_vectors_folder, current_time), label_matrix)
+            current_cryst = self.sim.df_cryst[i, 1]
+            current_polymer.merge_boxes_binning(label_matrix, current_cryst, 
+                save_string= "%s/%s_domain_dist_%s.txt" %(path_to_domain_dist, self.sim.lammps_dump_prefix, current_time))
+        return 0;
 
     def read_crystallisation(self, path: str = None):
         if path is None:
@@ -790,7 +809,7 @@ def main():
     #print(current_poly.atom_coords.nridges)
     #current_poly.merge_boxes_2(print_results= True)
 
-    PVA_100.calc_bond_bond_correlation()
+    PVA_100.domain_analysis.calc_domain_dist()
 
 
 if __name__== "__main__":

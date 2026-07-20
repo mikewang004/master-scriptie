@@ -4,14 +4,16 @@ import pandas as pd
 
 class coarse_grained_hist():
 
-    def __init__(self, label_matrix, total_volume, local_volume, nemcount):
+    def __init__(self, label_matrix, total_volume,local_volume, n_atoms, crystallinity):
         self.label_matrix = label_matrix
         self.local_volume = local_volume
         self.total_volume = total_volume
-        self.nemcount = nemcount
+        self.n_atoms = n_atoms
+        self.crystallinity = crystallinity
         self.unique_values, self.counts = np.unique(label_matrix, return_counts = True)
 
 
+#TODO look at how pdf2/volume pdf is calculated
 
     def build_bin_edges(self):
         """
@@ -60,16 +62,16 @@ class coarse_grained_hist():
         bin_centers = 0.5 * (left_edges + right_edges)  # bin midpoints
 
         pdf1 = counts / widths                          # count density
-        pdf2 = bin_centers * pdf1 / self.nemcount            # volume-weighted, normalised
+        pdf2 = bin_centers * pdf1 / (np.sum(self.counts[1:]))            # volume-weighted, normalised
 
         return bin_centers, pdf1, pdf2, counts
 
 
 
     def build_hist(self, crystallinity, save_string = None):
-        centers, pdf1, pdf2, counts = self.coarse_bin(self.counts)
+        centers, pdf1, pdf2, counts = self.coarse_bin(self.counts, )
         df = pd.DataFrame({
-            "clustersize": centers * 2,          # bin label ≈ right edge (i in C++)
+            "clustersize": centers * 2,          
             "volume":      centers * 2 * self.local_volume,
             "vol_Vtot":    centers * 2 * self.local_volume / self.total_volume,
             "Ncluster":    counts,

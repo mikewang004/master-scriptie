@@ -316,9 +316,11 @@ class polymer():
 
     def merge_boxes_binning(self, label_matrix, current_cryst, save_string = None):
         unique_values, counts = np.unique(label_matrix, return_counts = True)
-        cg_hist = coarse_grained_hist(label_matrix, self.atom_coords.volume, self.atom_coords.local_volume, nemcount = self.atom_coords.n_atoms)
+        cg_hist = coarse_grained_hist(label_matrix, self.atom_coords.volume, self.atom_coords.local_volume, self.atom_coords.n_atoms, current_cryst)
         cg_hist_df = cg_hist.build_hist(current_cryst, save_string= save_string)
         return cg_hist_df
+
+
 
     def create_new_polymer_df(self, column_names):
         """Creates an empty dataframe per mol_id with len(column_names) columns. column_names must be a list"""

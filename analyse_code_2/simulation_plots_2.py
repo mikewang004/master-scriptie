@@ -293,7 +293,8 @@ class simulation_plots():
         for i in range(0, len(times_different_PVA)):
             polymer_times = times_different_PVA[i]
             for j in range(0, len(polymer_times)): 
-                current_poly = polymer_list[i].get_polymer_by_time(int(polymer_times[j])*1200000)
+                current_time = int(polymer_times[j])*1200000
+                current_poly = polymer_list[i].get_polymer_by_time(current_time)
                 if mode == "rg":
                     current_poly.gyration_radius()
                     # values, bins, __ = axes[i].hist(current_poly.results.gyration_radius_distribution/
@@ -334,6 +335,21 @@ class simulation_plots():
                     axes[i].set_xlabel(r"$\lambda$", fontsize = self.caption_font)
                     
                     savestring = "%s/polymer_conformation/nem_value_pva_100_1000.pdf" %self.path_to_latex_plots_folder
+
+
+                elif mode == "cryst_domain_dist":
+                    cryst_domain_dist = pd.read_csv("%s/domain_distribution/%s_domain_dist_%s.txt" 
+                        %(polymer_list[i].path_to_home_folder, polymer_list[i].lammps_dump_prefix, current_time), sep = " ")
+                    #print(cryst_domain_dist["volume_pdf"])
+
+                    axes[i].plot(cryst_domain_dist["volume"], cryst_domain_dist["volume_pdf"], 
+                        label = r"$%i t/t_c$" %(int(current_poly.atom_coords.current_timestep/polymer_list[i].tc_time)))
+                    savestring = "%s/domain_analysis/nem_value_pva_100_1000.pdf" %self.path_to_latex_plots_folder
+                    axes[i].set_xscale("log")
+                    axes[i].set_yscale("log")
+                    axes[i].set_xlabel(r"$V_\text{domain}$")
+                    axes[i].set_ylabel(r"$d\phi/dV$")
+
             axes[i].tick_params(labelbottom=True, labelleft=True)
             axes[i].text(0.02, 0.95, letter_subplot_list[i],
                 transform=axes[i].transAxes,
@@ -398,7 +414,7 @@ def main():
     simp = simulation_plots(simulations)
 
     #simp.plot_monomer_density_and_crossover_values(show_plot=True)
-    simp.plot_rg_two_polymers_three_times(mode = "rg")
+    simp.plot_rg_two_polymers_three_times(mode = "cryst_domain_dist")
     #simp.plot_crystallinity_avrami(savestring= None)
     #simp.plot_avg_domain_size()
     #simp.plot_crossover_values_vs_chain_length()

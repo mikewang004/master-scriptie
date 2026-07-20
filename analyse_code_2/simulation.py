@@ -785,7 +785,7 @@ def main():
     #hyperbolic_functions_plot()
     #PVA_1000.domain_analysis.get_crossover_point(8, 40, savefig_name= "plots/pva_1000_crossover_point_definition.pdf", show_plot= True)
     #PVA_100.domain_analysis.get_crossover_point_kneed(savefig_name= "plots/pva_100_crossover_point_definition.pdf", show_plot= True)
-    PVA_500.domain_analysis.find_knee()
+    #PVA_500.domain_analysis.find_knee()
     # current_poly = PVA_1000.get_polymer_by_time(12000000, cell_length= 2.0)
     # debug_merge_boxes(current_poly)
     #PVA_200.get_polymer_by_time(10*120000).merge_boxes_2(print_results = True)
@@ -809,7 +809,7 @@ def main():
     #print(current_poly.atom_coords.nridges)
     #current_poly.merge_boxes_2(print_results= True)
 
-    PVA_100.domain_analysis.calc_domain_dist()
+    PVA_1000.domain_analysis.calc_domain_dist()
 
 
 if __name__== "__main__":

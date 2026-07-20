@@ -48,12 +48,12 @@ class fit_functions():
     #     # return c/denom +b
 
 
-    def inverse_lin_func(x, a, b):
-        return - 1/(a * x) + b
+    # def inverse_lin_func(x, a, b):
+    #     return - 1/(a * x) + b
 
-    def monomer_local_density_power_lab(x, a, b, c):
-        #return a - b * np.exp(-x/c)
-        return a - b * x ** (-c)
+    # def monomer_local_density_power_lab(x, a, b, c):
+    #     #return a - b * np.exp(-x/c)
+    #     return a - b * x ** (-c)
 
     def double_exp(x, a, b, c1, c2, d):
         return a - b * np.exp(-x/c1) - d * np.exp(-x/c2)
@@ -76,16 +76,16 @@ def curvature_normalised(x, popt, x_min, x_max, y_min, y_max):
 
 
 
-def double_exp(x, a, b, c1, c2, d):
-    return a - b * np.exp(-x/c1) - d * np.exp(-x/c2)
+# def double_exp(x, a, b, c1, c2, d):
+#     return a - b * np.exp(-x/c1) - d * np.exp(-x/c2)
 
-def double_exp_d1(x, a, b, c1, c2, d):
-    """First derivative of double_exp."""
-    return (b/c1) * np.exp(-x/c1) + (d/c2) * np.exp(-x/c2)
+# def double_exp_d1(x, a, b, c1, c2, d):
+#     """First derivative of double_exp."""
+#     return (b/c1) * np.exp(-x/c1) + (d/c2) * np.exp(-x/c2)
 
-def double_exp_d2(x, a, b, c1, c2, d):
-    """Second derivative of double_exp."""
-    return ((-b/c1**2) * np.exp(-x/c1) - (d/c2**2)*np.exp(-x/c2))
+# def double_exp_d2(x, a, b, c1, c2, d):
+#     """Second derivative of double_exp."""
+#     return ((-b/c1**2) * np.exp(-x/c1) - (d/c2**2)*np.exp(-x/c2))
 
 
 
@@ -704,6 +704,23 @@ class Simulation:
         return polymer(path_to_file, polymer_length=self.polymer_length)
 
 
+    def calc_bond_bond_correlation(self, path_to_bond_bond_folder = None):
+        if path_to_bond_bond_folder == None:
+            path_to_bond_bond_folder = "%s/%s" %(self.path_to_home_folder, "bond_bond_correlation")
+        make_folder(path_to_bond_bond_folder)
+
+        for i in tqdm(range(0, len(self.list_run_files))):
+            current_time = self.df_slurm_sim_data["Step"].iloc[i]
+            #Read file 
+            if not Path("%s/%s_cryst_time_%s.txt" %(path_to_bond_bond_folder, self.lammps_dump_prefix, current_time)).is_file():
+                current_polymer = polymer("%s/%s" %(self.path_to_data_folder, self.list_run_files[i]))
+                bond_bond_corr = current_polymer.bond_bond_correlation_2(
+                    save_string = "%s/%s_bond_bond_corr_%s.txt" %(path_to_bond_bond_folder, self.lammps_dump_prefix, current_time),
+                )
+
+        return 0;
+
+
 def calc_crystallisation_and_avg_domain_size(polymer):
     print(polymer.df_slurm_sim_data)
     polymer.slurm_files.merge_slurm_files(force_save= True)
@@ -711,6 +728,11 @@ def calc_crystallisation_and_avg_domain_size(polymer):
     polymer.domain_analysis.calc_avg_domain_size()
 
     return 0;
+    
+
+
+    
+
 
 def debug_merge_boxes(polymer):
     print(polymer.atom_coords.bond_vectors["nx"].max())
@@ -726,6 +748,8 @@ def hyperbolic_functions_plot():
     print(t, y)
     plt.scatter(t, y)
     plt.show()
+
+
 
 def main():
     #PVA_200 = Simulation(200, "../../data/PVA-200/equil", "../data_online/PVA-200/icryst_T088_Tdot_e-3")
@@ -765,5 +789,9 @@ def main():
     #current_poly.atom_coords.get_nematic_vector_5()
     #print(current_poly.atom_coords.nridges)
     #current_poly.merge_boxes_2(print_results= True)
+
+    PVA_100.calc_bond_bond_correlation()
+
+
 if __name__== "__main__":
     main()

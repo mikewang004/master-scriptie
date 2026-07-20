@@ -381,19 +381,14 @@ class polymer():
             subset = subset_df.to_numpy()[:, 1:4]
             subset = subset / np.linalg.norm(subset, axis=1, keepdims=True)
             bond_bond_corr_array_polymer = np.zeros([self.atom_coords.polymer_length - 1, self.atom_coords.polymer_length - 1])
-            #print(bond_bond_corr_array_polymer.shape)
-            #subset = subset / np.linalg.norm(subset, axis=1, keepdims=True)
             bond_bond_correlation_array[i, :, :] = subset @ subset.T
-            #print(df_bond_per_position.iloc[:, i])
         bond_correlation_average = np.mean(bond_bond_correlation_array, axis = 0)
-        #print(bond_correlation_average)
         diag_means = np.zeros(self.atom_coords.polymer_length-1)
         for i in range(0, self.atom_coords.polymer_length -1):
-            #print(np.diagonal(bond_correlation_average, offset = i))
             diag_means[i] = np.mean(np.diagonal(bond_correlation_average, offset = i))
         positions = np.arange(1, self.atom_coords.polymer_length)
-        #print(positions.shape, diag_means.shape)
-        return positions, diag_means
+        diag_means_array = np_array([positions, diag_means])
+
 
     def bond_bond_corr_min_value(self):
         #positions, diag_means = self.bond_bond_correlation_2()
@@ -427,13 +422,15 @@ class polymer():
 
 
 
-    def bond_bond_correlation_2(self):
+    def bond_bond_correlation_2(self, save_string = None):
         bv = self.atom_coords.bond_vectors.copy()[["mol_id", "bx", "by", "bz"]]
         bv['pos_in_chain'] = bv.groupby('mol_id').cumcount()
         corr = []
         for n in range(self.atom_coords.polymer_length -1):
             corr.append(self.bond_bond_corr_for_n(bv, n))
         #print(np.array(corr))
+        if isinstance(save_string, str):
+            np.savetxt("%s" %save_string, np.array([np.arange(1, self.atom_coords.polymer_length), corr]).T)
         return np.array(corr)
 
 

@@ -809,8 +809,8 @@ def main():
     #print(current_poly.atom_coords.nridges)
     #current_poly.merge_boxes_2(print_results= True)
 
-    PVA_1000.domain_analysis.calc_domain_dist()
-
+    #PVA_100.domain_analysis.calc_domain_dist()
+    PVA_1000.calc_bond_bond_correlation()
 
 if __name__== "__main__":
     main()

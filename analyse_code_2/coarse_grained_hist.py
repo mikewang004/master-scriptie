@@ -13,22 +13,24 @@ class coarse_grained_hist():
         self.unique_values, self.counts = np.unique(label_matrix, return_counts = True)
 
 
+
 #TODO look at how pdf2/volume pdf is calculated
 
     def build_bin_edges(self):
-        """
-        Reproduces the manual bin boundaries from the C++ code.
-        Returns an array of bin edges (left-exclusive, right-inclusive).
-        """
-        edges = []
-        edges += list(range(0, 6))          # bins [0,1], [1,2], ..., [4,5]  → width 1
-        edges += [7]                         # [5, 7]                         → width 2
-        edges += [10]                        # [7, 10]                        → width 3
-        edges += list(range(20, 80, 10))     # [10,20], [20,30], ..., [60,70] → width 10
-        edges += [100]                       # [70, 100]                      → width 30
-        edges += list(range(200, 800, 100))  # [100,200], ..., [600,700]      → width 100
-        edges += [1000]                      # [700, 1000]                    → width 300
-        edges += list(range(2000, 10001, 1000))  # [1000,2000], ...           → width 1000
+        labels = (
+            list(range(1, 8))           # 1,2,3,4,5,6,7
+            + [10]                      # 10
+            + list(range(20, 71, 10))   # 20,30,40,50,60,70
+            + [100]                     # 100
+            + list(range(200, 701, 100))# 200,300,400,500,600,700
+            + [1000]                    # 1000
+            + list(range(2000, 10001, 1000))  # 2000,3000,...,10000
+        )
+
+        # edges: prepend 0 so the first bin is [0, 1) → size 1 only
+        # each bin is [labels[i-1], labels[i]) → contains sizes labels[i-1]..labels[i]-1
+        edges = [0] + labels
+
         return np.array(edges)
 
 
@@ -69,7 +71,9 @@ class coarse_grained_hist():
 
 
     def build_hist(self, crystallinity, save_string = None):
-        centers, pdf1, pdf2, counts = self.coarse_bin(self.counts, )
+        mask = self.unique_values > 0
+        cluster_sizes = self.counts[mask]
+        centers, pdf1, pdf2, counts = self.coarse_bin(cluster_sizes)
         df = pd.DataFrame({
             "clustersize": centers * 2,          
             "volume":      centers * 2 * self.local_volume,

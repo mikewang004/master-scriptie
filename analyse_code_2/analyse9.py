@@ -397,10 +397,14 @@ class polymer():
         diag_means_array = np_array([positions, diag_means])
 
 
-    def bond_bond_corr_min_value(self):
+    def bond_bond_corr_min_value(self, path_to_bond_bond_file = None):
         #positions, diag_means = self.bond_bond_correlation_2()
-        positions = np.arange(1, self.atom_coords.polymer_length)
-        diag_means = self.bond_bond_correlation_2()
+        if path_to_bond_bond_file == None:
+            positions = np.arange(1, self.atom_coords.polymer_length)
+            diag_means = self.bond_bond_correlation_2()
+        else:
+            bond_bond = np.loadtxt(path_to_bond_bond_file)
+            positions = bond_bond[:, 0]; diag_means = bond_bond[:, 1]
         #Get minimum position:
         min_value = np.min(diag_means)
         min_index = np.argmin(diag_means)

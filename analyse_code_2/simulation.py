@@ -633,7 +633,7 @@ class Simulation:
 
     def get_simulation_time(self, normalised_by_tc = True):
         if normalised_by_tc == True:
-            return self.df_slurm_sim_data["Step"] * self.timestep / self.tc
+            return self.df_slurm_sim_data["Step"] * self.timestep / self.tc_time
         else:
             return self.df_slurm_sim_data["Step"] * self.timestep
 
@@ -810,7 +810,7 @@ def main():
     #current_poly.merge_boxes_2(print_results= True)
 
     #PVA_100.domain_analysis.calc_domain_dist()
-    PVA_1000.calc_bond_bond_correlation()
+    PVA_50.calc_bond_bond_correlation()
 
 if __name__== "__main__":
     main()

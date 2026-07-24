@@ -461,12 +461,33 @@ class polymer():
 
 
 
-def main():
-    label_matrix = np.load("../data_online/PVA-100/icryst_T088_Tdot_e-3/nematic_vectors/label_map_time_24000000.npy")
-    path_to_polymer = "../../data/pva-100/quick_quench/equil/equil_t_088_tdot_e-3_run1_time_24000000.txt"
-    pva_100_step_20 = polymer(path_to_polymer, current_timestep= 24000000)
+    def analyse_properties_before_quench(self):
+        print("Current length: %i" %self.atom_coords.polymer_length)
+        print(self.atom_coords.n_atoms/self.atom_coords.volume)
+        self.end_to_end_distance()
+        self.gyration_radius()
+        print()
 
-    pva_100_step_20.merge_boxes_binning(label_matrix)
+
+
+def get_properties_of_polymers_before_quench():
+    path_to_data_folder = "../../data"
+    pva_chain_length_list = [300, 500, 1000]
+    # pva_100 = polymer("%s/pva-100/quick_quench/quench/quench_tmin_088_tdot_e-3.out" %path_to_data_folder)
+    # pva_100.analyse_properties_before_quench()
+    for length in pva_chain_length_list:
+        current_polymer = polymer("%s/PVA-%i/quench/PVA-%i_quench_T088_tdot_e-3_sim1_time_0.txt" %(path_to_data_folder, length, length), polymer_length = length)
+        current_polymer.analyse_properties_before_quench()
+    #path_to_pva_50 = "%s/PVA-50/equil/PVA-50_equil_t_088_tdot_e-3_run1_time_0.txt"
+
+def main():
+    # label_matrix = np.load("../data_online/PVA-100/icryst_T088_Tdot_e-3/nematic_vectors/label_map_time_24000000.npy")
+    # path_to_polymer = "../../data/pva-100/quick_quench/equil/equil_t_088_tdot_e-3_run1_time_24000000.txt"
+    # pva_100_step_20 = polymer(path_to_polymer, current_timestep= 24000000)
+
+    # pva_100_step_20.merge_boxes_binning(label_matrix)
+
+    get_properties_of_polymers_before_quench()
 
 
 if __name__== "__main__":

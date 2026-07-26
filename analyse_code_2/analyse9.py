@@ -471,13 +471,13 @@ class polymer():
 
 
 def get_properties_of_polymers_before_quench():
-    path_to_data_folder = "../../data"
-    pva_chain_length_list = [300, 500, 1000]
-    # pva_100 = polymer("%s/pva-100/quick_quench/quench/quench_tmin_088_tdot_e-3.out" %path_to_data_folder)
-    # pva_100.analyse_properties_before_quench()
-    for length in pva_chain_length_list:
-        current_polymer = polymer("%s/PVA-%i/quench/PVA-%i_quench_T088_tdot_e-3_sim1_time_0.txt" %(path_to_data_folder, length, length), polymer_length = length)
-        current_polymer.analyse_properties_before_quench()
+    path_to_data_folder = "../data"
+    pva_chain_length_list = [1000]
+    pva_100 = polymer("%s/pva-100/quick_quench/quench/quench_tmin_088_tdot_e-3_time_0.txt" %path_to_data_folder)
+    pva_100.analyse_properties_before_quench()
+    # for length in pva_chain_length_list:
+    #     current_polymer = polymer("%s/PVA-%i/quench/PVA-%i_quench_T088_tdot_e-3_time_0.txt" %(path_to_data_folder, length, length), polymer_length = length)
+    #     current_polymer.analyse_properties_before_quench()
     #path_to_pva_50 = "%s/PVA-50/equil/PVA-50_equil_t_088_tdot_e-3_run1_time_0.txt"
 
 def main():
@@ -488,6 +488,7 @@ def main():
     # pva_100_step_20.merge_boxes_binning(label_matrix)
 
     get_properties_of_polymers_before_quench()
+    #current_poly = polymer("%s/PVA-%i/quench/PVA-300_quench_T088_tdot_e-3_sim1_time_0.txt" %("../data", 300))
 
 
 if __name__== "__main__":

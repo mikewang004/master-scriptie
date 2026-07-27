@@ -370,6 +370,16 @@ class simulation_plots():
                     savestring = "%s/polymer_conformation/local_density_pva-100_1000.pdf" %self.path_to_latex_plots_folder
                     axes[i].set_xlabel(r"monomer count/$V_\text{local}$")
                     axes[i].set_ylabel(r"P(monomer count/$V_\text{local}$)")
+
+                elif mode == "bond_bond_corr":
+                    bond_bond_corr = current_poly.bond_bond_correlation_2()
+                    n = np.arange(1, len(bond_bond_corr)+1)
+                    axes[i].scatter(n, bond_bond_corr, marker = ".",
+                        label = r"$%i t/t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
+                    savestring = "%s/polymer_conformation/bond_bond_correlation_pva_100_1000.pdf" %self.path_to_latex_plots_folder
+                    axes[i].set_xlabel("n")
+                    axes[i].set_ylabel(r"$cos\theta(n)$")
+                    axes[i].set_xlim((0, 100))
             axes[i].tick_params(labelbottom=True, labelleft=True)
             axes[i].text(0.02, 0.95, letter_subplot_list[i],
                 transform=axes[i].transAxes,
@@ -391,6 +401,7 @@ class simulation_plots():
             plt.savefig(savestring)
         if show_plot == True:
             plt.show()
+
 
     def plot_stem_length(self, savestring = None, show_plot = True):
         plt.figure(figsize = (self.std_width*1.25, self.std_height*1.5))
@@ -457,7 +468,7 @@ def main():
     simp = simulation_plots(simulations)
 
     #simp.plot_monomer_density_and_crossover_values(show_plot=True)
-    simp.plot_rg_two_polymers_three_times(mode = "local_monomer_density_dist")
+    simp.plot_rg_two_polymers_three_times(mode = "bond_bond_corr")
     #simp.plot_crystallinity()
     #simp.plot_avg_domain_size()
     #simp.plot_crossover_values_vs_chain_length()

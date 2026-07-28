@@ -14,13 +14,14 @@ file_name_run2_e3_T085 = "equil_t_085_tdot_e-3_run2"
 
 # Search all 
 
-time_temp_T08 = get_time_temp_from_slurm(data_path + "/slurm-T=0.8.out")
-time_temp_T07 = get_time_temp_from_slurm(data_path + "/slurm-T=0.7.out")
-time_temp_T085 = get_time_temp_from_slurm(data_path + "/slurm-T=0.85.out")
-time_temp_T075 = get_time_temp_from_slurm(data_path + "/slurm-T=0.75.out")
-time_temp_e4_T085 = get_time_temp_from_slurm(data_path + "/slurm-e4-T=0.85.out")
-time_temp_run2_e3_T07 = get_time_temp_from_slurm(data_path + "/slurm-run2-e3-T=0.7.out")
-time_temp_run2_e3_T085 = get_time_temp_from_slurm(data_path + "/slurm-run2-e3-T=0.85.out")
+time_temp_T08 = get_time_temp_from_slurm(data_path + "/slurm-e3-T08.out")
+time_temp_T07 = get_time_temp_from_slurm(data_path + "/slurm-e3-T07-run1.out")
+time_temp_T085 = get_time_temp_from_slurm(data_path + "/slurm-e3-T085-run1.out")
+time_temp_T075 = get_time_temp_from_slurm(data_path + "/slurm-e3-T075.out")
+time_temp_T088 = get_time_temp_from_slurm(data_path + "/slurm-e3-T088.out")
+#time_temp_e4_T085 = get_time_temp_from_slurm(data_path + "/slurm-e4-T=0.85.out")
+#time_temp_run2_e3_T07 = get_time_temp_from_slurm(data_path + "/slurm-run2-e3-T=0.7.out")
+#time_temp_run2_e3_T085 = get_time_temp_from_slurm(data_path + "/slurm-run2-e3-T=0.85.out")
 #print(time_temp_T07[:, 0])
 
 cryst_T07 = "all_times_cryst_equil_t_07_tdot_e-3.txt"
@@ -30,11 +31,11 @@ cryst_T085 = "all_times_cryst_equil_t_085_tdot_e-3.txt"
 e3_run2_cryst_T07 = "all_times_cryst_equil_t_07_tdot_e-3_run2.txt"
 e3_run2_cryst_T085 = "all_times_cryst_equil_t_085_tdot_e-3_run2.txt"
 e4_cryst_T085 = "all_times_cryst_equil_t_085_tdot_e-4.txt"
-#cryst_list = [cryst_T07, cryst_T075, cryst_T08, cryst_T085]
-#temps = [0.7, 0.75, 0.8, 0.85]
+cryst_list = [cryst_T07, cryst_T075, cryst_T08, cryst_T085]
+temps = [0.7, 0.75, 0.8, 0.85]
 
-cryst_list = [e3_run2_cryst_T07, e3_run2_cryst_T085]
-temps = [0.7, 0.85]
+# cryst_list = [e3_run2_cryst_T07, e3_run2_cryst_T085]
+# temps = [0.7, 0.85]
 
 
 def calc_crystallisation(file_name_path, times, cryst_file_name):

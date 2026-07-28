@@ -11,6 +11,7 @@ import re
 from typing import List, Tuple, Optional
 import bisect
 from kneed import KneeLocator
+from hoshenKopelmanInPython2 import hoshen_kopelman_domains
 
 #TODO: modify file so that polymer properties can be accessed easily from Simulation()
 
@@ -123,6 +124,7 @@ class SlurmFiles():
 
 
         pattern = re.compile(r'^(.*)-run(\d+)\.out$')
+
         for q in folder.glob('*-run*.out'):
             m = pattern.search(q.name)
             if m:
@@ -739,6 +741,122 @@ class Simulation:
 
         return 0;
 
+    def calc_tie_chain_distribution(self):
+        results = []
+
+        for i in tqdm(range(0, len(self.list_run_files))):
+        #for i in tqdm(range(50, 52)):
+            tie_results = []
+            current_time = self.df_slurm_sim_data["Step"].iloc[i]
+            current_poly =  polymer("%s/%s" %(self.path_to_data_folder, self.list_run_files[i]))
+            label_matrix = np.load("%s/label_map_time_%i.npy" %(self.path_to_nematic_vectors_folder, current_time))
+            #print(label_matrix)
+
+            # Get domain_id for each row via element-wise indexing into label_matrix
+
+
+          
+            # ── 1. Build bond_vecs2 ───────────────────────────────────────────────────────
+            bond_vecs2 = current_poly.atom_coords.bond_vectors[["bx", "by", "bz"]].copy()
+            bond_vecs2["domain_id"] = label_matrix[
+                current_poly.atom_coords.bond_vectors["nx"].values,
+                current_poly.atom_coords.bond_vectors["ny"].values,
+                current_poly.atom_coords.bond_vectors["nz"].values,
+            ]
+
+            # ── 2. Identify tie chains ────────────────────────────────────────────────────
+            # Logic per molecule:
+            #   - Walk along the chain (atom_id order within mol_id).
+            #   - A "segment" is a maximal run of consecutive amorphous bonds (domain_id == 0).
+            #   - A segment is a tie chain if the crystalline domain just BEFORE it differs
+            #     from the crystalline domain just AFTER it (both must be non-zero).
+            #
+            # We work at the bond level: bond at atom_id i connects bead i to bead i+1,
+            # so the domain label at atom_id i is the domain of bead i.
+
+
+
+            for mol_id, grp in bond_vecs2.groupby(
+                current_poly.atom_coords.bond_vectors["mol_id"]  # use mol_id from original df as grouping key
+            ):
+                grp = grp.sort_index()          # sort by atom_id
+                domains = grp["domain_id"].values
+                atom_ids = grp.index.values
+                n = len(domains)
+
+                k = 0
+                while k < n:
+                    if domains[k] == 0:
+                        # start of an amorphous run
+                        j = k
+                        while j < n and domains[j] == 0:
+                            j += 1
+                        # amorphous segment: indices [i, j)
+                        # domain before segment
+                        d_before = domains[k - 1] if k > 0 else 0
+                        # domain after segment
+                        d_after  = domains[j]     if j < n else 0
+                        length   = j - k
+
+                        is_tie = (
+                            (d_before != 0) and
+                            (d_after  != 0) and
+                            (d_before != d_after) and
+                            (length   >= 2)          # ← at least two bonds
+                        )
+
+
+                        tie_results.append({
+                            "mol_id":       mol_id,
+                            "start_atom":   atom_ids[k],
+                            "end_atom":     atom_ids[j - 1],
+                            "length_bonds": j - k,          # number of bonds (≈ monomers)
+                            "domain_before": d_before,
+                            "domain_after":  d_after,
+                            "is_tie":        is_tie,
+                        })
+                        k = j
+                    else:
+                        k += 1
+
+            segments_df = pd.DataFrame(tie_results)
+
+            # ── 3. Compute f_tie ──────────────────────────────────────────────────────────
+            tie_df = segments_df[segments_df["is_tie"]]
+
+            total_bonds     = len(bond_vecs2)
+            tie_bonds       = tie_df["length_bonds"].sum()
+            f_tie           = tie_bonds / total_bonds
+
+            n_tie_chains    = len(tie_df)
+            mean_tie_length = tie_df["length_bonds"].mean() if n_tie_chains > 0 else 0.0
+
+            # ── 4. Report ─────────────────────────────────────────────────────────────────
+            # print(f"Total bonds            : {total_bonds}")
+            # print(f"Bonds in tie chains    : {tie_bonds}")
+            # print(f"f_tie                  : {f_tie:.4f}")
+            # print(f"Number of tie chains   : {n_tie_chains}")
+            # print(f"Mean tie-chain length  : {mean_tie_length:.2f} monomers")
+            # print()
+            # print("Tie-chain length distribution:")
+            # print(tie_df["length_bonds"].describe())
+            # print()
+            #print(tie_df.head(10))
+
+            results.append({
+                "index": i,
+                "time": current_time,
+                "total_bonds": total_bonds,
+                "tie_bonds": tie_bonds,
+                "f_tie": f_tie,
+                "n_tie_chains": n_tie_chains,
+                "mean_tie_length": mean_tie_length,
+            })
+
+        summary_df = pd.DataFrame(results).set_index("index")
+        summary_df.to_csv("%s/tie_chains.txt" %(self.path_to_home_folder), sep = " ")
+        return summary_df
+
 
 def calc_crystallisation_and_avg_domain_size(polymer):
     print(polymer.df_slurm_sim_data)
@@ -780,8 +898,15 @@ def main():
     PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
 
 
-    PVA_100.domain_analysis.calc_crystallisation()
-    PVA_1000.domain_analysis.calc_crystallisation()
+    # PVA_100.domain_analysis.calc_crystallisation()
+    # PVA_1000.domain_analysis.calc_crystallisation()
+
+    PVA_50.calc_tie_chain_distribution()
+    PVA_100.calc_tie_chain_distribution()
+    PVA_200.calc_tie_chain_distribution()
+    PVA_300.calc_tie_chain_distribution()
+    PVA_500.calc_tie_chain_distribution()
+    PVA_1000.calc_tie_chain_distribution()
     #hyperbolic_functions_plot()
     #PVA_1000.domain_analysis.get_crossover_point(8, 40, savefig_name= "plots/pva_1000_crossover_point_definition.pdf", show_plot= True)
     #PVA_100.domain_analysis.get_crossover_point_kneed(savefig_name= "plots/pva_100_crossover_point_definition.pdf", show_plot= True)
@@ -810,7 +935,7 @@ def main():
     #current_poly.merge_boxes_2(print_results= True)
 
     #PVA_100.domain_analysis.calc_domain_dist()
-    PVA_50.calc_bond_bond_correlation()
+    #PVA_50.calc_bond_bond_correlation()
 
 if __name__== "__main__":
     main()

@@ -28,6 +28,25 @@ class results(object):
     def __init__(self):
         return
 
+def get_time_temp_from_slurm(file_to_path):
+    n_columns = 2
+    with open(file_to_path, "r") as file:
+        lines = file.readlines()
+
+    for i, line in enumerate(lines):
+        if "Per MPI rank memory allocation (min/avg/max)" in line:
+            start_index = i+2
+            break
+    collected_rows = []
+    for line in lines[start_index:]:
+        if "error: *** JOB" in line:
+            print(line)
+            break
+        row = line.strip().split()
+        collected_rows.append(row[:n_columns])
+    return np.array(collected_rows, dtype = float)
+
+
 
 
 class atom_coords:
@@ -290,7 +309,8 @@ class polymer():
 
     def merge_boxes_2(self, ndot_cutoff = 0.97,cryst_cutoff = 0.8, save = False, print_results: bool = False, label_matrix = None):
         if not isinstance(label_matrix, np.ndarray):
-            label_matrix = hk_in_python(self.df_cryst, ndot_cutoff = ndot_cutoff, nridges = self.atom_coords.nridges, cryst_cutoff = cryst_cutoff)
+            #label_matrix = hk_in_python(self.df_cryst, ndot_cutoff = ndot_cutoff, nridges = self.atom_coords.nridges, cryst_cutoff = cryst_cutoff)\
+            label_matrix = hoshen_kopelman_domains(self.df_cryst, dot_threshold = ndot_cutoff, s_threshold = cryst_cutoff)
         total_box_elements = (self.atom_coords.nridges["x"]*self.atom_coords.nridges["y"]*self.atom_coords.nridges["z"]).astype(int)
         unique_values, counts = np.unique(label_matrix, return_counts=True) #Labels and how much each label occurs
         total_number_merged_clusters = counts[counts > 1]
@@ -467,6 +487,7 @@ class polymer():
         self.end_to_end_distance()
         self.gyration_radius()
         print()
+
 
 
 

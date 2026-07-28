@@ -1,4 +1,4 @@
-from analyse9 import polymer, atom_coords
+from analyse9 import polymer, atom_coords, get_time_temp_from_slurm
 import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
@@ -39,7 +39,7 @@ class avrami():
 
 class simulation_plots():
 
-    def __init__(self, simulations, caption_font = 11, legend_font = 9, title_font = 18):
+    def __init__(self, simulations, caption_font = 10, legend_font = 9, title_font = 14):
         self.cm_to_in = 1/2.54
         self.max_x = 15.5
         self.max_y = 22
@@ -308,7 +308,7 @@ class simulation_plots():
 
                     bin_centers = (bin_edges[:-1] + bin_edges[1:]) /2
 
-                    smooth_counts = sp.ndimage.gaussian_filter1d(counts, sigma = 1.5)
+                    smooth_counts = sp.ndimage.gaussian_filter1d(counts, sigma = 1.7)
                     axes[i].plot(bin_centers, smooth_counts, color=self.times_colours["%i" %(2*j)], linestyle = "-", marker = ".",
                     label = r"$%i t/t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
                     axes[i].set_xlabel(r"$R_g/ \sqrt{\langle R_g^2 \rangle}$", fontsize = self.caption_font)
@@ -449,7 +449,61 @@ class simulation_plots():
         plt.show()
 
 
+    def plot_crystallinity_different_quench_temps(self):
+        data_path = "../../data/pva-100/quick_quench/long_run"
+        cryst_path = "../test_run/"
+        time_temp_T08 = get_time_temp_from_slurm(data_path + "/slurm-e3-T08.out")
+        time_temp_T07 = get_time_temp_from_slurm(data_path + "/slurm-e3-T07-run1.out")
+        time_temp_T085 = get_time_temp_from_slurm(data_path + "/slurm-e3-T085-run1.out")
+        time_temp_T075 = get_time_temp_from_slurm(data_path + "/slurm-e3-T075.out")
+        time_temp_T088 = get_time_temp_from_slurm(data_path + "/slurm-e3-T088.out")
 
+        cryst_T07 = "%s/all_times_cryst_equil_t_07_tdot_e-3.txt" %cryst_path
+        cryst_T08 = "%s/all_times_cryst_equil_t_08_tdot_e-3.txt" %cryst_path
+        cryst_T075 = "%s/all_times_cryst_equil_t_075_tdot_e-3.txt" %cryst_path
+        cryst_T085 = "%s/all_times_cryst_equil_t_085_tdot_e-3.txt" %cryst_path
+        cryst_T088 = "%s/all_times_cryst_equil_t_088_tdot_e-3.txt" %cryst_path
+        cryst_list = [cryst_T07, cryst_T075, cryst_T08, cryst_T085, cryst_T088]
+        colors = {0: 'tab:blue',1: 'tab:red', 2: 'tab:purple', 3: 'tab:green', 4: 'tab:orange'}
+        temps = [0.7, 0.75, 0.8, 0.85, 0.88]
+        i = 0
+        for item in cryst_list:
+            array = np.loadtxt(item, delimiter="," )
+            print(array)
+            time = array[:, 0]; cryst = array[:, 1]
+            color = colors.get(i, 'tab:gray')  # fallback for unspecified iterations
+            plt.scatter(time*0.005, cryst, label = "T = %.2f" %temps[i], marker = ".", color = color)
+            i = i + 1
+        
+        plt.title(r"Crystallisation after quench at $\dot{T} = 10^{-3}$")
+        plt.xlabel(r"$t/\tau$")
+        plt.ylabel(r"$\phi(t)$")
+        plt.legend()
+        plt.savefig("%s/quench_temps/crystallisation_after_quick_quench.pdf" %(self.path_to_latex_plots_folder))
+        plt.show()
+
+
+    def plot_length_tie_chains(self, savestring = None, mode = "N_tie"):
+        for i in range(0, len(self.simulations)):
+            simulation = self.simulations[i]
+            path_to_tie_chain_file = "%s/tie_chains.txt" %simulation.path_to_home_folder
+            tie_chains = pd.read_csv(path_to_tie_chain_file, sep = " ")
+            time = simulation.get_simulation_time()
+            if mode == "N_tie":
+                y = tie_chains["mean_tie_length"].iloc[1:]/simulation.polymer_length
+                ylabel = r"$N_\text{tie}/N$"
+                savestring = "%s/tie_chains/mean_tie_chain_lengths.pdf" %self.path_to_latex_plots_folder
+            elif mode == "f_tie":
+                y = tie_chains["f_tie"].iloc[1:]
+                ylabel = r"f_\text{tie}"
+                savestring = "%s/tie_chains/f_tie.pdf" %self.path_to_latex_plots_folder
+            plt.plot(time[1:],y,
+                color=self.simulation_colours[simulation], label = "PVA-%i" %simulation.polymer_length)
+        plt.xlabel(r"$t/tc$")
+        plt.ylabel(ylabel)
+        plt.legend()
+        plt.savefig(savestring)
+        return 0;
 
 
 
@@ -468,12 +522,15 @@ def main():
     simp = simulation_plots(simulations)
 
     #simp.plot_monomer_density_and_crossover_values(show_plot=True)
-    simp.plot_rg_two_polymers_three_times(mode = "bond_bond_corr")
+    #simp.plot_rg_two_polymers_three_times(mode = "rg")
     #simp.plot_crystallinity()
     #simp.plot_avg_domain_size()
     #simp.plot_crossover_values_vs_chain_length()
 
     #simp.plot_stem_length()
+
+    #simp.plot_crystallinity_different_quench_temps()
+    simp.plot_length_tie_chains(mode = "f_tie")
 
 
 if __name__== "__main__":

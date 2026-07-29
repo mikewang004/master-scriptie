@@ -92,7 +92,7 @@ class simulation_plots():
             time = simulation.df_slurm_sim_data["Step"] * simulation.timestep
             monomer_density = (poly.atom_coords.n_atoms/simulation.df_slurm_sim_data["Volume"])
             #idx, xkn, ykn = simulation.domain_analysis.get_crossover_point_cutoff(cutoff=0.985)
-            idx, xkn, ykn, popt = simulation.domain_analysis.find_knee()
+            idx, xkn, ykn, popt = simulation.domain_analysis.find_knee(monomer_density)
             # times.append(time[crossover_index])
             # crossovers.append(monomer_density[crossover_index])
             # idx_list.append(idx)
@@ -138,7 +138,7 @@ class simulation_plots():
             # Top subplot
             ax1.scatter(time, monomer_density, label=f"PVA-{simulation.polymer_length}", color = self.simulation_colours[simulation])
 
-            idx, xkn, ykn, popt = simulation.domain_analysis.find_knee()
+            idx, xkn, ykn, popt = simulation.domain_analysis.find_knee(momer_density)
             polymer_lengths.append(simulation.polymer_length)
             times.append(xkn); crossovers.append(ykn); idx_list.append(idx)
             time_con = np.linspace(0, time.max(), 50000)
@@ -268,6 +268,88 @@ class simulation_plots():
         if show_plot == True:
             plt.show()
 
+
+    
+    def plot_avg_domain_size_and_crossover_values(self, show_plot= True):
+        width = self.max_x/1.5 * plt_cm_to_in
+        height = self.max_y/3 * plt_cm_to_in
+
+        # Two vertical subplots; total figure height = 2 * height
+        fig, (ax1, ax2) = plt.subplots(
+            2, 1,
+            figsize=(width, 2 * height),
+            sharex=True
+        )
+
+        times = []
+        crossovers = []
+        polymer_lengths = []
+        idx_list = []
+        # Calc max density (is at PVA-50)
+        pva_50 = self.simulations[0]
+        max_density = pva_50.get_polymer_by_time(0).atom_coords.n_atoms/pva_50.df_slurm_sim_data["Volume"].iloc[-1]
+
+        for simulation in self.simulations:
+            current_domain_file = simulation.domain_analysis.read_avg_domain_size()
+            time = simulation.get_simulation_time(normalised_by_tc= False)
+            mean_domain_size = current_domain_file["mean size cryst domains"].iloc[:len(time)]**(1/3)
+            ax1.scatter(time, mean_domain_size, 
+                label = "PVA-%i" %(simulation.polymer_length), c= self.simulation_colours[simulation], marker = ".")
+
+            idx, xkn, ykn, popt = simulation.domain_analysis.find_knee(mean_domain_size)
+            polymer_lengths.append(simulation.polymer_length)
+            times.append(xkn); crossovers.append(ykn); idx_list.append(idx)
+            time_con = np.linspace(0, time.max(), 50000)
+            ax2.scatter(time, mean_domain_size, label=f"PVA-{simulation.polymer_length}", color = self.simulation_colours[simulation], marker = ".")
+            ax2.plot(time_con, fit_functions.double_exp(time_con, *popt), color = self.simulation_colours[simulation], linewidth = 3.0)
+
+        tc = pd.DataFrame(
+            {
+                "index": idx_list,
+                "time": times,
+                "mean domain size": crossovers,
+            },
+            index=polymer_lengths,
+        )
+        tc.index.name = "polymer_lengths"
+
+        for i in range(0,len(times)):
+            xkn = times[i]; ykn = crossovers[i]
+            ax2.scatter(xkn, ykn, marker="x", color="black", zorder = 3)
+
+        print(tc.head())
+        tc.to_csv("../data_online/mean_domain_size.txt", sep=" ")
+
+
+        # Horizontal lines in both subplots
+
+        # Labels & legend
+        ax2.set_xlabel(r"$t/\tau$", fontsize = self.caption_font)
+        ax1.set_ylabel(r"$l/\sigma$", fontsize = self.caption_font)
+        ax2.set_ylabel(r"$l/\sigma$", fontsize = self.caption_font)
+
+        ax1.legend(fontsize=plt_caption_font)
+        ax2.legend(fontsize=plt_caption_font)
+
+        ax1.text(
+            0.02, 0.95, "(a)",
+            transform=ax1.transAxes,
+            fontsize=plt_caption_font,
+            va="top", ha="left"
+        )
+        ax2.text(
+            0.02, 0.95, "(b)",
+            transform=ax2.transAxes,
+            fontsize=plt_caption_font,
+            va="top", ha="left"
+        )
+
+        #ax1.set_xscale("log")
+        #ax2.set_xscale("log")
+        fig.tight_layout()
+        fig.savefig("%s/crossover_point/crossover_mean_domain_size_vs_time_different_chains_subplots.pdf" %self.path_to_latex_plots_folder)
+        if show_plot == True:
+            plt.show()
     
 
 
@@ -562,7 +644,7 @@ def main():
     simp = simulation_plots(simulations)
 
     #simp.plot_monomer_density_and_crossover_values(show_plot=True)
-    simp.plot_rg_two_polymers_three_times(mode = "nematic")
+    #simp.plot_rg_two_polymers_three_times(mode = "nematic")
     #simp.plot_crystallinity()
     #simp.plot_avg_domain_size()
     #simp.plot_crossover_values_vs_chain_length()
@@ -571,6 +653,8 @@ def main():
 
     #simp.plot_crystallinity_different_quench_temps()
     #simp.plot_length_tie_chains(mode = "f_tie")
+
+    simp.plot_avg_domain_size_and_crossover_values()
 
 
 if __name__== "__main__":

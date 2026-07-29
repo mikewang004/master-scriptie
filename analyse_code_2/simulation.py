@@ -520,7 +520,7 @@ class domain_analysis:
 
 
             
-    def find_knee(self, p0=None, n_points=500_000):
+    def find_knee(self, monomer_density, p0=None, n_points=500_000):
         """
         Fit double_exp to (x, y) data and return the point of maximum curvature
         on normalised axes (the 'knee').
@@ -540,7 +540,7 @@ class domain_analysis:
         current_poly = self.sim.get_polymer_by_time(0)
         n_atoms = current_poly.atom_coords.n_atoms
         time = self.sim.df_slurm_sim_data["Step"] * self.sim.timestep
-        monomer_density = (n_atoms/self.sim.df_slurm_sim_data["Volume"])
+        #monomer_density = (n_atoms/self.sim.df_slurm_sim_data["Volume"])
         x, y = np.asarray(time), np.asarray(monomer_density)
 
         if p0 is None:
@@ -631,6 +631,12 @@ class Simulation:
         self.df_cryst = self.domain_analysis.read_crystallisation()
         self.timestep = 0.005
         self.tc_idx, self.tc_time, self.tc_density = self.read_crossover_time()
+        polymer_0 = self.get_polymer_by_time(0)
+        print("PVA-%i loaded!" %self.polymer_length)
+        print("Box boundaries as follows: ")
+        print(polymer_0.atom_coords.actual_cell_length)
+        print(polymer_0.atom_coords.nridges)
+        print(polymer_0.atom_coords.n_atoms/polymer_0.atom_coords.volume)
 
 
     def get_simulation_time(self, normalised_by_tc = True):

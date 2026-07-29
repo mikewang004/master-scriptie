@@ -72,7 +72,7 @@ class atom_coords:
         #Calculate box properties 
 
         self.bond_vectors = self.calculate_bond_vectors()
-        self.bond_vectors, self.nridges, self.no_nridges_3d  = self.make_cell_grid()
+        self.bond_vectors, self.nridges, self.no_nridges_3d, self.actual_cell_length  = self.make_cell_grid()
         self.local_volume = self.calc_local_volume()
         #self.df_cryst = self.get_nematic_vector_5()
         self.results = results()
@@ -210,7 +210,7 @@ class atom_coords:
             nz=nz,
         )
         #self.bond_vectors = self.bond_vectors[(self.bond_vectors["nx"] >= 0) & (self.bond_vectors["ny"] >= 0) & (self.bond_vectors["nz"] >= 0)]
-        return self.bond_vectors, nridges, nridges_total_3d
+        return self.bond_vectors, nridges, nridges_total_3d, actual_cell_length
 
     def assign_monomers_to_box(self, cell_length = 2):
         nridges, nridges_total_3d = self.calc_nridges()

@@ -294,7 +294,8 @@ class simulation_plots():
         #current_poly_1000 = PVA_1000.get_polymer_by_time(int(times_PVA_1000[i]*1200000))
         for i in range(0, len(times_different_PVA)):
             polymer_times = times_different_PVA[i]
-            for j in range(0, len(polymer_times)): 
+            for j in range(0, len(polymer_times)):
+            #for j in range(0, 1): 
                 current_time = int(polymer_times[j])*1200000
                 current_poly = polymer_list[i].get_polymer_by_time(current_time)
                 if mode == "rg":
@@ -330,13 +331,14 @@ class simulation_plots():
                     counts, bin_edges = np.histogram(current_poly.results.nematic_value_dist, bins = 100, density = True)
                     bin_centers = (bin_edges[:-1] + bin_edges[1:]) /2
                     smooth_counts = sp.ndimage.gaussian_filter1d(counts, sigma = 1.0)
-                    axes[i].plot(bin_centers, smooth_counts, color=self.times_colours["%i" %(2*j)], linestyle = "-", marker = "o",
+                    axes[i].plot(bin_centers, smooth_counts, color=self.times_colours["%i" %(2*j)], linestyle = "-", marker = ".",
                     label = r"$%i t/t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
                 # values, bins, __ = axes[i].hist(current_poly_1000.results.nematic_value_dist, 
                 #     bins=100, color=self.simulation_colours[PVA_1000], density = True, histtype = "step", label = "PVA-%i" %PVA_1000.polymer_length)
-                    axes[i].set_xlabel(r"$\lambda$", fontsize = self.caption_font)
+                    axes[i].set_xlabel(r"$\lambda$")
+                    axes[i].set_ylabel(r"$P(\lambda)$")
                     
-                    savestring = "%s/polymer_conformation/nem_value_pva_100_1000.pdf" %self.path_to_latex_plots_folder
+                    savestring = "%s/nematic_dist/nem_value_pva_100_1000.pdf" %self.path_to_latex_plots_folder
 
 
                 elif mode == "cryst_domain_dist":
@@ -355,21 +357,59 @@ class simulation_plots():
 
                 elif mode == "local_monomer_density_dist":
                     monomer_count = current_poly.atom_coords.assign_monomers_to_box()
+                    print(monomer_count.iloc[:, :7])
                     triplet_counts = (
                         monomer_count.groupby(['nx', 'ny', 'nz'])
                         .size()
                         .reset_index(name='count')
                     )
-                    local_density = triplet_counts["count"]/current_poly.atom_coords.local_volume
-                    mu, sigma = sp.stats.norm.fit(local_density)
+
+                    n_bins = 26
+                    Lx, Ly, Lz = current_poly.atom_coords.boxlengths  # box dimensions
+                    coords = monomer_count[['xu', 'yu', 'zu']].values
+                    x_min, y_min, z_min = coords.min(axis=0)  # or use known box origin
+
+                    bins_x = np.linspace(x_min, x_min + Lx, n_bins + 1)
+                    bins_y = np.linspace(y_min, y_min + Ly, n_bins + 1)
+                    bins_z = np.linspace(z_min, z_min + Lz, n_bins + 1)
+                    counts, edges = np.histogramdd(coords, bins=(bins_x, bins_y, bins_z))
+
+                    # --- voxel volume ---
+                    voxel_vol = (Lx / n_bins) * (Ly / n_bins) * (Lz / n_bins)
+
+                    # --- local density: monomers per unit volume ---
+                    local_density = counts / voxel_vol  # shape: (n_bins, n_bins, n_bins)
+                    global_density = current_poly.atom_coords.n_atoms/current_poly.atom_coords.volume
+                    # print(f"Voxel volume:       {voxel_vol:.4f}")
+                    # print(f"Max local density:  {local_density.max():.4f}")
+                    # print(f"Mean local density: {local_density.mean():.4f}")
+                    # print(f"Global density check: {len(coords) / (Lx * Ly * Lz):.4f}")
+                    density_flat = local_density.flatten()
+                    density_nonzero = density_flat[density_flat > 0]
+                    counts, bin_edges = np.histogram(density_nonzero, bins = n_bins, density = True)
+                    bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+                    counts_smooth = sp.ndimage.gaussian_filter1d(counts.astype(float), sigma=1)
+
+                    axes[i].plot(bin_centers, counts_smooth, color=self.times_colours["%i" %(2*j)],
+                        label=r"$%i t/t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
+                    if j == 2:
+                        axes[i].vlines(global_density, 0, 2.5, color = "red", label = r"$\rho_\text{global}$ = %.2f at %i $t/t_c$" %(global_density,
+                        int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)), linestyle = "dashed")
+                    # axes[i].hist(density_nonzero, bins = n_bins, color = self.times_colours["%i" %(2*j)],
+                    #      label = r"$%i t/t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
+
+                    print(polymer_list[i].polymer_length, int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time))
+                    #local_density = triplet_counts["count"]/current_poly.atom_coords.local_volume
+                    #print(np.histogram(local_density, bins = 20))
+                    mu, sigma = sp.stats.norm.fit(density_nonzero)
                     x_kde = np.linspace(local_density.min(),local_density.max(), 100)
                     pdf = sp.stats.norm.pdf(x_kde, mu, sigma)
-                    axes[i].plot(x_kde, pdf, 
-                        color = self.times_colours["%i" %(2*j)], linestyle = "-", markersize = 3,
-                        label = r"$%i t/t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
+                    # axes[i].plot(x_kde, pdf, 
+                    #     color = self.times_colours["%i" %(2*j)], linestyle = "-", markersize = 3,
+                    #     label = r"$%i t/t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
                     savestring = "%s/polymer_conformation/local_density_pva-100_1000.pdf" %self.path_to_latex_plots_folder
-                    axes[i].set_xlabel(r"monomer count/$V_\text{local}$")
-                    axes[i].set_ylabel(r"P(monomer count/$V_\text{local}$)")
+                    axes[i].set_xlabel(r"$N_\text{local monomers}/V_\text{local}$")
+                    axes[i].set_ylabel(r"$P(N_\text{local monomers}/V_\text{local}$)")
 
                 elif mode == "bond_bond_corr":
                     bond_bond_corr = current_poly.bond_bond_correlation_2()
@@ -386,7 +426,7 @@ class simulation_plots():
                 fontsize=plt_caption_font,
                 va="top", ha="left")
             if mode == "nematic":
-                axes[i].vlines(PVA_100.cryst_cutoff, 0, np.max(counts), color = "red",linestyles = "dotted", label = r"crystallisation cutoff")
+                axes[i].vlines(PVA_100.cryst_cutoff, 0, np.max(counts), color = "red",linestyles = "dotted", label = r"$\lambda_\text{cutoff} = 0.8$")
             axes[i].legend(fontsize = self.caption_font)
 
 
@@ -522,7 +562,7 @@ def main():
     simp = simulation_plots(simulations)
 
     #simp.plot_monomer_density_and_crossover_values(show_plot=True)
-    #simp.plot_rg_two_polymers_three_times(mode = "rg")
+    simp.plot_rg_two_polymers_three_times(mode = "nematic")
     #simp.plot_crystallinity()
     #simp.plot_avg_domain_size()
     #simp.plot_crossover_values_vs_chain_length()
@@ -530,7 +570,7 @@ def main():
     #simp.plot_stem_length()
 
     #simp.plot_crystallinity_different_quench_temps()
-    simp.plot_length_tie_chains(mode = "f_tie")
+    #simp.plot_length_tie_chains(mode = "f_tie")
 
 
 if __name__== "__main__":

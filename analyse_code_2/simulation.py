@@ -632,11 +632,11 @@ class Simulation:
         self.timestep = 0.005
         self.tc_idx, self.tc_time, self.tc_density = self.read_crossover_time()
         polymer_0 = self.get_polymer_by_time(0)
-        print("PVA-%i loaded!" %self.polymer_length)
-        print("Box boundaries as follows: ")
-        print(polymer_0.atom_coords.actual_cell_length)
-        print(polymer_0.atom_coords.nridges)
-        print(polymer_0.atom_coords.n_atoms/polymer_0.atom_coords.volume)
+        # print("PVA-%i loaded!" %self.polymer_length)
+        # print("Box boundaries as follows: ")
+        # print(polymer_0.atom_coords.actual_cell_length)
+        # print(polymer_0.atom_coords.nridges)
+        # print(polymer_0.atom_coords.n_atoms/polymer_0.atom_coords.volume)
 
 
     def get_simulation_time(self, normalised_by_tc = True):
@@ -907,12 +907,12 @@ def main():
     # PVA_100.domain_analysis.calc_crystallisation()
     # PVA_1000.domain_analysis.calc_crystallisation()
 
-    PVA_50.calc_tie_chain_distribution()
-    PVA_100.calc_tie_chain_distribution()
-    PVA_200.calc_tie_chain_distribution()
-    PVA_300.calc_tie_chain_distribution()
-    PVA_500.calc_tie_chain_distribution()
-    PVA_1000.calc_tie_chain_distribution()
+    # PVA_50.calc_tie_chain_distribution()
+    # PVA_100.calc_tie_chain_distribution()
+    # PVA_200.calc_tie_chain_distribution()
+    # PVA_300.calc_tie_chain_distribution()
+    # PVA_500.calc_tie_chain_distribution()
+    # PVA_1000.calc_tie_chain_distribution()
     #hyperbolic_functions_plot()
     #PVA_1000.domain_analysis.get_crossover_point(8, 40, savefig_name= "plots/pva_1000_crossover_point_definition.pdf", show_plot= True)
     #PVA_100.domain_analysis.get_crossover_point_kneed(savefig_name= "plots/pva_100_crossover_point_definition.pdf", show_plot= True)
@@ -926,7 +926,7 @@ def main():
     #calc_crystallisation_and_avg_domain_size(PVA_50)
     #calc_crystallisation_and_avg_domain_size(PVA_100)
     #calc_crystallisation_and_avg_domain_size(PVA_200)
-    #calc_crystallisation_and_avg_domain_size(PVA_300)
+    calc_crystallisation_and_avg_domain_size(PVA_300)
     #calc_crystallisation_and_avg_domain_size(PVA_500)
     #calc_crystallisation_and_avg_domain_size(PVA_1000)
 
@@ -942,6 +942,7 @@ def main():
 
     #PVA_100.domain_analysis.calc_domain_dist()
     #PVA_50.calc_bond_bond_correlation()
+    PVA_300.domain_analysis.calc_domain_dist()
 
 if __name__== "__main__":
     main()

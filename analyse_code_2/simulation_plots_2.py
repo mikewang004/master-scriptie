@@ -352,8 +352,28 @@ class simulation_plots():
             plt.show()
     
 
+    def choose_two_polymers(self, N1 = 1, N2 = 5):
+        """PVA-50: 0, -100: 1, -200: 2, 300: 3, 500: 4, 1000: 5"""
 
-    def plot_rg_two_polymers_three_times(self, mode = "rg", savestring_default = True, show_plot = True):
+        sim1 = self.simulations[N1]; sim2 = self.simulations[N2]
+        index_t_start = 0
+        time_by_index = {
+            0: 140,  # PVA-50
+            1: 140,  # PVA-100
+            2: 140,  # PVA-200
+            3: 133,  # PVA-300
+            4: 119,  # PVA-500
+            5: 119,  # PVA-1000
+        }
+
+        times_poly_1 = [index_t_start, sim1.tc_idx, time_by_index[N1]]
+        times_poly_2 = [index_t_start, sim2.tc_idx, time_by_index[N2]]
+        polymer_list = [sim1, sim2]
+        times_different_PVA = [times_poly_1, times_poly_2]
+        return polymer_list, times_different_PVA
+
+
+    def plot_rg_two_polymers_three_times(self, index_poly_1 = None, index_poly_2 = None, mode = "rg", savestring_default = True, show_plot = True):
         """Mode can either be 'rg' or "re". 
         Note: PVA-100 has 174 items, PVA-1000 119."""
         #TODO review smoothening method
@@ -363,13 +383,17 @@ class simulation_plots():
             sharex=True
         )
 
-        PVA_100 = self.simulations[1]; PVA_1000 = self.simulations[-1]
 
-        index_t_start = 0; index_t_end_1000 = 119; index_t_end_100 = 140
-        times_PVA_100 = [index_t_start, PVA_100.tc_idx, index_t_end_100]
-        times_PVA_1000 = [index_t_start, PVA_1000.tc_idx, index_t_end_1000]
-        times_different_PVA = [times_PVA_100, times_PVA_1000]
-        polymer_list = [PVA_100, PVA_1000]
+        if index_poly_1 == None:
+            PVA_100 = self.simulations[1]; PVA_1000 = self.simulations[-1]
+
+            index_t_start = 0; index_t_end_1000 = 119; index_t_end_100 = 140 #Also 140 for PVA-50, -100, 200
+            times_PVA_100 = [index_t_start, PVA_100.tc_idx, index_t_end_100]
+            times_PVA_1000 = [index_t_start, PVA_1000.tc_idx, index_t_end_1000]
+            times_different_PVA = [times_PVA_100, times_PVA_1000]
+            polymer_list = [PVA_100, PVA_1000]
+        else:
+            polymer_list, times_different_PVA = self.choose_two_polymers(index_poly_1, index_poly_2)
         letter_subplot_list = ["(a)", "(b)", "(c)"]
         #print(times_PVA_100[i])
         #current_poly_100 = PVA_100.get_polymer_by_time(int(times_PVA_100[i]*1200000))
@@ -395,7 +419,7 @@ class simulation_plots():
                     axes[i].plot(bin_centers, smooth_counts, color=self.times_colours["%i" %(2*j)], linestyle = "-", marker = ".",
                     label = r"$%i t/t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
                     axes[i].set_xlabel(r"$R_g/ \sqrt{\langle R_g^2 \rangle}$", fontsize = self.caption_font)
-                    savestring = "%s/polymer_conformation/rg_pva_100_1000.pdf" %self.path_to_latex_plots_folder
+                    savestring = "%s/polymer_conformation/rg_pva_%i_%i.pdf" %(self.path_to_latex_plots_folder, polymer_list[0].polymer_length, polymer_list[1].polymer_length)
 
                 elif mode == "re":
                     current_poly.end_to_end_distance()
@@ -420,7 +444,7 @@ class simulation_plots():
                     axes[i].set_xlabel(r"$\lambda$")
                     axes[i].set_ylabel(r"$P(\lambda)$")
                     
-                    savestring = "%s/nematic_dist/nem_value_pva_100_1000.pdf" %self.path_to_latex_plots_folder
+                    savestring = "%s/nematic_dist/nem_value_pva_200_300.pdf" %self.path_to_latex_plots_folder
 
 
                 elif mode == "cryst_domain_dist":
@@ -429,8 +453,8 @@ class simulation_plots():
                     #print(cryst_domain_dist["volume_pdf"])
 
                     axes[i].plot(cryst_domain_dist["volume"], cryst_domain_dist["volume_pdf"], 
-                        label = r"$%i t/t_c$" %(int(current_poly.atom_coords.current_timestep/polymer_list[i].tc_time)))
-                    savestring = "%s/domain_analysis/nem_value_pva_100_1000.pdf" %self.path_to_latex_plots_folder
+                        label = r"$%i t/t_c$" %current_time)
+                    savestring = "%s/domain_analysis/nem_value_pva_%i_%i.pdf" %(self.path_to_latex_plots_folder, polymer_list[0].polymer_length, polymer_list[1].polymer_length)
                     axes[i].set_xscale("log")
                     axes[i].set_yscale("log")
                     axes[i].set_xlabel(r"$V_\text{domain}$")
@@ -513,8 +537,8 @@ class simulation_plots():
 
 
 
-        axes[0].set_title("PVA-100")
-        axes[1].set_title("PVA-1000")
+        axes[0].set_title("PVA-%i" %(polymer_list[0].polymer_length))
+        axes[1].set_title("PVA-%i" %(polymer_list[0].polymer_length))
 
         axes[0].legend(fontsize=self.caption_font)
         axes[1].legend(fontsize=self.caption_font)
@@ -612,8 +636,8 @@ class simulation_plots():
             tie_chains = pd.read_csv(path_to_tie_chain_file, sep = " ")
             time = simulation.get_simulation_time()
             if mode == "N_tie":
-                y = tie_chains["mean_tie_length"].iloc[1:]/simulation.polymer_length
-                ylabel = r"$N_\text{tie}/N$"
+                y = tie_chains["mean_tie_length"].iloc[1:]
+                ylabel = r"$N_\text{tie}$"
                 savestring = "%s/tie_chains/mean_tie_chain_lengths.pdf" %self.path_to_latex_plots_folder
             elif mode == "f_tie":
                 y = tie_chains["f_tie"].iloc[1:]
@@ -644,7 +668,7 @@ def main():
     simp = simulation_plots(simulations)
 
     #simp.plot_monomer_density_and_crossover_values(show_plot=True)
-    #simp.plot_rg_two_polymers_three_times(mode = "nematic")
+    simp.plot_rg_two_polymers_three_times(mode = "cryst_domain_dist", index_poly_1= 2, index_poly_2= 3)
     #simp.plot_crystallinity()
     #simp.plot_avg_domain_size()
     #simp.plot_crossover_values_vs_chain_length()
@@ -652,9 +676,9 @@ def main():
     #simp.plot_stem_length()
 
     #simp.plot_crystallinity_different_quench_temps()
-    #simp.plot_length_tie_chains(mode = "f_tie")
+    #simp.plot_length_tie_chains(mode = "N_tie")
 
-    simp.plot_avg_domain_size_and_crossover_values()
+    #simp.plot_avg_domain_size_and_crossover_values()
 
 
 if __name__== "__main__":

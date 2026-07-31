@@ -942,7 +942,7 @@ def main():
 
     #PVA_100.domain_analysis.calc_domain_dist()
     #PVA_50.calc_bond_bond_correlation()
-    PVA_300.domain_analysis.calc_domain_dist()
+    PVA_500.domain_analysis.calc_domain_dist()
 
 if __name__== "__main__":
     main()

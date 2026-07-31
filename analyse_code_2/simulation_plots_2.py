@@ -398,20 +398,23 @@ class simulation_plots():
         #print(times_PVA_100[i])
         #current_poly_100 = PVA_100.get_polymer_by_time(int(times_PVA_100[i]*1200000))
         #current_poly_1000 = PVA_1000.get_polymer_by_time(int(times_PVA_1000[i]*1200000))
+
         for i in range(0, len(times_different_PVA)):
             polymer_times = times_different_PVA[i]
+            first_poly = polymer_list[i].get_polymer_by_time(0)
             for j in range(0, len(polymer_times)):
             #for j in range(0, 1): 
                 current_time = int(polymer_times[j])*1200000
                 current_poly = polymer_list[i].get_polymer_by_time(current_time)
                 if mode == "rg":
+                    first_poly.gyration_radius()
                     current_poly.gyration_radius()
                     # values, bins, __ = axes[i].hist(current_poly.results.gyration_radius_distribution/
                     #     np.sqrt(current_poly.results.mean_gyration_radius), bins=50, 
                     #     color=self.times_colours["%i" %(2*j)], density = True, histtype = "step", 
                     #     label = r"$%i t/t_c$" %(int(current_poly.atom_coords.current_timestep/polymer_list[i].tc_time)))
                     counts, bin_edges = np.histogram(current_poly.results.gyration_radius_distribution/
-                         np.sqrt(current_poly.results.mean_gyration_radius), bins = 80, density = True)
+                         np.sqrt(first_poly.results.mean_gyration_radius), bins = 80, density = True)
 
                     bin_centers = (bin_edges[:-1] + bin_edges[1:]) /2
 
@@ -419,20 +422,24 @@ class simulation_plots():
                     axes[i].plot(bin_centers, smooth_counts, color=self.times_colours["%i" %(2*j)], linestyle = "-", marker = ".",
                     label = r"$%i t/t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
                     axes[i].set_xlabel(r"$R_g/ \sqrt{\langle R_g^2 \rangle}$", fontsize = self.caption_font)
+                    axes[i].set_ylabel(r"$P(R_g/ \sqrt{\langle R_g^2 \rangle})$")
                     savestring = "%s/polymer_conformation/rg_pva_%i_%i.pdf" %(self.path_to_latex_plots_folder, polymer_list[0].polymer_length, polymer_list[1].polymer_length)
 
                 elif mode == "re":
+                    first_poly.end_to_end_distance()
                     current_poly.end_to_end_distance()
-                    counts, bin_edges = np.histogram(current_poly.results.end_to_end_distribution/current_poly.results.mean_squared_end_to_end, bins = 100, density= True)
+                    counts, bin_edges = np.histogram(current_poly.results.end_to_end_distribution/first_poly.results.mean_squared_end_to_end, bins = 100, density= True)
                     bin_centers = (bin_edges[:-1] + bin_edges[1:]) /2
                     smooth_counts = sp.ndimage.gaussian_filter1d(counts, sigma = 2.0)
                     axes[i].plot(bin_centers, smooth_counts, color=self.times_colours["%i" %(2*j)], linestyle = "-", marker = ".",
                     label = r"$%i t/t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
+                    axes[i].set_xlabel(r"$R_e/ \sqrt{\langle R_e^2 \rangle}$", fontsize = self.caption_font)
+                    axes[i].set_ylabel(r"$P(R_e/ \sqrt{\langle R_e^2 \rangle})$")
+                    savestring = "%s/polymer_conformation/re_pva_%i_%i.pdf" %(self.path_to_latex_plots_folder, polymer_list[0].polymer_length, polymer_list[1].polymer_length)
                 #values, bins, __ = axes[i].hist(current_poly_1000.results.end_to_end_distribution/
                 #    (current_poly_1000.results.mean_squared_end_to_end), bins=50, color=self.simulation_colours[PVA_1000], density = True, histtype = "step", label = "PVA-%i" %PVA_1000.polymer_length)
-                    axes[i].set_xlabel(r"$R_e/ \sqrt{\langle R_e^2 \rangle}$", fontsize = self.caption_font)
-                    savestring = "%s/polymer_conformation/re_pva_100_1000.pdf" %self.path_to_latex_plots_folder
                 elif mode == "nematic":
+
                     current_poly.nematic_distributuion()
                     counts, bin_edges = np.histogram(current_poly.results.nematic_value_dist, bins = 100, density = True)
                     bin_centers = (bin_edges[:-1] + bin_edges[1:]) /2
@@ -444,7 +451,7 @@ class simulation_plots():
                     axes[i].set_xlabel(r"$\lambda$")
                     axes[i].set_ylabel(r"$P(\lambda)$")
                     
-                    savestring = "%s/nematic_dist/nem_value_pva_200_300.pdf" %self.path_to_latex_plots_folder
+                    savestring = "%s/nematic_dist/nem_value_pva_%i_%i.pdf" %(self.path_to_latex_plots_folder, polymer_list[0].polymer_length, polymer_list[1].polymer_length)
 
 
                 elif mode == "cryst_domain_dist":
@@ -453,7 +460,7 @@ class simulation_plots():
                     #print(cryst_domain_dist["volume_pdf"])
 
                     axes[i].plot(cryst_domain_dist["volume"], cryst_domain_dist["volume_pdf"], 
-                        label = r"$%i t/t_c$" %current_time)
+                        label = r"$%i t/t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
                     savestring = "%s/domain_analysis/nem_value_pva_%i_%i.pdf" %(self.path_to_latex_plots_folder, polymer_list[0].polymer_length, polymer_list[1].polymer_length)
                     axes[i].set_xscale("log")
                     axes[i].set_yscale("log")
@@ -538,7 +545,7 @@ class simulation_plots():
 
 
         axes[0].set_title("PVA-%i" %(polymer_list[0].polymer_length))
-        axes[1].set_title("PVA-%i" %(polymer_list[0].polymer_length))
+        axes[1].set_title("PVA-%i" %(polymer_list[1].polymer_length))
 
         axes[0].legend(fontsize=self.caption_font)
         axes[1].legend(fontsize=self.caption_font)
@@ -668,7 +675,7 @@ def main():
     simp = simulation_plots(simulations)
 
     #simp.plot_monomer_density_and_crossover_values(show_plot=True)
-    simp.plot_rg_two_polymers_three_times(mode = "cryst_domain_dist", index_poly_1= 2, index_poly_2= 3)
+    simp.plot_rg_two_polymers_three_times(mode = "nematic", index_poly_1= 1, index_poly_2= 5)
     #simp.plot_crystallinity()
     #simp.plot_avg_domain_size()
     #simp.plot_crossover_values_vs_chain_length()

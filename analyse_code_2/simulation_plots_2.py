@@ -39,7 +39,7 @@ class avrami():
 
 class simulation_plots():
 
-    def __init__(self, simulations, caption_font = 10, legend_font = 9, title_font = 14):
+    def __init__(self, simulations, caption_font = 12, legend_font = 9, title_font = 14):
         self.cm_to_in = 1/2.54
         self.max_x = 15.5
         self.max_y = 22
@@ -65,6 +65,15 @@ class simulation_plots():
         self.times_colour_list = ["0", "1", "2", "3", "4"]
         self.times_colours = self.fix_colour_schemes(["0", "1", "2", "3", "4"], "inferno", cmap_max= 0.8)
         self.path_to_latex_plots_folder = "../../master-thesis-latex/content/plots"
+
+        self.end_time_index =  {
+            0: 140,  # PVA-50
+            1: 140,  # PVA-100
+            2: 140,  # PVA-200
+            3: 133,  # PVA-300
+            4: 99,  # PVA-500
+            5: 119,  # PVA-1000
+        }
 
 
 
@@ -138,7 +147,7 @@ class simulation_plots():
             # Top subplot
             ax1.scatter(time, monomer_density, label=f"PVA-{simulation.polymer_length}", color = self.simulation_colours[simulation])
 
-            idx, xkn, ykn, popt = simulation.domain_analysis.find_knee(momer_density)
+            idx, xkn, ykn, popt = simulation.domain_analysis.find_knee(monomer_density)
             polymer_lengths.append(simulation.polymer_length)
             times.append(xkn); crossovers.append(ykn); idx_list.append(idx)
             time_con = np.linspace(0, time.max(), 50000)
@@ -213,7 +222,7 @@ class simulation_plots():
         #plt.xscale("log")
         #plt.title("Mean domain size, various chains")
         if savestring is None:
-            savestring = "%s/crystallinity/crystallinity_vs_time.pdf" %self.path_to_latex_plots_folder
+            savestring = "%s/domain_analysis/crystallinity_vs_time.pdf" %self.path_to_latex_plots_folder
         plt.savefig("%s" %( savestring))
         if show_plot == True:
             plt.show()
@@ -373,6 +382,7 @@ class simulation_plots():
         return polymer_list, times_different_PVA
 
 
+
     def plot_rg_two_polymers_three_times(self, index_poly_1 = None, index_poly_2 = None, mode = "rg", savestring_default = True, show_plot = True):
         """Mode can either be 'rg' or "re". 
         Note: PVA-100 has 174 items, PVA-1000 119."""
@@ -441,6 +451,7 @@ class simulation_plots():
                 elif mode == "nematic":
 
                     current_poly.nematic_distributuion()
+                    print("nem dist calc done!")
                     counts, bin_edges = np.histogram(current_poly.results.nematic_value_dist, bins = 100, density = True)
                     bin_centers = (bin_edges[:-1] + bin_edges[1:]) /2
                     smooth_counts = sp.ndimage.gaussian_filter1d(counts, sigma = 1.0)
@@ -537,9 +548,11 @@ class simulation_plots():
             axes[i].text(0.02, 0.95, letter_subplot_list[i],
                 transform=axes[i].transAxes,
                 fontsize=plt_caption_font,
-                va="top", ha="left")
+                va="top", ha="right")
+            ha = "left"
             if mode == "nematic":
-                axes[i].vlines(PVA_100.cryst_cutoff, 0, np.max(counts), color = "red",linestyles = "dotted", label = r"$\lambda_\text{cutoff} = 0.8$")
+                ha = "right"
+                axes[i].vlines(self.simulations[1].cryst_cutoff, 0, np.max(counts), color = "red",linestyles = "dotted", label = r"$\lambda_\text{cutoff} = 0.8$")
             axes[i].legend(fontsize = self.caption_font)
 
 
@@ -554,6 +567,52 @@ class simulation_plots():
             plt.savefig(savestring)
         if show_plot == True:
             plt.show()
+
+    def plot_rg_vs_re(self, savestring = None):
+        list_times = [0,1,7]
+        for j in range(0, 3):
+            gyration_radius_list = np.zeros(len(self.simulations))
+            end_end_list = np.zeros(len(self.simulations))
+            polymer_length = np.zeros(len(self.simulations))
+            for i in tqdm(range(0, len(self.simulations))):
+                simulation = self.simulations[i]
+                #current_poly = simulation.get_polymer_by_time(simulation.df_slurm_sim_data["Step"].iloc[simulation.tc_idx])
+                if j == 0:
+                    time = 0
+                    label = r"$0 t/t_c$"
+                elif j ==1:
+                    time = simulation.df_slurm_sim_data["Step"].iloc[simulation.tc_idx]
+                    label = r"$1 t/t_c$"
+                elif j == 2:
+                    time = simulation.df_slurm_sim_data["Step"].iloc[self.end_time_index[i]]
+                    label = r"$7 t/t_c$"
+                current_poly = simulation.get_polymer_by_time(time)
+                current_poly.end_to_end_distance()
+                current_poly.gyration_radius()
+                gyration_radius_list[i] = ((current_poly.results.mean_gyration_radius))
+                end_end_list[i] = ((current_poly.results.mean_squared_end_to_end)**2)
+                polymer_length[i] = simulation.polymer_length
+                if i == 4 and j == 2:
+                    gyration_radius_list[i] = np.nan
+                    end_end_list[i] = np.nan
+                    polymer_length[i] = np.nan
+                print(end_end_list[i], gyration_radius_list[i])
+
+            plt.scatter(polymer_length, gyration_radius_list / 6, label = r"$\langle R_g^2 \rangle / 6, %i t/t_c$ "%(list_times[j]))
+            plt.scatter(polymer_length, end_end_list, label = r"$\langle R_e^2 \rangle, %i t/t_c$" %(list_times[j]))
+            #plt.scatter(gyration_radius_list, end_end_list/6, label = label, marker = ".")
+        #plt.xlabel(r"$\langle R_g^2 \rangle / 6$")
+        #plt.ylabel(r"$\langle R_e^2 \rangle$")
+        plt.xlabel(r"N")
+        plt.xscale("log")
+        plt.yscale("log")
+        plt.legend()
+        if savestring == None:
+            savestring = "%s/polymer_conformation/rg_vs_re_at_tc.pdf" %self.path_to_latex_plots_folder
+        plt.savefig(savestring)
+            
+
+
 
 
     def plot_stem_length(self, savestring = None, show_plot = True):
@@ -674,8 +733,8 @@ def main():
 
     simp = simulation_plots(simulations)
 
-    #simp.plot_monomer_density_and_crossover_values(show_plot=True)
-    simp.plot_rg_two_polymers_three_times(mode = "nematic", index_poly_1= 1, index_poly_2= 5)
+    #simp.plot_monomer_density_and_crossover_values(show_plot=False)
+    simp.plot_rg_two_polymers_three_times(mode = "bond_bond_corr", index_poly_1= 1, index_poly_2= 5)
     #simp.plot_crystallinity()
     #simp.plot_avg_domain_size()
     #simp.plot_crossover_values_vs_chain_length()
@@ -684,8 +743,11 @@ def main():
 
     #simp.plot_crystallinity_different_quench_temps()
     #simp.plot_length_tie_chains(mode = "N_tie")
+    #simp.plot_length_tie_chains(mode = "f_tie")
 
     #simp.plot_avg_domain_size_and_crossover_values()
+
+    #simp.plot_rg_vs_re()
 
 
 if __name__== "__main__":

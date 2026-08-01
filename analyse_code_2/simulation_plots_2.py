@@ -270,7 +270,7 @@ class simulation_plots():
         plt.legend(fontsize=self.caption_font)
         plt.xlabel(r"$t/\tau_c$", fontsize = self.caption_font)
         plt.ylabel(r"$l/\sigma$", fontsize = self.caption_font)
-        plt.xscale("log")
+        #plt.xscale("log")
         #plt.title("Mean domain size, various chains")
         if savestring is not None:
             plt.savefig("%s/%s" %(self.save_folder, savestring))
@@ -734,7 +734,7 @@ def main():
     simp = simulation_plots(simulations)
 
     #simp.plot_monomer_density_and_crossover_values(show_plot=False)
-    simp.plot_rg_two_polymers_three_times(mode = "bond_bond_corr", index_poly_1= 1, index_poly_2= 5)
+    #simp.plot_rg_two_polymers_three_times(mode = "bond_bond_corr", index_poly_1= 1, index_poly_2= 5)
     #simp.plot_crystallinity()
     #simp.plot_avg_domain_size()
     #simp.plot_crossover_values_vs_chain_length()

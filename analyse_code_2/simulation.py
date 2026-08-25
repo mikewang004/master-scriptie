@@ -908,7 +908,7 @@ def main():
     # PVA_1000.domain_analysis.calc_crystallisation()
 
     # PVA_50.calc_tie_chain_distribution()
-    # PVA_100.calc_tie_chain_distribution()
+    PVA_100.calc_tie_chain_distribution()
     # PVA_200.calc_tie_chain_distribution()
     # PVA_300.calc_tie_chain_distribution()
     # PVA_500.calc_tie_chain_distribution()
@@ -926,7 +926,7 @@ def main():
     #calc_crystallisation_and_avg_domain_size(PVA_50)
     #calc_crystallisation_and_avg_domain_size(PVA_100)
     #calc_crystallisation_and_avg_domain_size(PVA_200)
-    calc_crystallisation_and_avg_domain_size(PVA_300)
+    #calc_crystallisation_and_avg_domain_size(PVA_300)
     #calc_crystallisation_and_avg_domain_size(PVA_500)
     #calc_crystallisation_and_avg_domain_size(PVA_1000)
 
@@ -942,7 +942,7 @@ def main():
 
     #PVA_100.domain_analysis.calc_domain_dist()
     #PVA_50.calc_bond_bond_correlation()
-    PVA_500.domain_analysis.calc_domain_dist()
+    #PVA_500.domain_analysis.calc_domain_dist()
 
 if __name__== "__main__":
     main()

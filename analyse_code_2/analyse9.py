@@ -388,6 +388,7 @@ class polymer():
         self.results.gyration_radius_distribution = np.sqrt(df_gyration_radius.iloc[:, 3])
         self.results.gyration_radius = df_gyration_radius
         self.results.mean_gyration_radius = np.mean(df_gyration_radius["gyration_radius"]) #Ensemble average
+        self.results.std_gyration_radius =  np.std(df_gyration_radius["gyration_radius"])
         print("mean gyration is %f" %np.sqrt(self.results.mean_gyration_radius))
 
 

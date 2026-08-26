@@ -440,10 +440,9 @@ class simulation_plots():
             1: 140,  # PVA-100
             2: 140,  # PVA-200
             3: 133,  # PVA-300
-            4: 119,  # PVA-500
+            4: 99,  # PVA-500
             5: 119,  # PVA-1000
         }
-
         times_poly_1 = [index_t_start, sim1.tc_idx, time_by_index[N1]]
         times_poly_2 = [index_t_start, sim2.tc_idx, time_by_index[N2]]
         polymer_list = [sim1, sim2]
@@ -473,6 +472,7 @@ class simulation_plots():
             polymer_list = [PVA_100, PVA_1000]
         else:
             polymer_list, times_different_PVA = self.choose_two_polymers(index_poly_1, index_poly_2)
+            print(polymer_list, times_different_PVA)
         letter_subplot_list = ["(a)", "(b)", "(c)"]
         #print(times_PVA_100[i])
         #current_poly_100 = PVA_100.get_polymer_by_time(int(times_PVA_100[i]*1200000))
@@ -640,6 +640,91 @@ class simulation_plots():
         if show_plot == True:
             plt.show()
 
+
+    def plot_N_vs_rg(self):
+
+        width = self.max_x/1.5 * plt_cm_to_in
+        height = self.max_y/3 * plt_cm_to_in
+
+        n_sims = 6
+        time_factor = 1_200_000
+
+        # Columns correspond to:
+        # 0 -> t = 0
+        # 1 -> t = tc
+        # 2 -> t = tend
+        polymer_lengths = np.empty(n_sims)
+        rg_means = np.empty((n_sims, 3))
+        rg_stds = np.empty((n_sims, 3))
+
+        # ---- First: calculate and store all Rg values ----
+        for i in range(n_sims):
+            sim = self.simulations[i]
+            polymer_lengths[i] = sim.polymer_length
+
+            time_indices = [
+                0,
+                sim.tc_idx,
+                self.end_time_index[i],
+            ]
+
+            # Normalisation value: mean Rg at t = 0
+            first_poly = sim.get_polymer_by_time(0)
+            first_poly.gyration_radius()
+            rg_initial_mean = first_poly.results.mean_gyration_radius
+
+            for j, time_index in enumerate(time_indices):
+                current_time = int(time_index) * time_factor
+                current_poly = sim.get_polymer_by_time(current_time)
+                current_poly.gyration_radius()
+
+                # Normalised mean and standard deviation
+                rg_means[i, j] = (
+                    current_poly.results.mean_gyration_radius / rg_initial_mean
+                )
+                rg_stds[i, j] = (
+                    current_poly.results.std_gyration_radius / rg_initial_mean
+                )
+
+        # Sort by polymer length, in case simulations are not already ordered
+        order = np.argsort(polymer_lengths)
+        polymer_lengths = polymer_lengths[order]
+        rg_means = rg_means[order]
+        rg_stds = rg_stds[order]
+
+        # ---- Then: plot Rg versus polymer length ----
+        labels = [
+            r"$t = 0$",
+            r"$t = t_c$",
+            r"$t = t_{\mathrm{end}}$",
+        ]
+
+        colours = [
+            self.times_colours["0"],
+            self.times_colours["2"],
+            self.times_colours["4"],
+        ]
+
+        for j in range(3):
+            plt.errorbar(
+                polymer_lengths,
+                rg_means[:, j],
+                #yerr=rg_stds[:, j],
+                color=colours[j],
+                linestyle="-",
+                marker=".",
+                capsize=3,
+                label=labels[j],
+            )
+
+        plt.xlabel(r"$N$")
+        plt.ylabel(r"$\langle R_g \rangle / \langle R_{g,t=0} \rangle$")
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig("%s/polymer_conformation/N_vs_rg_one_plot.pdf" %self.path_to_latex_plots_folder)
+        plt.show()
+
+
     def plot_rg_vs_re(self, savestring = None):
         list_times = [0,1,7]
         for j in range(0, 3):
@@ -725,8 +810,8 @@ class simulation_plots():
         #plt.ylim((0, 50))
         plt.legend()
         plt.ylim((15, 40))
-        plt.ylabel("Stem length")
-        plt.xlabel("$t_c$")
+        plt.ylabel(r"min(\cos\theta(n))")
+        plt.xlabel(r"$t_c$")
         if savestring == None:
             savestring = "%s/stem_lengths/stem_lengths_all_polymer_chains.pdf" %(self.path_to_latex_plots_folder)
         plt.savefig(savestring)
@@ -824,12 +909,13 @@ def main():
     simp = simulation_plots(simulations)
 
     #simp.plot_monomer_density_and_crossover_values(show_plot=False, mode = "b", marker_size = 10.0)
-    #simp.plot_rg_two_polymers_three_times(mode = "re", index_poly_1= 1, index_poly_2= 5)
+    #simp.plot_rg_two_polymers_three_times(mode = "re", index_poly_1= 4, index_poly_2= 5)
+    #simp.plot_rg_two_polymers_three_times(mode = "rg", index_poly_1= 4, index_poly_2= 5)
     #simp.plot_crystallinity()
     #simp.plot_avg_domain_size()
     #simp.plot_crossover_values_vs_chain_length()
 
-    #simp.plot_stem_length()
+    simp.plot_stem_length()
 
     #simp.plot_crystallinity_different_quench_temps()
     #simp.plot_length_tie_chains(mode = "N_tie")
@@ -838,7 +924,9 @@ def main():
     #simp.plot_avg_domain_size_and_crossover_values()
 
     #simp.plot_rg_vs_re()
-    simp.plot_n_vs_tie()
+    #simp.plot_n_vs_tie()
+
+    #simp.plot_N_vs_rg()
 
 
 if __name__== "__main__":

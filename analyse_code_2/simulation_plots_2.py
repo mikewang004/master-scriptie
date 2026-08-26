@@ -286,7 +286,7 @@ class simulation_plots():
 
 
         plt.legend(fontsize=self.caption_font)
-        plt.xlabel(r"$t/\tau_c$", fontsize = self.caption_font)
+        plt.xlabel(r"$t_c$", fontsize = self.caption_font)
         plt.ylabel(r"$\phi$", fontsize = self.caption_font)
         #plt.xscale("log")
         #plt.title("Mean domain size, various chains")

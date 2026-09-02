@@ -435,23 +435,38 @@ class simulation_plots():
 
         sim1 = self.simulations[N1]; sim2 = self.simulations[N2]
         index_t_start = 0
-        time_by_index = {
-            0: 140,  # PVA-50
-            1: 140,  # PVA-100
-            2: 140,  # PVA-200
-            3: 133,  # PVA-300
-            4: 99,  # PVA-500
-            5: 119,  # PVA-1000
-        }
+        # time_by_index = {
+        #     0: 140,  # PVA-50
+        #     1: 140,  # PVA-100
+        #     2: 140,  # PVA-200
+        #     3: 133,  # PVA-300
+        #     4: 99,  # PVA-500
+        #     5: 119,  # PVA-1000
+        # }
+        time_by_index = self.end_time_index
         times_poly_1 = [index_t_start, sim1.tc_idx, time_by_index[N1]]
         times_poly_2 = [index_t_start, sim2.tc_idx, time_by_index[N2]]
         polymer_list = [sim1, sim2]
         times_different_PVA = [times_poly_1, times_poly_2]
         return polymer_list, times_different_PVA
 
+    def get_histogram_rg_re(self, first_poly, current_poly, mode = "rg", bins = 100):
+        if mode == "rg":
+            first_poly.gyration_radius()
+            current_poly.gyration_radius()
+            counts, bin_edges = np.histogram(current_poly.results.gyration_radius_distribution/
+                    np.sqrt(first_poly.results.mean_gyration_radius), bins = bins, density = True)
+        elif mode == "re":
+            first_poly.end_to_end_distance()
+            current_poly.end_to_end_distance()
 
+            counts, bin_edges = np.histogram(current_poly.results.end_to_end_distribution/first_poly.results.mean_squared_end_to_end, bins = bins, density= True)
+        bin_centers = (bin_edges[:-1] + bin_edges[1:]) /2
+        smooth_counts = sp.ndimage.gaussian_filter1d(counts, sigma = 2.0)
 
-    def plot_rg_two_polymers_three_times(self, index_poly_1 = None, index_poly_2 = None, mode = "rg", savestring_default = True, show_plot = True):
+        return bin_centers, smooth_counts
+
+    def plot_rg_two_polymers_three_times(self, index_poly_1 = None, index_poly_2 = None, mode = "rg", savestring_default = True, show_plot = True, bins = 100):
         """Mode can either be 'rg' or "re". 
         Note: PVA-100 has 174 items, PVA-1000 119."""
         #TODO review smoothening method
@@ -483,40 +498,60 @@ class simulation_plots():
         for i in range(0, len(times_different_PVA)):
             polymer_times = times_different_PVA[i]
             first_poly = polymer_list[i].get_polymer_by_time(0)
+            ymax = 0
             for j in range(start_int, len(polymer_times)):
             #for j in range(0, 1): 
                 current_time = int(polymer_times[j])*1200000
+                print(current_time)
+                if j == 0:
+                    error_times_list = [int(polymer_times[j] + 1)*1200000, int(polymer_times[j] + 2)*1200000, 
+                        int(polymer_times[j] + 3)*1200000, int(polymer_times[j]+ 4)*1200000]
+                elif j == len(polymer_times)-1:
+                    error_times_list = [int(polymer_times[j]-1)*1200000, int(polymer_times[j]-2)*1200000, 
+                        int(polymer_times[j]-3)*1200000, int(polymer_times[j]-4)*1200000]
+                else: 
+                    error_times_list = [int(polymer_times[j]-2)*1200000, int(polymer_times[j]-1)*1200000, 
+                        int(polymer_times[j]+1)*1200000, int(polymer_times[j]+2)*1200000]
+                print(error_times_list)
+                err_smooth_counts = np.zeros([4, bins])
                 current_poly = polymer_list[i].get_polymer_by_time(current_time)
                 if mode == "rg":
-                    first_poly.gyration_radius()
-                    current_poly.gyration_radius()
-                    # values, bins, __ = axes[i].hist(current_poly.results.gyration_radius_distribution/
-                    #     np.sqrt(current_poly.results.mean_gyration_radius), bins=50, 
-                    #     color=self.times_colours["%i" %(2*j)], density = True, histtype = "step", 
-                    #     label = r"$%i t_c$" %(int(current_poly.atom_coords.current_timestep/polymer_list[i].tc_time)))
-                    counts, bin_edges = np.histogram(current_poly.results.gyration_radius_distribution/
-                         np.sqrt(first_poly.results.mean_gyration_radius), bins = 80, density = True)
-
-                    bin_centers = (bin_edges[:-1] + bin_edges[1:]) /2
-
-                    smooth_counts = sp.ndimage.gaussian_filter1d(counts, sigma = 1.7)
-                    axes[i].plot(bin_centers, smooth_counts, color=self.times_colours["%i" %(2*j)], linestyle = "-", marker = ".",
-                    label = r"$%i t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
+                    for k in range(0, len(error_times_list)):
+                        _, err_smooth_counts[k, :] = self.get_histogram_rg_re(first_poly, polymer_list[i].get_polymer_by_time(error_times_list[k]), 
+                        mode = "rg", bins = bins)
+                    #print(np.mean(err_smooth_counts, axis = 0), np.std(err_smooth_counts, axis = 0))
+                    bin_centers, smooth_counts = self.get_histogram_rg_re(first_poly, current_poly, mode = "rg", bins = bins)
+                    axes[i].errorbar(bin_centers, smooth_counts, yerr = np.std(err_smooth_counts, axis = 0),
+                        color=self.times_colours["%i" %(2*j)], linestyle = "-", marker = ".",
+                        label = r"$%i t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
+                    #axes[i].vlines(current_poly.results.mean_gyration_radius/first_poly.results.mean_gyration_radius, 0, 10, color = "red", linestyle = "dashed")
+                    axes[i].vlines(current_poly.results.mean_gyration_radius/first_poly.results.mean_gyration_radius, 0, 10, color = self.times_colours["%i" %(2*j)], linestyle = "dashed")
                     axes[i].set_xlabel(r"$R_g/ \sqrt{\langle R_{g, t = 0 tc}^2 \rangle}$", fontsize = self.caption_font)
                     axes[i].set_ylabel(r"$P(R_g/ \sqrt{\langle R_{g, t = 0 tc}^2 \rangle})$")
+                    ymax_new = np.max(smooth_counts)
+                    if ymax_new > ymax:
+                        ymax = ymax_new + 0.1 * ymax_new
+                    axes[i].set_ylim(0, ymax)
                     savestring = "%s/polymer_conformation/rg_pva_%i_%i.pdf" %(self.path_to_latex_plots_folder, polymer_list[0].polymer_length, polymer_list[1].polymer_length)
 
                 elif mode == "re":
-                    first_poly.end_to_end_distance()
-                    current_poly.end_to_end_distance()
-                    counts, bin_edges = np.histogram(current_poly.results.end_to_end_distribution/first_poly.results.mean_squared_end_to_end, bins = 100, density= True)
-                    bin_centers = (bin_edges[:-1] + bin_edges[1:]) /2
-                    smooth_counts = sp.ndimage.gaussian_filter1d(counts, sigma = 2.0)
-                    axes[i].plot(bin_centers, smooth_counts, color=self.times_colours["%i" %(2*j)], linestyle = "-", marker = ".",
-                    label = r"$%i t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
+                    for k in range(0, len(error_times_list)):
+                        _, err_smooth_counts[k, :] = self.get_histogram_rg_re(first_poly, polymer_list[i].get_polymer_by_time(error_times_list[k]), 
+                        mode = "re", bins = bins)
+                    #print(np.mean(err_smooth_counts, axis = 0), np.std(err_smooth_counts, axis = 0))
+                    bin_centers, smooth_counts = self.get_histogram_rg_re(first_poly, current_poly, mode = "re", bins = bins)
+                    axes[i].errorbar(bin_centers, smooth_counts, yerr = np.std(err_smooth_counts, axis = 0),
+                        color=self.times_colours["%i" %(2*j)], linestyle = "-", marker = ".",
+                        label = r"$%i t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
+                    axes[i].vlines(current_poly.results.mean_squared_end_to_end/first_poly.results.mean_squared_end_to_end, 0, 10, 
+                        color =self.times_colours["%i" %(2*j)], linestyle = "dashed")
                     axes[i].set_xlabel(r"$R_e/ \sqrt{\langle R_{e, t = 0 tc}^2 \rangle}$", fontsize = self.caption_font)
                     axes[i].set_ylabel(r"$P(R_e/ \sqrt{\langle R_{e, t = 0 tc}^2 \rangle})$")
                     savestring = "%s/polymer_conformation/re_pva_%i_%i.pdf" %(self.path_to_latex_plots_folder, polymer_list[0].polymer_length, polymer_list[1].polymer_length)
+                    ymax_new = np.max(smooth_counts)
+                    if ymax_new > ymax:
+                        ymax = ymax_new + 0.15 * ymax_new
+                    axes[i].set_ylim(0, ymax)
                 #values, bins, __ = axes[i].hist(current_poly_1000.results.end_to_end_distribution/
                 #    (current_poly_1000.results.mean_squared_end_to_end), bins=50, color=self.simulation_colours[PVA_1000], density = True, histtype = "step", label = "PVA-%i" %PVA_1000.polymer_length)
                 elif mode == "nematic":
@@ -844,7 +879,7 @@ class simulation_plots():
             plt.scatter(time*0.005, cryst, label = "T = %.2f" %temps[i], marker = ".", color = color)
             i = i + 1
         
-        plt.title(r"Crystallisation after quench at $\dot{T} = 10^{-3}$")
+        #plt.title(r"Crystallisation after quench at $\dot{T} = 10^{-3}$")
         plt.xlabel(r"$t/\tau$")
         plt.ylabel(r"$\phi(t)$")
         plt.legend()
@@ -907,15 +942,17 @@ def main():
     simulations = [PVA_50, PVA_100, PVA_200, PVA_300, PVA_500, PVA_1000]
 
     simp = simulation_plots(simulations)
-
     #simp.plot_monomer_density_and_crossover_values(show_plot=False, mode = "b", marker_size = 10.0)
-    #simp.plot_rg_two_polymers_three_times(mode = "re", index_poly_1= 4, index_poly_2= 5)
-    #simp.plot_rg_two_polymers_three_times(mode = "rg", index_poly_1= 4, index_poly_2= 5)
+    #simp.plot_rg_two_polymers_three_times(mode = "re", index_poly_1= 1, index_poly_2= 5, show_plot = False)
+    #simp.plot_rg_two_polymers_three_times(mode = "rg", index_poly_1= 1, index_poly_2= 5, show_plot= False)
+    simp.plot_rg_two_polymers_three_times(mode = "re", index_poly_1= 0, index_poly_2= 1)
+    simp.plot_rg_two_polymers_three_times(mode = "re", index_poly_1= 2, index_poly_2= 3)
+    simp.plot_rg_two_polymers_three_times(mode = "re", index_poly_1= 4, index_poly_2= 5)
     #simp.plot_crystallinity()
     #simp.plot_avg_domain_size()
     #simp.plot_crossover_values_vs_chain_length()
 
-    simp.plot_stem_length()
+    #simp.plot_stem_length()
 
     #simp.plot_crystallinity_different_quench_temps()
     #simp.plot_length_tie_chains(mode = "N_tie")

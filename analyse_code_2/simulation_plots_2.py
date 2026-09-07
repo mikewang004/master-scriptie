@@ -960,11 +960,15 @@ def run_double_plot_for_all_i(simp, mode):
 
 def different_quench_rate_simulations():
 
-    pva_100_e3 = Simulation(100, "../../data/pva-100/cooling_rate/e-3", "../data_online/pva-100/icryst_T07_Tdot_e-3", cooling_rate = -3, target_temp = 0.5)
-    pva_100_e4 = Simulation(100, "../../data/pva-100/cooling_rate/e-4", "../data_online/pva-100/icryst_T07_Tdot_e-4", cooling_rate = -3, target_temp = 0.5)
-    pva_100_e5 = Simulation(100, "../../data/pva-100/cooling_rate/e-5", "../data_online/pva-100/icryst_T07_Tdot_e-5", cooling_rate = -3, target_temp = 0.5)
+    pva_100_e3 = Simulation(100, "../../data/pva-100/cooling_rate/e-3", "../data_online/pva-100/icryst_T05_Tdot_e-3", cooling_rate = -3, target_temp = 0.5)
+    pva_100_e4 = Simulation(100, "../../data/pva-100/cooling_rate/e-4", "../data_online/pva-100/icryst_T05_Tdot_e-4", cooling_rate = -4, target_temp = 0.5)
+    pva_100_e5 = Simulation(100, "../../data/pva-100/cooling_rate/e-5", "../data_online/pva-100/icryst_T05_Tdot_e-5", cooling_rate = -5, target_temp = 0.5)
+    simulations = [pva_100_e3, pva_100_e4, pva_100_e5]
 
-    return [pva_100_e3, pva_100_e4, pva_100_e5]
+    # for sim in simulations:
+    #     sim.domain_analysis.calc_crystallisation()
+
+    return simulations
 def main():
 
     simulations = different_quench_rate_simulations()
@@ -972,12 +976,12 @@ def main():
 
     #simulations = load_in_simulations()
 
-    #simp = simulation_plots(simulations)
+    simp = simulation_plots(simulations)
     #mode = "nematic"
     #simp.plot_monomer_density_and_crossover_values(show_plot=False, mode = "b", marker_size = 10.0)
     #simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 1, index_poly_2= 5)
     #run_double_plot_for_all_i(simp, mode)
-    #simp.plot_crystallinity()
+    simp.plot_crystallinity()
     #simp.plot_avg_domain_size()
     #simp.plot_crossover_values_vs_chain_length()
 

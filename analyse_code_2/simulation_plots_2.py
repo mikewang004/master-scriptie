@@ -965,16 +965,17 @@ def different_quench_rate_simulations():
     pva_100_e5 = Simulation(100, "../../data/pva-100/cooling_rate/e-5", "../data_online/pva-100/icryst_T05_Tdot_e-5", cooling_rate = -5, target_temp = 0.5)
     simulations = [pva_100_e3, pva_100_e4, pva_100_e5]
 
-    # for sim in simulations:
-    #     sim.domain_analysis.calc_crystallisation()
+    for sim in simulations:
+        #sim.domain_analysis.calc_crystallisation()
+        sim.domain_analysis.calc_avg_domain_size()
 
     return simulations
 def main():
 
-    simulations = different_quench_rate_simulations()
+    #simulations = different_quench_rate_simulations()
 
 
-    #simulations = load_in_simulations()
+    simulations = load_in_simulations()
 
     simp = simulation_plots(simulations)
     #mode = "nematic"

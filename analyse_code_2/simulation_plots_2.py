@@ -101,7 +101,7 @@ class simulation_plots():
             time = simulation.df_slurm_sim_data["Step"] * simulation.timestep
             monomer_density = (poly.atom_coords.n_atoms/simulation.df_slurm_sim_data["Volume"])
             #idx, xkn, ykn = simulation.domain_analysis.get_crossover_point_cutoff(cutoff=0.985)
-            idx, xkn, ykn, popt = simulation.domain_analysis.find_knee(monomer_density)
+            idx, xkn, ykn, popt = simulation.domain_analysis.find_knee(monomer_density, time)
             # times.append(time[crossover_index])
             # crossovers.append(monomer_density[crossover_index])
             # idx_list.append(idx)
@@ -121,210 +121,434 @@ class simulation_plots():
             plt.show()
 
 
-    def plot_monomer_density_and_crossover_values(self, show_plot=True, mode="a", marker_size=None):
+
+    def plot_monomer_density_and_crossover_values(
+        self,
+        show_plot=True,
+        mode="a",
+        marker_size=None,
+        observable="monomer_density",
+        crossover_observable="monomer_density",
+    ):
         """
+        Plot monomer density or crystallinity as a function of time and mark
+        crossover times determined independently from either observable.
+
         Parameters
         ----------
-        show_plot : bool
-            Whether to call plt.show() at the end.
-        mode : str
-            "a" – both subplots (original behaviour)
-            "b" – only the monomer-density panel (no fit) as a standalone figure
-            "c" – only the density + fit + crossover panel as a standalone figure
-        marker_size : float or None
-            Marker size for all scatter plots. If None, uses matplotlib's default.
+        show_plot : bool, default=True
+            Whether to call ``plt.show()`` at the end.
+
+        mode : {"a", "b", "c", "d", "e"}, default="a"
+            "a" : Raw observable and observable with fit/crossover markers.
+            "b" : Raw observable only.
+            "c" : Observable with fit and crossover markers only.
+            "d" : Normalised observable, observable / observable_infinity.
+            "e" : All three panels.
+
+        marker_size : float or None, default=None
+            Marker size for scatter plots. If None, Matplotlib's default is used.
+
+        observable : {"monomer_density", "crystallinity"}, default="monomer_density"
+            Quantity plotted on the y-axis.
+
+        crossover_observable : {"monomer_density", "crystallinity"},
+            default="monomer_density"
+            Quantity used to determine the crossover time. This is independent
+            of the plotted observable.
         """
 
         # ------------------------------------------------------------------ #
-        #  Collect data (always needed)                                        #
+        #  Validate input                                                    #
         # ------------------------------------------------------------------ #
-        times           = []
-        crossovers      = []
+        valid_observables = {"monomer_density", "crystallinity"}
+
+        if observable not in valid_observables:
+            raise ValueError(
+                f"Unknown observable '{observable}'. Choose "
+                "'monomer_density' or 'crystallinity'."
+            )
+
+        if crossover_observable not in valid_observables:
+            raise ValueError(
+                f"Unknown crossover_observable '{crossover_observable}'. Choose "
+                "'monomer_density' or 'crystallinity'."
+            )
+
+        # ------------------------------------------------------------------ #
+        #  Observable-specific labels and filenames                          #
+        # ------------------------------------------------------------------ #
+        if observable == "monomer_density":
+            observable_label = r"$\rho_\mathrm{monomer}$"
+            normalised_label = (
+                r"$\rho_\mathrm{monomer}"
+                r"/\rho_{\mathrm{monomer},\infty}$"
+            )
+            file_prefix = "density"
+
+        else:
+            observable_label = r"$\phi(t)$"
+            normalised_label = r"$\phi(t)/\phi(\infty)$"
+            file_prefix = "crystallinity"
+
+        # ------------------------------------------------------------------ #
+        #  Helper: retrieve observable and time in t/tau                     #
+        # ------------------------------------------------------------------ #
+        def _get_observable(simulation, observable_name):
+            """
+            Return the requested observable and its corresponding time array.
+
+            Both time arrays are returned in reduced time units, t/tau.
+            """
+
+            if observable_name == "monomer_density":
+                poly = simulation.get_polymer_by_time(0)
+
+                values = (
+                    poly.atom_coords.n_atoms
+                    / simulation.df_slurm_sim_data["Volume"].to_numpy()
+                )
+
+                time = (
+                    simulation.df_slurm_sim_data["Step"].to_numpy()
+                    * simulation.timestep
+                )
+
+                return values, time
+
+            if observable_name == "crystallinity":
+                values = simulation.df_cryst[:, 1]
+
+                # df_cryst[:, 0] is assumed to contain simulation steps.
+                # Convert to t/tau, consistent with the monomer-density time axis.
+                time = simulation.df_cryst[:, 0] * simulation.timestep
+
+                return values, time
+
+        # ------------------------------------------------------------------ #
+        #  Collect simulation data                                           #
+        # ------------------------------------------------------------------ #
+        crossover_times = []
+        crossover_values_list = []
         polymer_lengths = []
-        idx_list        = []
-
-        pva_50      = self.simulations[0]
-        max_density = (pva_50.get_polymer_by_time(0).atom_coords.n_atoms
-                    / pva_50.df_slurm_sim_data["Volume"].iloc[-1])
-
-        # Pre-compute everything so we can reuse it for any mode
+        crossover_idx_list = []
         sim_data = []
+
         for simulation in self.simulations:
-            poly             = simulation.get_polymer_by_time(0)
-            time             = simulation.df_slurm_sim_data["Step"] * simulation.timestep
-            monomer_density  = poly.atom_coords.n_atoms / simulation.df_slurm_sim_data["Volume"]
-            idx, xkn, ykn, popt = simulation.domain_analysis.find_knee(monomer_density)
+
+            # The quantity to display on the y-axis.
+            values, plot_time = _get_observable(simulation, observable)
+
+            # The quantity from which the crossover time is determined.
+            crossover_values, crossover_time_array = _get_observable(
+                simulation,
+                crossover_observable,
+            )
+
+            if len(plot_time) != len(values):
+                raise ValueError(
+                    f"Time and {observable} arrays have different lengths for "
+                    f"N = {simulation.polymer_length}: "
+                    f"{len(plot_time)} and {len(values)}, respectively."
+                )
+
+            if len(crossover_time_array) != len(crossover_values):
+                raise ValueError(
+                    f"Time and crossover {crossover_observable} arrays have "
+                    f"different lengths for N = {simulation.polymer_length}: "
+                    f"{len(crossover_time_array)} and "
+                    f"{len(crossover_values)}, respectively."
+                )
+
+            # Determine crossover time from crossover_observable.
+            crossover_idx, crossover_time, crossover_value, crossover_popt = (
+                simulation.domain_analysis.find_knee(
+                    crossover_values,
+                    crossover_time_array,
+                )
+            )
+
+            # Obtain a fit for the observable being plotted.
+            plot_idx, plot_xkn, plot_ykn, plot_popt = (
+                simulation.domain_analysis.find_knee(
+                    values,
+                    plot_time,
+                )
+            )
+
+            # The crossover marker is placed at:
+            #
+            # (crossover time from crossover_observable,
+            #  plotted observable evaluated at that time).
+            #
+            # np.interp interpolates safely when plot_time and
+            # crossover_time_array have different sampling intervals.
+            marker_y = np.interp(
+                crossover_time,
+                plot_time,
+                values,
+            )
 
             polymer_lengths.append(simulation.polymer_length)
-            times.append(xkn)
-            crossovers.append(ykn)
-            idx_list.append(idx)
+            crossover_times.append(crossover_time)
+            crossover_values_list.append(crossover_value)
+            crossover_idx_list.append(crossover_idx)
 
-            sim_data.append(dict(
-                simulation      = simulation,
-                time            = time,
-                monomer_density = monomer_density,
-                idx             = idx,
-                xkn             = xkn,
-                ykn             = ykn,
-                popt            = popt,
-                phi_inf         = popt[0]
-            ))
+            sim_data.append(
+                dict(
+                    simulation=simulation,
+                    time=plot_time,
+                    values=values,
 
+                    # Fit of the observable shown in the figure.
+                    popt=plot_popt,
+                    value_inf=plot_popt[0],
+
+                    # Crossover determined from crossover_observable.
+                    crossover_idx=crossover_idx,
+                    crossover_time=crossover_time,
+                    crossover_value=crossover_value,
+
+                    # Crossover marker y-coordinate in the displayed quantity.
+                    marker_y=marker_y,
+                )
+            )
+
+        # ------------------------------------------------------------------ #
+        #  Save crossover-time data                                          #
+        # ------------------------------------------------------------------ #
         tc = pd.DataFrame(
-            {"index": idx_list, "time": times, "monomer density": crossovers},
+            {
+                "index": crossover_idx_list,
+                "time": crossover_times,
+                f"{crossover_observable}_at_crossover": crossover_values_list,
+            },
             index=polymer_lengths,
         )
         tc.index.name = "polymer_lengths"
+
         print(tc.head())
-        tc.to_csv("../data_online/crossover_times.txt", sep=" ")
+
+        tc.to_csv(
+            f"../data_online/crossover_times_{crossover_observable}.txt",
+            sep=" ",
+        )
 
         # ------------------------------------------------------------------ #
-        #  Helper: draw panel (a) — raw density scatter                       #
+        #  Helper: raw observable panel                                      #
         # ------------------------------------------------------------------ #
         def _draw_panel_a(ax):
             for d in sim_data:
                 ax.scatter(
-                    d["time"], d["monomer_density"],
+                    d["time"],
+                    d["values"],
                     label=f"$N = {d['simulation'].polymer_length}$",
                     color=self.simulation_colours[d["simulation"]],
                     s=marker_size,
                 )
-            ax.set_ylabel(r"$\rho_\text{local}$", fontsize=self.caption_font)
-            ax.set_xlabel(r"$t/\tau$",                      fontsize=self.caption_font)
+
+            ax.set_ylabel(observable_label, fontsize=self.caption_font)
+            ax.set_xlabel(r"$t/\tau$", fontsize=self.caption_font)
             ax.legend(fontsize=plt_caption_font)
 
         # ------------------------------------------------------------------ #
-        #  Helper: draw panel (c) — density + fit + crossover markers         #
+        #  Helper: observable with fit and crossover markers                 #
         # ------------------------------------------------------------------ #
-        def _draw_panel_c(ax, draw_label_x = True):
+        def _draw_panel_c(ax, draw_label_x=True):
             for d in sim_data:
-                time_con = np.linspace(0, d["time"].max(), 50000)
+                time_con = np.linspace(
+                    d["time"].min(),
+                    d["time"].max(),
+                    50000,
+                )
+
                 ax.scatter(
-                    d["time"], d["monomer_density"],
+                    d["time"],
+                    d["values"],
                     label=f"$N = {d['simulation'].polymer_length}$",
                     color=self.simulation_colours[d["simulation"]],
                     s=marker_size,
                 )
+
                 ax.plot(
                     time_con,
                     fit_functions.double_exp(time_con, *d["popt"]),
-                    color="r", linestyle="dashed",
+                    color="r",
+                    linestyle="dashed",
                 )
+
             for d in sim_data:
-                ax.scatter(d["xkn"], d["ykn"], marker="x", color="black", zorder=3, s=marker_size)
-            if draw_label_x == True:
-                ax.set_xlabel(r"$t/\tau$",                      fontsize=self.caption_font)
-            ax.set_ylabel(r"$\rho_\text{local}$",  fontsize=self.caption_font)
+                ax.scatter(
+                    d["crossover_time"],
+                    d["marker_y"],
+                    marker="x",
+                    color="black",
+                    zorder=3,
+                    s=marker_size,
+                )
+
+            if draw_label_x:
+                ax.set_xlabel(r"$t/\tau$", fontsize=self.caption_font)
+
+            ax.set_ylabel(observable_label, fontsize=self.caption_font)
             ax.legend(fontsize=plt_caption_font)
 
+        # ------------------------------------------------------------------ #
+        #  Helper: normalised observable                                     #
+        # ------------------------------------------------------------------ #
         def _draw_panel_d(ax):
             for d in sim_data:
-                time_con = np.linspace(0, d["time"].max(), 50000)
                 ax.scatter(
-                    d["time"], d["monomer_density"]/d["phi_inf"],
+                    d["time"],
+                    d["values"] / d["value_inf"],
                     label=f"$N = {d['simulation'].polymer_length}$",
                     color=self.simulation_colours[d["simulation"]],
                     s=marker_size,
                 )
-                # ax.plot(
-                #     time_con,
-                #     fit_functions.double_exp(time_con, *d["popt"]/d["phi_inf"]),
-                #     color="r", linestyle="dashed",
-                # )
-            ax.set_xlabel(r"$t/\tau$",                      fontsize=self.caption_font)
-            ax.set_ylabel(r"$\rho_\text{local}/\rho_{\text{local, } \infty}$",  fontsize=self.caption_font)
+
+            ax.set_xlabel(r"$t/\tau$", fontsize=self.caption_font)
+            ax.set_ylabel(normalised_label, fontsize=self.caption_font)
             ax.legend(fontsize=plt_caption_font)
 
         # ------------------------------------------------------------------ #
-        #  Build figure according to mode                                      #
+        #  Figure dimensions                                                 #
         # ------------------------------------------------------------------ #
-        width  = self.max_x / 1.5 * plt_cm_to_in
-        height = self.max_y / 3   * plt_cm_to_in
+        width = self.max_x / 1.5 * plt_cm_to_in
+        height = self.max_y / 3 * plt_cm_to_in
 
+        # ------------------------------------------------------------------ #
+        #  Build figure                                                      #
+        # ------------------------------------------------------------------ #
         if mode == "a":
-            # ── original: two stacked subplots ──────────────────────────────
             fig, (ax1, ax2) = plt.subplots(
-                2, 1,
+                2,
+                1,
                 figsize=(width, 2 * height),
                 sharex=True,
             )
+
             _draw_panel_a(ax1)
             _draw_panel_c(ax2)
 
-            ax1.text(0.02, 0.95, "(a)", transform=ax1.transAxes,
-                    fontsize=plt_caption_font, va="top", ha="left")
-            ax2.text(0.02, 0.95, "(b)", transform=ax2.transAxes,
-                    fontsize=plt_caption_font, va="top", ha="left")
+            ax1.text(
+                0.02,
+                0.95,
+                "(a)",
+                transform=ax1.transAxes,
+                fontsize=plt_caption_font,
+                va="top",
+                ha="left",
+            )
+            ax2.text(
+                0.02,
+                0.95,
+                "(b)",
+                transform=ax2.transAxes,
+                fontsize=plt_caption_font,
+                va="top",
+                ha="left",
+            )
 
             fig.tight_layout()
+
             fig.savefig(
-                "%s/crossover_point/crossover_density_vs_time_different_chains_subplots.pdf"
-                % self.path_to_latex_plots_folder
+                f"{self.path_to_latex_plots_folder}/crossover_point/"
+                f"crossover_{file_prefix}_vs_time_different_chains_"
+                f"crossover_{crossover_observable}.pdf"
             )
 
         elif mode == "b":
-            # ── standalone panel (a): raw density only ──────────────────────
             fig, ax = plt.subplots(figsize=(width, height))
+
             _draw_panel_a(ax)
-            ax.set_xlabel(r"$t/\tau$", fontsize=self.caption_font)
+
             fig.tight_layout()
+
             fig.savefig(
-                "%s/crossover_point/crossover_density_vs_time_panel_a.pdf"
-                % self.path_to_latex_plots_folder
+                f"{self.path_to_latex_plots_folder}/crossover_point/"
+                f"crossover_{file_prefix}_vs_time_panel_a.pdf"
             )
 
         elif mode == "c":
-            # ── standalone panel (c): density + fit + crossover markers ─────
             fig, ax = plt.subplots(figsize=(width, height))
+
             _draw_panel_c(ax)
+
             fig.tight_layout()
+
             fig.savefig(
-                "%s/crossover_point/crossover_density_vs_time_panel_c.pdf"
-                % self.path_to_latex_plots_folder
+                f"{self.path_to_latex_plots_folder}/crossover_point/"
+                f"crossover_{file_prefix}_vs_time_panel_c_"
+                f"crossover_{crossover_observable}.pdf"
             )
 
         elif mode == "d":
-            # ── standalone panel (d): data collapse rho/rho_inf
             fig, ax = plt.subplots(figsize=(width, height))
+
             _draw_panel_d(ax)
+
             fig.tight_layout()
+
             fig.savefig(
-                "%s/crossover_point/crossover_density_vs_time_panel_d.pdf"
-                % self.path_to_latex_plots_folder
+                f"{self.path_to_latex_plots_folder}/crossover_point/"
+                f"crossover_{file_prefix}_vs_time_panel_d.pdf"
             )
 
         elif mode == "e":
-            # ── monomer density, with fit, and data collapse rho/rho_inf ──────────────────────────────
             fig, (ax1, ax2, ax3) = plt.subplots(
-                3, 1,
+                3,
+                1,
                 figsize=(width, 3 * height),
                 sharex=False,
             )
+
             _draw_panel_a(ax1)
             _draw_panel_c(ax2)
             _draw_panel_d(ax3)
 
-            ax1.text(0.02, 0.95, "(a)", transform=ax1.transAxes,
-                    fontsize=plt_caption_font, va="top", ha="left")
-            ax2.text(0.02, 0.95, "(b)", transform=ax2.transAxes,
-                    fontsize=plt_caption_font, va="top", ha="left")
-            ax3.text(0.02, 0.95, "(c)", transform=ax3.transAxes,
-                    fontsize=plt_caption_font, va="top", ha="left")
+            ax1.text(
+                0.02,
+                0.95,
+                "(a)",
+                transform=ax1.transAxes,
+                fontsize=plt_caption_font,
+                va="top",
+                ha="left",
+            )
+            ax2.text(
+                0.02,
+                0.95,
+                "(b)",
+                transform=ax2.transAxes,
+                fontsize=plt_caption_font,
+                va="top",
+                ha="left",
+            )
+            ax3.text(
+                0.02,
+                0.95,
+                "(c)",
+                transform=ax3.transAxes,
+                fontsize=plt_caption_font,
+                va="top",
+                ha="left",
+            )
 
             fig.tight_layout()
+
             fig.savefig(
-                "%s/crossover_point/crossover_density_vs_time_different_chains_subplots_with_collapse.pdf"
-                % self.path_to_latex_plots_folder
+                f"{self.path_to_latex_plots_folder}/crossover_point/"
+                f"crossover_{file_prefix}_vs_time_different_chains_"
+                f"with_collapse_crossover_{crossover_observable}.pdf"
             )
 
         else:
-            raise ValueError(f"Unknown mode '{mode}'. Choose 'a', 'b', or 'c'.")
+            raise ValueError(
+                f"Unknown mode '{mode}'. Choose 'a', 'b', 'c', 'd', or 'e'."
+            )
 
         if show_plot:
             plt.show()
-
-
 
 
     def plot_crystallinity(self, savestring = None, show_plot = True):
@@ -429,7 +653,7 @@ class simulation_plots():
             ax1.scatter(time, mean_domain_size, 
                 label = "PVA-%i" %(simulation.polymer_length), c= self.simulation_colours[simulation], marker = ".")
 
-            idx, xkn, ykn, popt = simulation.domain_analysis.find_knee(mean_domain_size)
+            idx, xkn, ykn, popt = simulation.domain_analysis.find_knee(mean_domain_size, time)
             polymer_lengths.append(simulation.polymer_length)
             times.append(xkn); crossovers.append(ykn); idx_list.append(idx)
             time_con = np.linspace(0, time.max(), 50000)
@@ -581,8 +805,8 @@ class simulation_plots():
                         label = r"$%i t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
                     #axes[i].vlines(current_poly.results.mean_gyration_radius/first_poly.results.mean_gyration_radius, 0, 10, color = "red", linestyle = "dashed")
                     axes[i].vlines(np.sqrt(current_poly.results.mean_gyration_radius)/np.sqrt(first_poly.results.mean_gyration_radius), 0, 10, color = self.times_colours["%i" %(2*j)], linestyle = "dashed")
-                    axes[i].set_xlabel(r"$R_g/ \sqrt{\langle R_{g, t = 0 tc}^2 \rangle}$", fontsize = self.caption_font)
-                    axes[i].set_ylabel(r"$P(R_g/ \sqrt{\langle R_{g, t = 0 tc}^2 \rangle})$")
+                    axes[i].set_xlabel(r"$R_g/ \sqrt{\langle R_{g, t/t_c = 0}^2 \rangle}$", fontsize = self.caption_font)
+                    axes[i].set_ylabel(r"$P(R_g/ \sqrt{\langle R_{g, t/t_c = 0}^2 \rangle})$")
                     ymax_new = np.max(smooth_counts)
                     if ymax_new > ymax:
                         ymax = ymax_new + 0.1 * ymax_new
@@ -1034,7 +1258,7 @@ def main():
 
     simp = simulation_plots(simulations)
     #mode = "nematic"
-    simp.plot_monomer_density_and_crossover_values(show_plot=True, mode = "e", marker_size = 10.0)
+    simp.plot_monomer_density_and_crossover_values(show_plot=True, mode = "e", marker_size = 10.0, observable= "crystallinity")
     #simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 1, index_poly_2= 5)
     #run_double_plot_for_all_i(simp, mode)
     #simp.plot_crystallinity()

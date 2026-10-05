@@ -128,7 +128,7 @@ def plot_2x2_monomer_density(simulation, times, save_string = None, bins = 18):
         plt.show()
         #axes[i].set_title(col, fontsize=10)
 
-def plot_monomer_density(current_polymer, savestring = None):
+def plot_monomer_density(current_polymer, savestring = None, label= None):
 
     monomer_count = current_polymer.atom_coords.assign_monomers_to_box()
 
@@ -172,11 +172,13 @@ def plot_monomer_density(current_polymer, savestring = None):
     bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
     counts_smooth = sp.ndimage.gaussian_filter1d(counts.astype(float), sigma=1)
 
-    plt.scatter(bin_centers, counts_smooth)
+    plt.scatter(bin_centers, counts_smooth, label = label)
+    plt.ylim(0, 5)
     plt.title("Local density, PVA-%i" %(current_polymer.atom_coords.polymer_length))
+    plt.legend()
     if savestring != None:
         plt.savefig(savestring)
-    plt.show()
+    #plt.show()
 
 def plot_multiple_monomer_densities(simulation_list, times: list):
     plt.figure(figsize=(8, 5))
@@ -524,7 +526,7 @@ def main():
     # plot_crossover_values(simulations)
     #plot_volume_vs_density(simulations)
 
-    #PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/equil", "../data_online/PVA-100/icryst_T088_Tdot_e-3")
+    PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/equil", "../data_online/PVA-100/icryst_T088_Tdot_e-3")
     #PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
 
     # #print(PVA_100.df_slurm_sim_data)
@@ -540,14 +542,16 @@ def main():
     # plot_2x2_end_end_radius(PVA_100, times, save_string="plots/PVA_100_Re.pdf")
     # plot_2x2_end_end_radius(PVA_1000, times, save_string="plots/PVA_1000_Re.pdf")
 
-    #current_poly = PVA_100.get_polymer_by_time(times[3])
+    current_poly = PVA_100.get_polymer_by_time(0)
+    plot_monomer_density(current_poly, savestring= "plots/local_density_sim_start_pva_100.pdf", label = "before quench")
     #plot_2x2_monomer_density(PVA_100, times, save_string="plots/PVA_100_local_density.pdf")
     #plot_2x2_monomer_density(PVA_1000, times, save_string="plots/PVA_1000_local_density.pdf", bins = 18)
     #current_poly.gyration_radius()
     pva_100_before_quench = "../../data/pva-100/quick_quench/quench/quench_tmin_088_tdot_e-3_time_0.txt"
     pva_1000_before_quench = "../../data/PVA-1000/quench/PVA-1000_quench_T088_tdot_e-3_time_0.txt"
     current_poly = polymer(pva_100_before_quench)
-    plot_monomer_density(current_poly, savestring= "plots/local_density_sim_start_pva_100.pdf")
+    plot_monomer_density(current_poly, savestring= "plots/local_density_sim_start_pva_100.pdf", label = "after quench, before iso. cryst.")
+    plt.show()
         
     #plot_distribution_crystalline_domains([PVA_500], times)#,savestring="plots/cryst_size_dist_pva_500.pdf")
     #plot_mean_rg([PVA_100, PVA_200, PVA_300], savestring = "plots/Rg_vs_time_PVA_100_200_300.pdf")

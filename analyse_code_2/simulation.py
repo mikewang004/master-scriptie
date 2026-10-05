@@ -520,7 +520,7 @@ class domain_analysis:
 
 
             
-    def find_knee(self, monomer_density, p0=None, n_points=500_000):
+    def find_knee(self, monomer_density, time, p0=None, n_points=500_000):
         """
         Fit double_exp to (x, y) data and return the point of maximum curvature
         on normalised axes (the 'knee').
@@ -539,7 +539,7 @@ class domain_analysis:
 
         current_poly = self.sim.get_polymer_by_time(0)
         n_atoms = current_poly.atom_coords.n_atoms
-        time = self.sim.df_slurm_sim_data["Step"] * self.sim.timestep
+        #time = self.sim.df_slurm_sim_data["Step"] * self.sim.timestep
         #monomer_density = (n_atoms/self.sim.df_slurm_sim_data["Volume"])
         x, y = np.asarray(time), np.asarray(monomer_density)
 
@@ -551,7 +551,6 @@ class domain_analysis:
             c10 = x.max() * 0.1
             c20 = x.max() * 0.5
             p0  = [a0, b0, c10, c20, d0]
-
         popt, _ = sp.optimize.curve_fit(fit_functions.double_exp, x, y, p0=p0, maxfev=20_000)
 
         x_min, x_max = x.min(), x.max()
@@ -571,7 +570,6 @@ class domain_analysis:
         idx_time = int(np.argmin(np.abs(time - x_knee)))
         closest_time = time[idx_time]
         closest_density = monomer_density[idx_time]
-        print(idx, x_knee, y_knee)
         # plt.plot(x, y)
         # plt.scatter(x_knee, y_knee)
         # plt.show()

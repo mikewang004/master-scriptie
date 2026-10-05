@@ -31,9 +31,9 @@ def crystallisation_vs_time(simulations: list):
 
 
 def plot_gyration_radius(current_poly):
-
-    values, bins, _ = plt.hist((current_poly.results.gyration_radius_distribution), bins = 100, density = True)
-    plt.vlines(np.sqrt(current_poly.results.mean_gyration_radius), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "mean gyration radius = %.4f" %np.sqrt(current_poly.results.mean_gyration_radius))
+    current_poly.gyration_radius()
+    values, bins, _ = plt.hist((current_poly.results.gyration_radius_distribution/np.sqrt(current_poly.results.mean_gyration_radius)), bins = 100, density = True)
+    plt.vlines(np.sqrt(current_poly.results.mean_gyration_radius)/np.sqrt(current_poly.results.mean_gyration_radius), ymin = 0, ymax = np.max(values), linestyles ="dashed", color = "red", label = "mean gyration radius = %.4f" %np.sqrt(current_poly.results.mean_gyration_radius))
     plt.legend()
     plt.show()
 
@@ -128,24 +128,54 @@ def plot_2x2_monomer_density(simulation, times, save_string = None, bins = 18):
         plt.show()
         #axes[i].set_title(col, fontsize=10)
 
-def plot_monomer_density(current_polymer):
+def plot_monomer_density(current_polymer, savestring = None):
 
-    monomer_density = current_polymer.atom_coords.assign_monomers_to_box()
+    monomer_count = current_polymer.atom_coords.assign_monomers_to_box()
 
     triplet_counts = (
-        monomer_density.groupby(['nx', 'ny', 'nz'])
+        monomer_count.groupby(['nx', 'ny', 'nz'])
         .size()
         .reset_index(name='count')
     )
 
-    local_density = triplet_counts["count"]/current_polymer.atom_coords.local_volume
-    #print(triplet_counts.min(), triplet_counts.max(), triplet_counts.mean())
-    mu, sigma = sp.stats.norm.fit(local_density)
-    values, bins, __ = plt.hist(local_density, bins = int(triplet_counts["count"].max()-triplet_counts["count"].min()+1), color="steelblue", density = True)
-    x_kde = np.linspace(local_density.min(), local_density.max(), 100)
-    pdf = sp.stats.norm.pdf(x_kde, mu, sigma)
-    plt.plot(x_kde, pdf)
+    # local_density = triplet_counts["count"]/current_polymer.atom_coords.local_volume
+    # #print(triplet_counts.min(), triplet_counts.max(), triplet_counts.mean())
+    # mu, sigma = sp.stats.norm.fit(local_density)
+    # values, bins, __ = plt.hist(local_density, bins = int(triplet_counts["count"].max()-triplet_counts["count"].min()+1), color="steelblue", density = True)
+    # x_kde = np.linspace(local_density.min(), local_density.max(), 100)
+    # pdf = sp.stats.norm.pdf(x_kde, mu, sigma)
+    # plt.plot(x_kde, pdf)
+
+    n_bins = 26
+    Lx, Ly, Lz = current_polymer.atom_coords.boxlengths  # box dimensions
+    coords = monomer_count[['xu', 'yu', 'zu']].values
+    x_min, y_min, z_min = coords.min(axis=0)  # or use known box origin
+
+    bins_x = np.linspace(x_min, x_min + Lx, n_bins + 1)
+    bins_y = np.linspace(y_min, y_min + Ly, n_bins + 1)
+    bins_z = np.linspace(z_min, z_min + Lz, n_bins + 1)
+    counts, edges = np.histogramdd(coords, bins=(bins_x, bins_y, bins_z))
+
+    # --- voxel volume ---
+    voxel_vol = (Lx / n_bins) * (Ly / n_bins) * (Lz / n_bins)
+
+    # --- local density: monomers per unit volume ---
+    local_density = counts / voxel_vol  # shape: (n_bins, n_bins, n_bins)
+    global_density = current_polymer.atom_coords.n_atoms/current_polymer.atom_coords.volume
+    # print(f"Voxel volume:       {voxel_vol:.4f}")
+    # print(f"Max local density:  {local_density.max():.4f}")
+    # print(f"Mean local density: {local_density.mean():.4f}")
+    # print(f"Global density check: {len(coords) / (Lx * Ly * Lz):.4f}")
+    density_flat = local_density.flatten()
+    density_nonzero = density_flat[density_flat > 0]
+    counts, bin_edges = np.histogram(density_nonzero, bins = n_bins, density = True)
+    bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+    counts_smooth = sp.ndimage.gaussian_filter1d(counts.astype(float), sigma=1)
+
+    plt.scatter(bin_centers, counts_smooth)
     plt.title("Local density, PVA-%i" %(current_polymer.atom_coords.polymer_length))
+    if savestring != None:
+        plt.savefig(savestring)
     plt.show()
 
 def plot_multiple_monomer_densities(simulation_list, times: list):
@@ -488,10 +518,10 @@ def main():
 
     simulations = [PVA_50, PVA_100, PVA_200, PVA_300, PVA_500, PVA_1000]
 
-    print(PVA_100.tc_time)
+    # print(PVA_100.tc_time)
 
-    plot_monomer_density_and_crossover_values(simulations)
-    plot_crossover_values(simulations)
+    # plot_monomer_density_and_crossover_values(simulations)
+    # plot_crossover_values(simulations)
     #plot_volume_vs_density(simulations)
 
     #PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/equil", "../data_online/PVA-100/icryst_T088_Tdot_e-3")
@@ -514,7 +544,10 @@ def main():
     #plot_2x2_monomer_density(PVA_100, times, save_string="plots/PVA_100_local_density.pdf")
     #plot_2x2_monomer_density(PVA_1000, times, save_string="plots/PVA_1000_local_density.pdf", bins = 18)
     #current_poly.gyration_radius()
-    #plot_gyration_radius(current_poly)
+    pva_100_before_quench = "../../data/pva-100/quick_quench/quench/quench_tmin_088_tdot_e-3_time_0.txt"
+    pva_1000_before_quench = "../../data/PVA-1000/quench/PVA-1000_quench_T088_tdot_e-3_time_0.txt"
+    current_poly = polymer(pva_100_before_quench)
+    plot_monomer_density(current_poly, savestring= "plots/local_density_sim_start_pva_100.pdf")
         
     #plot_distribution_crystalline_domains([PVA_500], times)#,savestring="plots/cryst_size_dist_pva_500.pdf")
     #plot_mean_rg([PVA_100, PVA_200, PVA_300], savestring = "plots/Rg_vs_time_PVA_100_200_300.pdf")

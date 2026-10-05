@@ -10,6 +10,7 @@ from clib.boxAlgorithmsInC import box_algos_lib
 from nematic_vector import calc_nematic_tensor_2, nematic_vector_loop, nematic_vector_loop_2, compute_Q, orderparameter
 from hoshenKopelmanInPython import hk_in_python
 from coarse_grained_hist import coarse_grained_hist
+from hoshenKopelmanInPython2 import hoshen_kopelman_domains
 
 def wrap_coordinates(column, minlength, total_length):
     return (column - minlength) % total_length + minlength
@@ -309,8 +310,8 @@ class polymer():
 
     def merge_boxes_2(self, ndot_cutoff = 0.97,cryst_cutoff = 0.8, save = False, print_results: bool = False, label_matrix = None):
         if not isinstance(label_matrix, np.ndarray):
-            #label_matrix = hk_in_python(self.df_cryst, ndot_cutoff = ndot_cutoff, nridges = self.atom_coords.nridges, cryst_cutoff = cryst_cutoff)\
-            label_matrix = hoshen_kopelman_domains(self.df_cryst, dot_threshold = ndot_cutoff, s_threshold = cryst_cutoff)
+            label_matrix = hk_in_python(self.df_cryst, ndot_cutoff = ndot_cutoff, nridges = self.atom_coords.nridges, cryst_cutoff = cryst_cutoff)\
+            #label_matrix = hoshen_kopelman_domains(self.df_cryst, dot_threshold = ndot_cutoff, s_threshold = cryst_cutoff)
         total_box_elements = (self.atom_coords.nridges["x"]*self.atom_coords.nridges["y"]*self.atom_coords.nridges["z"]).astype(int)
         unique_values, counts = np.unique(label_matrix, return_counts=True) #Labels and how much each label occurs
         total_number_merged_clusters = counts[counts > 1]

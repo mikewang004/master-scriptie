@@ -112,7 +112,7 @@ class simulation_plots():
             plt.scatter(simulation.polymer_length, xkn, c = self.simulation_colours[simulation], label=f"PVA-{simulation.polymer_length}")
         plt.xlabel("Chain lengths")
         plt.ylabel(r"$t_\text{crossover } [t/\tau]$")
-        #plt.ylabel(r"$n_\text{monomers}/\sigma^3$")
+        #plt.ylabel(r"$\rho_\text{local}$")
         plt.legend()
         if save_string == None:
             save_string = "%s/crossover_point/tc_vs_chain_length.pdf" %(self.path_to_latex_plots_folder)
@@ -168,6 +168,7 @@ class simulation_plots():
                 xkn             = xkn,
                 ykn             = ykn,
                 popt            = popt,
+                phi_inf         = popt[0]
             ))
 
         tc = pd.DataFrame(
@@ -185,22 +186,23 @@ class simulation_plots():
             for d in sim_data:
                 ax.scatter(
                     d["time"], d["monomer_density"],
-                    label=f"PVA-{d['simulation'].polymer_length}",
+                    label=f"$N = {d['simulation'].polymer_length}$",
                     color=self.simulation_colours[d["simulation"]],
                     s=marker_size,
                 )
-            ax.set_ylabel(r"$n_\text{monomers}/\sigma^3$", fontsize=self.caption_font)
+            ax.set_ylabel(r"$\rho_\text{local}$", fontsize=self.caption_font)
+            ax.set_xlabel(r"$t/\tau$",                      fontsize=self.caption_font)
             ax.legend(fontsize=plt_caption_font)
 
         # ------------------------------------------------------------------ #
         #  Helper: draw panel (c) — density + fit + crossover markers         #
         # ------------------------------------------------------------------ #
-        def _draw_panel_c(ax):
+        def _draw_panel_c(ax, draw_label_x = True):
             for d in sim_data:
                 time_con = np.linspace(0, d["time"].max(), 50000)
                 ax.scatter(
                     d["time"], d["monomer_density"],
-                    label=f"PVA-{d['simulation'].polymer_length}",
+                    label=f"$N = {d['simulation'].polymer_length}$",
                     color=self.simulation_colours[d["simulation"]],
                     s=marker_size,
                 )
@@ -211,8 +213,27 @@ class simulation_plots():
                 )
             for d in sim_data:
                 ax.scatter(d["xkn"], d["ykn"], marker="x", color="black", zorder=3, s=marker_size)
+            if draw_label_x == True:
+                ax.set_xlabel(r"$t/\tau$",                      fontsize=self.caption_font)
+            ax.set_ylabel(r"$\rho_\text{local}$",  fontsize=self.caption_font)
+            ax.legend(fontsize=plt_caption_font)
+
+        def _draw_panel_d(ax):
+            for d in sim_data:
+                time_con = np.linspace(0, d["time"].max(), 50000)
+                ax.scatter(
+                    d["time"], d["monomer_density"]/d["phi_inf"],
+                    label=f"$N = {d['simulation'].polymer_length}$",
+                    color=self.simulation_colours[d["simulation"]],
+                    s=marker_size,
+                )
+                # ax.plot(
+                #     time_con,
+                #     fit_functions.double_exp(time_con, *d["popt"]/d["phi_inf"]),
+                #     color="r", linestyle="dashed",
+                # )
             ax.set_xlabel(r"$t/\tau$",                      fontsize=self.caption_font)
-            ax.set_ylabel(r"$n_\text{monomers}/\sigma^3$",  fontsize=self.caption_font)
+            ax.set_ylabel(r"$\rho_\text{local}/\rho_{\text{local, } \infty}$",  fontsize=self.caption_font)
             ax.legend(fontsize=plt_caption_font)
 
         # ------------------------------------------------------------------ #
@@ -260,6 +281,40 @@ class simulation_plots():
             fig.tight_layout()
             fig.savefig(
                 "%s/crossover_point/crossover_density_vs_time_panel_c.pdf"
+                % self.path_to_latex_plots_folder
+            )
+
+        elif mode == "d":
+            # ── standalone panel (d): data collapse rho/rho_inf
+            fig, ax = plt.subplots(figsize=(width, height))
+            _draw_panel_d(ax)
+            fig.tight_layout()
+            fig.savefig(
+                "%s/crossover_point/crossover_density_vs_time_panel_d.pdf"
+                % self.path_to_latex_plots_folder
+            )
+
+        elif mode == "e":
+            # ── monomer density, with fit, and data collapse rho/rho_inf ──────────────────────────────
+            fig, (ax1, ax2, ax3) = plt.subplots(
+                3, 1,
+                figsize=(width, 3 * height),
+                sharex=False,
+            )
+            _draw_panel_a(ax1)
+            _draw_panel_c(ax2)
+            _draw_panel_d(ax3)
+
+            ax1.text(0.02, 0.95, "(a)", transform=ax1.transAxes,
+                    fontsize=plt_caption_font, va="top", ha="left")
+            ax2.text(0.02, 0.95, "(b)", transform=ax2.transAxes,
+                    fontsize=plt_caption_font, va="top", ha="left")
+            ax3.text(0.02, 0.95, "(c)", transform=ax3.transAxes,
+                    fontsize=plt_caption_font, va="top", ha="left")
+
+            fig.tight_layout()
+            fig.savefig(
+                "%s/crossover_point/crossover_density_vs_time_different_chains_subplots_with_collapse.pdf"
                 % self.path_to_latex_plots_folder
             )
 
@@ -965,23 +1020,24 @@ def different_quench_rate_simulations():
     pva_100_e5 = Simulation(100, "../../data/pva-100/cooling_rate/e-5", "../data_online/pva-100/icryst_T05_Tdot_e-5", cooling_rate = -5, target_temp = 0.5)
     simulations = [pva_100_e3, pva_100_e4, pva_100_e5]
 
-    # for sim in simulations:
-    #     sim.domain_analysis.calc_crystallisation()
+    for sim in simulations:
+        #sim.domain_analysis.calc_crystallisation()
+        sim.domain_analysis.calc_avg_domain_size()
 
     return simulations
 def main():
 
-    simulations = different_quench_rate_simulations()
+    #simulations = different_quench_rate_simulations()
 
 
-    #simulations = load_in_simulations()
+    simulations = load_in_simulations()
 
     simp = simulation_plots(simulations)
     #mode = "nematic"
-    #simp.plot_monomer_density_and_crossover_values(show_plot=False, mode = "b", marker_size = 10.0)
+    simp.plot_monomer_density_and_crossover_values(show_plot=True, mode = "e", marker_size = 10.0)
     #simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 1, index_poly_2= 5)
     #run_double_plot_for_all_i(simp, mode)
-    simp.plot_crystallinity()
+    #simp.plot_crystallinity()
     #simp.plot_avg_domain_size()
     #simp.plot_crossover_values_vs_chain_length()
 

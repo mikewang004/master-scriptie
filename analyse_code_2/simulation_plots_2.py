@@ -841,7 +841,7 @@ class simulation_plots():
                     bin_centers = (bin_edges[:-1] + bin_edges[1:]) /2
                     smooth_counts = sp.ndimage.gaussian_filter1d(counts, sigma = 1.0)
                     axes[i].plot(bin_centers, smooth_counts, color=self.times_colours["%i" %(2*j)], linestyle = "-", marker = ".",
-                    label = r"$%i t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
+                    label = r"$t/t_c = %i$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
                 # values, bins, __ = axes[i].hist(current_poly_1000.results.nematic_value_dist, 
                 #     bins=100, color=self.simulation_colours[PVA_1000], density = True, histtype = "step", label = "PVA-%i" %PVA_1000.polymer_length)
                     axes[i].set_xlabel(r"$S$")
@@ -858,8 +858,8 @@ class simulation_plots():
                         %(polymer_list[i].path_to_home_folder, polymer_list[i].lammps_dump_prefix, current_time), sep = " ")
                     #print(cryst_domain_dist["volume_pdf"])
 
-                    axes[i].plot(cryst_domain_dist["volume"], cryst_domain_dist["volume_pdf"], color=self.times_colours["%i" %(2*j)], 
-                        label = r"$%i t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
+                    axes[i].scatter(cryst_domain_dist["volume"], cryst_domain_dist["volume_pdf"], color=self.times_colours["%i" %(2*j)], 
+                        label = r"$t/t_c = %i$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
                     savestring = "%s/domain_analysis/nem_value_pva_%i_%i.pdf" %(self.path_to_latex_plots_folder, polymer_list[0].polymer_length, polymer_list[1].polymer_length)
                     axes[i].set_xscale("log")
                     axes[i].set_yscale("log")
@@ -903,7 +903,7 @@ class simulation_plots():
                     counts_smooth = sp.ndimage.gaussian_filter1d(counts.astype(float), sigma=1)
 
                     axes[i].plot(bin_centers, counts_smooth, color=self.times_colours["%i" %(2*j)],
-                        label=r"$%i t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
+                        label=r"$t/t_c = %i$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
                     #if j == 2:
                     axes[i].vlines(global_density, 0, 10, color =self.times_colours["%i" %(2*j)], linestyle = "dashed") #label = r"$\rho_\text{global}$ = %.2f at %i $t_c$" %(global_density,
                         #int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)), linestyle = "dashed")
@@ -920,11 +920,13 @@ class simulation_plots():
                     #     color = self.times_colours["%i" %(2*j)], linestyle = "-", markersize = 3,
                     #     label = r"$%i t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
                     savestring = "%s/polymer_conformation/local_density_pva-%i_%i.pdf" %(self.path_to_latex_plots_folder, polymer_list[0].polymer_length, polymer_list[1].polymer_length)
-                    axes[i].set_xlabel(r"$N_\text{local monomers}/V_\text{local}$")
-                    axes[i].set_ylabel(r"$P(N_\text{local monomers}/V_\text{local}$)")
+                    #axes[i].set_xlabel(r"$N_\text{local monomers}/V_\text{local}$")
+                    #axes[i].set_ylabel(r"$P(N_\text{local monomers}/V_\text{local}$)")
+                    axes[i].set_xlabel(r"$\rho_\text{local}$")
+                    axes[i].set_ylabel(r"$P(\rho_\text{local})$")
                     ymax_new = np.max(counts_smooth)
                     if ymax_new > ymax:
-                        ymax = ymax_new + 0.1 * ymax_new
+                        ymax = ymax_new + 0.2 * ymax_new
 
 
                 elif mode == "bond_bond_corr":
@@ -944,7 +946,7 @@ class simulation_plots():
             if mode == "nematic":
                 text_xaxis = 0.993
                 ha = "right"
-                axes[i].vlines(self.simulations[1].cryst_cutoff, 0, np.max(counts), color = "red",linestyles = "dotted", label = r"$\lambda_\text{cutoff} = 0.8$")
+                axes[i].vlines(self.simulations[1].cryst_cutoff, 0, np.max(counts), color = "red",linestyles = "dotted", label = r"$S_\text{cutoff} = 0.8$")
             axes[i].legend(fontsize = self.caption_font)
             axes[i].text(text_xaxis, 0.95, letter_subplot_list[i],
                 transform=axes[i].transAxes,
@@ -1257,10 +1259,13 @@ def main():
     simulations = load_in_simulations()
 
     simp = simulation_plots(simulations)
-    #mode = "nematic"
-    simp.plot_monomer_density_and_crossover_values(show_plot=True, mode = "e", marker_size = 10.0, observable= "crystallinity")
-    #simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 1, index_poly_2= 5)
-    #run_double_plot_for_all_i(simp, mode)
+    mode = "nematic"
+    #simp.plot_monomer_density_and_crossover_values(show_plot=True, mode = "e", marker_size = 10.0, observable= "crystallinity")
+    simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 1, index_poly_2= 5)
+    run_double_plot_for_all_i(simp, mode)
+
+    # quench_PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/quench", "../data_online/PVA-100/quench_T088_Tdot_e-3")
+    # quench_PVA_1000 = Simulation(100, "../../data/PVA-1000/quench", "../data_online/PVA-1000/quench_T088_Tdot_e-3")
     #simp.plot_crystallinity()
     #simp.plot_avg_domain_size()
     #simp.plot_crossover_values_vs_chain_length()

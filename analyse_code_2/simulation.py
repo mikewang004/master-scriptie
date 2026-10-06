@@ -9,11 +9,13 @@ import pandas as pd
 import pathlib
 import re
 from typing import List, Tuple, Optional
-import bisect
-from kneed import KneeLocator
 from hoshenKopelmanInPython2 import hoshen_kopelman_domains
+import glob
 
 #TODO: modify file so that polymer properties can be accessed easily from Simulation()
+
+def bond_correlation_model(n, lp, b0):
+    return np.exp(-n * b0 / lp)
 
 def make_folder(path_to_folder: str):
     """Check if folder exists, if not make folder"""
@@ -745,6 +747,48 @@ class Simulation:
 
         return 0;
 
+    def fit_persistence_length(self, path_to_bond_bond_folder = None):
+        """Via <cos theta(n)> = <b_{ij} * b_{i(j+ 1)} = exp(-n b_0 + l_p)"""
+        if path_to_bond_bond_folder == None:
+            path_to_bond_bond_folder = "%s/%s" %(self.path_to_home_folder, "bond_bond_correlation")
+        
+        persistence_length = pd.DataFrame(np.zeros([self.df_slurm_sim_data.shape[0], 4]), columns = 
+            ["time", "b_0", "persistence_length", "persistence_length_err"])
+        for i in tqdm(range(0, len(self.list_run_files))):
+            current_time = self.df_slurm_sim_data["Step"].iloc[i]
+            current_polymer = polymer("%s/%s" %(self.path_to_data_folder, self.list_run_files[i]))
+            bond_vectors = current_polymer.atom_coords.calculate_bond_vectors(normalise = False)
+            mean_bond_vec_length = np.mean(np.sqrt(bond_vectors["bx"]**2 + 
+                bond_vectors["by"]**2 + bond_vectors["bz"]**2))
+            try:
+                pattern = f"{self.path_to_home_folder}/bond_bond_correlation/*_{current_time}.txt"
+                files = glob.glob(pattern)
+                bond_bond_corr_file = np.loadtxt(files[0])
+                n = bond_bond_corr_file[:,0]; bond_bond_corr = bond_bond_corr_file[:, 1]
+            except FileNotFoundError:
+                n, bond_bond_corr = current_poly.bond_bond_correlation_2()
+
+            
+            #Fit exp(-n b_0 + l_p)
+
+            popt, pcov = sp.optimize.curve_fit(
+                lambda n, lp: bond_correlation_model(n, lp, mean_bond_vec_length),
+                n, bond_bond_corr,
+                p0=[10 * mean_bond_vec_length],
+                bounds=(0, np.inf)
+            )
+
+            lp = popt[0]
+            lp_err = np.sqrt(pcov[0, 0])
+
+            # print(f"Persistence length: {lp:.4g} ± {lp_err:.2g}")
+            # print(f"In bond-length units: l_p / b_0 = {lp / mean_bond_vec_length:.4g}")
+            persistence_length.iloc[i, :] = current_time, mean_bond_vec_length, lp, lp_err
+
+        persistence_length.to_csv("%s/persistence_length.txt" %self.path_to_home_folder)
+        return 0;
+        
+
     def calc_tie_chain_distribution(self):
         results = []
 
@@ -901,8 +945,17 @@ def main():
     PVA_500 = Simulation(500, "../../data/PVA-500/equil", "../data_online/PVA-500/icryst_T088_Tdot_e-3")
     PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
 
-    quench_PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/quench", "../data_online/PVA-100/quench_T088_Tdot_e-3")
+    #quench_PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/quench", "../data_online/PVA-100/quench_T088_Tdot_e-3")
     #quench_PVA_1000 = Simulation(100, "../../data/PVA-1000/quench", "../data_online/PVA-1000/quench_T088_Tdot_e-3")
+
+
+    PVA_100.fit_persistence_length()
+    PVA_1000.fit_persistence_length()
+    PVA_50.fit_persistence_length()
+    PVA_200.fit_persistence_length()
+    PVA_300.fit_persistence_length()
+    PVA_500.fit_persistence_length()
+
 
     # PVA_100.domain_analysis.calc_crystallisation()
     # PVA_1000.domain_analysis.calc_crystallisation()

@@ -8,6 +8,7 @@ from simulation import Simulation, fit_functions
 import scienceplots
 from matplotlib.lines import Line2D
 import pandas as pd
+import glob
 
 
 plt.style.use('science')
@@ -930,8 +931,15 @@ class simulation_plots():
 
 
                 elif mode == "bond_bond_corr":
-                    bond_bond_corr = current_poly.bond_bond_correlation_2()
-                    n = np.arange(1, len(bond_bond_corr)+1)
+                    try: 
+                        pattern = f"{polymer_list[i].path_to_home_folder}/bond_bond_correlation/*_{current_time}.txt"
+                        files = glob.glob(pattern)
+                        bond_bond_corr_file = np.loadtxt(files[0])
+                        n = bond_bond_corr_file[:,0]; bond_bond_corr = bond_bond_corr_file[:, 1]
+                    except FileNotFoundError:
+                        n, bond_bond_corr = current_poly.bond_bond_correlation_2()
+                        #n = np.arange(1, len(bond_bond_corr)+1)
+                    
                     axes[i].scatter(n, bond_bond_corr, marker = ".",
                         label = r"$%i t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)),
                         color=self.times_colours["%i" %(2*j)])
@@ -954,10 +962,10 @@ class simulation_plots():
                 va="top", ha=ha)
 
         for i in range(0, len(times_different_PVA)):
-            axes[i].set_ylim(0, ymax)
+            #axes[i].set_ylim(0, ymax)
             axes[i].set_title("PVA-%i" %(polymer_list[i].polymer_length))
             axes[i].legend(fontsize=self.caption_font)
-        #axes[1].set_title("PVA-%i" %(polymer_list[1].polymer_length))
+        axes[1].set_title("PVA-%i" %(polymer_list[1].polymer_length))
 
         
         #axes[1].legend(fontsize=self.caption_font)
@@ -1259,7 +1267,7 @@ def main():
     simulations = load_in_simulations()
 
     simp = simulation_plots(simulations)
-    mode = "nematic"
+    mode = "bond_bond_corr"
     #simp.plot_monomer_density_and_crossover_values(show_plot=True, mode = "e", marker_size = 10.0, observable= "crystallinity")
     simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 1, index_poly_2= 5)
     run_double_plot_for_all_i(simp, mode)

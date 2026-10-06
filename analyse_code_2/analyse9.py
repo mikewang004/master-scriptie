@@ -121,25 +121,38 @@ class atom_coords:
         wrapped_coords["zu"] = wrap_coordinates(self.datapd["zu"], self.dimensions.loc["z", "min"], self.boxlengths["z"])
         return wrapped_coords
 
-    def calculate_bond_vectors(self):
+    def calculate_bond_vectors(self, normalise=True):
 
-        shifted = self.datapd.groupby('mol_id')[['xu', 'yu', 'zu']].shift(-1)
-        shifted = shifted.copy()
-        bond_vecs = shifted - self.datapd[['xu', 'yu', 'zu']]
+        shifted = self.datapd.groupby("mol_id")[["xu", "yu", "zu"]].shift(-1)
 
-
-
-        bond_vecs.columns = ['bx', 'by', 'bz']
-        bond_vecs = bond_vecs.dropna()
+        # Physical, unnormalised bond vectors:
+        # b_j = r_(j+1) - r_j
+        bond_vecs = shifted - self.datapd[["xu", "yu", "zu"]]
+        bond_vecs.columns = ["bx", "by", "bz"]
+        bond_vecs = bond_vecs.dropna().copy()
+        # Preserve molecule identifiers for each valid bond
         bond_vecs.insert(
-        0,  # position
-        'mol_id',
-        self.datapd.loc[bond_vecs.index, 'mol_id'].values
+            0,
+            "mol_id",
+            self.datapd.loc[bond_vecs.index, "mol_id"].to_numpy()
         )
+        if normalise:
+            norms = np.linalg.norm(
+                bond_vecs[["bx", "by", "bz"]].to_numpy(),
+                axis=1
+            )
 
-        norms = np.linalg.norm(bond_vecs[['bx','by','bz']].to_numpy(), axis=1)
-        bond_vecs[['bx','by','bz']] = bond_vecs[['bx','by','bz']].div(norms, axis=0)
-        bond_vecs = bond_vecs.apply(np.float32)
+            if np.any(norms == 0):
+                raise ValueError("Cannot normalise bond vectors with zero length.")
+
+            bond_vecs[["bx", "by", "bz"]] = (
+                bond_vecs[["bx", "by", "bz"]]
+                .div(norms, axis=0)
+            )
+        # Keep molecule IDs integer; convert only vector components to float32
+        bond_vecs[["bx", "by", "bz"]] = bond_vecs[
+            ["bx", "by", "bz"]
+        ].astype(np.float32)
         bond_vecs["mol_id"] = bond_vecs["mol_id"].astype(np.int32) + 1
         return bond_vecs
 
@@ -455,7 +468,12 @@ class polymer():
 
 
 
-    def bond_bond_correlation_2(self, save_string = None):
+    def bond_bond_correlation_2(self, save_string = None, read_string = None):
+        try:
+            bond_bond_corr = np.loadtxt(read_string)
+            return bond_bond_corr[:, :]
+        except FileNotFoundError:
+            pass
         bv = self.atom_coords.bond_vectors.copy()[["mol_id", "bx", "by", "bz"]]
         bv['pos_in_chain'] = bv.groupby('mol_id').cumcount()
         corr = []
@@ -464,7 +482,9 @@ class polymer():
         #print(np.array(corr))
         if isinstance(save_string, str):
             np.savetxt("%s" %save_string, np.array([np.arange(1, self.atom_coords.polymer_length), corr]).T)
-        return np.array(corr)
+        return n, np.array(corr)
+
+
 
 
     # def local_monomer_density(self):

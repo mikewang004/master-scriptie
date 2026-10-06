@@ -962,7 +962,8 @@ class simulation_plots():
                 va="top", ha=ha)
 
         for i in range(0, len(times_different_PVA)):
-            #axes[i].set_ylim(0, ymax)
+            if mode != "bond_bond_corr"
+                axes[i].set_ylim(0, ymax)
             axes[i].set_title("PVA-%i" %(polymer_list[i].polymer_length))
             axes[i].legend(fontsize=self.caption_font)
         axes[1].set_title("PVA-%i" %(polymer_list[1].polymer_length))

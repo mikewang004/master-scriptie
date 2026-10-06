@@ -764,7 +764,7 @@ class Simulation:
                 pattern = f"{self.path_to_home_folder}/bond_bond_correlation/*_{current_time}.txt"
                 files = glob.glob(pattern)
                 bond_bond_corr_file = np.loadtxt(files[0])
-                n = bond_bond_corr_file[:,0]; bond_bond_corr = bond_bond_corr_file[:, 1]
+                n = bond_bond_corr_file[:16,0]; bond_bond_corr = bond_bond_corr_file[:16, 1]
             except FileNotFoundError:
                 n, bond_bond_corr = current_poly.bond_bond_correlation_2()
 

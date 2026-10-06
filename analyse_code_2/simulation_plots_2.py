@@ -64,7 +64,7 @@ class simulation_plots():
         self.std_height = self.max_y/3 * plt_cm_to_in
         plt.rcParams["figure.figsize"] = [self.std_width, self.std_height]
         self.times_colour_list = ["0", "1", "2", "3", "4"]
-        self.times_colours = self.fix_colour_schemes(["0", "1", "2", "3", "4"], "inferno", cmap_max= 0.8)
+        self.times_colours = self.fix_colour_schemes(["0", "1", "2", "3", "4", "10"], "inferno", cmap_max= 0.8)
         self.path_to_latex_plots_folder = "../../master-thesis-latex/content/plots"
 
         self.end_time_index =  {
@@ -613,18 +613,50 @@ class simulation_plots():
             current_domain_file = simulation.domain_analysis.read_avg_domain_size()
             time = simulation.get_simulation_time()
             plt.scatter(time[:len(current_domain_file["mean size cryst domains"])], current_domain_file["mean size cryst domains"].iloc[:len(time)]**(1/3), 
-                label = "PVA-%i" %(simulation.polymer_length), c= self.simulation_colours[simulation], marker = ".")
+                label = "$N = %i$" %(simulation.polymer_length), c= self.simulation_colours[simulation], marker = ".")
 
 
         plt.legend(fontsize=self.caption_font)
-        plt.xlabel(r"$t/\tau_c$", fontsize = self.caption_font)
+        plt.xlabel(r"$t/t_c$", fontsize = self.caption_font)
         plt.ylabel(r"$l/\sigma$", fontsize = self.caption_font)
         #plt.xscale("log")
         #plt.title("Mean domain size, various chains")
-        if savestring is not None:
-            plt.savefig("%s/%s" %(self.save_folder, savestring))
+        plt.savefig("%s/domain_analysis/mean_domain_size.pdf" %(self.path_to_latex_plots_folder))
         if show_plot == True:
             plt.show()
+
+    def plot_avg_domain_size_vs_N(self, show_plot = True):
+        plt.figure(figsize = (self.std_width*1.25, self.std_height*1.5))
+        mean_std_domain_size = np.zeros((len(self.simulations), 3))
+        tcs = [1,5]
+        for i in range(len(tcs)):
+            tc = tcs[i]
+            for i in range(0, len(self.simulations)):
+                simulation = self.simulations[i]
+                current_domain_file = simulation.domain_analysis.read_avg_domain_size()
+                end_time = (simulation.tc_time * tc)/0.005
+                match_positions = np.flatnonzero(np.isclose(current_domain_file["time"].to_numpy(), end_time))
+                current_position = match_positions[0]
+                start = max(0, current_position - 2)
+                stop = min(len(current_domain_file), current_position + 3)
+
+                current_domain_rows = current_domain_file.iloc[start:stop]
+
+                #Get average domain size + std 
+                mean_std_domain_size[i, :] = simulation.polymer_length, np.mean(current_domain_rows["mean size cryst domains"]**(1/3)), np.std(current_domain_rows["mean size cryst domains"]**(1/3))
+
+            plt.errorbar(mean_std_domain_size[:, 0], mean_std_domain_size[:, 1], yerr = mean_std_domain_size[:, 2], fmt = ".",
+                color = self.times_colours["%i" %(2*tc)], label = r"$t/t_c = %i$" %tc)
+
+        plt.xlabel(r"$N$", fontsize = self.caption_font)
+        plt.ylabel(r"$l/\sigma$", fontsize = self.caption_font)
+        plt.legend(fontsize=self.caption_font)
+        #plt.title(r"$t/t_c = 5$")
+        plt.savefig("%s/domain_analysis/mean_domain_size_vs_N.pdf" %(self.path_to_latex_plots_folder))
+        if show_plot == True:
+            plt.show()
+
+
 
 
     
@@ -939,10 +971,38 @@ class simulation_plots():
                     except FileNotFoundError:
                         n, bond_bond_corr = current_poly.bond_bond_correlation_2()
                         #n = np.arange(1, len(bond_bond_corr)+1)
-                    
-                    axes[i].scatter(n, bond_bond_corr, marker = ".",
-                        label = r"$%i t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)),
-                        color=self.times_colours["%i" %(2*j)])
+
+                    axes[i].scatter(n, bond_bond_corr, marker=".", label=r"$t/t_c = %i$" % (
+                        int(current_poly.atom_coords.current_timestep* polymer_list[i].timestep/ polymer_list[i].tc_time)),
+                        color=self.times_colours["%i" % (2 * j)]
+                    )
+                    df_persistence_length = pd.read_csv("%s/persistence_length.txt"% polymer_list[i].path_to_home_folder)
+                    current_persistence_length_row = df_persistence_length.loc[np.isclose(df_persistence_length["time"], current_time)]
+                    #axes[i].axhline(np.exp(-1), color="0.5", ls=":",lw=0.8, zorder=0)
+                    if current_persistence_length_row.empty:
+                        print(f"No persistence-length result found for time = {current_time}")
+
+                    else:
+                        row = current_persistence_length_row.iloc[0]
+                        lp = row["persistence_length"]; lp_err = row["persistence_length_err"]; b0 = row["b_0"]
+                        # Persistence length expressed as a number of bonds
+                        n_p = lp / b0
+                        n_p_err = lp_err / b0
+                        colour = self.times_colours["%i" % (2 * j)]
+                        # Vertical line at n_p = l_p / b_0
+                        #axes[i].axvline(n_p,color=colour,ls="--",lw=1.0,alpha=0.8,zorder=1 )
+                        # Marker at the defining correlation value exp(-1)
+                        #axes[i].errorbar(n_p, np.exp(-1), xerr=n_p_err, color=colour, markersize=3, capsize=2, zorder=4, marker = "x")
+                        axes[i].errorbar(n_p, np.exp(-1), xerr=n_p_err, color = colour, marker = "x", markersize = 5, capsize = 3, linewidth = 0.4, zorder=4)
+
+                    #Calc stem length 
+
+                    min_index = np.argmin(bond_bond_corr)
+                    corr_min = bond_bond_corr[min_index]
+                    n_stem = n[min_index]
+                    if corr_min < -0.1:
+                        axes[i].scatter(n_stem, corr_min, marker="v", s=28, color=colour, edgecolor="black", linewidth=0.4,zorder=5)
+
                     savestring = "%s/polymer_conformation/bond_bond_correlation_pva_%i_%i.pdf" %(self.path_to_latex_plots_folder, polymer_list[0].polymer_length, polymer_list[1].polymer_length)
                     axes[i].set_xlabel("$n$")
                     axes[i].set_ylabel(r"$\cos \theta(n)$")
@@ -962,11 +1022,11 @@ class simulation_plots():
                 va="top", ha=ha)
 
         for i in range(0, len(times_different_PVA)):
-            if mode != "bond_bond_corr"
+            if mode != "bond_bond_corr":
                 axes[i].set_ylim(0, ymax)
-            axes[i].set_title("PVA-%i" %(polymer_list[i].polymer_length))
+            axes[i].set_title("$N = %i$" %(polymer_list[i].polymer_length))
             axes[i].legend(fontsize=self.caption_font)
-        axes[1].set_title("PVA-%i" %(polymer_list[1].polymer_length))
+        axes[1].set_title("$N = %i$" %(polymer_list[1].polymer_length))
 
         
         #axes[1].legend(fontsize=self.caption_font)
@@ -1189,6 +1249,7 @@ class simulation_plots():
 
 
     def plot_length_tie_chains(self, savestring = None, mode = "N_tie"):
+        plt.figure(figsize = (self.std_width*1.25, self.std_height*1.5))
         for i in range(0, len(self.simulations)):
             simulation = self.simulations[i]
             path_to_tie_chain_file = "%s/tie_chains.txt" %simulation.path_to_home_folder
@@ -1204,7 +1265,7 @@ class simulation_plots():
                 savestring = "%s/tie_chains/f_tie.pdf" %self.path_to_latex_plots_folder
             plt.plot(time[1:],y,
                 color=self.simulation_colours[simulation], label = "PVA-%i" %simulation.polymer_length)
-        plt.xlabel(r"$tc$")
+        plt.xlabel(r"$t/tc$")
         plt.ylabel(ylabel)
         plt.legend()
         plt.savefig(savestring)
@@ -1228,6 +1289,39 @@ class simulation_plots():
         plt.savefig(savestring)
         return 0;
 
+
+    def plot_ftie_vs_N(self, show_plot = True):
+        plt.figure(figsize = (self.std_width*1.25, self.std_height*1.5))
+        mean_std_domain_size = np.zeros((len(self.simulations), 3))
+        tcs = [1,5]
+        for i in range(len(tcs)):
+            tc = tcs[i]
+            for i in range(0, len(self.simulations)):
+                simulation = self.simulations[i]
+                end_time = (simulation.tc_time * tc)/0.005
+                path_to_tie_chain_file = "%s/tie_chains.txt" %simulation.path_to_home_folder
+                current_domain_file = pd.read_csv(path_to_tie_chain_file, sep = " ")
+                match_positions = np.flatnonzero(np.isclose(current_domain_file["time"].to_numpy(), end_time))
+                current_position = match_positions[0]
+                start = max(0, current_position - 2)
+                stop = min(len(current_domain_file), current_position + 3)
+
+                current_domain_rows = current_domain_file.iloc[start:stop]
+
+                #Get average domain size + std 
+                mean_std_domain_size[i, :] = simulation.polymer_length, np.mean(current_domain_rows["f_tie"]), np.std(current_domain_rows["f_tie"])
+
+            plt.errorbar(mean_std_domain_size[:, 0], mean_std_domain_size[:, 1], yerr = mean_std_domain_size[:, 2], fmt = ".",
+                color = self.times_colours["%i" %(2*tc)], label = r"$t/t_c = %i$" %tc)
+
+        plt.xlabel(r"$N$", fontsize = self.caption_font)
+        plt.ylabel(r"$f_\text{tie}$", fontsize = self.caption_font)
+        plt.legend(fontsize=self.caption_font)
+        #plt.title(r"$t/t_c = 5$")
+        plt.savefig("%s/tie_chains/f_tie_vs_N.pdf" %(self.path_to_latex_plots_folder))
+        if show_plot == True:
+            plt.show()
+
 def load_in_simulations():
     PVA_50 = Simulation(50, "../../data/PVA-50/equil", "../data_online/PVA-50/icryst_T088_Tdot_e-3")
     PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/equil", "../data_online/PVA-100/icryst_T088_Tdot_e-3")
@@ -1240,10 +1334,10 @@ def load_in_simulations():
     simulations = [PVA_50, PVA_100, PVA_200, PVA_300, PVA_500, PVA_1000]
     return simulations
 
-def run_double_plot_for_all_i(simp, mode):
-    simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 0, index_poly_2= 1)
-    simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 2, index_poly_2= 3)
-    simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 4, index_poly_2= 5)
+def run_double_plot_for_all_i(simp, mode, show_plot = False):
+    simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 0, index_poly_2= 1, show_plot= show_plot)
+    simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 2, index_poly_2= 3, show_plot= show_plot)
+    simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 4, index_poly_2= 5, show_plot= show_plot)
 
     return 0;
 
@@ -1270,20 +1364,20 @@ def main():
     simp = simulation_plots(simulations)
     mode = "bond_bond_corr"
     #simp.plot_monomer_density_and_crossover_values(show_plot=True, mode = "e", marker_size = 10.0, observable= "crystallinity")
-    simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 1, index_poly_2= 5)
-    run_double_plot_for_all_i(simp, mode)
-
+    #simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 1, index_poly_2= 5)
+    #run_double_plot_for_all_i(simp, mode, show_plot = False)
+    simp.plot_ftie_vs_N()
+    #simp.plot_avg_domain_size()
     # quench_PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/quench", "../data_online/PVA-100/quench_T088_Tdot_e-3")
     # quench_PVA_1000 = Simulation(100, "../../data/PVA-1000/quench", "../data_online/PVA-1000/quench_T088_Tdot_e-3")
     #simp.plot_crystallinity()
-    #simp.plot_avg_domain_size()
     #simp.plot_crossover_values_vs_chain_length()
 
     #simp.plot_stem_length()
 
     #simp.plot_crystallinity_different_quench_temps()
-    #simp.plot_length_tie_chains(mode = "N_tie")
-    #simp.plot_length_tie_chains(mode = "f_tie")
+    simp.plot_length_tie_chains(mode = "N_tie")
+    simp.plot_length_tie_chains(mode = "f_tie")
 
     #simp.plot_avg_domain_size_and_crossover_values()
 

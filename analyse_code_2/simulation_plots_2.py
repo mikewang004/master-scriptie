@@ -234,6 +234,7 @@ class simulation_plots():
         polymer_lengths = []
         crossover_idx_list = []
         sim_data = []
+        value_inf_list = []
 
         for simulation in self.simulations:
 
@@ -294,6 +295,7 @@ class simulation_plots():
             crossover_times.append(crossover_time)
             crossover_values_list.append(crossover_value)
             crossover_idx_list.append(crossover_idx)
+            value_inf_list.append(crossover_popt[0])
 
             sim_data.append(
                 dict(
@@ -322,7 +324,8 @@ class simulation_plots():
             {
                 "index": crossover_idx_list,
                 "time": crossover_times,
-                f"{crossover_observable}_at_crossover": crossover_values_list,
+                f"{crossover_observable}": crossover_values_list,
+                "value_inf" : value_inf_list,
             },
             index=polymer_lengths,
         )
@@ -552,6 +555,29 @@ class simulation_plots():
             plt.show()
 
 
+    def plot_crossover_inf_vs_N(self, observable = "monomer_density", show_plot = True):
+        if observable == "monomer_density":
+            file_prefix = "density"
+            ylabel = r"$\rho_{\text{monomer}, \infty}$"
+
+        else:
+            file_prefix = "crystallinity"
+            ylabel = r"$\phi(\infty)$"
+
+        crossover_times_csv = pd.read_csv(
+            f"../data_online/crossover_times_{observable}.txt",
+            sep=" ",
+        )
+        plt.figure(figsize = (self.std_width*1.25, self.std_height*1.5))
+        plt.scatter(crossover_times_csv["polymer_lengths"], crossover_times_csv["value_inf"])
+        plt.xlabel(r"$N$")
+        plt.ylabel(ylabel)
+        plt.savefig(f"{self.path_to_latex_plots_folder}/crossover_point/{observable}_inf_vs_N.pdf")
+        if show_plot == True:
+            plt.show()
+
+
+
     def plot_crystallinity(self, savestring = None, show_plot = True):
         plt.figure(figsize = (self.std_width*1.25, self.std_height*1.5))
         for i in range(0, len(self.simulations)):
@@ -641,6 +667,7 @@ class simulation_plots():
                 stop = min(len(current_domain_file), current_position + 3)
 
                 current_domain_rows = current_domain_file.iloc[start:stop]
+                middle_row = current_domain_file.iloc[current_position]
 
                 #Get average domain size + std 
                 mean_std_domain_size[i, :] = simulation.polymer_length, np.mean(current_domain_rows["mean size cryst domains"]**(1/3)), np.std(current_domain_rows["mean size cryst domains"]**(1/3))
@@ -1307,9 +1334,10 @@ class simulation_plots():
                 stop = min(len(current_domain_file), current_position + 3)
 
                 current_domain_rows = current_domain_file.iloc[start:stop]
+                middle_domain_row = current_domain_file.iloc[current_position]
 
                 #Get average domain size + std 
-                mean_std_domain_size[i, :] = simulation.polymer_length, np.mean(current_domain_rows["f_tie"]), np.std(current_domain_rows["f_tie"])
+                mean_std_domain_size[i, :] = simulation.polymer_length, np.mean(middle_domain_row["f_tie"]), np.std(current_domain_rows["f_tie"])
 
             plt.errorbar(mean_std_domain_size[:, 0], mean_std_domain_size[:, 1], yerr = mean_std_domain_size[:, 2], fmt = ".",
                 color = self.times_colours["%i" %(2*tc)], label = r"$t/t_c = %i$" %tc)
@@ -1363,11 +1391,13 @@ def main():
 
     simp = simulation_plots(simulations)
     mode = "bond_bond_corr"
-    #simp.plot_monomer_density_and_crossover_values(show_plot=True, mode = "e", marker_size = 10.0, observable= "crystallinity")
+    #simp.plot_monomer_density_and_crossover_values(show_plot=True, mode = "e", marker_size = 10.0, observable= "crystallinity", crossover_observable= "crystallinity")
+    simp.plot_crossover_inf_vs_N(observable= "monomer_density")
+    simp.plot_crossover_inf_vs_N(observable= "crystallinity")
     #simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 1, index_poly_2= 5)
     #run_double_plot_for_all_i(simp, mode, show_plot = False)
-    simp.plot_ftie_vs_N()
-    #simp.plot_avg_domain_size()
+    #simp.plot_ftie_vs_N()
+    #simp.plot_avg_domain_size_vs_N()
     # quench_PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/quench", "../data_online/PVA-100/quench_T088_Tdot_e-3")
     # quench_PVA_1000 = Simulation(100, "../../data/PVA-1000/quench", "../data_online/PVA-1000/quench_T088_Tdot_e-3")
     #simp.plot_crystallinity()
@@ -1376,8 +1406,8 @@ def main():
     #simp.plot_stem_length()
 
     #simp.plot_crystallinity_different_quench_temps()
-    simp.plot_length_tie_chains(mode = "N_tie")
-    simp.plot_length_tie_chains(mode = "f_tie")
+    #simp.plot_length_tie_chains(mode = "N_tie")
+    #simp.plot_length_tie_chains(mode = "f_tie")
 
     #simp.plot_avg_domain_size_and_crossover_values()
 

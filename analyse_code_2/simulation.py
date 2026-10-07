@@ -945,23 +945,25 @@ def main():
     PVA_500 = Simulation(500, "../../data/PVA-500/equil", "../data_online/PVA-500/icryst_T088_Tdot_e-3")
     PVA_1000 = Simulation(1000, "../../data/PVA-1000/equil", "../data_online/PVA-1000/icryst_T088_Tdot_e-3")
 
-    #quench_PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/quench", "../data_online/PVA-100/quench_T088_Tdot_e-3")
-    #quench_PVA_1000 = Simulation(100, "../../data/PVA-1000/quench", "../data_online/PVA-1000/quench_T088_Tdot_e-3")
+    quench_PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/quench", "../data_online/PVA-100/quench_T088_Tdot_e-3")
+    quench_PVA_1000 = Simulation(100, "../../data/PVA-1000/quench", "../data_online/PVA-1000/quench_T088_Tdot_e-3")
 
 
-    PVA_100.fit_persistence_length()
-    PVA_1000.fit_persistence_length()
-    PVA_50.fit_persistence_length()
-    PVA_200.fit_persistence_length()
-    PVA_300.fit_persistence_length()
-    PVA_500.fit_persistence_length()
+    # PVA_100.fit_persistence_length()
+    # PVA_1000.fit_persistence_length()
+    # PVA_50.fit_persistence_length()
+    # PVA_200.fit_persistence_length()
+    # PVA_300.fit_persistence_length()
+    # PVA_500.fit_persistence_length()
 
 
     # PVA_100.domain_analysis.calc_crystallisation()
     # PVA_1000.domain_analysis.calc_crystallisation()
 
     #quench_PVA_100.domain_analysis.calc_crystallisation_and_avg_domain_size()
-    #calc_crystallisation_and_avg_domain_size(quench_PVA_100)
+    #quench_PVA_1000.domain_analysis.calc_crystallisation_and_avg_domain_size()
+    calc_crystallisation_and_avg_domain_size(quench_PVA_100)
+    calc_crystallisation_and_avg_domain_size(quench_PVA_1000)
 
     # PVA_50.calc_tie_chain_distribution()
     # PVA_100.calc_tie_chain_distribution()

@@ -805,6 +805,76 @@ class simulation_plots():
 
         return bin_centers, smooth_counts
 
+    def plot_rg_two_polymers_at_begin_melt(self, mode = "rg", bins = 100, savestring_default = True, show_plot = True):
+
+        fig, axes = plt.subplots(
+            2, 1,
+            figsize=(1.5 * self.std_width, 2.2 * self.std_height),
+            sharex=True
+        )
+        PVA_100 = self.simulations[1]; PVA_1000 = self.simulations[-1]
+        melt_PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/quench", "../data_online/PVA-100/quench_T088_Tdot_e-3")
+        melt_PVA_1000 = Simulation(1000, "../../data/PVA-1000/quench", "../data_online/PVA-1000/quench_T088_Tdot_e-3")
+
+        for i in range(0, 2):
+            if i == 0:
+                current_poly_quench = PVA_100.get_polymer_by_time(0)
+                current_poly_melt = melt_PVA_100.get_polymer_by_time(0)
+            else:
+                current_poly_quench = PVA_1000.get_polymer_by_time(0)
+                current_poly_melt = melt_PVA_1000.get_polymer_by_time(0)  
+
+
+            current_poly_list = [current_poly_quench, current_poly_melt]  
+            label_list = [r"$T = 1$", r"$T = 0.88$"]  
+            if mode == "rg":
+                current_poly_melt.gyration_radius()
+                for j in range(len(current_poly_list)):
+                    current_poly = current_poly_list[j]
+                    current_poly.gyration_radius()
+                    counts, bin_edges = np.histogram(current_poly.results.gyration_radius_distribution/np.sqrt(current_poly_quench.results.mean_gyration_radius), bins = bins, density= True)
+                    bin_centers = (bin_edges[:-1] + bin_edges[1:]) /2
+                    smooth_counts = sp.ndimage.gaussian_filter1d(counts, sigma = 2.0)
+                    axes[i].scatter(bin_centers, smooth_counts, linestyle = "-", marker = ".", label = label_list[j])
+                #axes[i].vlines(current_poly.results.mean_gyration_radius/first_poly.results.mean_gyration_radius, 0, 10, color = "red", linestyle = "dashed")
+                #axes[i].vlines(np.sqrt(current_poly.results.mean_gyration_radius)/np.sqrt(first_poly.results.mean_gyration_radius), 0, 10, color = self.times_colours["%i" %(2*j)], linestyle = "dashed")
+                axes[i].set_xlabel(r"$R_g/\langle R_g|_{T = 0.88} \rangle$", fontsize = self.caption_font)
+                axes[i].set_ylabel(r"$P(R_g)$")
+                axes[i].legend()
+                axes[i].set_title(r"$N = %i$" %current_poly.atom_coords.polymer_length)
+                # ymax_new = np.max(smooth_counts)
+                # if ymax_new > ymax:
+                #     ymax = ymax_new + 0.1 * ymax_new
+                # axes[i].set_ylim(0, ymax)
+                savestring = "%s/polymer_conformation/rg_melt_vs_iso_quench_N=100_1000.pdf" %(self.path_to_latex_plots_folder)
+
+            elif mode == "re":
+                #print(np.mean(err_smooth_counts, axis = 0), np.std(err_smooth_counts, axis = 0))
+                current_poly_melt.end_to_end_distance()
+                for j in range(len(current_poly_list)):
+                    current_poly = current_poly_list[j]
+                    current_poly.end_to_end_distance()
+                    counts, bin_edges = np.histogram(current_poly.results.end_to_end_distribution/current_poly_quench.results.mean_squared_end_to_end, bins = bins, density= True)
+                    bin_centers = (bin_edges[:-1] + bin_edges[1:]) /2
+                    smooth_counts = sp.ndimage.gaussian_filter1d(counts, sigma = 2.0)
+                    axes[i].scatter(bin_centers, smooth_counts,
+                        linestyle = "-", marker = ".",
+                        label = label_list[j])
+                axes[i].legend()
+                    # axes[i].vlines(current_poly.results.mean_squared_end_to_end, 0, 10, 
+                    #      linestyle = "dashed")
+                axes[i].set_xlabel(r"$R_e/\langle R_e|_{T = 0.88} \rangle$", fontsize = self.caption_font)
+                axes[i].set_ylabel(r"$P(R_e)$")
+                axes[i].set_title(r"$N = %i$" %current_poly.atom_coords.polymer_length)
+                savestring = "%s/polymer_conformation/re_melt_vs_iso_quench_N=100_1000.pdf" %(self.path_to_latex_plots_folder)
+                
+        if savestring_default == True:
+            plt.savefig(savestring)
+        if show_plot == True:
+            plt.show()
+
+
+
     def plot_rg_two_polymers_three_times(self, index_poly_1 = None, index_poly_2 = None, mode = "rg", savestring_default = True, show_plot = True, bins = 100):
         """Mode can either be 'rg' or "re". 
         Note: PVA-100 has 174 items, PVA-1000 119."""
@@ -1391,9 +1461,13 @@ def main():
 
     simp = simulation_plots(simulations)
     mode = "bond_bond_corr"
+
+    simp.plot_rg_two_polymers_at_begin_melt(mode = "rg")
+    simp.plot_rg_two_polymers_at_begin_melt(mode = "re")
+
     #simp.plot_monomer_density_and_crossover_values(show_plot=True, mode = "e", marker_size = 10.0, observable= "crystallinity", crossover_observable= "crystallinity")
-    simp.plot_crossover_inf_vs_N(observable= "monomer_density")
-    simp.plot_crossover_inf_vs_N(observable= "crystallinity")
+    #simp.plot_crossover_inf_vs_N(observable= "monomer_density")
+    #simp.plot_crossover_inf_vs_N(observable= "crystallinity")
     #simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 1, index_poly_2= 5)
     #run_double_plot_for_all_i(simp, mode, show_plot = False)
     #simp.plot_ftie_vs_N()

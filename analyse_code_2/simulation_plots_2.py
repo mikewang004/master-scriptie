@@ -69,11 +69,11 @@ class simulation_plots():
 
         self.end_time_index =  {
             0: 140,  # PVA-50
-            1: 140,  # PVA-100
+            1: 126,  # PVA-100
             2: 140,  # PVA-200
             3: 133,  # PVA-300
             4: 99,  # PVA-500
-            5: 119,  # PVA-1000
+            5: 114,  # PVA-1000
         }
 
 
@@ -568,7 +568,7 @@ class simulation_plots():
             f"../data_online/crossover_times_{observable}.txt",
             sep=" ",
         )
-        plt.figure(figsize = (self.std_width*1.25, self.std_height*1.5))
+        plt.figure(figsize = (self.std_width, self.std_height))
         plt.scatter(crossover_times_csv["polymer_lengths"], crossover_times_csv["value_inf"])
         plt.xlabel(r"$N$")
         plt.ylabel(ylabel)
@@ -809,8 +809,9 @@ class simulation_plots():
 
         fig, axes = plt.subplots(
             2, 1,
-            figsize=(1.5 * self.std_width, 2.2 * self.std_height),
-            sharex=True
+            figsize=(1.5 * self.std_width, 2 * self.std_height),
+            sharex=True,
+            layout = "constrained"
         )
         PVA_100 = self.simulations[1]; PVA_1000 = self.simulations[-1]
         melt_PVA_100 = Simulation(100, "../../data/pva-100/quick_quench/quench", "../data_online/PVA-100/quench_T088_Tdot_e-3")
@@ -826,6 +827,7 @@ class simulation_plots():
 
 
             current_poly_list = [current_poly_quench, current_poly_melt]  
+            colours_list = ["c", "k"]
             label_list = [r"$T = 1$", r"$T = 0.88$"]  
             if mode == "rg":
                 current_poly_melt.gyration_radius()
@@ -835,11 +837,11 @@ class simulation_plots():
                     counts, bin_edges = np.histogram(current_poly.results.gyration_radius_distribution/np.sqrt(current_poly_quench.results.mean_gyration_radius), bins = bins, density= True)
                     bin_centers = (bin_edges[:-1] + bin_edges[1:]) /2
                     smooth_counts = sp.ndimage.gaussian_filter1d(counts, sigma = 2.0)
-                    axes[i].scatter(bin_centers, smooth_counts, linestyle = "-", marker = ".", label = label_list[j])
+                    axes[i].scatter(bin_centers, smooth_counts, linestyle = "-", marker = ".", label = label_list[j], color = colours_list[j])
                 #axes[i].vlines(current_poly.results.mean_gyration_radius/first_poly.results.mean_gyration_radius, 0, 10, color = "red", linestyle = "dashed")
                 #axes[i].vlines(np.sqrt(current_poly.results.mean_gyration_radius)/np.sqrt(first_poly.results.mean_gyration_radius), 0, 10, color = self.times_colours["%i" %(2*j)], linestyle = "dashed")
-                axes[i].set_xlabel(r"$R_g/\langle R_g|_{T = 0.88} \rangle$", fontsize = self.caption_font)
-                axes[i].set_ylabel(r"$P(R_g)$")
+                axes[i].set_xlabel(r"$R_g/\sqrt{\langle R^2_{g, T = 0.88} \rangle}$", fontsize = self.caption_font)
+                axes[i].set_ylabel(r"$P(R_g/\sqrt{\langle R^2_{g, T = 0.88}\rangle})$")
                 axes[i].legend()
                 axes[i].set_title(r"$N = %i$" %current_poly.atom_coords.polymer_length)
                 # ymax_new = np.max(smooth_counts)
@@ -859,15 +861,16 @@ class simulation_plots():
                     smooth_counts = sp.ndimage.gaussian_filter1d(counts, sigma = 2.0)
                     axes[i].scatter(bin_centers, smooth_counts,
                         linestyle = "-", marker = ".",
-                        label = label_list[j])
+                        label = label_list[j], color = colours_list[j])
                 axes[i].legend()
                     # axes[i].vlines(current_poly.results.mean_squared_end_to_end, 0, 10, 
                     #      linestyle = "dashed")
-                axes[i].set_xlabel(r"$R_e/\langle R_e|_{T = 0.88} \rangle$", fontsize = self.caption_font)
-                axes[i].set_ylabel(r"$P(R_e)$")
+                axes[i].set_xlabel(r"$R_e/\sqrt{\langle R^2_{e, T = 0.88} \rangle}$", fontsize = self.caption_font)
+                axes[i].set_ylabel(r"$P(R_e/\sqrt{\langle R^2_{e, T = 0.88}\rangle})$")
                 axes[i].set_title(r"$N = %i$" %current_poly.atom_coords.polymer_length)
                 savestring = "%s/polymer_conformation/re_melt_vs_iso_quench_N=100_1000.pdf" %(self.path_to_latex_plots_folder)
-                
+        for ax in axes:
+            ax.tick_params(axis="x", labelbottom=True)
         if savestring_default == True:
             plt.savefig(savestring)
         if show_plot == True:
@@ -882,7 +885,8 @@ class simulation_plots():
         fig, axes = plt.subplots(
             2, 1,
             figsize=(1.5 * self.std_width, 2 * self.std_height),
-            sharex=True
+            sharex=True,
+            layout = "constrained"
         )
 
 
@@ -932,7 +936,7 @@ class simulation_plots():
                     bin_centers, smooth_counts = self.get_histogram_rg_re(first_poly, current_poly, mode = "rg", bins = bins)
                     axes[i].errorbar(bin_centers, smooth_counts, yerr = np.std(err_smooth_counts, axis = 0),
                         color=self.times_colours["%i" %(2*j)], linestyle = "-", marker = ".",
-                        label = r"$%i t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
+                        label = r"$t/t_c = %i$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
                     #axes[i].vlines(current_poly.results.mean_gyration_radius/first_poly.results.mean_gyration_radius, 0, 10, color = "red", linestyle = "dashed")
                     axes[i].vlines(np.sqrt(current_poly.results.mean_gyration_radius)/np.sqrt(first_poly.results.mean_gyration_radius), 0, 10, color = self.times_colours["%i" %(2*j)], linestyle = "dashed")
                     axes[i].set_xlabel(r"$R_g/ \sqrt{\langle R_{g, t/t_c = 0}^2 \rangle}$", fontsize = self.caption_font)
@@ -951,11 +955,11 @@ class simulation_plots():
                     bin_centers, smooth_counts = self.get_histogram_rg_re(first_poly, current_poly, mode = "re", bins = bins)
                     axes[i].errorbar(bin_centers, smooth_counts, yerr = np.std(err_smooth_counts, axis = 0),
                         color=self.times_colours["%i" %(2*j)], linestyle = "-", marker = ".",
-                        label = r"$%i t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
+                        label = r"$%t/t_c = i$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
                     axes[i].vlines(current_poly.results.mean_squared_end_to_end/first_poly.results.mean_squared_end_to_end, 0, 10, 
                         color =self.times_colours["%i" %(2*j)], linestyle = "dashed")
-                    axes[i].set_xlabel(r"$R_e/ \sqrt{\langle R_{e, t = 0 tc}^2 \rangle}$", fontsize = self.caption_font)
-                    axes[i].set_ylabel(r"$P(R_e/ \sqrt{\langle R_{e, t = 0 tc}^2 \rangle})$")
+                    axes[i].set_xlabel(r"$R_e/ \sqrt{\langle R_{e, t/t_c = 0}^2 \rangle}$", fontsize = self.caption_font)
+                    axes[i].set_ylabel(r"$P(R_e/ \sqrt{\langle R_{e, t/t_c = 0}^2 \rangle})$")
                     savestring = "%s/polymer_conformation/re_pva_%i_%i.pdf" %(self.path_to_latex_plots_folder, polymer_list[0].polymer_length, polymer_list[1].polymer_length)
                     ymax_new = np.max(smooth_counts)
                     if ymax_new > ymax:
@@ -1133,6 +1137,8 @@ class simulation_plots():
         if show_plot == True:
             plt.show()
 
+        plt.close()
+
 
     def plot_N_vs_rg(self):
 
@@ -1299,12 +1305,12 @@ class simulation_plots():
             
             time = simulation.get_simulation_time()
             print(time.shape, len(positions))
-            plt.plot(time[1:], positions[1:], color=self.simulation_colours[simulation], label = "PVA-%i" %simulation.polymer_length, alpha = 0.5)
+            plt.plot(time[1:], positions[1:], color=self.simulation_colours[simulation], label = r"$N = %i$" %simulation.polymer_length, alpha = 0.5)
         #plt.ylim((0, 50))
         plt.legend()
         plt.ylim((15, 40))
-        plt.ylabel(r"$min(\cos\theta(n))$")
-        plt.xlabel(r"$t_c$")
+        plt.ylabel(r"$\min(\cos\theta(n))$")
+        plt.xlabel(r"$t/t_c$")
         if savestring == None:
             savestring = "%s/stem_lengths/stem_lengths_all_polymer_chains.pdf" %(self.path_to_latex_plots_folder)
         plt.savefig(savestring)
@@ -1462,13 +1468,15 @@ def main():
     simp = simulation_plots(simulations)
     mode = "bond_bond_corr"
 
-    simp.plot_rg_two_polymers_at_begin_melt(mode = "rg")
-    simp.plot_rg_two_polymers_at_begin_melt(mode = "re")
+    #simp.plot_rg_two_polymers_at_begin_melt(mode = "rg")
+    #simp.plot_rg_two_polymers_at_begin_melt(mode = "re")
 
-    #simp.plot_monomer_density_and_crossover_values(show_plot=True, mode = "e", marker_size = 10.0, observable= "crystallinity", crossover_observable= "crystallinity")
+    #simp.plot_monomer_density_and_crossover_values(show_plot=True, mode = "b", marker_size = 10.0, observable= "monomer_density", crossover_observable= "crystallinity")
     #simp.plot_crossover_inf_vs_N(observable= "monomer_density")
     #simp.plot_crossover_inf_vs_N(observable= "crystallinity")
-    #simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 1, index_poly_2= 5)
+    simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 1, index_poly_2= 5, show_plot = False)
+
+    #simp.plot_rg_two_polymers_three_times(mode = "re", index_poly_1= 1, index_poly_2= 5, show_plot= False)
     #run_double_plot_for_all_i(simp, mode, show_plot = False)
     #simp.plot_ftie_vs_N()
     #simp.plot_avg_domain_size_vs_N()
@@ -1477,7 +1485,7 @@ def main():
     #simp.plot_crystallinity()
     #simp.plot_crossover_values_vs_chain_length()
 
-    #simp.plot_stem_length()
+    simp.plot_stem_length()
 
     #simp.plot_crystallinity_different_quench_temps()
     #simp.plot_length_tie_chains(mode = "N_tie")

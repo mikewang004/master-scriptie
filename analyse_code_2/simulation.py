@@ -661,7 +661,8 @@ class Simulation:
             return 0;
         tc_idx = row["index"]
         tc_time = row["time"]
-        tc_density = row["monomer density"]
+        #tc_density = row["monomer density"]
+        tc_density = row["crystallinity"]
         return int(tc_idx), int(tc_time), tc_density
 
     def get_polymer_by_time(self, time, cell_length = 2.0):

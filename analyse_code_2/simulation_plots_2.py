@@ -9,6 +9,7 @@ import scienceplots
 from matplotlib.lines import Line2D
 import pandas as pd
 import glob
+from pathlib import Path
 
 
 plt.style.use('science')
@@ -1010,7 +1011,8 @@ class simulation_plots():
                         .reset_index(name='count')
                     )
 
-                    n_bins = 26
+                    #n_bins = 26 #default value 
+                    n_bins = 30
                     Lx, Ly, Lz = current_poly.atom_coords.boxlengths  # box dimensions
                     coords = monomer_count[['xu', 'yu', 'zu']].values
                     x_min, y_min, z_min = coords.min(axis=0)  # or use known box origin
@@ -1138,6 +1140,140 @@ class simulation_plots():
             plt.show()
 
         plt.close()
+
+    def plot_local_density_loop(
+        self,
+        index_poly_1=None,
+        index_poly_2=None,
+        savestring_default=True,
+        show_plot=True,
+        n_bins_values=range(20, 41),
+    ):
+        """Plot local-density distributions at three times for two polymers.
+
+        Create a separate two-panel figure for each n_bins value. Each value
+        sets both the number of spatial bins per dimension and the number of
+        density-histogram bins. Empty voxels are excluded, as in the original.
+
+        Assumes an orthorhombic periodic box and a snapshot interval of
+        1,200,000 simulation steps.
+        """
+        if index_poly_1 is None:
+            polymers = [self.simulations[1], self.simulations[-1]]
+            time_indices = [
+                [0, polymers[0].tc_idx, 140],
+                [0, polymers[1].tc_idx, 119],
+            ]
+        else:
+            polymers, time_indices = self.choose_two_polymers(
+                index_poly_1, index_poly_2
+            )
+
+        if len(polymers) != 2 or len(time_indices) != 2:
+            raise ValueError("Exactly two polymers and two time-index lists are required.")
+
+        # Load snapshots only once, rather than once for every bin count.
+        snapshots = []
+        for polymer, indices in zip(polymers, time_indices):
+            records = []
+            for j, index in enumerate(indices):
+                snapshot = polymer.get_polymer_by_time(int(index) * 1_200_000)
+                monomers = snapshot.atom_coords.assign_monomers_to_box()
+                coords = monomers[["xu", "yu", "zu"]].to_numpy(dtype=float)
+                lengths = np.asarray(snapshot.atom_coords.boxlengths, dtype=float)
+
+                if len(coords) == 0 or np.any(lengths <= 0):
+                    raise ValueError("Snapshots must have monomers and positive box lengths.")
+
+                # Wrap unwrapped coordinates into one periodic box. The minimum
+                # coordinate defines the grid origin, matching the original choice.
+                coords = np.mod(coords - coords.min(axis=0), lengths)
+
+                records.append({
+                    "coords": coords,
+                    "lengths": lengths,
+                    "global_density": (
+                        snapshot.atom_coords.n_atoms / snapshot.atom_coords.volume
+                    ),
+                    "relative_time": (
+                        snapshot.atom_coords.current_timestep
+                        * polymer.timestep / polymer.tc_time
+                    ),
+                    "color": self.times_colours[str(2 * j)],
+                })
+            snapshots.append(records)
+
+        if savestring_default:
+            output_dir = Path(self.path_to_latex_plots_folder) / "polymer_conformation/local_density_loop"
+            output_dir.mkdir(parents=True, exist_ok=True)
+
+        for n_bins in n_bins_values:
+            if not isinstance(n_bins, (int, np.integer)) or n_bins < 1:
+                raise ValueError("All bin counts must be positive integers.")
+
+            fig, axes = plt.subplots(
+                2, 1,
+                figsize=(1.5 * self.std_width, 2 * self.std_height),
+                sharex=True,
+                layout="constrained",
+            )
+
+            for i, (ax, polymer, records) in enumerate(zip(axes, polymers, snapshots)):
+                ymax = 0.0
+
+                for record in records:
+                    voxel_counts, _ = np.histogramdd(
+                        record["coords"],
+                        bins=n_bins,
+                        range=[(0.0, length) for length in record["lengths"]],
+                    )
+                    voxel_volume = np.prod(record["lengths"]) / n_bins**3
+                    density = voxel_counts[voxel_counts > 0] / voxel_volume
+
+                    counts, edges = np.histogram(density, bins=n_bins, density=True)
+                    counts = sp.ndimage.gaussian_filter1d(counts, sigma=1.0)
+                    centers = (edges[:-1] + edges[1:]) / 2
+
+                    ax.plot(
+                        centers,
+                        counts,
+                        color=record["color"],
+                        label=f"t/t_c = {record['relative_time']:.2g}",
+                    )
+                    ax.axvline(
+                        record["global_density"],
+                        color=record["color"],
+                        linestyle="--",
+                        linewidth=1,
+                    )
+                    ymax = max(ymax, float(counts.max()))
+
+                ax.set_ylim(0, 1.2 * ymax)
+                ax.set_title(f"N = {polymer.polymer_length}")
+                ax.set_xlabel(r"$\rho_\text{local}$")
+                ax.set_ylabel(r"$P(\rho_\text{local})$")
+                ax.tick_params(axis="x", labelbottom=True)
+                ax.legend(fontsize=self.caption_font)
+                ax.text(
+                    0.01, 0.95, f"({chr(97 + i)})",
+                    transform=ax.transAxes,
+                    fontsize=self.caption_font,
+                    va="top", ha="left",
+                )
+
+            fig.suptitle(f"Local density: {n_bins} bins per dimension")
+
+            if savestring_default:
+                fig.savefig(
+                    output_dir / (
+                        f"local_density_pva-{polymers[0].polymer_length}_"
+                        f"{polymers[1].polymer_length}_nbins-{n_bins}.pdf"
+                    ),
+                    bbox_inches="tight",
+                )
+            if show_plot:
+                plt.show()
+            plt.close(fig)
 
 
     def plot_N_vs_rg(self):
@@ -1466,7 +1602,7 @@ def main():
     simulations = load_in_simulations()
 
     simp = simulation_plots(simulations)
-    mode = "bond_bond_corr"
+    mode = "local_monomer_density_dist"
 
     #simp.plot_rg_two_polymers_at_begin_melt(mode = "rg")
     #simp.plot_rg_two_polymers_at_begin_melt(mode = "re")
@@ -1475,6 +1611,7 @@ def main():
     #simp.plot_crossover_inf_vs_N(observable= "monomer_density")
     #simp.plot_crossover_inf_vs_N(observable= "crystallinity")
     simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 1, index_poly_2= 5, show_plot = False)
+    #simp.plot_local_density_loop(index_poly_1= 1, index_poly_2= 5, show_plot = False)
 
     #simp.plot_rg_two_polymers_three_times(mode = "re", index_poly_1= 1, index_poly_2= 5, show_plot= False)
     #run_double_plot_for_all_i(simp, mode, show_plot = False)
@@ -1485,7 +1622,7 @@ def main():
     #simp.plot_crystallinity()
     #simp.plot_crossover_values_vs_chain_length()
 
-    simp.plot_stem_length()
+    #simp.plot_stem_length()
 
     #simp.plot_crystallinity_different_quench_temps()
     #simp.plot_length_tie_chains(mode = "N_tie")

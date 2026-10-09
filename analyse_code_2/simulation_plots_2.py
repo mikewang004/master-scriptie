@@ -1003,41 +1003,12 @@ class simulation_plots():
 
 
                 elif mode == "local_monomer_density_dist":
-                    monomer_count = current_poly.atom_coords.assign_monomers_to_box()
-                    print(monomer_count.iloc[:, :7])
-                    triplet_counts = (
-                        monomer_count.groupby(['nx', 'ny', 'nz'])
-                        .size()
-                        .reset_index(name='count')
-                    )
-
-                    #n_bins = 26 #default value 
-                    n_bins = 30
-                    Lx, Ly, Lz = current_poly.atom_coords.boxlengths  # box dimensions
-                    coords = monomer_count[['xu', 'yu', 'zu']].values
-                    x_min, y_min, z_min = coords.min(axis=0)  # or use known box origin
-
-                    bins_x = np.linspace(x_min, x_min + Lx, n_bins + 1)
-                    bins_y = np.linspace(y_min, y_min + Ly, n_bins + 1)
-                    bins_z = np.linspace(z_min, z_min + Lz, n_bins + 1)
-                    counts, edges = np.histogramdd(coords, bins=(bins_x, bins_y, bins_z))
-
-                    # --- voxel volume ---
-                    voxel_vol = (Lx / n_bins) * (Ly / n_bins) * (Lz / n_bins)
-
-                    # --- local density: monomers per unit volume ---
-                    local_density = counts / voxel_vol  # shape: (n_bins, n_bins, n_bins)
+                    #bins = 26 #default value
+                    # for k in range(0, len(error_times_list)):
+                    #     _, err_smooth_counts[k, :] = self.get_histogram_rg_re(first_poly, polymer_list[i].get_polymer_by_time(error_times_list[k]), 
+                    #     mode = "re", bins = bins)
+                    bin_centers, counts_smooth = current_poly.local_density(n_bins = 30)
                     global_density = current_poly.atom_coords.n_atoms/current_poly.atom_coords.volume
-                    # print(f"Voxel volume:       {voxel_vol:.4f}")
-                    # print(f"Max local density:  {local_density.max():.4f}")
-                    # print(f"Mean local density: {local_density.mean():.4f}")
-                    # print(f"Global density check: {len(coords) / (Lx * Ly * Lz):.4f}")
-                    density_flat = local_density.flatten()
-                    density_nonzero = density_flat[density_flat > 0]
-                    counts, bin_edges = np.histogram(density_nonzero, bins = n_bins, density = True)
-                    bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
-                    counts_smooth = sp.ndimage.gaussian_filter1d(counts.astype(float), sigma=1)
-
                     axes[i].plot(bin_centers, counts_smooth, color=self.times_colours["%i" %(2*j)],
                         label=r"$t/t_c = %i$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
                     #if j == 2:
@@ -1049,9 +1020,9 @@ class simulation_plots():
                     print(polymer_list[i].polymer_length, int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time))
                     #local_density = triplet_counts["count"]/current_poly.atom_coords.local_volume
                     #print(np.histogram(local_density, bins = 20))
-                    mu, sigma = sp.stats.norm.fit(density_nonzero)
-                    x_kde = np.linspace(local_density.min(),local_density.max(), 100)
-                    pdf = sp.stats.norm.pdf(x_kde, mu, sigma)
+                    # mu, sigma = sp.stats.norm.fit(density_nonzero)
+                    # x_kde = np.linspace(local_density.min(),local_density.max(), 100)
+                    # pdf = sp.stats.norm.pdf(x_kde, mu, sigma)
                     # axes[i].plot(x_kde, pdf, 
                     #     color = self.times_colours["%i" %(2*j)], linestyle = "-", markersize = 3,
                     #     label = r"$%i t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
@@ -1503,7 +1474,7 @@ class simulation_plots():
                 ylabel = r"$f_\text{tie}$"
                 savestring = "%s/tie_chains/f_tie.pdf" %self.path_to_latex_plots_folder
             plt.plot(time[1:],y,
-                color=self.simulation_colours[simulation], label = "PVA-%i" %simulation.polymer_length)
+                color=self.simulation_colours[simulation], label = "N = %i" %simulation.polymer_length)
         plt.xlabel(r"$t/tc$")
         plt.ylabel(ylabel)
         plt.legend()
@@ -1602,7 +1573,7 @@ def main():
     simulations = load_in_simulations()
 
     simp = simulation_plots(simulations)
-    mode = "local_monomer_density_dist"
+    mode = "cryst_domain_dist"
 
     #simp.plot_rg_two_polymers_at_begin_melt(mode = "rg")
     #simp.plot_rg_two_polymers_at_begin_melt(mode = "re")
@@ -1610,7 +1581,7 @@ def main():
     #simp.plot_monomer_density_and_crossover_values(show_plot=True, mode = "b", marker_size = 10.0, observable= "monomer_density", crossover_observable= "crystallinity")
     #simp.plot_crossover_inf_vs_N(observable= "monomer_density")
     #simp.plot_crossover_inf_vs_N(observable= "crystallinity")
-    simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 1, index_poly_2= 5, show_plot = False)
+    #simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 1, index_poly_2= 5, show_plot = False)
     #simp.plot_local_density_loop(index_poly_1= 1, index_poly_2= 5, show_plot = False)
 
     #simp.plot_rg_two_polymers_three_times(mode = "re", index_poly_1= 1, index_poly_2= 5, show_plot= False)
@@ -1625,7 +1596,7 @@ def main():
     #simp.plot_stem_length()
 
     #simp.plot_crystallinity_different_quench_temps()
-    #simp.plot_length_tie_chains(mode = "N_tie")
+    simp.plot_length_tie_chains(mode = "N_tie")
     #simp.plot_length_tie_chains(mode = "f_tie")
 
     #simp.plot_avg_domain_size_and_crossover_values()

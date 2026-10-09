@@ -511,6 +511,46 @@ class polymer():
         print()
 
 
+    def local_density(self, n_bins = 30):
+        """Calculates local density per given time. Returns a distribution"""
+
+        monomer_count = self.atom_coords.assign_monomers_to_box()
+        print(monomer_count.iloc[:, :7])
+        triplet_counts = (
+            monomer_count.groupby(['nx', 'ny', 'nz'])
+            .size()
+            .reset_index(name='count')
+        )
+
+        #n_bins = 26 #default value 
+        Lx, Ly, Lz = self.atom_coords.boxlengths  # box dimensions
+        coords = monomer_count[['xu', 'yu', 'zu']].values
+        x_min, y_min, z_min = coords.min(axis=0)  # or use known box origin
+
+        bins_x = np.linspace(x_min, x_min + Lx, n_bins + 1)
+        bins_y = np.linspace(y_min, y_min + Ly, n_bins + 1)
+        bins_z = np.linspace(z_min, z_min + Lz, n_bins + 1)
+        counts, edges = np.histogramdd(coords, bins=(bins_x, bins_y, bins_z))
+
+        # --- voxel volume ---
+        voxel_vol = (Lx / n_bins) * (Ly / n_bins) * (Lz / n_bins)
+
+        # --- local density: monomers per unit volume ---
+        local_density = counts / voxel_vol  # shape: (n_bins, n_bins, n_bins)
+        global_density = self.atom_coords.n_atoms/self.atom_coords.volume
+        # print(f"Voxel volume:       {voxel_vol:.4f}")
+        # print(f"Max local density:  {local_density.max():.4f}")
+        # print(f"Mean local density: {local_density.mean():.4f}")
+        # print(f"Global density check: {len(coords) / (Lx * Ly * Lz):.4f}")
+        density_flat = local_density.flatten()
+        density_nonzero = density_flat[density_flat > 0]
+        counts, bin_edges = np.histogram(density_nonzero, bins = n_bins, density = True)
+        bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+        counts_smooth = sp.ndimage.gaussian_filter1d(counts.astype(float), sigma=1)
+        self.results.bin_centers, self.results.counts_smooth = bin_centers, counts_smooth
+        return bin_centers, counts_smooth
+
+
 
 
 def get_properties_of_polymers_before_quench():

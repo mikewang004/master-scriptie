@@ -879,10 +879,13 @@ class simulation_plots():
 
 
 
-    def plot_rg_two_polymers_three_times(self, index_poly_1 = None, index_poly_2 = None, mode = "rg", savestring_default = True, show_plot = True, bins = 100):
+    def plot_rg_two_polymers_three_times(self, index_poly_1 = None, index_poly_2 = None, mode = "rg", savestring_default = True, show_plot = True, bins = 100,
+    crystalline_filter = 0):
         """Mode can either be 'rg' or "re". 
-        Note: PVA-100 has 174 items, PVA-1000 119."""
-        #TODO review smoothening method
+        Note: PVA-100 has 174 items, PVA-1000 119.
+        filter=0: include all monomers.
+        filter=1: include monomers belonging to crystalline cells.
+        filter=2: include monomers belonging to non-crystalline cells."""
         fig, axes = plt.subplots(
             2, 1,
             figsize=(1.5 * self.std_width, 2 * self.std_height),
@@ -1007,7 +1010,7 @@ class simulation_plots():
                     # for k in range(0, len(error_times_list)):
                     #     _, err_smooth_counts[k, :] = self.get_histogram_rg_re(first_poly, polymer_list[i].get_polymer_by_time(error_times_list[k]), 
                     #     mode = "re", bins = bins)
-                    bin_centers, counts_smooth = current_poly.local_density(n_bins = 30)
+                    bin_centers, counts_smooth = current_poly.local_density(n_bins = 30, filter = crystalline_filter)
                     global_density = current_poly.atom_coords.n_atoms/current_poly.atom_coords.volume
                     axes[i].plot(bin_centers, counts_smooth, color=self.times_colours["%i" %(2*j)],
                         label=r"$t/t_c = %i$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
@@ -1026,7 +1029,15 @@ class simulation_plots():
                     # axes[i].plot(x_kde, pdf, 
                     #     color = self.times_colours["%i" %(2*j)], linestyle = "-", markersize = 3,
                     #     label = r"$%i t_c$" %(int(current_poly.atom_coords.current_timestep*polymer_list[i].timestep/polymer_list[i].tc_time)))
-                    savestring = "%s/polymer_conformation/local_density_pva-%i_%i.pdf" %(self.path_to_latex_plots_folder, polymer_list[0].polymer_length, polymer_list[1].polymer_length)
+                    if crystalline_filter == 0:
+                        crystalline_part_savestring = "all_monomers"
+                    elif crystalline_filter == 1:
+                        crystalline_part_savestring = "only_crystalline_monomers"
+                    else:
+                        crystalline_part_savestring = "only_non_crystalline_monomers"
+                    savestring = "%s/polymer_conformation/local_density_%s_pva-%i_%i.pdf" %(self.path_to_latex_plots_folder, 
+                    crystalline_part_savestring, polymer_list[0].polymer_length, polymer_list[1].polymer_length)
+                    
                     #axes[i].set_xlabel(r"$N_\text{local monomers}/V_\text{local}$")
                     #axes[i].set_ylabel(r"$P(N_\text{local monomers}/V_\text{local}$)")
                     axes[i].set_xlabel(r"$\rho_\text{local}$")
@@ -1573,7 +1584,7 @@ def main():
     simulations = load_in_simulations()
 
     simp = simulation_plots(simulations)
-    mode = "cryst_domain_dist"
+    mode = "local_monomer_density_dist"
 
     #simp.plot_rg_two_polymers_at_begin_melt(mode = "rg")
     #simp.plot_rg_two_polymers_at_begin_melt(mode = "re")
@@ -1581,7 +1592,8 @@ def main():
     #simp.plot_monomer_density_and_crossover_values(show_plot=True, mode = "b", marker_size = 10.0, observable= "monomer_density", crossover_observable= "crystallinity")
     #simp.plot_crossover_inf_vs_N(observable= "monomer_density")
     #simp.plot_crossover_inf_vs_N(observable= "crystallinity")
-    #simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 1, index_poly_2= 5, show_plot = False)
+    simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 1, index_poly_2= 5, show_plot = False, crystalline_filter= 0)
+    #simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 1, index_poly_2= 5, show_plot = False, crystalline_filter= 2)
     #simp.plot_local_density_loop(index_poly_1= 1, index_poly_2= 5, show_plot = False)
 
     #simp.plot_rg_two_polymers_three_times(mode = "re", index_poly_1= 1, index_poly_2= 5, show_plot= False)
@@ -1596,7 +1608,7 @@ def main():
     #simp.plot_stem_length()
 
     #simp.plot_crystallinity_different_quench_temps()
-    simp.plot_length_tie_chains(mode = "N_tie")
+    #simp.plot_length_tie_chains(mode = "N_tie")
     #simp.plot_length_tie_chains(mode = "f_tie")
 
     #simp.plot_avg_domain_size_and_crossover_values()

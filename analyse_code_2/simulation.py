@@ -671,7 +671,7 @@ class Simulation:
         except IndexError:
             raise ValueError("Time not in dataset, choose a different time.")
         current_polymer = polymer("%s/%s_run%i_time_%i.txt"%(self.path_to_data_folder, self.lammps_dump_prefix, current_row["Run"], current_row["StepSequence"]), 
-            polymer_length= self.polymer_length, cell_length= cell_length, current_timestep = time)
+            polymer_length= self.polymer_length, cell_length= cell_length, current_timestep = time, path_to_home_folder= self.path_to_home_folder)
         try:
             current_cryst_file = pd.read_csv("%s/%s_cryst_time_%s.txt" %(self.path_to_crystallisation_folder, self.lammps_dump_prefix, time), sep = " ")
             current_polymer.read_cryst("%s/%s_cryst_time_%s.txt" %(self.path_to_crystallisation_folder, self.lammps_dump_prefix, time))

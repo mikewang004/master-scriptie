@@ -12,6 +12,8 @@ from hoshenKopelmanInPython import hk_in_python
 from coarse_grained_hist import coarse_grained_hist
 from hoshenKopelmanInPython2 import hoshen_kopelman_domains
 
+import glob
+
 def wrap_coordinates(column, minlength, total_length):
     return (column - minlength) % total_length + minlength
 
@@ -308,11 +310,25 @@ class atom_coords:
 
 
 class polymer():
-    def __init__(self, path_to_file, polymer_length = 100, cell_length = 2.0, current_timestep = None):
+    def __init__(self, path_to_file, polymer_length = 100, cell_length = 2.0, current_timestep = None, path_to_home_folder = None):
         self.atom_coords = atom_coords(path_to_file, polymer_length= polymer_length, cell_length= cell_length, current_timestep= current_timestep)
+        self.path_to_home_folder = path_to_home_folder
+        self.current_timestep = current_timestep
         self.results = results()
 
-    def read_cryst(self, location):
+    def read_cryst(self, location = None):
+        if location == None:
+            if self.path_to_home_folder == None:
+                print("No location supplied and/or found, aborting...")
+                return 0;
+            else:
+                try: 
+                    pattern = f"{self.path_to_home_folder}/crystallisation/*_{self.current_timestep}.txt"
+                except FileNotFoundError:
+                    print("Location supplied but file not found")
+                    return 0;
+                files = glob.glob(pattern)
+                location = files[0]
         self.df_cryst = pd.read_csv(location, sep = " ", header = None, skiprows = 1, index_col = False).iloc[:, 1:]
         try:
             self.df_cryst.columns = ["xid", "yid", "zid", "cryst_bool", "x_ev", "y_ev", "z_ev"]
@@ -511,44 +527,88 @@ class polymer():
         print()
 
 
-    def local_density(self, n_bins = 30):
-        """Calculates local density per given time. Returns a distribution"""
+    def local_density(self, n_bins=30, filter=0):
+        """Return a smoothed density distribution over occupied histogram voxels.
 
-        monomer_count = self.atom_coords.assign_monomers_to_box()
-        print(monomer_count.iloc[:, :7])
-        triplet_counts = (
-            monomer_count.groupby(['nx', 'ny', 'nz'])
-            .size()
-            .reset_index(name='count')
+        filter=0: include all monomers.
+        filter=1: include monomers belonging to crystalline cells.
+        filter=2: include monomers belonging to non-crystalline cells.
+
+        Cell membership is matched using nx, ny, nz versus xid, yid, zid.
+        The spatial histogram grid is fixed using the unfiltered coordinates.
+        Empty histogram voxels are excluded, as in the original implementation.
+        Requires NumPy as np and SciPy as sp.
+        """
+        if filter not in (0, 1, 2):
+            raise ValueError("filter must be 0, 1, or 2.")
+        if not isinstance(n_bins, (int, np.integer)) or n_bins < 1:
+            raise ValueError("n_bins must be a positive integer.")
+
+        monomers = self.atom_coords.assign_monomers_to_box()
+        coords = monomers[["xu", "yu", "zu"]].to_numpy(dtype=float)
+        if len(coords) == 0:
+            raise ValueError("No monomers are available.")
+
+        # Define the grid from ALL monomers, not the filtered subset.
+        lengths = np.asarray(self.atom_coords.boxlengths, dtype=float)
+        if lengths.shape != (3,) or np.any(lengths <= 0):
+            raise ValueError("Expected three positive orthorhombic box lengths.")
+        origin = coords.min(axis=0)
+        edges = [
+            np.linspace(start, start + length, n_bins + 1)
+            for start, length in zip(origin, lengths)
+        ]
+
+        if filter != 0:
+            self.read_cryst()
+            cells = self.df_cryst[
+                ["xid", "yid", "zid", "cryst_bool"]
+            ].rename(columns={"cryst_bool": "_cell_crystalline"})
+
+            monomers = monomers.merge(
+                cells,
+                left_on=["nx", "ny", "nz"],
+                right_on=["xid", "yid", "zid"],
+                how="left",
+                validate="many_to_one",
+            )
+
+            # Missing assignments are not automatically non-crystalline.
+            if monomers["_cell_crystalline"].isna().any():
+                raise ValueError(
+                    "Some monomer cells have no crystallinity assignment. "
+                    "Check the cell identifiers and self.df_cryst."
+                )
+            crystalline = monomers["_cell_crystalline"].gt(0.8)
+            monomers = monomers.loc[crystalline if filter == 1 else ~crystalline]
+            coords = monomers[["xu", "yu", "zu"]].to_numpy(dtype=float)
+
+        if len(coords) == 0:
+            raise ValueError("No monomers match the selected crystallinity filter.")
+
+        voxel_counts, _ = np.histogramdd(coords, bins=edges)
+        if int(voxel_counts.sum()) != len(coords):
+            raise ValueError(
+                "Some coordinates lie outside the histogram grid. "
+                "If xu, yu, zu are unwrapped periodic coordinates, wrap them "
+                "into the simulation box before histogramming."
+            )
+
+        voxel_volume = np.prod(lengths) / n_bins**3
+        density_nonzero = voxel_counts[voxel_counts > 0] / voxel_volume
+
+        counts, bin_edges = np.histogram(
+            density_nonzero, bins=n_bins, density=True
+        )
+        bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+        counts_smooth = sp.ndimage.gaussian_filter1d(
+            counts.astype(float), sigma=1
         )
 
-        #n_bins = 26 #default value 
-        Lx, Ly, Lz = self.atom_coords.boxlengths  # box dimensions
-        coords = monomer_count[['xu', 'yu', 'zu']].values
-        x_min, y_min, z_min = coords.min(axis=0)  # or use known box origin
-
-        bins_x = np.linspace(x_min, x_min + Lx, n_bins + 1)
-        bins_y = np.linspace(y_min, y_min + Ly, n_bins + 1)
-        bins_z = np.linspace(z_min, z_min + Lz, n_bins + 1)
-        counts, edges = np.histogramdd(coords, bins=(bins_x, bins_y, bins_z))
-
-        # --- voxel volume ---
-        voxel_vol = (Lx / n_bins) * (Ly / n_bins) * (Lz / n_bins)
-
-        # --- local density: monomers per unit volume ---
-        local_density = counts / voxel_vol  # shape: (n_bins, n_bins, n_bins)
-        global_density = self.atom_coords.n_atoms/self.atom_coords.volume
-        # print(f"Voxel volume:       {voxel_vol:.4f}")
-        # print(f"Max local density:  {local_density.max():.4f}")
-        # print(f"Mean local density: {local_density.mean():.4f}")
-        # print(f"Global density check: {len(coords) / (Lx * Ly * Lz):.4f}")
-        density_flat = local_density.flatten()
-        density_nonzero = density_flat[density_flat > 0]
-        counts, bin_edges = np.histogram(density_nonzero, bins = n_bins, density = True)
-        bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
-        counts_smooth = sp.ndimage.gaussian_filter1d(counts.astype(float), sigma=1)
-        self.results.bin_centers, self.results.counts_smooth = bin_centers, counts_smooth
+        self.results.bin_centers = bin_centers
+        self.results.counts_smooth = counts_smooth
         return bin_centers, counts_smooth
+
 
 
 

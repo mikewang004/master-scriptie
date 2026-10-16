@@ -1494,6 +1494,8 @@ class simulation_plots():
 
 
     def plot_n_vs_tie(self, savestring = None):
+        plt.figure(figsize = (self.std_width*1.25, self.std_height*1.5))
+        tc_times = [1, 5]
         for i in range(0, len(self.simulations)):
             simulation = self.simulations[i]
             path_to_tie_chain_file = "%s/tie_chains.txt" %simulation.path_to_home_folder
@@ -1502,11 +1504,43 @@ class simulation_plots():
             y = tie_chains["mean_tie_length"].iloc[1:]
             ylabel = r"$N_\text{tie}$"
             savestring = "%s/tie_chains/n_vs_mean_tie_length.pdf" %self.path_to_latex_plots_folder
-            plt.scatter(simulation.polymer_length,y[100],
-                color=self.simulation_colours[simulation], label = "PVA-%i" %simulation.polymer_length)
+            # plt.scatter(simulation.polymer_length,y[100],
+            #     color=self.simulation_colours[simulation], label = "PVA-%i" %simulation.polymer_length)
+            for j in range(0, len(tc_times)):
+                # plt.scatter(simulation.polymer_length,y[tc_times[j]*simulation.tc_idx],
+                #     color=self.simulation_colours[simulation], marker = marker, label = "PVA-%i" %simulation.polymer_length)
+                plt.scatter(
+                    simulation.polymer_length,
+                    y[tc_times[j] * simulation.tc_idx],
+                    color=self.simulation_colours[simulation],
+                    marker="s" if j == 0 else "v",
+                    label=f"PVA-{simulation.polymer_length}" if j == 0 else "_nolegend_",
+                )
         plt.xlabel(r"$N$")
         plt.ylabel(ylabel)
-        plt.legend()
+        handles, labels = plt.gca().get_legend_handles_labels()
+        polymer_handles = [
+            Line2D(
+                [], [],
+                color=handle.get_facecolors()[0],
+                marker="o",
+                linestyle="none",
+                label=label,
+            )
+            for handle, label in zip(handles, labels)
+        ]
+        time_handles = [
+            Line2D(
+                [], [], color="black", marker="s", linestyle="none",
+                label=r"$t/t_c = 1$",
+            ),
+            Line2D(
+                [], [], color="black", marker="v", linestyle="none",
+                label=r"$t/t_c = 5$",
+            ),
+        ]
+        plt.legend(handles=polymer_handles + time_handles)
+        #plt.legend()
         plt.savefig(savestring)
         return 0;
 
@@ -1584,7 +1618,7 @@ def main():
     simulations = load_in_simulations()
 
     simp = simulation_plots(simulations)
-    mode = "local_monomer_density_dist"
+    mode = "nematic"
 
     #simp.plot_rg_two_polymers_at_begin_melt(mode = "rg")
     #simp.plot_rg_two_polymers_at_begin_melt(mode = "re")
@@ -1592,7 +1626,7 @@ def main():
     #simp.plot_monomer_density_and_crossover_values(show_plot=True, mode = "b", marker_size = 10.0, observable= "monomer_density", crossover_observable= "crystallinity")
     #simp.plot_crossover_inf_vs_N(observable= "monomer_density")
     #simp.plot_crossover_inf_vs_N(observable= "crystallinity")
-    simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 1, index_poly_2= 5, show_plot = False, crystalline_filter= 0)
+    #simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 1, index_poly_2= 5, show_plot = False, crystalline_filter= 0)
     #simp.plot_rg_two_polymers_three_times(mode = mode, index_poly_1= 1, index_poly_2= 5, show_plot = False, crystalline_filter= 2)
     #simp.plot_local_density_loop(index_poly_1= 1, index_poly_2= 5, show_plot = False)
 
@@ -1614,7 +1648,7 @@ def main():
     #simp.plot_avg_domain_size_and_crossover_values()
 
     #simp.plot_rg_vs_re()
-    #simp.plot_n_vs_tie()
+    simp.plot_n_vs_tie()
 
     #simp.plot_N_vs_rg()
 
